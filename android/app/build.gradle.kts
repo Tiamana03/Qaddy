@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.fairway"
+    namespace = "com.qaddy.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -16,10 +16,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.fairway"
+        applicationId = "com.qaddy.app" // TODO(founders): confirm final bundle id before first store submission
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 26 // ~Android 8.0 (2017+) — see M0 plan notes; adjust if analytics later shows real device-support need
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Real per-environment secrets — only the .example templates are committed.
+lib/core/config/env/*.json
+!lib/core/config/env/*.json.example
