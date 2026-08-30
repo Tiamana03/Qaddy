@@ -11,36 +11,38 @@ dependencies:
   flutter:
     sdk: flutter
 
+  cupertino_icons: ^1.0.8
+
   # State management + dependency injection (see core/ for the repository/service
   # interfaces that keep every provider here vendor-agnostic).
   flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
 
-  # Backend
-  supabase_flutter: ^2.8.0
-
-  # Crash reporting (live from M0 — see core/services/crash_reporting_service.dart)
-  sentry_flutter: ^8.13.0
+  # Routing
+  go_router: ^14.6.2
 
   # Product analytics (Noop binding until a launch-geography/data-residency
   # decision is made — see core/services/analytics_service.dart)
   posthog_flutter: ^4.10.0
 
-  # Routing
-  go_router: ^14.6.2
+  riverpod_annotation: ^2.6.1
 
-  cupertino_icons: ^1.0.8
+  # Crash reporting (live from M0 — see core/services/crash_reporting_service.dart)
+  sentry_flutter: ^8.13.0
+
+  # Backend
+  supabase_flutter: ^2.8.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  build_runner: ^2.4.13
+
+  riverpod_generator: ^2.6.3
+
   # Superset of flutter_lints, chosen for long-term maintainability
   # per the founders' explicit engineering standards (see analysis_options.yaml).
   very_good_analysis: ^7.0.0
-
-  riverpod_generator: ^2.6.3
-  build_runner: ^2.4.13
 
 flutter:
   uses-material-design: true

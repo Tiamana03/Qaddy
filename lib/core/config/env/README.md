@@ -11,5 +11,7 @@ flutter run --dart-define-from-file=lib/core/config/env/dev.json
 ```
 
 Until a real Supabase project exists (see the Release One roadmap, M0),
-`SUPABASE_URL`/`SUPABASE_ANON_KEY` can stay empty — `AppConfig.isBackendConfigured`
+`SUPABASE_URL`/`SUPABASE_PUBLISHABLE_KEY` can stay empty —
+`AppConfig.isBackendConfigured` is false in that case and the app boots
+without attempting a connection.
 is false in that case and the app boots without attempting a connection.

@@ -1,5 +1,5 @@
 /// Crash + error reporting, behind an interface for the same reason as
-/// [AnalyticsService] — see that file's doc comment.
+/// `AnalyticsService` — see that file's doc comment.
 ///
 /// Unlike analytics, crash reporting carries no data-residency tension with
 /// the founders' stated philosophy, so this is wired to Sentry from
@@ -33,7 +33,7 @@ class SentryCrashReportingService implements CrashReportingService {
       stackTrace: stackTrace,
       withScope: context == null
           ? null
-          : (scope) => scope.setExtra('context', context),
+          : (scope) => scope.setContext('context', {'value': context}),
     );
   }
 

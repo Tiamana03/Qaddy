@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/config/app_config.dart';
+import 'package:qaddy/core/routing/app_router.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/config/app_config.dart';
-import 'core/routing/app_router.dart';
-
 Future<void> main() async {
-  final config = AppConfig.current;
+  const config = AppConfig.current;
 
   await runZonedGuarded(
     () async {
@@ -18,7 +17,7 @@ Future<void> main() async {
       if (config.isBackendConfigured) {
         await Supabase.initialize(
           url: config.supabaseUrl,
-          anonKey: config.supabaseAnonKey,
+          publishableKey: config.supabasePublishableKey,
         );
       }
       // When isBackendConfigured is false (no Supabase project provisioned
@@ -27,11 +26,12 @@ Future<void> main() async {
 
       if (config.isCrashReportingConfigured) {
         await SentryFlutter.init((options) {
-          options.dsn = config.sentryDsn;
-          options.environment = config.environment.name;
-          options.tracesSampleRate = config.environment == AppEnvironment.prod
-              ? 0.2
-              : 1.0;
+          options
+            ..dsn = config.sentryDsn
+            ..environment = config.environment.name
+            ..tracesSampleRate = config.environment == AppEnvironment.prod
+                ? 0.2
+                : 1.0;
         }, appRunner: () => runApp(const ProviderScope(child: QaddyApp())));
       } else {
         runApp(const ProviderScope(child: QaddyApp()));

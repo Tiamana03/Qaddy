@@ -9,9 +9,10 @@
 /// variable directly: everything goes through [AppConfig.current], which
 /// keeps the actual Supabase project (or any other per-environment secret)
 /// swappable without touching call sites. Nothing here assumes a real
-/// Supabase project exists yet — [supabaseUrl] and [supabaseAnonKey] default
-/// to empty strings, and [AppConfig.isBackendConfigured] lets the app boot
-/// and be tested safely before a project is provisioned.
+/// Supabase project exists yet — [AppConfig.supabaseUrl] and
+/// [AppConfig.supabasePublishableKey] default to empty strings, and
+/// [AppConfig.isBackendConfigured] lets the app boot and be tested safely
+/// before a project is provisioned.
 library;
 
 enum AppEnvironment { dev, staging, prod }
@@ -20,7 +21,7 @@ class AppConfig {
   const AppConfig._({
     required this.environmentName,
     required this.supabaseUrl,
-    required this.supabaseAnonKey,
+    required this.supabasePublishableKey,
     required this.sentryDsn,
     required this.postHogApiKey,
     required this.postHogHost,
@@ -34,7 +35,7 @@ class AppConfig {
   final String environmentName;
 
   final String supabaseUrl;
-  final String supabaseAnonKey;
+  final String supabasePublishableKey;
   final String sentryDsn;
   final String postHogApiKey;
   final String postHogHost;
@@ -46,7 +47,7 @@ class AppConfig {
   };
 
   bool get isBackendConfigured =>
-      supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+      supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
 
   bool get isCrashReportingConfigured => sentryDsn.isNotEmpty;
 
@@ -55,7 +56,7 @@ class AppConfig {
   static const AppConfig current = AppConfig._(
     environmentName: String.fromEnvironment('APP_ENV', defaultValue: 'dev'),
     supabaseUrl: String.fromEnvironment('SUPABASE_URL'),
-    supabaseAnonKey: String.fromEnvironment('SUPABASE_ANON_KEY'),
+    supabasePublishableKey: String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY'),
     sentryDsn: String.fromEnvironment('SENTRY_DSN'),
     postHogApiKey: String.fromEnvironment('POSTHOG_API_KEY'),
     postHogHost: String.fromEnvironment(

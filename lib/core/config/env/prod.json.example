@@ -1,7 +1,7 @@
 {
   "APP_ENV": "prod",
   "SUPABASE_URL": "",
-  "SUPABASE_ANON_KEY": "",
+  "SUPABASE_PUBLISHABLE_KEY": "",
   "SENTRY_DSN": "",
   "POSTHOG_API_KEY": "",
   "POSTHOG_HOST": "https://app.posthog.com"

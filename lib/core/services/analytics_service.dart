@@ -42,9 +42,10 @@ class PostHogAnalyticsService implements AnalyticsService {
   @override
   Future<void> track(String event, {Map<String, Object?>? properties}) {
     throw UnimplementedError(
-      'PostHogAnalyticsService is not wired yet — see AppConfig.isAnalyticsConfigured '
-      'and analytics_providers.dart. Requires a launch-geography/data-residency '
-      'decision before going live (see the Release One roadmap, M0).',
+      'PostHogAnalyticsService is not wired yet — see '
+      'AppConfig.isAnalyticsConfigured and analytics_providers.dart. '
+      'Requires a launch-geography/data-residency decision before going '
+      'live (see the Release One roadmap, M0).',
     );
   }
 
@@ -60,7 +61,8 @@ class PostHogAnalyticsService implements AnalyticsService {
 }
 
 final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
-  // Swap to PostHogAnalyticsService() once AppConfig.current.isAnalyticsConfigured
-  // and the hosting-region decision is made. Nothing outside this file changes.
+  // Swap to PostHogAnalyticsService() once
+  // AppConfig.current.isAnalyticsConfigured and the hosting-region decision
+  // is made. Nothing outside this file changes.
   return const NoopAnalyticsService();
 });
