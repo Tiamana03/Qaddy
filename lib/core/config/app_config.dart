@@ -40,10 +40,10 @@ class AppConfig {
   final String postHogHost;
 
   AppEnvironment get environment => switch (environmentName) {
-        'prod' => AppEnvironment.prod,
-        'staging' => AppEnvironment.staging,
-        _ => AppEnvironment.dev,
-      };
+    'prod' => AppEnvironment.prod,
+    'staging' => AppEnvironment.staging,
+    _ => AppEnvironment.dev,
+  };
 
   bool get isBackendConfigured =>
       supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;

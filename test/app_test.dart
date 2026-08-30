@@ -7,11 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/main.dart';
 
 void main() {
-  testWidgets('QaddyApp boots and shows the placeholder home screen',
-      (tester) async {
+  testWidgets('QaddyApp boots and shows the placeholder home screen', (
+    tester,
+  ) async {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Qaddy — foundations laid, features next.'), findsOneWidget);
+    expect(
+      find.text('Qaddy — foundations laid, features next.'),
+      findsOneWidget,
+    );
   });
 }

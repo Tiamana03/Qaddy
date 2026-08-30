@@ -29,9 +29,7 @@ class _BootPlaceholderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text('Qaddy — foundations laid, features next.'),
-      ),
+      body: Center(child: Text('Qaddy — foundations laid, features next.')),
     );
   }
 }

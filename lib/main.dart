@@ -26,16 +26,13 @@ Future<void> main() async {
       // need a live backend simply aren't reachable until M2 wires auth.
 
       if (config.isCrashReportingConfigured) {
-        await SentryFlutter.init(
-          (options) {
-            options.dsn = config.sentryDsn;
-            options.environment = config.environment.name;
-            options.tracesSampleRate = config.environment == AppEnvironment.prod
-                ? 0.2
-                : 1.0;
-          },
-          appRunner: () => runApp(const ProviderScope(child: QaddyApp())),
-        );
+        await SentryFlutter.init((options) {
+          options.dsn = config.sentryDsn;
+          options.environment = config.environment.name;
+          options.tracesSampleRate = config.environment == AppEnvironment.prod
+              ? 0.2
+              : 1.0;
+        }, appRunner: () => runApp(const ProviderScope(child: QaddyApp())));
       } else {
         runApp(const ProviderScope(child: QaddyApp()));
       }
