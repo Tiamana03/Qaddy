@@ -33,7 +33,7 @@ class SentryCrashReportingService implements CrashReportingService {
       stackTrace: stackTrace,
       withScope: context == null
           ? null
-          : (scope) => scope.setContext('context', {'value': context}),
+          : (scope) => scope.setContexts('context', {'value': context}),
     );
   }
 
