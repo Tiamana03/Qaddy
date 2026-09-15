@@ -111,13 +111,15 @@ Extended palette for charts, icons and illustrations. Not brand colours — do n
 
 # Gradients
 
-Subtle gradients for premium elements. Applied at 135° (top-left to bottom-right) unless a mockup specifies otherwise.
+Subtle gradients for premium elements. The colour stops below are taken directly from the Colour Library; the direction is not.
 
 | Token | Stops | Usage | Flutter Token Name |
 |---|---|---|---|
 | Green Gradient | `#0F3D2E` → `#1E6B4B` | Buttons, headers. | `gradientGreen` |
 | Gold Gradient | `#D4AF37` → `#F4D676` | Premium elements. | `gradientGold` |
 | Premium Gradient | `#8B5CF6` → `#EC4899` | Special/exclusive features. | `gradientPremium` |
+
+**Engineering Decision — Gradient Direction.** The Colour Library's gradient swatches show a colour blend but do not encode a direction. **135° (top-left to bottom-right) is the official Qaddy implementation standard for all three gradients above**, not a value read from the asset. Reason: a single consistent angle across every gradient token is what makes them read as one system rather than three unrelated effects, and top-left-to-bottom-right is the conventional direction for this style of diagonal brand gradient. This applies unless and until a future design asset explicitly specifies a different direction for a given gradient — treat that as a design decision to update this document, not a reason for an engineer to pick their own angle in the meantime.
 
 ---
 
