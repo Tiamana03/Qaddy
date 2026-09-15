@@ -150,12 +150,14 @@ Light Mode is the optional/secondary theme. Brand, semantic, accent and gradient
 |---|---|---|
 | Background | `background` | `#F8FAF9` |
 | Surface | `surface1` | `#FFFFFF` |
+| Alternate Surface | `surface2` | `#F5F7F6` |
 | Card | `card` | `#F1F5F3` |
 | Border | `border` | `#D1DAD6` |
+| Divider | `divider` | `#D7DDD9` |
 | Primary Text | `textPrimary` | `#0F3D2E` |
 | Secondary Text | `textSecondary` | `#6B867B` |
 
-The Colour Library does not define a Light Mode `Surface 2` or `Divider` — do not invent one. If Light Mode ships, request these from design before implementing.
+**Engineering Decision — Light Mode `surface2` and `divider`.** The Colour Library does not define a Light Mode `Surface 2` or `Divider` — these two values are not read from that asset. **`surface2: #F5F7F6` and `divider: #D7DDD9` are the official Qaddy implementation standard for Light Mode** unless and until a future design asset explicitly specifies different values. Reason: both sit in the same tonal relationship to Light Mode's `background` (`#F8FAF9`) and `surface1` (`#FFFFFF`) that their Dark Mode counterparts (`surface2`, `divider`) sit in relative to Dark Mode's `background` and `surface1` — a slightly-differentiated neutral step for `surface2`, and a subtle, low-contrast neutral for `divider` — so Light Mode keeps the same layering logic as Dark Mode instead of leaving two tokens undefined. This closes the one remaining Sprint 1 implementation blocker identified in the Sprint 1 Readiness Audit: without these two values, `QaddyColours`'s Light instance could not be fully constructed.
 
 ---
 
@@ -201,10 +203,10 @@ Never reference `Color(0xFF...)` literals outside of the file where `QaddyColour
 | `backgroundBase` | `Color(0xFF081B14)` | — (unchanged) |
 | `background` | `Color(0xFF081B14)` | `Color(0xFFF8FAF9)` |
 | `surface1` | `Color(0xFF102820)` | `Color(0xFFFFFFFF)` |
-| `surface2` | `Color(0xFF163B2E)` | — (not yet defined) |
+| `surface2` | `Color(0xFF163B2E)` | `Color(0xFFF5F7F6)` (Engineering Decision) |
 | `card` | `Color(0xFF1F2F29)` | `Color(0xFFF1F5F3)` |
 | `border` | `Color(0xFF2E4A3F)` | `Color(0xFFD1DAD6)` |
-| `divider` | `Color(0xFF3F5E52)` | — (not yet defined) |
+| `divider` | `Color(0xFF3F5E52)` | `Color(0xFFD7DDD9)` (Engineering Decision) |
 | `textPrimary` | `Color(0xFFFFFFFF)` | `Color(0xFF0F3D2E)` |
 | `textSecondary` | `Color(0xFF9FB3AA)` | `Color(0xFF6B867B)` |
 | `textTertiary` | `Color(0xFF6B867B)` | — (not yet defined) |
