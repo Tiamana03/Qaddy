@@ -6,15 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/main.dart';
 
 void main() {
-  testWidgets('QaddyApp boots and shows the placeholder home screen', (
-    tester,
-  ) async {
+  testWidgets('QaddyApp boots and shows the Home destination', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Qaddy — foundations laid, features next.'),
-      findsOneWidget,
-    );
+    // "Home" legitimately appears twice: the placeholder screen's heading
+    // and the bottom navigation bar's own tab label.
+    expect(find.text('Home'), findsWidgets);
   });
 }

@@ -156,6 +156,9 @@ Light Mode is the optional/secondary theme. Brand, semantic, accent and gradient
 | Divider | `divider` | `#D7DDD9` |
 | Primary Text | `textPrimary` | `#0F3D2E` |
 | Secondary Text | `textSecondary` | `#6B867B` |
+| Tertiary Text | `textTertiary` | `#8CA196` |
+
+**Engineering Decision — Light Mode `textTertiary`.** The Colour Library does not define a Light Mode tertiary text colour — this value is not read from that asset. **`textTertiary: #8CA196` is the official Qaddy implementation standard for Light Mode** unless and until a future design asset explicitly specifies a different value. Usage: captions, placeholders, disabled text, and other low-emphasis supporting text — the same role `textTertiary` plays in Dark Mode.
 
 **Engineering Decision — Light Mode `surface2` and `divider`.** The Colour Library does not define a Light Mode `Surface 2` or `Divider` — these two values are not read from that asset. **`surface2: #F5F7F6` and `divider: #D7DDD9` are the official Qaddy implementation standard for Light Mode** unless and until a future design asset explicitly specifies different values. Reason: both sit in the same tonal relationship to Light Mode's `background` (`#F8FAF9`) and `surface1` (`#FFFFFF`) that their Dark Mode counterparts (`surface2`, `divider`) sit in relative to Dark Mode's `background` and `surface1` — a slightly-differentiated neutral step for `surface2`, and a subtle, low-contrast neutral for `divider` — so Light Mode keeps the same layering logic as Dark Mode instead of leaving two tokens undefined. This closes the one remaining Sprint 1 implementation blocker identified in the Sprint 1 Readiness Audit: without these two values, `QaddyColours`'s Light instance could not be fully constructed.
 
@@ -209,7 +212,7 @@ Never reference `Color(0xFF...)` literals outside of the file where `QaddyColour
 | `divider` | `Color(0xFF3F5E52)` | `Color(0xFFD7DDD9)` (Engineering Decision) |
 | `textPrimary` | `Color(0xFFFFFFFF)` | `Color(0xFF0F3D2E)` |
 | `textSecondary` | `Color(0xFF9FB3AA)` | `Color(0xFF6B867B)` |
-| `textTertiary` | `Color(0xFF6B867B)` | — (not yet defined) |
+| `textTertiary` | `Color(0xFF6B867B)` | `Color(0xFF8CA196)` (Engineering Decision) |
 | `textInverse` | `Color(0xFF081B14)` | — (unchanged) |
 | `success` | `Color(0xFF22C55E)` | — (unchanged) |
 | `error` | `Color(0xFFEF4444)` | — (unchanged) |

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/config/app_config.dart';
 import 'package:qaddy/core/routing/app_router.dart';
+import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -56,9 +57,13 @@ class QaddyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Qaddy',
       debugShowCheckedModeBanner: false,
-      // Full design-system theming lands in Milestone 1 — this is a neutral
-      // placeholder so the app is usable (and testable) before then.
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
+      // Qaddy's design-system theme (Sprint 1.1) — see lib/core/theme/ and
+      // design/design-tokens/. Dark Mode is Qaddy's primary theme; Light
+      // Mode is the optional/secondary theme (colours.md). Both are wired
+      // here; `themeMode` is left at its default (ThemeMode.system) so the
+      // active theme follows the platform setting rather than forcing one.
+      theme: QaddyTheme.light,
+      darkTheme: QaddyTheme.dark,
       routerConfig: router,
     );
   }
