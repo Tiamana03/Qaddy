@@ -2,7 +2,7 @@
 
 # Border Radius
 
-Version: 2.0
+Version: 2.1
 Status: Active
 Source: No dedicated radius asset exists in `design/assets/` — see [Note on Source](#note-on-source). Every value below is an Engineering Decision.
 Last Updated: September 2026
@@ -52,6 +52,15 @@ No radius asset exists to source values from (see [Note on Source](#note-on-sour
 
 Reason for the scale as a whole: reusing the exact numeric values already defined in `spacing.md` (8/16/24/32) means a Flutter engineer who already knows the spacing scale already knows the radius scale — there is nothing new to memorise, and the two token systems visibly agree with each other instead of coincidentally almost matching.
 
+## Border Width
+
+| Token | Value | Reason | Usage | Flutter Token Name |
+|---|---|---|---|---|
+| Default | 1px | A hairline stroke — visible enough to define an edge without competing with the content inside it. | Default state for input fields and any other outlined control. | `borderWidthDefault` |
+| Focused | 2px | Doubling the default width is the smallest change that reads as a deliberate state change rather than a rendering inconsistency, without the border becoming heavy. | Focused state for input fields and any other outlined control. | `borderWidthFocused` |
+
+**Engineering Decision — Border Width.** No design asset in this repository specifies a border-width value — the Forms Library shows a visually thicker/coloured border on focus, but prints no number. **`borderWidthDefault: 1px` and `borderWidthFocused: 2px` are the official Qaddy implementation standard** for every outlined control, until superseded by a future design asset. Reason: a 1px hairline is the conventional default for a resting outlined control, and doubling it on focus is a small, legible, easily-implemented state change consistent with this scale's own preference for simple, predictable progressions (see the Radius Scale above).
+
 ---
 
 # Rules
@@ -59,6 +68,7 @@ Reason for the scale as a whole: reusing the exact numeric values already define
 - Never hardcode a radius value. If a component seems to need a radius that isn't above, that's a design conversation, not a reason to write a literal number.
 - Don't mix radius tokens on a single component's different corners unless a mockup explicitly shows an asymmetric shape (e.g. a bottom sheet rounded only at the top) — the default is uniform rounding on all four corners.
 - Keep radius consistent across all screens and both themes; radius does not change between Light and Dark Mode.
+- Never hardcode a border width. Use `borderWidthDefault`/`borderWidthFocused` the same way radius tokens are used — border width does not change between Light and Dark Mode either.
 
 ---
 
@@ -81,6 +91,8 @@ Never write a literal `BorderRadius.circular(24)` for a shape that has a token a
 | `large` | 24 |
 | `extraLarge` | 32 |
 | `pill` | 999 |
+| `borderWidthDefault` | 1 |
+| `borderWidthFocused` | 2 |
 
 ## Example
 
@@ -96,8 +108,14 @@ Flutter Token: extraLarge
 
 Chips
 Flutter Token: pill
+
+Input field (default)
+Flutter Token: borderWidthDefault
+
+Input field (focused)
+Flutter Token: borderWidthFocused
 ```
 
 ---
 
-Version 2.0
+Version 2.1

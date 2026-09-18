@@ -20,6 +20,8 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
     required this.large,
     required this.extraLarge,
     required this.pill,
+    required this.borderWidthDefault,
+    required this.borderWidthFocused,
   });
 
   /// The single instance used by both `QaddyTheme.light` and
@@ -30,6 +32,8 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
     large: 24,
     extraLarge: 32,
     pill: 999,
+    borderWidthDefault: 1,
+    borderWidthFocused: 2,
   );
 
   /// Compact controls: input fields, badges, tags, small filter chips.
@@ -50,6 +54,12 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
   /// [BorderRadius.circular] to cap at a true stadium/pill shape.
   final double pill;
 
+  /// Default state for input fields and any other outlined control.
+  final double borderWidthDefault;
+
+  /// Focused state for input fields and any other outlined control.
+  final double borderWidthFocused;
+
   @override
   QaddyRadius copyWith({
     double? small,
@@ -57,6 +67,8 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
     double? large,
     double? extraLarge,
     double? pill,
+    double? borderWidthDefault,
+    double? borderWidthFocused,
   }) {
     return QaddyRadius(
       small: small ?? this.small,
@@ -64,6 +76,8 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
       large: large ?? this.large,
       extraLarge: extraLarge ?? this.extraLarge,
       pill: pill ?? this.pill,
+      borderWidthDefault: borderWidthDefault ?? this.borderWidthDefault,
+      borderWidthFocused: borderWidthFocused ?? this.borderWidthFocused,
     );
   }
 
@@ -78,6 +92,16 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
       large: lerpDouble(large, other.large, t)!,
       extraLarge: lerpDouble(extraLarge, other.extraLarge, t)!,
       pill: lerpDouble(pill, other.pill, t)!,
+      borderWidthDefault: lerpDouble(
+        borderWidthDefault,
+        other.borderWidthDefault,
+        t,
+      )!,
+      borderWidthFocused: lerpDouble(
+        borderWidthFocused,
+        other.borderWidthFocused,
+        t,
+      )!,
     );
   }
 }

@@ -45,6 +45,9 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
     required this.gradientGreen,
     required this.gradientGold,
     required this.gradientPremium,
+    required this.disabledForeground,
+    required this.disabledBackground,
+    required this.disabledBorder,
   });
 
   /// Dark Mode — Qaddy's primary theme.
@@ -76,6 +79,9 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
     gradientGreen: _greenGradient,
     gradientGold: _goldGradient,
     gradientPremium: _premiumGradient,
+    disabledForeground: Color(0xFFA8B5AE),
+    disabledBackground: Color(0xFFE7ECE9),
+    disabledBorder: Color(0xFFD3DBD6),
   );
 
   /// Light Mode — Qaddy's optional/secondary theme.
@@ -110,6 +116,9 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
     gradientGreen: _greenGradient,
     gradientGold: _goldGradient,
     gradientPremium: _premiumGradient,
+    disabledForeground: Color(0xFFA8B5AE),
+    disabledBackground: Color(0xFFE7ECE9),
+    disabledBorder: Color(0xFFD3DBD6),
   );
 
   // Gradient stops are identical in both themes — declared once and shared.
@@ -219,6 +228,16 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// Special/exclusive features.
   final LinearGradient gradientPremium;
 
+  // Disabled state
+  /// Disabled text, disabled icons, disabled control labels.
+  final Color disabledForeground;
+
+  /// Disabled buttons, disabled input backgrounds, disabled chips.
+  final Color disabledBackground;
+
+  /// Disabled outlined buttons, disabled text fields, disabled cards.
+  final Color disabledBorder;
+
   @override
   QaddyColours copyWith({
     Color? primary,
@@ -248,6 +267,9 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
     LinearGradient? gradientGreen,
     LinearGradient? gradientGold,
     LinearGradient? gradientPremium,
+    Color? disabledForeground,
+    Color? disabledBackground,
+    Color? disabledBorder,
   }) {
     return QaddyColours(
       primary: primary ?? this.primary,
@@ -277,6 +299,9 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
       gradientGreen: gradientGreen ?? this.gradientGreen,
       gradientGold: gradientGold ?? this.gradientGold,
       gradientPremium: gradientPremium ?? this.gradientPremium,
+      disabledForeground: disabledForeground ?? this.disabledForeground,
+      disabledBackground: disabledBackground ?? this.disabledBackground,
+      disabledBorder: disabledBorder ?? this.disabledBorder,
     );
   }
 
@@ -321,6 +346,17 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
         other.gradientPremium,
         t,
       )!,
+      disabledForeground: Color.lerp(
+        disabledForeground,
+        other.disabledForeground,
+        t,
+      )!,
+      disabledBackground: Color.lerp(
+        disabledBackground,
+        other.disabledBackground,
+        t,
+      )!,
+      disabledBorder: Color.lerp(disabledBorder, other.disabledBorder, t)!,
     );
   }
 }

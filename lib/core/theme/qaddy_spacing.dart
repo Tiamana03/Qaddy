@@ -29,6 +29,7 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
     required this.buttonPadding,
     required this.sectionGap,
     required this.cardGap,
+    required this.iconButtonSize,
   });
 
   /// The single instance used by both `QaddyTheme.light` and
@@ -48,6 +49,7 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
     buttonPadding: 12,
     sectionGap: 32,
     cardGap: 16,
+    iconButtonSize: 48,
   );
 
   /// Tiny spacing: icon padding, space between an icon and its label.
@@ -102,6 +104,11 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
   /// Alias of [lg].
   final double cardGap;
 
+  /// Diameter / tap-target size for icon buttons.
+  ///
+  /// Alias of [display].
+  final double iconButtonSize;
+
   @override
   QaddySpacing copyWith({
     double? xs,
@@ -118,6 +125,7 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
     double? buttonPadding,
     double? sectionGap,
     double? cardGap,
+    double? iconButtonSize,
   }) {
     return QaddySpacing(
       xs: xs ?? this.xs,
@@ -134,6 +142,7 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
       buttonPadding: buttonPadding ?? this.buttonPadding,
       sectionGap: sectionGap ?? this.sectionGap,
       cardGap: cardGap ?? this.cardGap,
+      iconButtonSize: iconButtonSize ?? this.iconButtonSize,
     );
   }
 
@@ -157,6 +166,7 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
       buttonPadding: lerpDouble(buttonPadding, other.buttonPadding, t)!,
       sectionGap: lerpDouble(sectionGap, other.sectionGap, t)!,
       cardGap: lerpDouble(cardGap, other.cardGap, t)!,
+      iconButtonSize: lerpDouble(iconButtonSize, other.iconButtonSize, t)!,
     );
   }
 }

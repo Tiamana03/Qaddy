@@ -164,6 +164,20 @@ Light Mode is the optional/secondary theme. Brand, semantic, accent and gradient
 
 ---
 
+# Disabled State
+
+Used for disabled buttons, inputs, toggles, checkboxes and other controls.
+
+| Token | HEX | RGB | Usage | Flutter Token Name |
+|---|---|---|---|---|
+| Disabled Foreground | `#A8B5AE` | `rgb(168, 181, 174)` | Disabled text, disabled icons, disabled control labels. | `disabledForeground` |
+| Disabled Background | `#E7ECE9` | `rgb(231, 236, 233)` | Disabled buttons, disabled input backgrounds, disabled chips, disabled surfaces requiring a muted appearance. | `disabledBackground` |
+| Disabled Border | `#D3DBD6` | `rgb(211, 219, 214)` | Disabled outlined buttons, disabled text fields, disabled cards where required. | `disabledBorder` |
+
+**Engineering Decision — Disabled State.** The Qaddy Design Library includes disabled buttons, inputs, toggles, checkboxes and other controls, but no design asset specifies the exact disabled colour values. **The three values above are the official Qaddy implementation standard** until superseded by a future design asset. These values intentionally maintain sufficient contrast while clearly communicating that an element is unavailable. All disabled components throughout Qaddy must reference these tokens rather than creating custom disabled colours.
+
+---
+
 # Accessibility
 
 Contrast examples from the Colour Library, measured against the Dark Mode background (`#081B14`), all passing WCAG AA:
@@ -214,6 +228,9 @@ Never reference `Color(0xFF...)` literals outside of the file where `QaddyColour
 | `textSecondary` | `Color(0xFF9FB3AA)` | `Color(0xFF6B867B)` |
 | `textTertiary` | `Color(0xFF6B867B)` | `Color(0xFF8CA196)` (Engineering Decision) |
 | `textInverse` | `Color(0xFF081B14)` | — (unchanged) |
+| `disabledForeground` | `Color(0xFFA8B5AE)` | — (unchanged, Engineering Decision) |
+| `disabledBackground` | `Color(0xFFE7ECE9)` | — (unchanged, Engineering Decision) |
+| `disabledBorder` | `Color(0xFFD3DBD6)` | — (unchanged, Engineering Decision) |
 | `success` | `Color(0xFF22C55E)` | — (unchanged) |
 | `error` | `Color(0xFFEF4444)` | — (unchanged) |
 | `warning` | `Color(0xFFF59E0B)` | — (unchanged) |

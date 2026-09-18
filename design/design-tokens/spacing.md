@@ -2,7 +2,7 @@
 
 # Spacing
 
-Version: 2.0
+Version: 2.1
 Status: Active
 Source: No dedicated spacing/layout asset exists in `design/assets/` — see [Note on Source](#note-on-source). Every value below is an Engineering Decision.
 Last Updated: September 2026
@@ -69,8 +69,11 @@ These are named for their *role*, not their value, so a future re-tuning of "how
 | Button Padding | MD (12px) | Default internal padding for a button's content. | `buttonPadding` |
 | Section Gap | XXL (32px) | Default vertical gap between distinct sections on a screen. | `sectionGap` |
 | Card Gap | LG (16px) | Default gap between adjacent cards in a list or grid. | `cardGap` |
+| Icon Button Size | Display (48px) | Diameter / tap-target size for icon buttons. | `iconButtonSize` |
 
-Reason: these five aliases cover the layout decisions every feature screen makes repeatedly (screen padding, card padding, button padding, section-to-section spacing, card-to-card spacing). Aliasing them to the base scale — rather than letting each feature pick its own combination of raw tokens — is what makes "every screen breathes the same way" (per the Design Bible) an enforceable property instead of a hope.
+Reason: these six aliases cover the layout decisions every feature screen makes repeatedly (screen padding, card padding, button padding, section-to-section spacing, card-to-card spacing, icon button sizing). Aliasing them to the base scale — rather than letting each feature pick its own combination of raw tokens — is what makes "every screen breathes the same way" (per the Design Bible) an enforceable property instead of a hope.
+
+**Engineering Decision — Icon Button Size.** No design asset in this repository gives the Icon Button control a pixel dimension — the Buttons Library shows an "Icon Button" panel visually but prints no size for it, unlike the three named Button heights it does specify (Large 56px, Medium 48px, Small 40px — see [Note on Source](#note-on-source)). **`iconButtonSize: 48px` is the official Qaddy implementation standard** for every icon button's diameter and tap target, until superseded by a future design asset. Reason: 48px matches Flutter's and Material Design's own minimum recommended interactive/touch-target dimension, so this is never below platform accessibility guidance; it also reuses the exact same 48px already sourced from the Buttons Library's "Medium" button height, rather than introducing a new number — an icon button and a Medium button sit at the same scale in the same family of controls.
 
 ---
 
@@ -110,6 +113,7 @@ Never write a literal `EdgeInsets.all(16)` or `SizedBox(height: 24)` for a gap t
 | `buttonPadding` | 12 (alias of `md`) |
 | `sectionGap` | 32 (alias of `xxl`) |
 | `cardGap` | 16 (alias of `lg`) |
+| `iconButtonSize` | 48 (alias of `display`) |
 
 ## Example
 
@@ -122,8 +126,11 @@ Flutter Token: cardPadding
 
 Between sections
 Flutter Token: sectionGap
+
+Icon Button
+Flutter Token: iconButtonSize
 ```
 
 ---
 
-Version 2.0
+Version 2.1
