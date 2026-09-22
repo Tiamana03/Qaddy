@@ -3,13 +3,15 @@
 /// The route and bottom-nav label are "Friends" (navigation.md); the
 /// feature folder is "community" per navigation.md's Route Names vs
 /// Feature Folders Engineering Decision — the two are allowed to differ.
-/// Sprint 1.2 builds navigation only — real content lands in a later
-/// milestone. See `docs/architecture/navigation.md`.
+/// Uses `QaddyScaffold` for consistent layout and responsive behaviour —
+/// see `docs/sprints/sprint-01-5-foundation-integration.md`. Real content
+/// lands in a later milestone; see `docs/architecture/navigation.md`.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 
 /// Placeholder for the Friends destination (route `/friends`).
 class CommunityScreen extends StatelessWidget {
@@ -21,8 +23,7 @@ class CommunityScreen extends StatelessWidget {
     final colours = theme.extension<QaddyColours>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return Scaffold(
-      backgroundColor: colours.background,
+    return QaddyScaffold(
       body: Center(
         child: Text(
           'Friends',
