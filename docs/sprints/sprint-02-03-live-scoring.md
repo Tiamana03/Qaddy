@@ -140,7 +140,7 @@ Potential widgets:
 
 Continue using:
 
-docs/placeholder-data.md
+docs/standards/placeholder-data.md
 
 No API.
 

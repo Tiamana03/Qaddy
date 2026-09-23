@@ -119,22 +119,29 @@ Typical values:
 This is separate from the HoleScore list, which stores the score for each individual hole during play.
 ---
 
-# Hole Score
+### HoleScore
 
-Each hole records:
+| Field | Type | Description |
+|--------|------|-------------|
+| holeNumber | int | Hole number |
+| par | int | Hole par |
+| strokeIndex | int | Stroke index |
+| distance | int | Hole distance in metres |
+| grossScore | int | Gross score |
+| netScore | int | Net score |
+| stablefordPoints | int | Stableford points |
+| putts | int | Putts taken |
+| fairwayHit | bool | Fairway hit |
+| greenInRegulation | bool | GIR |
 
-| Field | Type |
-|---------|------|
-| holeNumber | int |
-| par | int |
-| strokeIndex | int |
-| grossScore | int |
-| netScore | int |
-| stablefordPoints | int |
-| putts | int |
-| fairwayHit | bool |
-| greenInRegulation | bool |
+## Hole Score Initial State
 
+Before a player records a score on a hole:
+
+- Gross Score defaults to the hole's Par.
+- Net Score defaults to the hole's Par.
+- Stableford Points default to 0.
+- The score can never be reduced below 1.
 ---
 
 # Scoring Formats
