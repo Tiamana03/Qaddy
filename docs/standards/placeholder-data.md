@@ -41,6 +41,12 @@ No developer or AI may invent alternative placeholder values unless this documen
 
 # Upcoming Round
 
+Format:
+Stableford
+
+Holes:
+18
+
 | Field | Value |
 |--------|-------|
 | Course | Richmond Golf Club |
@@ -93,16 +99,17 @@ No developer or AI may invent alternative placeholder values unless this documen
 
 # Friends
 
-| Name | Handicap |
-|------|-----------|
-| Josh | 10.8 |
-| Matt | 12.4 |
-| Ryan | 7.1 |
-| Luke | 15.3 |
-| Nathan | 9.5 |
-| Ben | 18.2 |
-| Jordan | 5.8 |
-| Chris | 11.7 |
+| Name | Handicap | Status    |
+| ---- | -------- | --------- |
+| Tom  | 8        | Confirmed |
+| Ben  | 12       | Confirmed |
+| Luke | 17       | Confirmed |
+| Josh | 15       | Pending   |
+| Nick | 21       | Confirmed |
+| Sam  | 9        | Confirmed |
+| Liam | 5        | Confirmed |
+| Jack | 13       | Confirmed |
+
 
 ---
 

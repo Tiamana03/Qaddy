@@ -27,10 +27,10 @@ Implementation must follow:
 - docs/architecture/navigation.md
 - docs/architecture/round-data-model.md
 - docs/architecture/responsive-layout.md
-- docs/design/colours.md
-- docs/design/spacing.md
-- docs/design/typography.md
-- docs/design/radius.md
+- design/design-tokens/colours.md
+- design/design-tokens/spacing.md
+- design/design-tokens/typography.md
+- design/design-tokens/radius.md
 - docs/design/breakpoints.md
 - docs/standards/placeholder-data.md
 - docs/project-rules.md
@@ -135,7 +135,6 @@ Display
 - Tee Time
 - Format
 - Holes
-- Competition Type
 
 Use placeholder values only.
 

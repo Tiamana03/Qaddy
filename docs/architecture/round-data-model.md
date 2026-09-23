@@ -93,6 +93,30 @@ Each player contains:
 | stablefordPoints | int |
 | position | int |
 
+### Player Status
+
+Each player has a participation status.
+
+Available values:
+
+- Confirmed
+- Pending
+- Declined
+
+This status represents attendance for the round.
+
+It does not represent online presence.
+
+## Hole Count
+
+Represents the number of holes scheduled for a round.
+
+Typical values:
+
+- 9
+- 18
+
+This is separate from the HoleScore list, which stores the score for each individual hole during play.
 ---
 
 # Hole Score
