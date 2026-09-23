@@ -20,6 +20,31 @@ const List<String> _monthAbbreviations = <String>[
   'Dec',
 ];
 
+const List<String> _monthNames = <String>[
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
+const List<String> _weekdayNames = <String>[
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+
 /// Reusable `DateTime` helpers.
 extension DateExtensions on DateTime {
   /// A date-only copy (year/month/day, time reset to midnight).
@@ -38,6 +63,12 @@ extension DateExtensions on DateTime {
 
   /// A friendly, fixed-format date, e.g. "12 Mar 2025".
   String toFriendlyDate() => '$day ${_monthAbbreviations[month - 1]} $year';
+
+  /// A full weekday name and date with no year, e.g. "Tuesday 22 September" —
+  /// matches the Dashboard's Welcome Header example in
+  /// `docs/sprints/sprint-02-01-dashboard.md`.
+  String toWeekdayAndDate() =>
+      '${_weekdayNames[weekday - 1]} $day ${_monthNames[month - 1]}';
 
   /// A relative description of this date: "Today", "Yesterday", "N days
   /// ago", or [toFriendlyDate] once it's further away than that.
