@@ -130,20 +130,30 @@ Holes:
 | Nick | 21       | Confirmed |
 | Sam  | 9        | Confirmed |
 | Liam | 5        | Confirmed |
-| Jack | 13       | Confirmed |
+| Tiamana | 13       | Confirmed |
 
 
 ---
 
-# Leaderboard
+## Leaderboard
 
-| Position | Player | Score |
-|-----------|--------|-------|
-| 1 | Tom | -2 |
-| 2 | Tiamana | E |
-| 3 | Josh | +3 |
-| 4 | Nick | +5 |
-| 5 | Luke | +7 |
+The Leaderboard represents the current standings for the active round.
+
+Only players participating in the current round should appear in this table.
+
+The leaderboard supplies placeholder data for Sprint 2.4 and any future leaderboard-related features.
+
+| Pos | Player  | Gross | Relative | Through |
+| --: | ------- | ----: | -------: | ------: |
+|   1 | Tom     |    70 |       -2 |      18 |
+|  T1 | Tiamana |    70 |       -2 |      18 |
+|   3 | Josh    |    75 |       +3 |      18 |
+|   4 | Nick    |    77 |       +5 |      18 |
+|   5 | Luke    |    79 |       +7 |      18 |
+|   6 | Ben     |    80 |       +8 |      18 |
+|   7 | Liam    |    82 |      +10 |      18 |
+|   8 | Sam     |    84 |      +12 |      18 |
+
 
 ---
 
