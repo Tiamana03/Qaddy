@@ -20,6 +20,14 @@ import 'package:qaddy/features/community/ui/screens/community_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_complete_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_details_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_expenses_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_golf_schedule_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_planning_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_travel_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -61,6 +69,56 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.trips,
                 builder: (BuildContext context, GoRouterState state) =>
                     const TripsScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'details',
+                    name: RouteNames.tripDetails,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripDetailsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'planning',
+                    name: RouteNames.tripPlanning,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripPlanningScreen(),
+                  ),
+                  GoRoute(
+                    path: 'travel',
+                    name: RouteNames.tripTravel,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripTravelScreen(),
+                  ),
+                  GoRoute(
+                    path: 'accommodation',
+                    name: RouteNames.tripAccommodation,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripAccommodationScreen(),
+                  ),
+                  GoRoute(
+                    path: 'golf',
+                    name: RouteNames.tripGolf,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripGolfScheduleScreen(),
+                  ),
+                  GoRoute(
+                    path: 'expenses',
+                    name: RouteNames.tripExpenses,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripExpensesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'chat',
+                    name: RouteNames.tripChat,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripChatScreen(),
+                  ),
+                  GoRoute(
+                    path: 'complete',
+                    name: RouteNames.tripComplete,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const TripCompleteScreen(),
+                  ),
+                ],
               ),
             ],
           ),

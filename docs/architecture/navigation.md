@@ -1,25 +1,29 @@
 # Qaddy Navigation Architecture
 
-**Version:** 1.1  
-**Status:** Active  
-**Source:** Product Architecture & Engineering Decisions  
+**Version:** 2.0
+
+**Status:** Active
+
+**Source:** Product Architecture
+
 **Last Updated:** September 2026
 
 ---
 
 # Purpose
 
-This document defines the navigation architecture for Qaddy.
+This document defines the complete navigation architecture for Qaddy.
 
 It is the single source of truth for:
 
 - Application routes
 - Navigation hierarchy
 - Bottom navigation
-- Navigation behaviour
+- Feature navigation
+- Route ownership
 - Future expansion
 
-No developer or AI may invent routes or navigation behaviour outside this document.
+No implementation may invent routes or navigation behaviour outside this document.
 
 ---
 
@@ -35,51 +39,47 @@ Users should always know where they are.
 
 ## Consistent
 
-Every feature should behave the same way.
-
-Navigation patterns must remain consistent throughout the application.
+Every feature should behave consistently throughout the application.
 
 ---
 
 ## Fast
 
-The most commonly used features should always be immediately accessible.
+Core features should always be accessible within three taps.
 
 ---
 
 ## Scalable
 
-The navigation system must support future Qaddy features without requiring major restructuring.
+Every feature should support future expansion without requiring major restructuring.
 
 ---
 
 # Three Click Rule
 
-Qaddy follows the Three Click Rule.
-
-Any core feature must be reachable from the Home Dashboard in **three taps or fewer** (excluding authentication).
-
-If a feature requires more than three interactions to reach, the navigation architecture should be reviewed before implementation.
-
-This principle guides every future feature added to Qaddy.
+Any major feature must be reachable within three user interactions from the Home Dashboard (excluding authentication).
 
 ---
 
-# Release 1 Navigation
+# Bottom Navigation
 
-Bottom Navigation contains five primary destinations.
+Release 1 contains five primary destinations.
 
 | Tab | Route | Purpose |
-|------|-------|---------|
+|------|-------|----------|
 | Home | /home | Dashboard |
-| Rounds | /rounds | Current & Previous Rounds |
+| Rounds | /rounds | Rounds & Live Scoring |
 | Trips | /trips | Golf Trips |
-| Friends | /friends | Groups & Social |
-| Profile | /profile | User Profile & Settings |
+| Friends | /friends | Friends & Community |
+| Profile | /profile | User Profile |
+
+Each destination owns its own independent navigation stack.
+
+Navigation history must be preserved when switching tabs.
 
 ---
 
-# Route Map
+# Route Hierarchy
 
 ## Public Routes
 
@@ -91,65 +91,165 @@ Bottom Navigation contains five primary destinations.
 
 ---
 
-## Authenticated Routes
+## Home
 
-| Route | Purpose |
-|--------|----------|
+| Route | Screen |
+|--------|--------|
 | /home | Dashboard |
-| /rounds | Rounds |
-| /trips | Trips |
-| /friends | Friends |
-| /profile | Profile |
 
 ---
 
-# Future Routes
+## Rounds
 
-The following destinations are intentionally reserved for future releases.
+| Route | Screen |
+|--------|--------|
+| /rounds | Rounds Home |
+| /rounds/setup | Round Setup |
+| /rounds/live | Live Scorecard |
+| /rounds/leaderboard | Leaderboard |
+| /rounds/complete | Round Complete |
 
-These are **not** part of Sprint 1.
+### Navigation Flow
+
+```
+Rounds
+    │
+    ▼
+Round Setup
+    │
+    ▼
+Live Scorecard
+    │
+    ▼
+Leaderboard
+    │
+    ▼
+Round Complete
+```
+
+---
+
+## Trips
+
+| Route | Screen |
+|--------|--------|
+| /trips | Trips Home |
+| /trips/details | Trip Details |
+| /trips/planning | Trip Planning |
+| /trips/travel | Travel |
+| /trips/accommodation | Accommodation |
+| /trips/golf | Golf Schedule |
+| /trips/expenses | Expenses |
+| /trips/chat | Trip Chat |
+| /trips/complete | Trip Complete |
+
+### Navigation Structure
+
+```
+Trips
+    │
+    ▼
+Trip Details
+    ├── Planning
+    ├── Travel
+    ├── Accommodation
+    ├── Golf Schedule
+    ├── Expenses
+    ├── Chat
+    └── Trip Complete
+```
+
+Trip Details is the central hub for every trip.
+
+Users may return to Trip Details from any child screen.
+
+Buttons linking to implemented screens must never remain disabled.
+
+---
+
+## Friends
+
+| Route | Screen |
+|--------|--------|
+| /friends | Friends Home |
+
+Future releases will expand Friends into:
+
+- Groups
+- Clubhouse
+- Rivalries
+- Community Feed
+
+---
+
+## Profile
+
+| Route | Screen |
+|--------|--------|
+| /profile | Profile |
+
+Future releases will expand Profile into:
 
 - Statistics
-- Golf IQ
-- Practice
-- Clubhouse
-- Booking
-- Marketplace
-- Notifications
+- Achievements
 - Settings
 - Premium
-- Referral System
-
-Future routes should extend this architecture rather than replace it.
 
 ---
 
 # Navigation Shell
 
-Sprint 1 uses a persistent Bottom Navigation Bar.
+Qaddy uses a persistent Bottom Navigation Bar.
 
-Each destination owns its own navigation stack.
+Each primary destination owns its own navigation stack.
 
-Navigation state must be preserved when switching between tabs.
+Navigation state must be preserved while switching tabs.
 
 ---
 
 # Routing
 
-Routing will use:
+Routing uses:
 
 - GoRouter
-- ShellRoute
+- StatefulShellRoute
 - Named Routes
-- Centralised Route Definitions
+- Route Constants
 
 Route strings must never be hardcoded outside the router.
+
+Business logic must never exist inside routing configuration.
 
 ---
 
 # Deep Linking
 
-Deep linking is supported by the architecture but is **not** implemented during Sprint 1.
+The architecture supports deep linking.
+
+Deep linking is not implemented during Release 1.
+
+---
+
+# Flutter Implementation Notes
+
+Navigation should be implemented using:
+
+- GoRouter
+- StatefulShellRoute
+- BottomNavigationBar
+- Named Routes
+- Route Constants
+
+Every feature owns its own nested routes beneath its root route.
+
+Example:
+
+```
+/trips
+    /details
+    /planning
+    /travel
+```
 
 ---
 
@@ -157,83 +257,25 @@ Deep linking is supported by the architecture but is **not** implemented during 
 
 ## Bottom Navigation
 
-Five primary tabs were selected because they represent the five highest-frequency user journeys within Qaddy.
+Five tabs represent the highest-frequency user journeys.
 
-Future features should be accessed from these destinations rather than increasing the number of Bottom Navigation items.
+Future features should extend existing tabs rather than creating additional bottom navigation destinations.
 
 ---
 
 ## Navigation State
 
-Each Bottom Navigation destination maintains its own navigation history.
+Each feature maintains its own navigation history.
 
-Switching between tabs must never reset that tab's navigation stack.
-
----
-
-## Engineering Decision — Bottom Navigation Naming
-
-Early navigation mockups used a **Play** tab.
-
-As Qaddy's product vision evolved, this destination was replaced with **Friends** to better represent the application's long-term social ecosystem.
-
-The Friends destination encompasses:
-
-- Friends
-- Groups
-- Community
-- Clubhouse
-- Rivalries
-- Social Activity
-
-This Engineering Decision supersedes earlier navigation mockups and becomes the official Release 1 navigation standard.
-
-Future implementations must use **Friends** as the primary destination unless this document is updated.
+Changing tabs must never reset another feature's navigation stack.
 
 ---
 
-# Flutter Implementation
+## Route Names vs Feature Folders
 
-Navigation will be implemented using:
+Navigation route names are part of the public interface.
 
-- GoRouter
-- ShellRoute
-- BottomNavigationBar
-- Named Routes
-- Route Constants
-
-The router is responsible only for navigation.
-
-Business logic must never exist inside routing configuration.
-
----
-
-# Token References
-
-Navigation UI must use the following design tokens:
-
-- colours.md
-- typography.md
-- spacing.md
-- radius.md
-- animations.md
-
-Navigation styling must never be hardcoded.
-
----
-
-# Future Expansion
-
-Future features should extend this architecture rather than replacing it.
-
-Any change to the navigation hierarchy must be documented and approved before implementation begins.
-## Engineering Decision — Route Names vs Feature Folders
-
-Navigation route names are part of the public application interface.
-
-Feature folder names are internal implementation details.
-
-The two do not need to match.
+Feature folders are internal implementation details.
 
 | Route | Feature Folder |
 |--------|----------------|
@@ -243,8 +285,35 @@ The two do not need to match.
 | /friends | community |
 | /profile | profile |
 
-This allows the public navigation structure to evolve without unnecessary refactoring of the underlying project architecture.
+Developers must not rename feature folders solely to match navigation routes.
 
-Developers must not rename or duplicate feature folders solely to match route names.
+---
 
-The existing project scaffold remains the source of truth for feature folder names unless this document is updated.
+# Future Expansion
+
+Future routes may include:
+
+- Statistics
+- Golf IQ
+- Practice
+- Clubhouse
+- Marketplace
+- Notifications
+- Booking
+- Premium
+- Referral System
+
+These should extend the existing navigation hierarchy rather than replacing it.
+
+---
+
+# Related Documents
+
+- round-data-model.md
+- trip-data-model.md
+- trips-feature-integration.md
+- rounds-feature-integration.md
+
+---
+
+**End of Document**
