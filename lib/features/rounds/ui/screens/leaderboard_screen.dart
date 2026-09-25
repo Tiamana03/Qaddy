@@ -24,58 +24,6 @@ import 'package:qaddy/features/rounds/logic/leaderboard_ranking.dart';
 import 'package:qaddy/features/rounds/models/leaderboard_entry.dart';
 import 'package:qaddy/features/rounds/ui/widgets/leaderboard_row.dart';
 
-/// Placeholder standings — see placeholder-data.md's "Leaderboard" table.
-const List<LeaderboardEntry> _leaderboardEntries = <LeaderboardEntry>[
-  LeaderboardEntry(
-    name: 'Tom',
-    grossScore: 70,
-    relativeToPar: -2,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Tiamana',
-    grossScore: 70,
-    relativeToPar: -2,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Josh',
-    grossScore: 75,
-    relativeToPar: 3,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Nick',
-    grossScore: 77,
-    relativeToPar: 5,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Luke',
-    grossScore: 79,
-    relativeToPar: 7,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Ben',
-    grossScore: 80,
-    relativeToPar: 8,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Liam',
-    grossScore: 82,
-    relativeToPar: 10,
-    throughHole: 18,
-  ),
-  LeaderboardEntry(
-    name: 'Sam',
-    grossScore: 84,
-    relativeToPar: 12,
-    throughHole: 18,
-  ),
-];
-
 /// The Live Leaderboard screen.
 class LeaderboardScreen extends StatelessWidget {
   const LeaderboardScreen({super.key});
@@ -87,7 +35,7 @@ class LeaderboardScreen extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    final ranked = rankLeaderboard(_leaderboardEntries);
+    final ranked = rankLeaderboard(richmondGolfClubLeaderboard);
 
     return QaddyScaffold(
       body: SingleChildScrollView(
