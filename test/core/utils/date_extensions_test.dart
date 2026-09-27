@@ -28,4 +28,19 @@ void main() {
       '3 days ago',
     );
   });
+
+  test('toRelative reports weeks and months once a week has passed', () {
+    expect(
+      DateTime.now().subtract(const Duration(days: 14)).toRelative(),
+      '2 weeks ago',
+    );
+    expect(
+      DateTime.now().subtract(const Duration(days: 30)).toRelative(),
+      '1 month ago',
+    );
+    expect(
+      DateTime.now().subtract(const Duration(days: 182)).toRelative(),
+      '6 months ago',
+    );
+  });
 }

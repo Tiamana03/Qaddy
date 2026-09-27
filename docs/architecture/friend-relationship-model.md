@@ -38,7 +38,7 @@ Every friendship must exist in one of the following states.
 | State | Description |
 |--------|-------------|
 | Pending | Friend request has been sent |
-| Accepted | Both users are connected |
+| Confirmed | Both users are connected |
 | Declined | Friend request rejected |
 | Blocked | Communication prevented |
 | Removed | Friendship ended |
@@ -57,7 +57,7 @@ Friend Request Sent
 Pending
    ┌────┴────┐
    ▼         ▼
-Accepted  Declined
+Confirmed Declined
    │
    ▼
 Removed
@@ -66,7 +66,7 @@ Removed
 Blocked
 ```
 
-Only Accepted friendships can participate in Qaddy social features.
+Only Confirmed friendships can participate in Qaddy social features.
 
 ---
 
@@ -84,9 +84,9 @@ Rules:
 
 ---
 
-# Accepted Friendships
+# Confirmed Friendships
 
-Accepted friends may:
+Confirmed friends may:
 
 - Join Trips together
 - Join Groups together
@@ -133,7 +133,7 @@ Historical data remains unchanged.
 
 # Relationship Permissions
 
-| Feature | Pending | Accepted | Removed | Blocked |
+| Feature | Pending | Confirmed | Removed | Blocked |
 |----------|----------|----------|----------|----------|
 | View Profile | Limited | Yes | Limited | No |
 | Invite to Trip | No | Yes | No | No |

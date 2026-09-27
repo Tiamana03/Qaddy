@@ -17,5 +17,13 @@ abstract final class RouteNames {
   static const String tripChat = 'tripChat';
   static const String tripComplete = 'tripComplete';
   static const String friends = 'friends';
+  static const String friendsList = 'friendsList';
+  static const String friendProfile = 'friendProfile';
+  static const String friendsActivity = 'friendsActivity';
+  static const String friendRequests = 'friendRequests';
+  static const String friendsSearch = 'friendsSearch';
+  static const String friendsGroups = 'friendsGroups';
+  static const String friendsGroupDetails = 'friendsGroupDetails';
+  static const String friendsRivalries = 'friendsRivalries';
   static const String profile = 'profile';
 }

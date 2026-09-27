@@ -37,6 +37,7 @@ No implementation may introduce additional Friend fields without first updating 
 | profilePhoto | String? | Profile image |
 | handicap | Double | Current golf handicap |
 | homeClub | String | Home golf club |
+| favouriteCourse | String? | Optional favourite course to play |
 | location | String | City or suburb |
 | status | FriendStatus | Friendship status |
 | favourite | bool | Favourite friend |
@@ -53,7 +54,7 @@ Every friendship must have one status.
 
 ```
 Pending
-Accepted
+Confirmed
 Declined
 Blocked
 Removed
@@ -65,9 +66,9 @@ Pending
 
 Friend request has been sent.
 
-Accepted
+Confirmed
 
-Both users are connected.
+Both users are connected. This matches the Trips feature's use of "Confirmed" for the same concept (see `docs/standards/placeholder-trip-data.md`).
 
 Declined
 
@@ -93,7 +94,7 @@ Pending
         │
  ┌──────┴──────┐
  ▼             ▼
-Accepted    Declined
+Confirmed   Declined
  │
  ▼
 Removed

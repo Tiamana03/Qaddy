@@ -171,12 +171,12 @@ class _PlayersSection extends StatelessWidget {
       <(String, String, PlayerStatus)>[
         ('Tom', '8', PlayerStatus.confirmed),
         ('Ben', '12', PlayerStatus.confirmed),
-        ('Luke', '17', PlayerStatus.confirmed),
+        ('Luke', '5', PlayerStatus.confirmed),
         ('Josh', '15', PlayerStatus.pending),
-        ('Nick', '21', PlayerStatus.confirmed),
-        ('Sam', '9', PlayerStatus.confirmed),
-        ('Liam', '5', PlayerStatus.confirmed),
-        ('Jack', '13', PlayerStatus.confirmed),
+        ('Nick', '10', PlayerStatus.confirmed),
+        ('Sam', '18', PlayerStatus.confirmed),
+        ('Liam', '7', PlayerStatus.confirmed),
+        ('Tiamana', '8.4', PlayerStatus.confirmed),
       ];
 
   @override

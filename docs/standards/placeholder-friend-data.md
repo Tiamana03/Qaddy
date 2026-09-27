@@ -30,6 +30,23 @@ No AI or developer may invent additional placeholder friends or modify existing 
 
 ---
 
+# Friend Details
+
+Additional Friend model fields not shown in the summary table above — see `friend-data-model.md` for `favourite`, `location`, `roundsPlayed` and `lastPlayed`.
+
+| Name | Favourite | Location | Rounds Played Together | Last Played Together |
+|------|:---------:|----------|------------------------:|-----------------------|
+| Tom | Yes | Richmond, VIC | 12 | Today |
+| Ben | No | Ipswich, QLD | 8 | Yesterday |
+| Luke | Yes | Brisbane, QLD | 15 | 3 days ago |
+| Josh | No | Brisbane, QLD | 4 | 2 weeks ago |
+| Nick | No | Bray Park, QLD | 6 | 3 days ago |
+| Sam | No | Indooroopilly, QLD | 2 | 1 month ago |
+| Liam | No | Nudgee, QLD | 9 | 4 days ago |
+| Jack | No | Gailes, QLD | 1 | 6 months ago |
+
+---
+
 # Friend Summary
 
 Total Friends
@@ -161,6 +178,55 @@ Common search examples:
 
 ---
 
+# Friend Requests
+
+Pending friendships are split by direction for the Friend Requests screen.
+
+## Incoming
+
+| Name | Handicap | Sent |
+|------|----------|------|
+| Sam | 18 | 3 days ago |
+
+## Outgoing
+
+| Name | Handicap | Sent |
+|------|----------|------|
+| Josh | 15 | 5 days ago |
+
+Both Sam and Josh already appear in the Friends table above with Status "Pending" — this section only adds which direction each request travelled. See `friend-requests.md`.
+
+---
+
+# Activity Feed
+
+Friend-scoped activity, distinct from the Dashboard's own "Recent Activity" (which shows the current user's activity only). See `activity-feed.md`.
+
+| Actor | Type | Message | When |
+|-------|------|---------|------|
+| Tom | RoundCompleted | Tom completed a round at Richmond Golf Club | 2 hours ago |
+| Ben | GroupJoined | Ben joined Saturday Boys | Yesterday |
+| Luke | HandicapChanged | Luke's handicap improved to 5 | 2 days ago |
+| Nick | TripCreated | Nick created Gold Coast Golf Escape | 3 days ago |
+| Liam | AchievementUnlocked | Liam unlocked Personal Best | 4 days ago |
+
+---
+
+# Rivalries
+
+The shared placeholder rivalry is between the current user (Tiamana) and Tom. See `rivalries.md`.
+
+| Field | Value |
+|-------|-------|
+| Friend | Tom |
+| Rounds Played | 12 |
+| Wins | 6 |
+| Losses | 5 |
+| Draws | 1 |
+| Last Result | Won by 2 strokes at Richmond Golf Club |
+
+---
+
 # Future Placeholder Data
 
 Future versions of this document may include:
@@ -189,6 +255,9 @@ Business rules belong in:
 
 - friend-data-model.md
 - friend-relationship-model.md
+- activity-feed.md
+- friend-requests.md
+- rivalries.md
 
 Implementation details belong inside the relevant sprint documentation.
 
@@ -198,9 +267,16 @@ Implementation details belong inside the relevant sprint documentation.
 
 - friend-data-model.md
 - friend-relationship-model.md
+- friend-profile.md
+- friend-requests.md
+- activity-feed.md
+- rivalries.md
+- search.md
 - placeholder-data.md
 - placeholder-trip-data.md
+- placeholder-group-data.md
 - profile-data-model.md
+- docs/features/friends-feature-integration.md
 
 ---
 

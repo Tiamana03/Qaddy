@@ -20,5 +20,13 @@ abstract final class AppRoutes {
   static const String tripChat = '/trips/chat';
   static const String tripComplete = '/trips/complete';
   static const String friends = '/friends';
+  static const String friendsList = '/friends/list';
+  static const String friendProfile = '/friends/profile';
+  static const String friendsActivity = '/friends/activity';
+  static const String friendRequests = '/friends/requests';
+  static const String friendsSearch = '/friends/search';
+  static const String friendsGroups = '/friends/groups';
+  static const String friendsGroupDetails = '/friends/groups/details';
+  static const String friendsRivalries = '/friends/rivalries';
   static const String profile = '/profile';
 }

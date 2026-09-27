@@ -125,12 +125,12 @@ Holes:
 | ---- | -------- | --------- |
 | Tom  | 8        | Confirmed |
 | Ben  | 12       | Confirmed |
-| Luke | 17       | Confirmed |
+| Luke | 5        | Confirmed |
 | Josh | 15       | Pending   |
-| Nick | 21       | Confirmed |
-| Sam  | 9        | Confirmed |
-| Liam | 5        | Confirmed |
-| Tiamana | 13       | Confirmed |
+| Nick | 10       | Confirmed |
+| Sam  | 18       | Confirmed |
+| Liam | 7        | Confirmed |
+| Tiamana | 8.4      | Confirmed |
 
 
 ---

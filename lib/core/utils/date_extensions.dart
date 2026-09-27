@@ -71,7 +71,8 @@ extension DateExtensions on DateTime {
       '${_weekdayNames[weekday - 1]} $day ${_monthNames[month - 1]}';
 
   /// A relative description of this date: "Today", "Yesterday", "N days
-  /// ago", or [toFriendlyDate] once it's further away than that.
+  /// ago", "N weeks ago", "N months ago", or [toFriendlyDate] once it's a
+  /// year or more away.
   String toRelative() {
     if (isToday) {
       return 'Today';
@@ -82,6 +83,14 @@ extension DateExtensions on DateTime {
     final days = DateTime.now().dateOnly.difference(dateOnly).inDays;
     if (days > 0 && days < 7) {
       return '$days days ago';
+    }
+    if (days < 30) {
+      final weeks = (days / 7).round();
+      return '$weeks week${weeks == 1 ? '' : 's'} ago';
+    }
+    if (days < 365) {
+      final months = (days / 30).round();
+      return '$months month${months == 1 ? '' : 's'} ago';
     }
     return toFriendlyDate();
   }

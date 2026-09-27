@@ -16,8 +16,16 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/routing/navigation_shell.dart';
 import 'package:qaddy/core/routing/route_names.dart';
-import 'package:qaddy/features/community/ui/screens/community_screen.dart';
+import 'package:qaddy/features/community/ui/screens/activity_feed_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friend_profile_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friend_requests_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friends_home_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
+import 'package:qaddy/features/community/ui/screens/rivalries_screen.dart';
+import 'package:qaddy/features/community/ui/screens/search_friends_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/groups/ui/screens/group_details_screen.dart';
+import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
@@ -128,7 +136,59 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.friends,
                 name: RouteNames.friends,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const CommunityScreen(),
+                    const FriendsHomeScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'list',
+                    name: RouteNames.friendsList,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const FriendsListScreen(),
+                  ),
+                  GoRoute(
+                    path: 'profile',
+                    name: RouteNames.friendProfile,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const FriendProfileScreen(),
+                  ),
+                  GoRoute(
+                    path: 'activity',
+                    name: RouteNames.friendsActivity,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const ActivityFeedScreen(),
+                  ),
+                  GoRoute(
+                    path: 'requests',
+                    name: RouteNames.friendRequests,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const FriendRequestsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'search',
+                    name: RouteNames.friendsSearch,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const SearchFriendsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'groups',
+                    name: RouteNames.friendsGroups,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const GroupsScreen(),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'details',
+                        name: RouteNames.friendsGroupDetails,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            const GroupDetailsScreen(),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'rivalries',
+                    name: RouteNames.friendsRivalries,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const RivalriesScreen(),
+                  ),
+                ],
               ),
             ],
           ),

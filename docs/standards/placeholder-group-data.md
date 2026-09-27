@@ -75,16 +75,18 @@ Primary placeholder group used throughout development.
 
 ## Members
 
-| Name | Handicap | Status |
-|------|----------|---------|
-| Tiamana | 11 | Active |
-| Tom | 8 | Active |
-| Ben | 12 | Active |
-| Luke | 5 | Active |
-| Josh | 15 | Active |
-| Nick | 10 | Active |
-| Sam | 18 | Active |
-| Liam | 7 | Active |
+Group membership has no per-member status — `group-data-model.md` only defines status at the group level. Members are simply the group's `memberIds`.
+
+| Name | Handicap |
+|------|----------|
+| Tiamana | 8.4 |
+| Tom | 8 |
+| Ben | 12 |
+| Luke | 5 |
+| Josh | 15 |
+| Nick | 10 |
+| Sam | 18 |
+| Liam | 7 |
 
 ---
 
@@ -142,15 +144,11 @@ Primary placeholder group used throughout development.
 
 # Group Status Definitions
 
+Status values match `group-data-model.md`'s Group Status section exactly (Active, Archived, Hidden, Deleted). Only Active is exercised by the placeholder groups above.
+
 ## Active
 
 The group is currently operating.
-
----
-
-## Paused
-
-The group is temporarily inactive.
 
 ---
 

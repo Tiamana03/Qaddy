@@ -114,14 +114,14 @@ No implementation may invent additional placeholder values outside this document
 
 | Name | Handicap | Role | Status |
 |------|-----------|------|-----------|
-| Tiamana | 13.4 | Organiser | Confirmed |
-| Ben | 8.6 | Player | Confirmed |
-| Luke | 15.2 | Player | Confirmed |
-| Josh | 11.8 | Player | Confirmed |
-| Nick | 17.3 | Player | Confirmed |
-| Sam | 7.9 | Player | Confirmed |
-| Liam | 19.1 | Player | Confirmed |
-| Jack | 9.8 | Player | Confirmed |
+| Tiamana | 8.4 | Organiser | Confirmed |
+| Ben | 12 | Player | Confirmed |
+| Luke | 5 | Player | Confirmed |
+| Josh | 15 | Player | Confirmed |
+| Nick | 10 | Player | Confirmed |
+| Sam | 18 | Player | Confirmed |
+| Liam | 7 | Player | Confirmed |
+| Jack | 22 | Player | Confirmed |
 
 ---
 
@@ -129,18 +129,18 @@ No implementation may invent additional placeholder values outside this document
 
 | Name | Handicap | Role | Status |
 |------|-----------|------|-----------|
-| Tiamana | 13.4 | Organiser | Confirmed |
-| Ben | 8.6 | Player | Confirmed |
-| Luke | 15.2 | Player | Pending |
-| Josh | 11.8 | Player | Pending |
-| Nick | 17.3 | Player | Confirmed |
-| Sam | 7.9 | Player | Pending |
-| Liam | 19.1 | Player | Confirmed |
-| Jack | 9.8 | Player | Pending |
+| Tiamana | 8.4 | Organiser | Confirmed |
+| Ben | 12 | Player | Confirmed |
+| Luke | 5 | Player | Pending |
+| Josh | 15 | Player | Pending |
+| Nick | 10 | Player | Confirmed |
+| Sam | 18 | Player | Pending |
+| Liam | 7 | Player | Confirmed |
+| Jack | 22 | Player | Pending |
 | Nathan | 14.5 | Player | Pending |
 | Chris | 18.4 | Player | Pending |
 | Jordan | 10.7 | Player | Pending |
-| Tom | 16.9 | Player | Pending |
+| Tom | 8 | Player | Pending |
 
 ---
 

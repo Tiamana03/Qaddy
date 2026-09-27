@@ -10,7 +10,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/responsive/responsive_extensions.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -95,9 +97,11 @@ class _WelcomeHeader extends StatelessWidget {
   }
 }
 
-/// Four placeholder quick actions — visual only, per the sprint document
-/// ("Buttons remain disabled or placeholder. No navigation logic is
-/// implemented.").
+/// Four Quick Actions. Create Round, Continue Round and Statistics remain
+/// visual only, per the sprint document ("Buttons remain disabled or
+/// placeholder. No navigation logic is implemented."). Friends now opens
+/// Friends Home, per `docs/features/friends-feature-integration.md`'s
+/// "Dashboard" section ("Selecting it opens Friends Home").
 ///
 /// Icons deliberately avoid `NavigationShell`'s bottom-nav icon set
 /// (`home`/`flag`/`card_travel`/`people`/`person`), which stays visible on
@@ -105,19 +109,24 @@ class _WelcomeHeader extends StatelessWidget {
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
 
-  static const List<(IconData, String)> _actions = <(IconData, String)>[
-    (Icons.add_circle_outline, 'Create Round'),
-    (Icons.play_circle_outline, 'Continue Round'),
-    (Icons.bar_chart, 'Statistics'),
-    (Icons.diversity_3, 'Friends'),
-  ];
+  static const List<(IconData, String)> _visualOnlyActions =
+      <(IconData, String)>[
+        (Icons.add_circle_outline, 'Create Round'),
+        (Icons.play_circle_outline, 'Continue Round'),
+        (Icons.bar_chart, 'Statistics'),
+      ];
 
   @override
   Widget build(BuildContext context) {
     return _ResponsiveGrid(
       children: <Widget>[
-        for (final (icon, label) in _actions)
+        for (final (icon, label) in _visualOnlyActions)
           QuickActionCard(icon: icon, label: label),
+        QuickActionCard(
+          icon: Icons.diversity_3,
+          label: 'Friends',
+          onTap: () => context.push(AppRoutes.friends),
+        ),
       ],
     );
   }

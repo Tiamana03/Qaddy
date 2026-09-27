@@ -172,12 +172,43 @@ Buttons linking to implemented screens must never remain disabled.
 | Route | Screen |
 |--------|--------|
 | /friends | Friends Home |
+| /friends/list | Friends List |
+| /friends/profile | Friend Profile |
+| /friends/activity | Activity Feed |
+| /friends/requests | Friend Requests |
+| /friends/search | Search Friends |
+| /friends/groups | Groups |
+| /friends/groups/details | Group Details |
+| /friends/rivalries | Rivalries |
 
-Future releases will expand Friends into:
+### Navigation Structure
 
-- Groups
+```
+Friends
+    │
+    ▼
+Friends Home
+    ├── Friends List
+    │       └── Friend Profile
+    ├── Activity Feed
+    ├── Friend Requests
+    ├── Search Friends
+    ├── Groups
+    │       └── Group Details
+    └── Rivalries
+```
+
+Activity Feed and Rivalries are reachable directly from Friends Home, satisfying the Three Click Rule (Dashboard → Friends tab → Friends Home → Activity Feed/Rivalries is 2 taps). Friend Profile also links to both as a convenience, since they are contextually about one friend, but that is a secondary path — not the only one.
+
+Friends Home is the central hub for the feature.
+
+Users may return to Friends Home from any child screen.
+
+Buttons linking to implemented screens must never remain disabled.
+
+Future releases will expand Friends further into:
+
 - Clubhouse
-- Rivalries
 - Community Feed
 
 ---
@@ -311,8 +342,11 @@ These should extend the existing navigation hierarchy rather than replacing it.
 
 - round-data-model.md
 - trip-data-model.md
+- friend-data-model.md
+- group-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
+- friends-feature-integration.md
 
 ---
 
