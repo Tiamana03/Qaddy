@@ -132,9 +132,12 @@ Each player card contains
 Display
 
 - Course
+- Date
 - Tee Time
+- Players
 - Format
 - Holes
+- Side Games
 
 Use placeholder values only.
 
