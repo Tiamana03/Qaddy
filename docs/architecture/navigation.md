@@ -219,6 +219,8 @@ Future releases will expand Friends further into:
 |--------|--------|
 | /profile | Profile |
 
+Release 1's Profile is a single, aggregated screen — see `docs/features/profile-feature-integration.md`. There is no Profile sub-navigation yet.
+
 Future releases will expand Profile into:
 
 - Statistics
@@ -344,9 +346,11 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - trip-data-model.md
 - friend-data-model.md
 - group-data-model.md
+- profile-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
+- profile-feature-integration.md
 
 ---
 

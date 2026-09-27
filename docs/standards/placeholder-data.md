@@ -33,7 +33,7 @@ No developer or AI may invent alternative placeholder values unless this documen
 | Display Name | Tiamana |
 | Handicap | 8.4 |
 | Home Course | Richmond Golf Club |
-| Member Since | 2026 |
+| Member Since | January 2024 |
 | Profile Image | Initials only |
 | Membership | Premium |
 

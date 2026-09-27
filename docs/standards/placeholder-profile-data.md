@@ -20,15 +20,15 @@ No AI or developer may invent additional profile values without updating this do
 | Field | Value |
 |--------|-------|
 | Name | Tiamana |
-| Handicap | 11 |
+| Handicap | 8.4 |
 | Home Club | Richmond Golf Club |
 | Favourite Course | Royal Queensland Golf Club |
 | Member Since | January 2024 |
 | Status | Active |
-| Country | Australia |
-| State | Queensland |
-| Preferred Tee | Blue |
+| Location | Queensland, Australia |
 | Profile Visibility | Friends Only |
+
+Handicap and Member Since match `placeholder-data.md`'s "User Profile" section exactly — Tiamana is the same placeholder user throughout the application (see `docs/architecture/profile-engineering-decisions.md`). Location combines the model's single `location` field (`profile-data-model.md`) rather than the separate Country/State fields an earlier draft of this document used, since those aren't part of the documented Profile Model. "Preferred Tee" has been removed for the same reason — no Profile Model field exists for it yet.
 
 ---
 
@@ -38,11 +38,13 @@ No AI or developer may invent additional profile values without updating this do
 |-----------|------:|
 | Friends | 8 |
 | Groups | 4 |
-| Trips | 3 |
+| Trips | 4 |
 | Courses Played | 18 |
-| Rounds Played | 42 |
+| Rounds Played | 68 |
 | Seasons Completed | 1 |
 | Achievements | 12 |
+
+Friends, Groups, Trips and Rounds Played match the totals already established in `placeholder-friend-data.md`, `placeholder-group-data.md`, `placeholder-trip-data.md` and `placeholder-data.md` respectively — see "Engineering Notes" below.
 
 ---
 
@@ -50,17 +52,19 @@ No AI or developer may invent additional profile values without updating this do
 
 | Statistic | Value |
 |-----------|------:|
-| Handicap | 11 |
-| Average Score | 87 |
+| Handicap | 8.4 |
+| Average Score | 83 |
 | Average Stableford | 34 |
-| Lowest Round | 78 |
+| Best Round | 74 |
 | Best Stableford | 42 |
 | Birdies | 37 |
 | Eagles | 2 |
 | Pars | 298 |
-| Fairways Hit | 63% |
-| Greens in Regulation | 49% |
+| Fairways Hit | 62% |
+| Greens in Regulation | 48% |
 | Average Putts | 31 |
+
+Handicap, Average Score, Best Round, Fairways Hit and Greens in Regulation match `placeholder-data.md`'s "Statistics" section exactly — both describe the same placeholder user's lifetime statistics.
 
 ---
 
@@ -80,10 +84,12 @@ No AI or developer may invent additional profile values without updating this do
 
 | Field | Value |
 |--------|-------|
-| Season | 2026 |
+| Season | 2026 Season |
 | Group | Saturday Boys |
 | Position | 5th |
 | Points | 97 |
+
+Matches `placeholder-group-data.md`'s "Saturday Boys" season and leaderboard exactly — Tiamana is rank 5 with 97 points there too.
 
 ---
 
@@ -94,7 +100,7 @@ No AI or developer may invent additional profile values without updating this do
 | Yesterday | Completed Richmond Golf Club |
 | 3 Days Ago | Joined Wednesday Warriors |
 | Last Week | Earned "Course Collector" |
-| 2 Weeks Ago | Planned Sunshine Coast Trip |
+| 2 Weeks Ago | Planned Gold Coast Golf Escape |
 | 3 Weeks Ago | Added Nick as Friend |
 
 ---
@@ -151,7 +157,7 @@ No AI or developer may invent additional profile values without updating this do
 
 | Statistic | Value |
 |-----------|------:|
-| Lowest Round | 78 |
+| Best Round | 74 |
 | Best Front Nine | 37 |
 | Best Back Nine | 38 |
 | Most Birdies | 5 |
@@ -165,12 +171,12 @@ No AI or developer may invent additional profile values without updating this do
 | Statistic | Value |
 |-----------|------:|
 | Courses Played | 18 |
-| Rounds Played | 42 |
+| Rounds Played | 68 |
 | Total Birdies | 37 |
 | Total Eagles | 2 |
 | Total Pars | 298 |
 | Total Stableford Points | 1428 |
-| Golf Trips | 3 |
+| Golf Trips | 4 |
 
 ---
 
@@ -229,7 +235,7 @@ Business rules belong in:
 - profile-data-model.md
 - profile-achievements.md
 
-Implementation belongs in the relevant sprint documentation.
+Implementation belongs in `docs/features/profile-feature-integration.md`.
 
 ---
 
@@ -237,11 +243,13 @@ Implementation belongs in the relevant sprint documentation.
 
 - profile-data-model.md
 - profile-achievements.md
+- profile-engineering-decisions.md
+- profile-future-roadmap.md
+- docs/features/profile-feature-integration.md
 - placeholder-data.md
 - placeholder-friend-data.md
 - placeholder-group-data.md
 - placeholder-trip-data.md
-- statistics-data-model.md
 
 ---
 
