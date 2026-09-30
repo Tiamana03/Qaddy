@@ -14,15 +14,15 @@ Per-document Engineering Decisions sections still apply where they exist (`profi
 
 ---
 
-## Release 1 Is One Aggregated Screen, Plus One Nested Destination
+## Release 1 Is One Aggregated Screen, Plus Two Nested Destinations
 
-`docs/architecture/navigation.md` defines a single route for Profile (`/profile`) and explicitly defers Achievements, Settings and Premium to future releases as their own routes. Statistics is the one exception — it is implemented now, nested at `/profile/statistics` and reached via a "View Statistics" quick link, per `docs/features/statistics-feature-integration.md`.
+`docs/architecture/navigation.md` defines a single route for Profile (`/profile`) and explicitly defers Achievements, Settings and Premium to future releases as their own routes. Statistics and Golf Bag are the two exceptions — both are implemented now, nested at `/profile/statistics` and `/profile/bag` respectively, each reached via its own quick link on Profile, per `docs/features/statistics-feature-integration.md` and `docs/features/golf-bag-feature-integration.md`.
 
-The Profile screen itself is still a single, scrollable aggregation page — like the Dashboard, it combines many small summary sections rather than linking out to sub-screens for its own content. Statistics is the only link out.
+The Profile screen itself is still a single, scrollable aggregation page — like the Dashboard, it combines many small summary sections rather than linking out to sub-screens for its own content. Statistics and Golf Bag are the only links out.
 
 **Why:** matches the documented route table exactly; avoids inventing navigation that isn't in `navigation.md`.
 
-**How to apply:** every section in `docs/features/profile-feature-integration.md`'s Screen Contents renders directly on `/profile`, except "View Statistics," which opens the nested `/profile/statistics` route.
+**How to apply:** every section in `docs/features/profile-feature-integration.md`'s Screen Contents renders directly on `/profile`, except "View Statistics" and "View Golf Bag," which open their respective nested routes.
 
 ---
 
@@ -86,6 +86,8 @@ Since `navigation.md` already defers a dedicated Achievements screen to a future
 - profile-achievements.md
 - docs/features/profile-feature-integration.md
 - profile-future-roadmap.md
+- docs/features/statistics-feature-integration.md
+- docs/features/golf-bag-feature-integration.md
 
 ---
 

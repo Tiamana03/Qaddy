@@ -26,6 +26,7 @@ import 'package:qaddy/features/community/ui/screens/search_friends_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/group_details_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
+import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
@@ -206,6 +207,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     name: RouteNames.profileStatistics,
                     builder: (BuildContext context, GoRouterState state) =>
                         const StatisticsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'bag',
+                    name: RouteNames.profileGolfBag,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const GolfBagScreen(),
                   ),
                 ],
               ),

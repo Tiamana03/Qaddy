@@ -140,34 +140,67 @@ class _QuickActionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+
+    return QaddySectionCard(
+      title: 'Quick Actions',
+      child: Column(
+        children: <Widget>[
+          _ActionTile(
+            icon: Icons.bar_chart,
+            label: 'View Statistics',
+            onTap: () => context.push(AppRoutes.profileStatistics),
+          ),
+          SizedBox(height: spacing.sm),
+          _ActionTile(
+            icon: Icons.golf_course_outlined,
+            label: 'View Golf Bag',
+            onTap: () => context.push(AppRoutes.profileGolfBag),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddySectionCard(
-      title: 'Quick Actions',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.push(AppRoutes.profileStatistics),
-          borderRadius: BorderRadius.circular(radius.medium),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: spacing.sm),
-            child: Row(
-              children: <Widget>[
-                Icon(Icons.bar_chart, color: colours.gold),
-                SizedBox(width: spacing.md),
-                Expanded(
-                  child: Text(
-                    'View Statistics',
-                    style: typography.body.copyWith(color: colours.textPrimary),
-                  ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(radius.medium),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: spacing.sm),
+          child: Row(
+            children: <Widget>[
+              Icon(icon, color: colours.gold),
+              SizedBox(width: spacing.md),
+              Expanded(
+                child: Text(
+                  label,
+                  style: typography.body.copyWith(color: colours.textPrimary),
                 ),
-                Icon(Icons.chevron_right, color: colours.textTertiary),
-              ],
-            ),
+              ),
+              Icon(Icons.chevron_right, color: colours.textTertiary),
+            ],
           ),
         ),
       ),

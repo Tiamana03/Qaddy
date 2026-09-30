@@ -219,8 +219,9 @@ Future releases will expand Friends further into:
 |--------|--------|
 | /profile | Profile |
 | /profile/statistics | Statistics |
+| /profile/bag | Golf Bag |
 
-Release 1's Profile is a single, aggregated screen with one nested destination — see `docs/features/profile-feature-integration.md` and `docs/features/statistics-feature-integration.md`. Selecting "View Statistics" on Profile opens Statistics; there is no further Profile sub-navigation yet.
+Release 1's Profile is a single, aggregated screen with two nested destinations — see `docs/features/profile-feature-integration.md`, `docs/features/statistics-feature-integration.md` and `docs/features/golf-bag-feature-integration.md`. Selecting "View Statistics" or "View Golf Bag" on Profile opens the respective screen; there is no further Profile sub-navigation yet.
 
 Future releases will expand Profile into:
 
@@ -317,6 +318,7 @@ Feature folders are internal implementation details.
 | /trips | trips |
 | /friends | community |
 | /profile | profile |
+| /profile/bag | my_bag |
 
 Developers must not rename feature folders solely to match navigation routes.
 
@@ -326,7 +328,6 @@ Developers must not rename feature folders solely to match navigation routes.
 
 Future routes may include:
 
-- Statistics
 - Golf IQ
 - Practice
 - Clubhouse
@@ -335,6 +336,8 @@ Future routes may include:
 - Booking
 - Premium
 - Referral System
+
+Statistics was in this list previously and is now implemented — see `docs/features/statistics-feature-integration.md`. Golf Bag was never in this list; it was added directly to Profile's own route table above — see `docs/features/golf-bag-feature-integration.md`.
 
 These should extend the existing navigation hierarchy rather than replacing it.
 
@@ -348,11 +351,13 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - group-data-model.md
 - profile-data-model.md
 - statistics-data-model.md
+- golf-bag-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
 - profile-feature-integration.md
 - statistics-feature-integration.md
+- golf-bag-feature-integration.md
 
 ---
 

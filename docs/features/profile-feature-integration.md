@@ -40,6 +40,7 @@ This feature includes:
 This feature does **not** include:
 
 - The Statistics screen's own content — Profile only links to it; see `docs/features/statistics-feature-integration.md`
+- The Golf Bag screen's own content — Profile only links to it; see `docs/features/golf-bag-feature-integration.md`
 - A dedicated Achievements screen
 - A dedicated Settings screen
 - A dedicated Premium screen
@@ -103,8 +104,9 @@ Displays, in order:
 - Equipment
 - Recent Activity
 - A "View Statistics" quick link
+- A "View Golf Bag" quick link
 
-Selecting "View Statistics" opens Statistics — see `docs/features/statistics-feature-integration.md`. No other section links to another screen.
+Selecting "View Statistics" opens Statistics — see `docs/features/statistics-feature-integration.md`. Selecting "View Golf Bag" opens Golf Bag — see `docs/features/golf-bag-feature-integration.md`. No other section links to another screen.
 
 ---
 
@@ -179,6 +181,7 @@ Avoid creating duplicate placeholder models.
 | Button | Action |
 |---------|---------|
 | View Statistics | Open Statistics (`/profile/statistics`) |
+| View Golf Bag | Open Golf Bag (`/profile/bag`) |
 
 No other interactive buttons exist in Release 1 — every other section is read-only display data (see Scope, "Editing any Profile information").
 
@@ -207,6 +210,7 @@ The Profile feature is complete when a user can:
 - View their achievement showcase, favourite courses, playing partners and equipment
 - View their recent activity
 - Navigate from Profile to Statistics and back
+- Navigate from Profile to Golf Bag and back
 - Return to the Dashboard
 
 Additionally:

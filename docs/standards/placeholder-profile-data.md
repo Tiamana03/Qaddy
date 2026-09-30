@@ -153,6 +153,8 @@ Matches `placeholder-group-data.md`'s "Saturday Boys" season and leaderboard exa
 | Putter | Odyssey White Hot |
 | Ball | Titleist Pro V1 |
 
+This is the canonical Equipment list — the Golf Bag feature reads it directly (`profileEquipment`) rather than restating it. See `placeholder-golf-bag-data.md`.
+
 ---
 
 # Personal Bests
@@ -248,6 +250,7 @@ Implementation belongs in `docs/features/profile-feature-integration.md`.
 - profile-engineering-decisions.md
 - profile-future-roadmap.md
 - docs/features/profile-feature-integration.md
+- placeholder-golf-bag-data.md
 - placeholder-data.md
 - placeholder-friend-data.md
 - placeholder-group-data.md
