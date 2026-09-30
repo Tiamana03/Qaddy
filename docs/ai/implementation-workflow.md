@@ -1,6 +1,6 @@
 # AI Implementation Workflow
 
-**Version:** 1.0
+**Version:** 2.0
 
 **Status:** Active
 
@@ -8,135 +8,252 @@
 
 # Purpose
 
-This document defines the mandatory implementation workflow for every Qaddy sprint.
+This document defines the mandatory implementation workflow for every Qaddy Release 1 feature.
 
-All AI assistants working on this repository must follow this workflow.
+Every implementation must follow this workflow exactly.
 
-No implementation may skip any step.
+No phase may be skipped.
+
+Implementation quality always takes priority over implementation speed.
 
 ---
 
 # Objectives
 
-Every sprint must:
+Every feature must:
 
-- follow the project documentation
+- follow project documentation
 - preserve architectural consistency
-- avoid undocumented decisions
+- avoid undocumented behaviour
+- maintain reusable code
+- remain production ready
 - remain fully testable
-- maintain production quality
-
-Quality is always more important than speed.
 
 ---
 
-# Phase 1 — Pre-Implementation Review
+# Global Workflow Rules (MANDATORY)
 
-Before writing any code:
+These rules apply to every implementation.
 
-1. Read the sprint document completely.
+## Documentation First
 
-2. Read every referenced document.
+Implementation never begins until documentation reaches **zero blockers**.
 
-3. Read every referenced design token.
+Documentation is the source of truth.
 
-4. Cross-check the current repository.
-
-5. Verify existing implementations.
-
-Never assume previous knowledge.
-
-Always re-read the documentation.
+Code must never become the source of truth.
 
 ---
 
-# Phase 2 — Architecture Validation
+## Release Roadmap
 
-Before implementation, verify:
+Feature order is defined exclusively by:
 
-- documentation is complete
-- behaviour is fully specified
-- design tokens exist
-- referenced classes exist
-- repository structure matches documentation
-- implementation does not conflict with existing code
+`docs/roadmap/release-1-roadmap.md`
 
----
+Never infer feature order from:
 
-# Phase 3 — Blocker Review
+- future roadmap documents
+- TODO comments
+- implementation status
+- placeholder references
+- architecture notes
+- previous conversations
 
-If anything is unclear:
+If the roadmap is missing or ambiguous:
 
 STOP.
 
-Do not implement.
+Request clarification.
 
-Instead provide:
+---
 
-- Blocker
-- Why implementation requires guessing
-- Which document should be updated
-- Recommendation (if applicable)
+## Working Tree Safety
+
+If files outside the current feature contain uncommitted changes:
+
+- do not modify them
+- do not stage them
+- do not include them in commits
+
+Instead report them under:
+
+## Existing Working Tree Changes
+
+inside the completion report.
+
+Only modify files belonging to the current feature unless explicitly instructed otherwise.
+
+---
+
+# Phase 1 — Feature Selection
+
+Before beginning work:
+
+1. Read:
+
+`docs/roadmap/release-1-roadmap.md`
+
+2. Determine the requested feature.
+
+3. Confirm it matches the roadmap.
+
+4. If it does not:
+
+STOP.
+
+Request clarification.
+
+---
+
+# Phase 2 — Repository Review
+
+Before reading documentation:
+
+- inspect repository structure
+- inspect existing implementation
+- inspect routes
+- inspect reusable widgets
+- inspect shared models
+- inspect placeholder data
+
+Never rely on memory.
+
+Always inspect the current repository.
+
+---
+
+# Phase 3 — Documentation Review
+
+Read every document related to the feature.
+
+Including:
+
+- feature integration
+- architecture
+- data models
+- placeholder data
+- navigation
+- engineering decisions
+- future roadmap
+- permissions
+- relationships
+- standards
+- design tokens
+
+Cross-check every document.
+
+Never assume documentation is internally consistent.
+
+---
+
+# Phase 4 — Documentation Validation
+
+Re-read every documentation file directly from disk.
+
+Produce a complete blocker report.
+
+Check:
+
+- terminology
+- enums
+- placeholder data
+- routes
+- navigation
+- permissions
+- models
+- lifecycle
+- release scope
+- engineering decisions
+- naming consistency
+- cross-document consistency
+
+Implementation MUST NOT begin while blockers exist.
+
+---
+
+# Phase 5 — Documentation Repair
+
+If blockers exist:
+
+Determine the source of truth.
+
+Repair every downstream document automatically.
+
+Do not ask for user input unless:
+
+- architecture is genuinely ambiguous
+- multiple valid product decisions exist
+
+Repeat:
+
+Documentation Validation
+
+↓
+
+Repair
+
+↓
+
+Validation
+
+Until:
+
+ZERO BLOCKERS
+
+Only then may implementation begin.
+
+---
+
+# Phase 6 — Implementation
+
+Implement only the approved feature.
+
+Never expand scope.
+
+Reuse existing:
+
+- widgets
+- models
+- design tokens
+- services
+- architecture
 
 Never invent:
 
-- design decisions
-- responsive behaviour
-- design tokens
-- component behaviour
-- architecture
+- behaviour
 - business logic
-
-Implementation only begins after blockers are resolved.
-
----
-
-# Phase 4 — Implementation
-
-Implement only what exists within the sprint scope.
-
-Do not expand scope.
-
-Do not begin future sprints.
-
-Follow:
-
-- project-rules.md
-- engineering-principles.md
-- architecture documents
+- responsive layouts
+- navigation
 - design tokens
 
-Every implementation must:
-
-- use existing design tokens
-- remain reusable
-- remain production ready
-- follow Flutter best practices
+Everything must come from documentation.
 
 ---
 
-# Phase 5 — Self Review
+# Phase 7 — Self Review
 
-Before verification:
-
-Review every file created or modified.
+Review every modified file.
 
 Check for:
 
+- duplicated widgets
 - duplicated logic
-- unnecessary complexity
-- unused code
 - inconsistent naming
+- unnecessary complexity
 - architectural violations
-- opportunities for simplification
+- reuse opportunities
+- dead code
+- unused imports
+- unnecessary comments
 
-Fix issues before continuing.
+Fix issues before verification.
 
 ---
 
-# Phase 6 — Verification
+# Phase 8 — Verification
 
-Run exactly:
+Run:
 
 ```bash
 dart format --output=none --set-exit-if-changed .
@@ -145,209 +262,160 @@ flutter analyze --fatal-infos
 
 flutter test
 
-If any command fails:
+If anything fails:
 
-fix the issue
-rerun verification
-repeat until all commands pass
+Fix it.
 
-Do not continue until verification succeeds.
+Repeat verification.
 
----
+Continue until all commands succeed.
 
-# Phase 7 — Git Workflow
+Phase 9 — Git Workflow
 
 After successful verification:
 
-1. Check repository status.
-
-2. Stage all sprint changes.
-
-3. Commit using an appropriate Conventional Commit message.
+Review repository status.
+Stage only files belonging to the feature.
+Leave unrelated working tree changes untouched.
+Commit using Conventional Commits.
 
 Example:
 
-```text
-feat: complete Sprint 1.5 app shell and navigation
-```
+feat: complete Statistics feature
+Push to main.
 
-4. Push to the main branch.
+If Git fails:
 
-If Git reports any errors:
+Resolve the issue.
 
-- resolve the issue
-- rerun the Git commands
-- confirm the push succeeded
+Retry.
 
-Do not leave the repository in a partially committed state.
+Confirm the push succeeded.
 
----
+Phase 10 — Completion Report
 
-# Phase 8 — Completion Report
+Provide:
 
-Finish every sprint by providing the following report.
+Summary
 
-## Summary
+Concise summary of the implementation.
 
-Provide a concise summary of what was implemented.
+Files Created
 
----
+List every new file.
 
-## Files Created
+Files Modified
 
-List every new file created during the sprint.
+List every modified file.
 
----
+Existing Working Tree Changes
 
-## Files Modified
+List every unrelated modified or untracked file.
 
-List every existing file modified during the sprint.
+Do not stage them.
 
----
+Engineering Decisions
 
-## Engineering Decisions
+Explain:
 
-Explain any implementation decisions including:
+implementation decisions
+architectural decisions
+reusable components
+documentation repairs
+trade-offs
+deviations (if any)
+Verification
 
-- unavoidable prerequisites
-- architectural considerations
-- implementation trade-offs
-- corrections made during development
+Report:
 
-If an implementation differed from the original plan, explain why.
+dart format
+flutter analyze
+flutter test
 
----
+Include pass/fail status.
 
-## Verification
-
-Report the results of:
-
-- dart format
-- flutter analyze
-- flutter test
-
-Include whether all checks passed successfully.
-
----
-
-## Git Status
+Git Status
 
 Include:
 
-- commit hash
-- commit message
-- confirmation that the push to main succeeded
+commit hash
+commit message
+confirmation push succeeded
+Recommendations
 
----
+Provide recommendations for:
 
-## Recommendations
+cleanup
+future improvements
+preparation for the next feature
 
-Provide recommendations for improving the project or preparing the next sprint.
+Do not begin the next feature automatically.
 
-Do not begin the next sprint.
+Wait for approval.
 
-Wait for review and approval.
+AI Roles
+ChatGPT
 
----
+Acts as:
 
-# AI Roles
-
-## ChatGPT
-
-ChatGPT acts as:
-
-- Product Owner
-- System Architect
-- Sprint Planner
-- Documentation Reviewer
-- Design Reviewer
-- Technical Reviewer
+Product Owner
+System Architect
+Documentation Reviewer
+Sprint Planner
+Technical Reviewer
+Design Reviewer
 
 Responsibilities:
 
-- define sprint scope
-- review documentation
-- identify blockers
-- review implementations
-- improve architecture
-- ensure long-term consistency
+define architecture
+define feature scope
+review documentation
+identify blockers
+review implementations
+maintain long-term consistency
 
-ChatGPT should not silently change product direction or architecture during implementation.
+ChatGPT must not silently change architecture.
 
----
+Claude
 
-## Claude
+Acts as:
 
-Claude acts as:
-
-- Senior Flutter Engineer
-- Implementation Engineer
-- Refactoring Engineer
-- Test Engineer
-- Git Operator
+Senior Flutter Engineer
+Implementation Engineer
+Refactoring Engineer
+Test Engineer
+Git Operator
 
 Responsibilities:
 
-- implement sprint documentation
-- keep code production-ready
-- run verification
-- fix implementation issues
-- commit changes
-- push changes
-- produce completion reports
+implement documentation
+repair documentation
+resolve documentation blockers
+perform self-review
+run verification
+fix issues
+commit
+push
+produce completion reports
 
-Claude must not invent undocumented behaviour or architecture.
+Claude must never invent undocumented behaviour.
 
----
+Success Criteria
 
-# General Rules
+A feature is complete only when:
 
-Always:
+documentation has zero blockers
+implementation matches documentation
+architecture remains consistent
+reusable components are used
+verification passes
+tests pass
+Git succeeds
+completion report is delivered
 
-- read documentation before implementation
-- verify the current repository state
-- follow project rules
-- follow architecture documents
-- use design tokens
-- write reusable code
-- write production-quality Flutter code
-- keep code simple and maintainable
-- document engineering decisions
+Only then is the feature considered complete.
 
-Never:
-
-- invent undocumented behaviour
-- invent design tokens
-- hardcode design values
-- skip verification
-- skip Git
-- silently change architecture
-- expand sprint scope
-- begin the next sprint without approval
-
-When documentation and implementation conflict:
-
-Stop immediately.
-
-Report the conflict.
-
-Identify which document requires updating.
-
-Wait until the documentation has been corrected before continuing.
 
 ---
 
-# Success Criteria
-
-A sprint is only considered complete when:
-
-- implementation matches the sprint documentation
-- architecture remains consistent
-- all verification commands pass
-- all tests pass
-- code is production-ready
-- Git commit succeeds
-- Git push succeeds
-- the completion report has been delivered
-
-Only then is the sprint considered complete.
+I actually think this is the workflow you'll use for the rest of the Qaddy proj
