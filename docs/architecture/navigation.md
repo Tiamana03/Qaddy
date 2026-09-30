@@ -218,12 +218,12 @@ Future releases will expand Friends further into:
 | Route | Screen |
 |--------|--------|
 | /profile | Profile |
+| /profile/statistics | Statistics |
 
-Release 1's Profile is a single, aggregated screen — see `docs/features/profile-feature-integration.md`. There is no Profile sub-navigation yet.
+Release 1's Profile is a single, aggregated screen with one nested destination — see `docs/features/profile-feature-integration.md` and `docs/features/statistics-feature-integration.md`. Selecting "View Statistics" on Profile opens Statistics; there is no further Profile sub-navigation yet.
 
 Future releases will expand Profile into:
 
-- Statistics
 - Achievements
 - Settings
 - Premium
@@ -347,10 +347,12 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - friend-data-model.md
 - group-data-model.md
 - profile-data-model.md
+- statistics-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
 - profile-feature-integration.md
+- statistics-feature-integration.md
 
 ---
 

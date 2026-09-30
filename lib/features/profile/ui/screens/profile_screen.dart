@@ -8,8 +8,11 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/responsive/responsive_extensions.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
@@ -38,6 +41,8 @@ class ProfileScreen extends StatelessWidget {
             const _ProfileHeader(),
             SizedBox(height: spacing.sectionGap),
             const _DetailsCard(),
+            SizedBox(height: spacing.sectionGap),
+            const _QuickActionsCard(),
             SizedBox(height: spacing.sectionGap),
             const _ProfileSummary(),
             SizedBox(height: spacing.sectionGap),
@@ -125,6 +130,46 @@ class _DetailsCard extends StatelessWidget {
           SizedBox(height: spacing.sm),
           const _InfoRow(label: 'Profile Visibility', value: 'Friends Only'),
         ],
+      ),
+    );
+  }
+}
+
+class _QuickActionsCard extends StatelessWidget {
+  const _QuickActionsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return QaddySectionCard(
+      title: 'Quick Actions',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push(AppRoutes.profileStatistics),
+          borderRadius: BorderRadius.circular(radius.medium),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: spacing.sm),
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.bar_chart, color: colours.gold),
+                SizedBox(width: spacing.md),
+                Expanded(
+                  child: Text(
+                    'View Statistics',
+                    style: typography.body.copyWith(color: colours.textPrimary),
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: colours.textTertiary),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

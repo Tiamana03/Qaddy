@@ -29,4 +29,5 @@ abstract final class AppRoutes {
   static const String friendsGroupDetails = '/friends/groups/details';
   static const String friendsRivalries = '/friends/rivalries';
   static const String profile = '/profile';
+  static const String profileStatistics = '/profile/statistics';
 }

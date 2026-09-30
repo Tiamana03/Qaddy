@@ -28,6 +28,7 @@ import 'package:qaddy/features/groups/ui/screens/group_details_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_complete_screen.dart';
@@ -199,6 +200,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.profile,
                 builder: (BuildContext context, GoRouterState state) =>
                     const ProfileScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'statistics',
+                    name: RouteNames.profileStatistics,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const StatisticsScreen(),
+                  ),
+                ],
               ),
             ],
           ),

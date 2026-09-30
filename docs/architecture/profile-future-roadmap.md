@@ -12,13 +12,7 @@ This document consolidates future features for the Profile feature that are docu
 
 None of the items below should be implemented until a future sprint document authorises them.
 
----
-
-## Statistics Screen
-
-A dedicated Statistics destination, per `docs/architecture/navigation.md`'s Profile "Future Expansion" ("Future releases will expand Profile into: Statistics").
-
-Depends on a `statistics-data-model.md` architecture document, which does not yet exist — Release 1's Profile screen displays placeholder statistics directly rather than through a formal Statistics feature.
+The Statistics destination named in `navigation.md`'s Profile "Future Expansion" is no longer future work — it is implemented as its own feature. See `docs/features/statistics-feature-integration.md`, `docs/architecture/statistics-data-model.md`, `statistics-engineering-decisions.md` and `statistics-future-roadmap.md`.
 
 ---
 
@@ -84,6 +78,8 @@ Each future feature above should, when scheduled, receive its own architecture d
 - profile-achievements.md
 - docs/features/profile-feature-integration.md
 - profile-engineering-decisions.md
+- docs/features/statistics-feature-integration.md
+- statistics-data-model.md
 
 ---
 

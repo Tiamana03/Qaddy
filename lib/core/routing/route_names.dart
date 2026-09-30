@@ -26,4 +26,5 @@ abstract final class RouteNames {
   static const String friendsGroupDetails = 'friendsGroupDetails';
   static const String friendsRivalries = 'friendsRivalries';
   static const String profile = 'profile';
+  static const String profileStatistics = 'profileStatistics';
 }

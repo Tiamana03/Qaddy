@@ -14,15 +14,15 @@ Per-document Engineering Decisions sections still apply where they exist (`profi
 
 ---
 
-## Release 1 Is One Aggregated Screen
+## Release 1 Is One Aggregated Screen, Plus One Nested Destination
 
-`docs/architecture/navigation.md` defines a single route for Profile (`/profile`) and explicitly defers Statistics, Achievements, Settings and Premium to future releases as their own routes.
+`docs/architecture/navigation.md` defines a single route for Profile (`/profile`) and explicitly defers Achievements, Settings and Premium to future releases as their own routes. Statistics is the one exception — it is implemented now, nested at `/profile/statistics` and reached via a "View Statistics" quick link, per `docs/features/statistics-feature-integration.md`.
 
-The Profile screen is therefore a single, scrollable aggregation page — like the Dashboard, it combines many small summary sections rather than linking out to sub-screens. There is no Profile sub-navigation in Release 1.
+The Profile screen itself is still a single, scrollable aggregation page — like the Dashboard, it combines many small summary sections rather than linking out to sub-screens for its own content. Statistics is the only link out.
 
 **Why:** matches the documented route table exactly; avoids inventing navigation that isn't in `navigation.md`.
 
-**How to apply:** every section in `docs/features/profile-feature-integration.md`'s Screen Contents renders directly on `/profile`. None of them is its own route.
+**How to apply:** every section in `docs/features/profile-feature-integration.md`'s Screen Contents renders directly on `/profile`, except "View Statistics," which opens the nested `/profile/statistics` route.
 
 ---
 

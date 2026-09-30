@@ -39,7 +39,7 @@ This feature includes:
 
 This feature does **not** include:
 
-- A dedicated Statistics screen
+- The Statistics screen's own content — Profile only links to it; see `docs/features/statistics-feature-integration.md`
 - A dedicated Achievements screen
 - A dedicated Settings screen
 - A dedicated Premium screen
@@ -102,8 +102,9 @@ Displays, in order:
 - Favourite Playing Partners
 - Equipment
 - Recent Activity
+- A "View Statistics" quick link
 
-No section links to another screen — Release 1 has nothing further to open (see Scope).
+Selecting "View Statistics" opens Statistics — see `docs/features/statistics-feature-integration.md`. No other section links to another screen.
 
 ---
 
@@ -175,7 +176,11 @@ Avoid creating duplicate placeholder models.
 
 # Button Behaviour
 
-Profile has no interactive buttons in Release 1 — every section is read-only display data (see Scope, "Editing any Profile information").
+| Button | Action |
+|---------|---------|
+| View Statistics | Open Statistics (`/profile/statistics`) |
+
+No other interactive buttons exist in Release 1 — every other section is read-only display data (see Scope, "Editing any Profile information").
 
 ---
 
@@ -217,7 +222,6 @@ Additionally:
 Future releases will replace placeholder functionality with:
 
 - Supabase
-- A dedicated Statistics screen
 - A dedicated Achievements screen (with the full Achievement model)
 - A dedicated Settings screen
 - A dedicated Premium screen
