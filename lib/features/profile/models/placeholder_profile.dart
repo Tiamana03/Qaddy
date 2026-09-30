@@ -85,9 +85,20 @@ const int profileTotalStablefordPoints = 1428;
 
 /// Tiamana's Current Season standing — read directly from Saturday Boys'
 /// own placeholder leaderboard rather than restated here.
-GroupLeaderboardEntry get profileCurrentSeasonStanding => groups_data
-    .saturdayBoysLeaderboard
-    .firstWhere((entry) => entry.player == profile.displayName);
+///
+/// Falls back to an unranked entry rather than throwing if Saturday Boys'
+/// leaderboard is ever changed without a matching entry for Tiamana —
+/// Profile depends on Groups' placeholder data staying in sync, but should
+/// degrade gracefully rather than crash if it doesn't.
+GroupLeaderboardEntry get profileCurrentSeasonStanding =>
+    groups_data.saturdayBoysLeaderboard.firstWhere(
+      (entry) => entry.player == profile.displayName,
+      orElse: () => GroupLeaderboardEntry(
+        rank: 0,
+        player: profile.displayName,
+        points: 0,
+      ),
+    );
 
 /// Tiamana's current season name and group — see
 /// placeholder-group-data.md's "Saturday Boys".

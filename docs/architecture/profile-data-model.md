@@ -319,4 +319,16 @@ when shared across multiple features.
 
 ---
 
+## Release 1
+
+Release 1 implements a documented subset of the Profile model.
+
+Additional fields defined within this model are reserved for future releases.
+
+See:
+
+profile-engineering-decisions.md
+
+---
+
 **End of Document**

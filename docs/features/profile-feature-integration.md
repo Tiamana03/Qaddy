@@ -43,6 +43,7 @@ This feature does **not** include:
 - A dedicated Achievements screen
 - A dedicated Settings screen
 - A dedicated Premium screen
+- An Activity Summary ("This Year") section — deferred, see `placeholder-profile-data.md`'s "Activity Summary"
 - Editing any Profile information
 - Supabase
 - Authentication

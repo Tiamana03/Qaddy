@@ -70,6 +70,8 @@ Handicap, Average Score, Best Round, Fairways Hit and Greens in Regulation match
 
 # Activity Summary
 
+**Status:** Deferred — not implemented in Release 1. See `docs/features/profile-feature-integration.md`'s Scope; kept here for a future "This Year" summary section.
+
 | Activity | Value |
 |----------|------:|
 | Rounds This Year | 18 |
