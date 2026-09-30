@@ -206,6 +206,7 @@ The Profile feature is complete when a user can:
 - View their current season standing
 - View their achievement showcase, favourite courses, playing partners and equipment
 - View their recent activity
+- Navigate from Profile to Statistics and back
 - Return to the Dashboard
 
 Additionally:
