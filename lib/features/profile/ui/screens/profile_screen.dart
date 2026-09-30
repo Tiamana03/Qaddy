@@ -23,6 +23,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
+import 'package:qaddy/features/profile/models/profile.dart';
 
 /// The Profile destination (route `/profile`).
 class ProfileScreen extends StatelessWidget {
@@ -128,7 +129,10 @@ class _DetailsCard extends StatelessWidget {
             value: profile.joinedDate.toFriendlyDate(),
           ),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Profile Visibility', value: 'Friends Only'),
+          _InfoRow(
+            label: 'Profile Visibility',
+            value: profileVisibilityLabel(profile.profileVisibility),
+          ),
         ],
       ),
     );
@@ -156,6 +160,12 @@ class _QuickActionsCard extends StatelessWidget {
             icon: Icons.golf_course_outlined,
             label: 'View Golf Bag',
             onTap: () => context.push(AppRoutes.profileGolfBag),
+          ),
+          SizedBox(height: spacing.sm),
+          _ActionTile(
+            icon: Icons.settings_outlined,
+            label: 'View Settings',
+            onTap: () => context.push(AppRoutes.profileSettings),
           ),
         ],
       ),

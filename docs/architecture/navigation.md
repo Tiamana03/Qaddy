@@ -96,6 +96,9 @@ Navigation history must be preserved when switching tabs.
 | Route | Screen |
 |--------|--------|
 | /home | Dashboard |
+| /home/notifications | Notifications |
+
+Selecting the notification bell on Dashboard's app bar opens Notifications — see `docs/features/notifications-feature-integration.md`.
 
 ---
 
@@ -220,13 +223,13 @@ Future releases will expand Friends further into:
 | /profile | Profile |
 | /profile/statistics | Statistics |
 | /profile/bag | Golf Bag |
+| /profile/settings | Settings |
 
-Release 1's Profile is a single, aggregated screen with two nested destinations — see `docs/features/profile-feature-integration.md`, `docs/features/statistics-feature-integration.md` and `docs/features/golf-bag-feature-integration.md`. Selecting "View Statistics" or "View Golf Bag" on Profile opens the respective screen; there is no further Profile sub-navigation yet.
+Release 1's Profile is a single, aggregated screen with three nested destinations — see `docs/features/profile-feature-integration.md`, `docs/features/statistics-feature-integration.md`, `docs/features/golf-bag-feature-integration.md` and `docs/features/settings-feature-integration.md`. Selecting "View Statistics," "View Golf Bag" or "View Settings" on Profile opens the respective screen; there is no further Profile sub-navigation yet.
 
 Future releases will expand Profile into:
 
 - Achievements
-- Settings
 - Premium
 
 ---
@@ -332,12 +335,11 @@ Future routes may include:
 - Practice
 - Clubhouse
 - Marketplace
-- Notifications
 - Booking
 - Premium
 - Referral System
 
-Statistics was in this list previously and is now implemented — see `docs/features/statistics-feature-integration.md`. Golf Bag was never in this list; it was added directly to Profile's own route table above — see `docs/features/golf-bag-feature-integration.md`.
+Statistics and Notifications were both in this list previously and are now implemented — see `docs/features/statistics-feature-integration.md` and `docs/features/notifications-feature-integration.md`. Golf Bag and Settings were never in this list; both were added directly to their respective route tables above — see `docs/features/golf-bag-feature-integration.md` and `docs/features/settings-feature-integration.md`.
 
 These should extend the existing navigation hierarchy rather than replacing it.
 
@@ -352,12 +354,16 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - profile-data-model.md
 - statistics-data-model.md
 - golf-bag-data-model.md
+- notifications-data-model.md
+- settings-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
 - profile-feature-integration.md
 - statistics-feature-integration.md
 - golf-bag-feature-integration.md
+- notifications-feature-integration.md
+- settings-feature-integration.md
 
 ---
 

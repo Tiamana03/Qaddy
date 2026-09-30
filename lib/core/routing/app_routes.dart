@@ -31,4 +31,6 @@ abstract final class AppRoutes {
   static const String profile = '/profile';
   static const String profileStatistics = '/profile/statistics';
   static const String profileGolfBag = '/profile/bag';
+  static const String profileSettings = '/profile/settings';
+  static const String homeNotifications = '/home/notifications';
 }

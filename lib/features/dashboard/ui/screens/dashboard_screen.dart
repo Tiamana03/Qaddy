@@ -31,9 +31,29 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = Theme.of(context).extension<QaddyColours>()!;
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     return QaddyScaffold(
+      // A bell icon opens Notifications — see
+      // docs/features/notifications-feature-integration.md. Dashboard had
+      // no app bar before this feature; a transparent, elevation-0 one
+      // blends into the existing layout rather than introducing a visible
+      // header bar or duplicating _WelcomeHeader's own greeting.
+      appBar: AppBar(
+        backgroundColor: colours.background,
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.notifications_outlined,
+              color: colours.textPrimary,
+            ),
+            tooltip: 'Notifications',
+            onPressed: () => context.push(AppRoutes.homeNotifications),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

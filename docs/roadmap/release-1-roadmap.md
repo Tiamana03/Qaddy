@@ -25,7 +25,7 @@ Whenever implementation prompts reference **Feature X**, this document is the si
 4. Friends ✅
 5. Profile ✅
 6. Statistics ✅
-7. Golf Bag
+7. Golf Bag ✅
 8. Notifications
 9. Settings
 10. Search
@@ -43,12 +43,12 @@ Completed:
 - ✅ Friends
 - ✅ Profile
 - ✅ Statistics
+- ✅ Golf Bag
 
 Current Feature:
-- 🔨 Golf Bag
+- 🔨 Notifications
 
 Remaining:
-- Notifications
 - Settings
 - Search
 - Authentication
@@ -84,7 +84,7 @@ If the roadmap and another document disagree, this roadmap takes precedence unti
 | Sprint 4 | Friends | ✅ Complete |
 | Sprint 5 | Profile | ✅ Complete |
 | Sprint 6 | Statistics | ✅ Complete |
-| Sprint 7 | Golf Bag | ⏳ Planned |
+| Sprint 7 | Golf Bag | ✅ Complete |
 | Sprint 8 | Courses | ⏳ Planned |
 | Sprint 9 | Trips | ⏳ Planned |
 | Sprint 10 | Handicap | ⏳ Planned |

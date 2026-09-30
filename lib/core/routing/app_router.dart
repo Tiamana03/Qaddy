@@ -27,8 +27,10 @@ import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/group_details_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
+import 'package:qaddy/features/notifications/ui/screens/notifications_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
@@ -59,6 +61,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.home,
                 builder: (BuildContext context, GoRouterState state) =>
                     const DashboardScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'notifications',
+                    name: RouteNames.homeNotifications,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const NotificationsScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -213,6 +223,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     name: RouteNames.profileGolfBag,
                     builder: (BuildContext context, GoRouterState state) =>
                         const GolfBagScreen(),
+                  ),
+                  GoRoute(
+                    path: 'settings',
+                    name: RouteNames.profileSettings,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const SettingsScreen(),
                   ),
                 ],
               ),

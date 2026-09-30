@@ -13,6 +13,19 @@ enum ProfileStatus { active, inactive, suspended, deleted }
 /// Who can view a Profile's information.
 enum ProfileVisibility { public, friendsOnly, private }
 
+/// A human-readable label for [visibility] — the single source both
+/// Profile's own Details card and Settings' Privacy section read from,
+/// rather than each hardcoding the same string independently. See
+/// `docs/architecture/settings-engineering-decisions.md`'s "Profile
+/// Visibility Is Derived, Not Restated as a Second Literal".
+String profileVisibilityLabel(ProfileVisibility visibility) {
+  return switch (visibility) {
+    ProfileVisibility.public => 'Public',
+    ProfileVisibility.friendsOnly => 'Friends Only',
+    ProfileVisibility.private => 'Private',
+  };
+}
+
 /// The current user's own identity — personal details, summary statistics
 /// and references to other features' data.
 class Profile {

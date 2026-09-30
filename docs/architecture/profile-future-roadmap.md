@@ -12,7 +12,7 @@ This document consolidates future features for the Profile feature that are docu
 
 None of the items below should be implemented until a future sprint document authorises them.
 
-The Statistics destination named in `navigation.md`'s Profile "Future Expansion" is no longer future work — it is implemented as its own feature. See `docs/features/statistics-feature-integration.md`, `docs/architecture/statistics-data-model.md`, `statistics-engineering-decisions.md` and `statistics-future-roadmap.md`.
+The Statistics and Settings destinations named in `navigation.md`'s Profile "Future Expansion" are no longer future work — both are implemented as their own features. See `docs/features/statistics-feature-integration.md` and `docs/features/settings-feature-integration.md`, plus each feature's own data model, engineering decisions and future roadmap documents.
 
 ---
 
@@ -21,14 +21,6 @@ The Statistics destination named in `navigation.md`'s Profile "Future Expansion"
 A dedicated Achievements destination, per `navigation.md`'s Profile "Future Expansion".
 
 This is where `profile-achievements.md`'s full Achievement model (category, rarity, progress, target, points, hidden) is intended to be implemented — see `docs/architecture/profile-engineering-decisions.md`'s "Achievements Use a Simplified Preview" for why Release 1 only shows a lightweight preview on the Profile screen itself.
-
----
-
-## Settings Screen
-
-A dedicated Settings destination, per `navigation.md`'s Profile "Future Expansion".
-
-Would own Profile Visibility changes, notification preferences, and account management — none of which are editable in Release 1 (Profile is read-only placeholder data).
 
 ---
 
@@ -80,6 +72,8 @@ Each future feature above should, when scheduled, receive its own architecture d
 - profile-engineering-decisions.md
 - docs/features/statistics-feature-integration.md
 - statistics-data-model.md
+- docs/features/settings-feature-integration.md
+- settings-data-model.md
 
 ---
 

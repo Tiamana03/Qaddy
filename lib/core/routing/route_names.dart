@@ -28,4 +28,6 @@ abstract final class RouteNames {
   static const String profile = 'profile';
   static const String profileStatistics = 'profileStatistics';
   static const String profileGolfBag = 'profileGolfBag';
+  static const String profileSettings = 'profileSettings';
+  static const String homeNotifications = 'homeNotifications';
 }
