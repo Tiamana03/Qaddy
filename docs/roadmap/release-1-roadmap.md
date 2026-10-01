@@ -28,7 +28,7 @@ Whenever implementation prompts reference **Feature X**, this document is the si
 7. Golf Bag ✅
 8. Notifications ✅
 9. Settings ✅
-10. Search
+10. Search ✅
 11. Authentication
 12. Polish & Launch
 
@@ -46,12 +46,12 @@ Completed:
 - ✅ Golf Bag
 - ✅ Notifications
 - ✅ Settings
+- ✅ Search
 
 Current Feature:
-- 🔨 Search
+- 🔨 Authentication
 
 Remaining:
-- Authentication
 - Polish & Launch
 
 ---
@@ -90,7 +90,7 @@ Renumbered to match "Release 1 Feature Order" above exactly — Sprint N corresp
 | Sprint 8 | Golf Bag | ✅ Complete |
 | Sprint 9 | Notifications | ✅ Complete |
 | Sprint 10 | Settings | ✅ Complete |
-| Sprint 11 | Search | ⏳ Planned |
+| Sprint 11 | Search | ✅ Complete |
 | Sprint 12 | Authentication | ⏳ Planned |
 | Sprint 13 | Polish & Launch | ⏳ Planned |
 
