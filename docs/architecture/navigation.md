@@ -89,6 +89,23 @@ Navigation history must be preserved when switching tabs.
 | /onboarding | First Launch |
 | /login | Authentication |
 
+### Navigation Flow
+
+```
+Splash
+    │ (automatic, after a short delay)
+    ▼
+Onboarding
+    │ (Skip, or Get Started on the last page)
+    ▼
+Login
+    │ (Sign In or Create Account)
+    ▼
+Dashboard
+```
+
+Every step uses `go`, not `push` — see `docs/architecture/authentication-engineering-decisions.md`'s "Navigation Uses `go`, Not `push`." These three screens are real, working routes, but — unlike every other destination in this document — nothing currently shipped links to them, and `AppRoutes.home` remains the router's `initialLocation`; seeing them requires navigating to `/` directly. See `docs/features/authentication-feature-integration.md` and `authentication-engineering-decisions.md`'s "This Flow Is Not the App's Boot Sequence" for why.
+
 ---
 
 ## Home
@@ -358,6 +375,7 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - notifications-data-model.md
 - settings-data-model.md
 - search-data-model.md
+- authentication-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
@@ -367,6 +385,7 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - notifications-feature-integration.md
 - settings-feature-integration.md
 - search-feature-integration.md
+- authentication-feature-integration.md
 
 ---
 

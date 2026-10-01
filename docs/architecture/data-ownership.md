@@ -47,6 +47,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
 | Settings (`settings`) | User-facing preference toggles (no new data of its own — reads Profile and Notifications) | — (consumer only) | — |
 | Search (`search`) | `SearchResult`/`SearchCategory` (presentation-only; no placeholder data of its own) | — (consumer only) | — |
+| Authentication (`authentication`) | `OnboardingPage` entries (new onboarding copy; no user/account data) | `lib/features/authentication/models/onboarding_pages.dart` | — (no other feature reads from or is read by Authentication) |
 
 Note on folder naming: the Golf Bag feature's folder is `my_bag`, not `golf_bag` — see `technical-architecture.md`'s Features folder-structure example. Do not create a `golf_bag/` folder; the empty scaffold that once existed there was removed (TD-002).
 
@@ -85,6 +86,8 @@ Rounds → Groups → Profile → Statistics
 
 **Implication for future features:** before importing another feature's placeholder data, check this graph for the chain you would be joining. Statistics already reads from three features directly (Community, Groups, Profile); Search reads from five (Community, Groups, Trips, Rounds, Profile) directly, more than any other feature — but all five edges terminate at Search, which nothing else reads from, so Search adds breadth, not depth, to the graph. Settings transitively depends on Profile, which transitively depends on Community/Groups/Trips, which depends on Rounds. A breaking change to `PositionBadge` (Rounds) could in principle ripple five features deep before reaching Settings. This has not caused a problem yet — every edge above was the correct call to avoid literal duplication, and the alternative (duplicated literals) already caused one real bug before Profile existed (the Handicap Consistency incident) — but a new feature adding another edge should consult this graph first, not reconstruct it by hand.
 
+**Authentication is the one node with no edges at all**, in either direction — it introduces no data another feature could read, and (unlike every other feature) deliberately reads nothing from Profile or anywhere else, since it does not yet touch the identity model it will eventually replace. See `docs/architecture/authentication-engineering-decisions.md`.
+
 ---
 
 # How to Use This Document
@@ -104,3 +107,4 @@ Rounds → Groups → Profile → Statistics
 - `docs/reviews/architecture-review-2.md` — Section 8, the review that identified this document was empty (TD-004) and reconstructed the dependency graph by hand
 - `docs/reviews/technical-debt.md` — TD-004 (this document being empty), TD-005 (Dashboard's missing public constant, Exception 2)
 - `docs/architecture/search-data-model.md`, `docs/architecture/search-engineering-decisions.md` — Search (Feature 10), the first feature to read from five other features directly
+- `docs/architecture/authentication-data-model.md`, `docs/architecture/authentication-engineering-decisions.md` — Authentication (Feature 11), the only feature with zero cross-feature edges
