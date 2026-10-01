@@ -9,17 +9,19 @@ import 'package:qaddy/features/authentication/ui/screens/login_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/sign_up_screen.dart';
 
 void main() {
-  testWidgets('shows Sign In fields and links to Sign Up', (tester) async {
+  testWidgets('shows Create Account fields and links back to Login', (
+    tester,
+  ) async {
     final router = GoRouter(
-      initialLocation: AppRoutes.login,
+      initialLocation: AppRoutes.signUp,
       routes: <RouteBase>[
-        GoRoute(
-          path: AppRoutes.login,
-          builder: (context, state) => const LoginScreen(),
-        ),
         GoRoute(
           path: AppRoutes.signUp,
           builder: (context, state) => const SignUpScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => const LoginScreen(),
         ),
       ],
     );
@@ -30,14 +32,14 @@ void main() {
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
     expect(find.text('Qaddy'), findsOneWidget);
-    expect(find.text('Sign in to continue'), findsOneWidget);
-    expect(find.text('Sign In'), findsOneWidget);
-    expect(find.text('Full Name'), findsNothing);
+    expect(find.text('Create your account'), findsOneWidget);
+    expect(find.text('Full Name'), findsOneWidget);
+    expect(find.text('Create Account'), findsOneWidget);
     expect(find.byType(QaddyPasswordField), findsOneWidget);
 
-    await tester.tap(find.text("Don't have an account? Sign Up"));
+    await tester.tap(find.text('Already have an account? Sign In'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Create your account'), findsOneWidget);
+    expect(find.text('Sign in to continue'), findsOneWidget);
   });
 }

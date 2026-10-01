@@ -18,6 +18,7 @@ import 'package:qaddy/core/routing/navigation_shell.dart';
 import 'package:qaddy/core/routing/route_names.dart';
 import 'package:qaddy/features/authentication/ui/screens/login_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/onboarding_screen.dart';
+import 'package:qaddy/features/authentication/ui/screens/sign_up_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/splash_screen.dart';
 import 'package:qaddy/features/community/ui/screens/activity_feed_screen.dart';
 import 'package:qaddy/features/community/ui/screens/friend_profile_screen.dart';
@@ -67,6 +68,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.login,
         builder: (BuildContext context, GoRouterState state) =>
             const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.signUp,
+        name: RouteNames.signUp,
+        builder: (BuildContext context, GoRouterState state) =>
+            const SignUpScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder:

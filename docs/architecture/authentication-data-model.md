@@ -22,7 +22,8 @@ Authentication displays:
 
 - Splash — no data, a fixed loading message
 - Onboarding — three `OnboardingPage` entries (the only new content this feature introduces)
-- Login — two UI modes (Sign In / Create Account), each a fixed set of empty form fields with no backing model
+- Login — a fixed set of empty form fields (Email, Password) with no backing model
+- Sign Up — a fixed set of empty form fields (Full Name, Email, Password) with no backing model
 
 ---
 
@@ -69,7 +70,7 @@ It does reuse existing shared widgets, not models:
 | Source | Reused for |
 |---------|-----------|
 | `QaddyFullScreenLoader` (`lib/core/widgets/loaders/`) | Splash's logo/loading treatment |
-| `QaddyTextField`, `QaddyPasswordField` (`lib/core/widgets/forms/`) | Login's fields — built in Sprint 1.3 "for future authentication screens" |
+| `QaddyTextField`, `QaddyPasswordField` (`lib/core/widgets/forms/`) | Login's and Sign Up's fields — built in Sprint 1.3 "for future authentication screens" |
 
 ---
 
@@ -83,10 +84,10 @@ Each entry introduces an existing, already-implemented Release 1 feature (Rounds
 
 # Business Rules
 
-- Login's fields hold no backing model — `TextEditingController`s only, read by nothing, validated by nothing, submitted nowhere.
-- The Sign In / Create Account mode is local UI state (a boolean or enum), reset every time Login is (re)opened.
+- Login's and Sign Up's fields hold no backing model — `TextEditingController`s only, read by nothing, validated by nothing, submitted nowhere.
+- Login and Sign Up are two separate screens/routes, not one screen with a mode toggle — each is a complete `StatelessWidget` with no local state of its own.
 - Onboarding's current page index is local UI state, reset every time Onboarding is (re)opened.
-- Tapping Login's primary button always navigates to Dashboard. It never reads field contents, never checks for emptiness, and never shows an error state.
+- Tapping Login's or Sign Up's primary button always navigates to Dashboard. Neither reads field contents, checks for emptiness, nor shows an error state.
 
 ---
 
@@ -95,7 +96,7 @@ Each entry introduces an existing, already-implemented Release 1 feature (Rounds
 - A real `User`/`Account` model.
 - Supabase Auth integration (sign up, sign in, sessions, tokens).
 - Persisted Onboarding "seen" state.
-- Any validation, error state, or loading state on Login's submit action.
+- Any validation, error state, or loading state on Login's or Sign Up's submit action.
 
 See `authentication-future-roadmap.md`.
 
@@ -115,7 +116,7 @@ Authentication functionality should remain inside:
 lib/features/authentication/
 ```
 
-The only new model type is `OnboardingPage`. No other model, placeholder data, or cross-feature import exists in this feature.
+The only new model type is `OnboardingPage`. No other model, placeholder data, or cross-feature import exists in this feature. `AuthHeader` (`lib/features/authentication/ui/widgets/auth_header.dart`) is a shared widget, not a model — the Qaddy wordmark + subtitle treatment reused by both Login and Sign Up.
 
 ---
 
