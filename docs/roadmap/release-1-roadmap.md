@@ -76,28 +76,23 @@ If the roadmap and another document disagree, this roadmap takes precedence unti
 
 # Release Status
 
+Renumbered to match "Release 1 Feature Order" above exactly — Sprint N corresponds to Feature (N-1), since Sprint 1 (Foundation) precedes the numbered Feature list and is not itself one of the 12 features. This table previously listed Courses, Handicap, Calendar, Offline Mode, AI Features, Performance Optimisation and Beta Polish as separate sprints that appear nowhere in Feature Order, and never marked Trips complete at all despite it being the third feature built. Both are corrected below.
+
 | Sprint | Feature | Status |
 |---------|----------|--------|
 | Sprint 1 | Foundation | ✅ Complete |
 | Sprint 2 | Dashboard | ✅ Complete |
 | Sprint 3 | Rounds | ✅ Complete |
-| Sprint 4 | Friends | ✅ Complete |
-| Sprint 5 | Profile | ✅ Complete |
-| Sprint 6 | Statistics | ✅ Complete |
-| Sprint 7 | Golf Bag | ✅ Complete |
-| Sprint 8 | Courses | ⏳ Planned |
-| Sprint 9 | Trips | ⏳ Planned |
-| Sprint 10 | Handicap | ⏳ Planned |
-| Sprint 11 | Authentication | ⏳ Planned |
-| Sprint 12 | Notifications | ⏳ Planned |
-| Sprint 13 | Search | ⏳ Planned |
-| Sprint 14 | Calendar | ⏳ Planned |
-| Sprint 15 | Settings | ⏳ Planned |
-| Sprint 16 | Offline Mode | ⏳ Planned |
-| Sprint 17 | AI Features | ⏳ Planned |
-| Sprint 18 | Performance Optimisation | ⏳ Planned |
-| Sprint 19 | Beta Polish | ⏳ Planned |
-| Sprint 20 | Launch Preparation | ⏳ Planned |
+| Sprint 4 | Trips | ✅ Complete |
+| Sprint 5 | Friends | ✅ Complete |
+| Sprint 6 | Profile | ✅ Complete |
+| Sprint 7 | Statistics | ✅ Complete |
+| Sprint 8 | Golf Bag | ✅ Complete |
+| Sprint 9 | Notifications | ✅ Complete |
+| Sprint 10 | Settings | ✅ Complete |
+| Sprint 11 | Search | ⏳ Planned |
+| Sprint 12 | Authentication | ⏳ Planned |
+| Sprint 13 | Polish & Launch | ⏳ Planned |
 
 ---
 
@@ -121,105 +116,63 @@ Implement round management, scoring, leaderboards and round lifecycle.
 
 ---
 
-## Sprint 4 — Friends
-
-Implement social features including friends, groups, rivalries and community.
-
----
-
-## Sprint 5 — Profile
-
-Implement player profiles, statistics summary, achievements preview and personal information.
-
----
-
-## Sprint 6 — Statistics
-
-Implement detailed player statistics, trends, charts, records and performance analysis.
-
----
-
-## Sprint 7 — Golf Bag
-
-Implement golf clubs, equipment management, club distances and bag analytics.
-
----
-
-## Sprint 8 — Courses
-
-Implement golf course database, hole information, scorecards and course statistics.
-
----
-
-## Sprint 9 — Trips
+## Sprint 4 — Trips
 
 Implement golf trip planning, itineraries, accommodation, transport and expenses.
 
 ---
 
-## Sprint 10 — Handicap
+## Sprint 5 — Friends
 
-Implement handicap history, calculations, tracking and official handicap management.
-
----
-
-## Sprint 11 — Authentication
-
-Replace placeholder users with secure authentication, user accounts and onboarding.
+Implement social features including friends, groups, rivalries and community.
 
 ---
 
-## Sprint 12 — Notifications
+## Sprint 6 — Profile
+
+Implement player profiles, statistics summary, achievements preview and personal information.
+
+---
+
+## Sprint 7 — Statistics
+
+Implement detailed player statistics, trends, charts, records and performance analysis.
+
+---
+
+## Sprint 8 — Golf Bag
+
+Implement golf clubs, equipment management, club distances and bag analytics.
+
+---
+
+## Sprint 9 — Notifications
 
 Implement push notifications, invitations, reminders and in-app notifications.
 
 ---
 
-## Sprint 13 — Search
-
-Implement global search across friends, rounds, trips, groups and courses.
-
----
-
-## Sprint 14 — Calendar
-
-Implement calendar integration, upcoming events and scheduling.
-
----
-
-## Sprint 15 — Settings
+## Sprint 10 — Settings
 
 Implement user preferences, appearance, privacy and application settings.
 
 ---
 
-## Sprint 16 — Offline Mode
+## Sprint 11 — Search
 
-Implement offline-first functionality, caching and synchronisation.
-
----
-
-## Sprint 17 — AI Features
-
-Implement AI insights, recommendations, Golf IQ and intelligent assistance.
+Implement global search across friends, rounds, trips, groups and courses.
 
 ---
 
-## Sprint 18 — Performance Optimisation
+## Sprint 12 — Authentication
 
-Optimise rendering, state management, loading performance and memory usage.
-
----
-
-## Sprint 19 — Beta Polish
-
-Complete accessibility improvements, UX refinements, animations, bug fixes and final QA.
+Replace placeholder users with secure authentication, user accounts and onboarding.
 
 ---
 
-## Sprint 20 — Launch Preparation
+## Sprint 13 — Polish & Launch
 
-Complete production configuration, release validation, store assets and deployment preparation.
+Complete performance optimisation, accessibility improvements, UX refinements, final QA, production configuration, release validation and deployment preparation.
 
 ---
 
@@ -240,7 +193,7 @@ Before every implementation Claude must:
 
 Release 1 is considered complete when:
 
-- All 20 sprints are marked Complete.
+- All 13 sprints are marked Complete.
 - Documentation contains zero blockers.
 - Flutter Analyze passes.
 - All automated tests pass.
