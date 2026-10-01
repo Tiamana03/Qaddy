@@ -47,7 +47,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
 | Settings (`settings`) | User-facing preference toggles (no new data of its own — reads Profile and Notifications) | — (consumer only) | — |
 | Search (`search`) | `SearchResult`/`SearchCategory` (presentation-only; no placeholder data of its own) | — (consumer only) | — |
-| Authentication (`authentication`) | `OnboardingPage` entries (new onboarding copy; no user/account data) | `lib/features/authentication/models/onboarding_pages.dart` | — (no other feature reads from or is read by Authentication) |
+| Authentication (`authentication`) | `OnboardingPage` entries (new onboarding copy; no user/account data) | `lib/features/authentication/models/onboarding_page.dart` | — (no other feature reads from or is read by Authentication) |
 
 Note on folder naming: the Golf Bag feature's folder is `my_bag`, not `golf_bag` — see `technical-architecture.md`'s Features folder-structure example. Do not create a `golf_bag/` folder; the empty scaffold that once existed there was removed (TD-002).
 

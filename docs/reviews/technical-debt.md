@@ -89,3 +89,75 @@ Expose Dashboard's round-summary values as a public constant (e.g. `lib/features
 Target
 
 Next Dashboard- or Profile-touching feature, or a dedicated cleanup pass.
+
+---
+
+## TD-006 — Orphaned `lib/core/design_system/` scaffold contradicting `folder-structure.md`
+
+Priority: Medium
+
+Status: **Resolved** (Architecture Review #3 maintenance pass, 2026-10-01)
+
+Current State
+
+~~`lib/core/design_system/{widgets,tokens,theme,icons,animations}/` existed as an empty, `.gitkeep.md`-only scaffold, while `docs/architecture/folder-structure.md`'s own Core listing (`theme/ widgets/ services/ models/ utils/ extensions/`) — and the real implementation — both use `lib/core/widgets/` and `lib/core/theme/` instead. Ten separate feature `.gitkeep.md` files (`achievements`, `authentication`, `community`, `dashboard`, `golf_iq`, `profile`, `rounds`, `settings`, `statistics`, `trips`) each pointed contributors at the wrong location: "Anything reusable across features belongs in core/design_system/widgets instead."~~ `lib/core/design_system/` has been deleted and all 10 `.gitkeep.md` files now correctly read "core/widgets". Traced to the original `M0: Foundations & Tooling` commit (`c14f5b2`) — the scaffold predates Sprint 1's real design system and was never reconciled once `core/widgets/`/`core/theme/` were built instead.
+
+Action
+
+~~Delete `lib/core/design_system/` and correct the 10 `.gitkeep.md` comments.~~ Done.
+
+---
+
+## TD-007 — `data-ownership.md` cited a non-existent filename for Authentication
+
+Priority: Low
+
+Status: **Resolved** (Architecture Review #3 maintenance pass, 2026-10-01)
+
+Current State
+
+~~The Authentication row in `docs/architecture/data-ownership.md`'s Ownership Table cited `lib/features/authentication/models/onboarding_pages.dart` (plural); the real file is `onboarding_page.dart` (singular).~~ Corrected.
+
+Action
+
+~~Fix the filename reference.~~ Done.
+
+---
+
+## TD-008 — M0/M1/M2 milestone terms used in code were undefined in the roadmap
+
+Priority: Medium
+
+Status: **Resolved** (Architecture Review #3 maintenance pass, 2026-10-01)
+
+Current State
+
+~~`lib/main.dart` ("running M0 locally", "until M2 wires auth") and `lib/core/config/env/README.md` ("see the Release One roadmap, M0") both referenced milestone terms that `docs/roadmap/release-1-roadmap.md` never defined anywhere, despite the roadmap's own Purpose section listing "milestone progression" as something it covers.~~ `release-1-roadmap.md` now has a "Milestones" section defining M0 (Foundations & Tooling, complete — commit `c14f5b2`), M1 (Release 1, this document's own scope) and M2 (Backend & Authentication, begins Release 2), grounded in the actual commit history and cross-referenced from both code locations above.
+
+Action
+
+~~Add canonical M0/M1/M2 definitions to the roadmap.~~ Done.
+
+---
+
+## TD-009 — Rounds' private `_InfoRow` is the last unmigrated copy in the codebase
+
+Priority: Low
+
+Status: Open (new, promoted from a parenthetical note in TD-001)
+
+Current State
+
+`lib/features/rounds/ui/screens/rounds_screen.dart` still defines its own private `_InfoRow` — confirmed by Architecture Review #3 to be the only non-shared InfoRow implementation left anywhere in `lib/` (`grep -rn "class _InfoRow\|class \w*InfoRow" lib` returns exactly two matches: this one and `QaddyInfoRow` itself). It was explicitly out of scope for TD-001's migration pass, since it predates `QaddyInfoRow` and wasn't one of the four features named in Architecture Review #2.
+
+Risk
+
+Low — functionally identical to `QaddyInfoRow`, so there is no behavioural risk, only an inconsistency: every other feature's InfoRow has converged on the shared widget, and this is the one holdout.
+
+Action
+
+Migrate `rounds_screen.dart`'s `_InfoRow` call sites to `QaddyInfoRow` and delete the private class, the same two-step fix already applied to Trips, Friends, Groups and Profile under TD-001.
+
+Target
+
+Next Rounds-touching feature, or a dedicated cleanup pass.

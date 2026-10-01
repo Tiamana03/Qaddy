@@ -17,6 +17,16 @@ Whenever implementation prompts reference **Feature X**, this document is the si
 
 ---
 
+# Milestones
+
+This roadmap's "milestone progression" (see Purpose above) is tracked at a broader level than its own 12 features / 13 sprints, using a milestone sequence referenced directly in code (`lib/main.dart`, `lib/core/config/env/README.md`). Those references point here; this section is their canonical definition.
+
+- **M0 — Foundations & Tooling.** Project scaffolding, CI pipeline, environment configuration (`lib/core/config/`), analytics/crash-reporting service stubs, and platform (Android/iOS) project setup. Predates Sprint 1 and this roadmap's Feature Order entirely. **Complete** — commit `c14f5b2`, "M0: Foundations & Tooling". `lib/main.dart`'s "e.g. running M0 locally" and `lib/core/config/env/README.md`'s "Until a real Supabase project exists (see the Release One roadmap, M0)" both refer to this milestone: `AppConfig.isBackendConfigured` is false throughout it, by design, because no Supabase project had been provisioned yet.
+- **M1 — Release 1.** This roadmap's entire scope — all 12 features in the Feature Order below, built against placeholder data with no backend. `AppConfig.isBackendConfigured` remains false throughout M1 as well; nothing in Release 1 requires a real backend to function (see `docs/architecture/authentication-engineering-decisions.md`'s "This Flow Is Not the App's Boot Sequence").
+- **M2 — Backend & Authentication.** Provisioning a real Supabase project and wiring real authentication, replacing Authentication's placeholder Splash/Onboarding/Login/Sign Up screens with a working sign-up/sign-in flow and making it the app's actual boot sequence — see `docs/architecture/authentication-future-roadmap.md`. `lib/main.dart`'s "aren't reachable until M2 wires auth" refers to this milestone. M2 begins Release 2 and is out of scope for this document.
+
+---
+
 # Release 1 Feature Order
 
 1. Dashboard ✅
