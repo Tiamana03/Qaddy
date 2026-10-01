@@ -26,8 +26,8 @@ Whenever implementation prompts reference **Feature X**, this document is the si
 5. Profile ✅
 6. Statistics ✅
 7. Golf Bag ✅
-8. Notifications
-9. Settings
+8. Notifications ✅
+9. Settings ✅
 10. Search
 11. Authentication
 12. Polish & Launch
@@ -44,13 +44,13 @@ Completed:
 - ✅ Profile
 - ✅ Statistics
 - ✅ Golf Bag
+- ✅ Notifications
+- ✅ Settings
 
 Current Feature:
-- 🔨 Notifications
+- 🔨 Search
 
 Remaining:
-- Settings
-- Search
 - Authentication
 - Polish & Launch
 
