@@ -22,6 +22,7 @@ import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/quick_action_card.dart';
 
 /// The Home / Dashboard destination (route `/home`) — Qaddy's control
@@ -37,13 +38,11 @@ class DashboardScreen extends StatelessWidget {
     return QaddyScaffold(
       // A bell icon opens Notifications and a search icon opens Search —
       // see docs/features/notifications-feature-integration.md and
-      // docs/features/search-feature-integration.md. Dashboard had no app
-      // bar before Notifications; a transparent, elevation-0 one blends
-      // into the existing layout rather than introducing a visible header
-      // bar or duplicating _WelcomeHeader's own greeting.
+      // docs/features/search-feature-integration.md. Background/elevation
+      // now come from qaddy_theme.dart's appBarTheme (TD-003) rather than
+      // an explicit override; this AppBar used to be the one screen that
+      // set them, which is what originally exposed the gap.
       appBar: AppBar(
-        backgroundColor: colours.background,
-        elevation: 0,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search, color: colours.textPrimary),
@@ -245,10 +244,16 @@ class _StatisticsPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return const _ResponsiveGrid(
       children: <Widget>[
-        QaddyStatisticCard(label: 'Rounds Played', value: '68'),
-        QaddyStatisticCard(label: 'Average Score', value: '83'),
+        QaddyStatisticCard(
+          label: 'Rounds Played',
+          value: '$dashboardRoundsPlayed',
+        ),
+        QaddyStatisticCard(
+          label: 'Average Score',
+          value: '$dashboardAverageScore',
+        ),
         QaddyStatisticCard(label: 'Handicap', value: '8.4'),
-        QaddyStatisticCard(label: 'Best Round', value: '74'),
+        QaddyStatisticCard(label: 'Best Round', value: '$dashboardBestRound'),
       ],
     );
   }

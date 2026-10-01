@@ -17,6 +17,7 @@ import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/ui/widgets/player_card.dart';
@@ -50,43 +51,6 @@ class RoundsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// A label/value pair used by both the Upcoming Round Card and Round
-/// Information sections — avoids duplicating the same row layout twice.
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            label,
-            style: typography.body.copyWith(color: colours.textSecondary),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(width: spacing.sm),
-        Text(
-          value,
-          style: typography.body.copyWith(
-            color: colours.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -150,13 +114,13 @@ class _UpcomingRoundCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: spacing.md),
-          _InfoRow(label: 'Date', value: upcomingRound.date),
+          QaddyInfoRow(label: 'Date', value: upcomingRound.date),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
+          QaddyInfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Players', value: '${upcomingRound.players}'),
+          QaddyInfoRow(label: 'Players', value: '${upcomingRound.players}'),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Weather', value: upcomingRound.weather),
+          QaddyInfoRow(label: 'Weather', value: upcomingRound.weather),
         ],
       ),
     );
@@ -218,13 +182,13 @@ class _RoundInformationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(label: 'Course', value: upcomingRound.course),
+          QaddyInfoRow(label: 'Course', value: upcomingRound.course),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
+          QaddyInfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Format', value: upcomingRound.format),
+          QaddyInfoRow(label: 'Format', value: upcomingRound.format),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Holes', value: '${upcomingRound.holes}'),
+          QaddyInfoRow(label: 'Holes', value: '${upcomingRound.holes}'),
         ],
       ),
     );
@@ -254,7 +218,7 @@ class _SideGamesCard extends StatelessWidget {
         children: <Widget>[
           for (final (index, game) in _games.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.sm),
-            _InfoRow(label: game.$1, value: 'Hole ${game.$2}'),
+            QaddyInfoRow(label: game.$1, value: 'Hole ${game.$2}'),
           ],
         ],
       ),

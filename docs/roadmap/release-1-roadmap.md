@@ -40,7 +40,7 @@ This roadmap's "milestone progression" (see Purpose above) is tracked at a broad
 9. Settings ✅
 10. Search ✅
 11. Authentication ✅
-12. Polish & Launch
+12. Polish & Launch ✅
 
 ---
 
@@ -58,12 +58,13 @@ Completed:
 - ✅ Settings
 - ✅ Search
 - ✅ Authentication
+- ✅ Polish & Launch
 
 Current Feature:
-- 🔨 Polish & Launch
+- (none — Release 1 is complete)
 
 Remaining:
-- (none — Polish & Launch is the final feature)
+- (none)
 
 ---
 
@@ -103,7 +104,7 @@ Renumbered to match "Release 1 Feature Order" above exactly — Sprint N corresp
 | Sprint 10 | Settings | ✅ Complete |
 | Sprint 11 | Search | ✅ Complete |
 | Sprint 12 | Authentication | ✅ Complete |
-| Sprint 13 | Polish & Launch | ⏳ Planned |
+| Sprint 13 | Polish & Launch | ✅ Complete |
 
 ---
 
@@ -210,3 +211,5 @@ Release 1 is considered complete when:
 - All automated tests pass.
 - Manual QA has been completed.
 - The application is production ready.
+
+**Status as of Polish & Launch (2026-10-01):** all 13 sprints marked Complete above; `flutter analyze --fatal-infos` and `flutter test` (123/123) pass; documentation inconsistencies found during Architecture Review #3 and Polish & Launch were corrected (see `docs/reviews/technical-debt.md`). "Manual QA" here means a representative in-browser spot check of key flows (Dashboard, navigation, Search, Authentication, the Rounds/AppBar polish changes) — not an exhaustive pass over all 33 screens on every platform/breakpoint, which remains appropriate for a dedicated QA pass before a real launch.

@@ -4,9 +4,12 @@
 /// don't: how [QaddyColours] maps onto Flutter's [ColorScheme] and
 /// [TextTheme] for the built-in Material widgets that haven't yet migrated
 /// to reading the token extensions directly. Component-level theming
-/// (button shapes, card padding, etc.) is deliberately out of scope here —
-/// Sprint 1.1 is the theme foundation only; that belongs with whichever
-/// sprint builds the actual shared button/card/dialog widgets.
+/// (button shapes, card padding, etc.) remains out of scope — Qaddy's own
+/// shared widgets (`QaddyPrimaryButton`, `QaddyCard`, etc.) read the token
+/// extensions directly rather than `ThemeData`. `appBarTheme` is the one
+/// exception, added during Polish & Launch to resolve TD-003: every screen
+/// builds a bare `AppBar()` with no Qaddy wrapper widget to theme instead,
+/// so this is the only place that consistency could be enforced.
 library;
 
 import 'package:flutter/material.dart';
@@ -66,6 +69,18 @@ abstract final class QaddyTheme {
       dividerColor: colours.divider,
       textTheme: textTheme,
       iconTheme: IconThemeData(color: colours.textPrimary),
+      // TD-003: every screen previously relied on Material 3's default
+      // AppBar background (`colorScheme.surface`), which only happened to
+      // look consistent with `colours.background` by coincidence — an
+      // accidental, not enforced, consistency. Setting it here once removes
+      // that risk for all 22 screens that build their own `AppBar`, and
+      // matches Dashboard's own explicit override exactly (now redundant
+      // there, see dashboard_screen.dart).
+      appBarTheme: AppBarTheme(
+        backgroundColor: colours.background,
+        elevation: 0,
+        foregroundColor: colours.textPrimary,
+      ),
       extensions: <ThemeExtension<dynamic>>[
         colours,
         QaddyTypography.standard,

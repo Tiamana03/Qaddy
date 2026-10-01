@@ -28,7 +28,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 **Two narrow exceptions exist**, and only these:
 
 1. **Genuinely new data a feature introduces because no other feature could supply it** — e.g. Statistics' two Trend deltas (Handicap, Average Score — "previous value" over a named period), Golf Bag's three Club Distances (Driver, Irons, Wedges). These are documented in each feature's own `placeholder-*-data.md` "New Placeholder Data" section and are not duplicates of anything, because nothing else owns them.
-2. **Dashboard's round-summary literals** (Rounds Played, Average Score, Best Round, Fairways Hit, Greens in Regulation) have no public constant to import — they are private literals inside `dashboard_screen.dart`'s widget tree. Profile mirrors these as its own literals, required to match `docs/placeholder-data.md`'s "Statistics" section exactly, per that document's own note. This is the one place in the app where the principle is enforced by **documentation convention**, not by a code-level import, because the owning feature (Dashboard) currently exposes nothing public to import from. It is a known gap (tracked as TD-005 below), not a violation — the values have been checked and are correct everywhere they appear.
+2. ~~**Dashboard's round-summary literals** had no public constant to import.~~ **Resolved during Polish & Launch (TD-005).** `lib/features/dashboard/models/placeholder_dashboard.dart` now publicly exposes `dashboardRoundsPlayed`, `dashboardAverageScore` and `dashboardBestRound`; Profile's `profileRoundsPlayed`/`profileAverageScore`/`profileBestRound` are computed from them directly, not duplicated. Dashboard never displays Fairways Hit or Greens in Regulation at all, so those two remain Profile-only literals — there was never a Dashboard value for them to drift from.
 
 ---
 
@@ -36,7 +36,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 
 | Feature (folder) | Owns | Public source | Known readers |
 |---|---|---|---|
-| Dashboard (`dashboard`) | Round-summary literals (Rounds Played, Average Score, Best Round, Fairways Hit, GIR) | Private literals only — **no public constant** (see Exception 2 above) | Profile (by convention, not import) |
+| Dashboard (`dashboard`) | Round-summary values (Rounds Played, Average Score, Best Round) | `lib/features/dashboard/models/placeholder_dashboard.dart` | Profile (`profileRoundsPlayed`/`profileAverageScore`/`profileBestRound`) |
 | Rounds (`rounds`) | Current/upcoming round data (`UpcomingRound`), round leaderboard, `PositionBadge` widget | `lib/features/rounds/models/placeholder_rounds.dart`, `lib/features/rounds/ui/widgets/position_badge.dart` | Groups (`GroupLeaderboardRow` reuses `PositionBadge`), Search (Rounds category) |
 | Trips (`trips`) | Trip itinerary data (accommodation, travel, expenses, golf schedule, planning), trip count, golf-schedule course list (`melbourneGolfWeekendCourses`) | `lib/features/trips/models/placeholder_trips.dart` | Profile (Trips count), Search (Trips and Courses categories) |
 | Community (`community`) | Friends list, friend profiles, Rivalry Performance | `lib/features/community/models/placeholder_friends.dart` | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
@@ -68,7 +68,7 @@ Profile       → Statistics      (Career Totals, Scoring Statistics, Personal R
 Profile       → Golf Bag        (Equipment)
 Profile       → Settings        (Profile Visibility)
 Notifications → Settings        (NotificationCategory)
-Dashboard     → Profile         (round-summary literals, by convention only — see Exception 2)
+Dashboard     → Profile         (Rounds Played, Average Score, Best Round)
 Community     → Search          (Friends category)
 Groups        → Search          (Groups category)
 Trips         → Search          (Trips and Courses categories)

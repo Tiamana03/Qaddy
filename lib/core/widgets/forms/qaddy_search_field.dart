@@ -65,6 +65,7 @@ class QaddySearchField extends StatelessWidget {
                   }
                   return IconButton(
                     icon: Icon(Icons.close, color: iconColour),
+                    tooltip: 'Clear search',
                     onPressed: enabled ? controller.clear : null,
                   );
                 },

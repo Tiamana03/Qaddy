@@ -5,16 +5,19 @@
 /// Shared Placeholder Subject", the current user (Tiamana) is Profile's
 /// only subject — there is no list of profiles to choose from.
 ///
-/// Friends/Groups/Trips counts and the Current Season card are computed
-/// from each feature's own placeholder data rather than duplicated as new
-/// literals (see that same document's "Friends, Groups and Rounds-Played
-/// Counts Are Computed, Not Duplicated") — this is the one thing in this
-/// file that is not a plain literal.
+/// Friends/Groups/Trips counts, the Current Season card, and
+/// `profileRoundsPlayed`/`profileAverageScore`/`profileBestRound` are all
+/// computed from each owning feature's own placeholder data rather than
+/// duplicated as new literals (see that same document's "Friends, Groups
+/// and Rounds-Played Counts Are Computed, Not Duplicated", and
+/// `docs/reviews/technical-debt.md`'s TD-005) — these are the only things
+/// in this file that are not plain literals.
 library;
 
 import 'package:qaddy/features/community/models/friend.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart'
     as friends_data;
+import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart'
     as groups_data;
@@ -46,10 +49,9 @@ int get profileGroupsCount => groups_data.groups.length;
 int get profileTripsCount =>
     trips_data.upcomingTripsCount + trips_data.pastTripsCount;
 
-/// Rounds played — must match placeholder-data.md's "Statistics" section;
-/// no public constant exists there to import (see
-/// profile-engineering-decisions.md).
-const int profileRoundsPlayed = 68;
+/// Rounds played — computed from `placeholder_dashboard.dart`, not
+/// duplicated (resolves TD-005; see `docs/reviews/technical-debt.md`).
+const int profileRoundsPlayed = dashboardRoundsPlayed;
 
 /// Courses played — see placeholder-profile-data.md's "Profile Summary".
 const int profileCoursesPlayed = 18;
@@ -60,11 +62,12 @@ const int profileSeasonsCompleted = 1;
 /// Total unlocked achievements.
 const int profileAchievementsCount = 12;
 
-/// Playing Statistics — must match placeholder-data.md's "Statistics"
-/// section for the fields both documents share.
-const int profileAverageScore = 83;
+/// Playing Statistics. `profileAverageScore` and `profileBestRound` are
+/// computed from `placeholder_dashboard.dart`, not duplicated (resolves
+/// TD-005); the rest have no Dashboard equivalent and remain literals here.
+const int profileAverageScore = dashboardAverageScore;
 const int profileAverageStableford = 34;
-const int profileBestRound = 74;
+const int profileBestRound = dashboardBestRound;
 const int profileBestStableford = 42;
 const int profileBirdies = 37;
 const int profileEagles = 2;

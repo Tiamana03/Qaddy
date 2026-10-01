@@ -78,6 +78,7 @@ class _QaddyPasswordFieldState extends State<QaddyPasswordField> {
             _obscure ? Icons.visibility : Icons.visibility_off,
             color: iconColour,
           ),
+          tooltip: _obscure ? 'Show password' : 'Hide password',
           onPressed: widget.enabled
               ? () => setState(() => _obscure = !_obscure)
               : null,

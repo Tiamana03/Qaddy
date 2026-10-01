@@ -34,21 +34,15 @@ Action
 
 Priority: Low
 
+Status: **Resolved** (Polish & Launch, 2026-10-01)
+
 Current State
 
-21 screens across 9 features each construct their own `AppBar(title: Text('X'))` inline. No `appBarTheme` is set in `qaddy_theme.dart`. Dashboard is the only screen with an explicit AppBar style override (`backgroundColor: colours.background, elevation: 0`, added for the Notifications bell icon); the other 20 rely on Material 3's default AppBar background (`colorScheme.surface`), which currently happens to look consistent with the scaffold background but isn't enforced to.
-
-Risk
-
-A future palette change to either `colours.background` or `colours.surface1` independently could introduce a visible seam at the top of 20 screens with no single place to fix it.
+~~22 screens each construct their own `AppBar(title: Text('X'))` inline. No `appBarTheme` is set in `qaddy_theme.dart`.~~ `qaddy_theme.dart` now sets `appBarTheme` (background `colours.background`, `elevation: 0`, `foregroundColor: colours.textPrimary`) on both Light and Dark theme builds, matching what Dashboard's own explicit override already was — Dashboard's now-redundant `backgroundColor`/`elevation` parameters were removed since the theme supplies them. The other 21 screens were visually unaffected (Material 3's default already happened to resemble `colours.background`), but the consistency is now enforced rather than accidental.
 
 Action
 
-Add an `appBarTheme` to `qaddy_theme.dart`'s `ThemeData` (lower-disruption option given 21 existing call sites), or introduce a `QaddyAppBar` wrapping widget consistent with every other shared UI pattern in the app.
-
-Target
-
-Next design-system maintenance pass.
+~~Add an `appBarTheme` to `qaddy_theme.dart`'s `ThemeData`.~~ Done.
 
 ---
 
@@ -72,23 +66,15 @@ Action
 
 Priority: Low
 
-Status: Open (new, identified while populating `data-ownership.md`)
+Status: **Resolved** (Polish & Launch, 2026-10-01)
 
 Current State
 
-Dashboard's round-summary values (Rounds Played, Average Score, Best Round, Fairways Hit, Greens in Regulation) are private literals inside `dashboard_screen.dart`'s widget tree — there is no public constant another feature can import. Profile needs the same values (its own Playing Statistics section) and currently matches them by documentation convention — both must independently equal `docs/placeholder-data.md`'s "Statistics" section — rather than by a code-level import, per `profile-engineering-decisions.md`'s "Friends, Groups and Rounds-Played Counts Are Computed, Not Duplicated".
-
-Risk
-
-This is the one place in the app where the Single-Source-of-Truth principle is enforced by convention rather than by import. If either Dashboard's or Profile's literal is edited without updating the other, they will silently drift — the exact class of bug the Handicap Consistency incident (before Profile existed) was caused by.
+~~Dashboard's round-summary values (Rounds Played, Average Score, Best Round, Fairways Hit, Greens in Regulation) are private literals inside `dashboard_screen.dart`'s widget tree — there is no public constant another feature can import.~~ `lib/features/dashboard/models/placeholder_dashboard.dart` (new) exposes `dashboardRoundsPlayed`, `dashboardAverageScore` and `dashboardBestRound` publicly; `dashboard_screen.dart` reads from it instead of inline literals, and Profile's `profileRoundsPlayed`/`profileAverageScore`/`profileBestRound` are now computed from these constants rather than independently declared. Fairways Hit and Greens in Regulation were never shown on Dashboard at all — verified during this pass — so they were never actually duplicated and remain ordinary Profile-only literals.
 
 Action
 
-Expose Dashboard's round-summary values as a public constant (e.g. `lib/features/dashboard/models/placeholder_dashboard.dart`) and have Profile import it instead of redeclaring matching literals.
-
-Target
-
-Next Dashboard- or Profile-touching feature, or a dedicated cleanup pass.
+~~Expose Dashboard's round-summary values as a public constant and have Profile import it instead of redeclaring matching literals.~~ Done.
 
 ---
 
@@ -144,19 +130,15 @@ Action
 
 Priority: Low
 
-Status: Open (new, promoted from a parenthetical note in TD-001)
+Status: **Resolved** (Polish & Launch, 2026-10-01)
 
 Current State
 
-`lib/features/rounds/ui/screens/rounds_screen.dart` still defines its own private `_InfoRow` — confirmed by Architecture Review #3 to be the only non-shared InfoRow implementation left anywhere in `lib/` (`grep -rn "class _InfoRow\|class \w*InfoRow" lib` returns exactly two matches: this one and `QaddyInfoRow` itself). It was explicitly out of scope for TD-001's migration pass, since it predates `QaddyInfoRow` and wasn't one of the four features named in Architecture Review #2.
-
-Risk
-
-Low — functionally identical to `QaddyInfoRow`, so there is no behavioural risk, only an inconsistency: every other feature's InfoRow has converged on the shared widget, and this is the one holdout.
+~~`lib/features/rounds/ui/screens/rounds_screen.dart` still defines its own private `_InfoRow`~~ — migrated to `QaddyInfoRow`, the same two-step fix (replace call sites, delete the private class, add the import) already applied to Trips, Friends, Groups and Profile under TD-001. `grep -rn "class _InfoRow\|class \w*InfoRow" lib` now returns exactly one match: `QaddyInfoRow` itself.
 
 Action
 
-Migrate `rounds_screen.dart`'s `_InfoRow` call sites to `QaddyInfoRow` and delete the private class, the same two-step fix already applied to Trips, Friends, Groups and Profile under TD-001.
+~~Migrate `rounds_screen.dart`'s `_InfoRow` call sites to `QaddyInfoRow` and delete the private class.~~ Done.
 
 Target
 
