@@ -21,6 +21,7 @@ import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/profile/models/profile.dart';
@@ -117,19 +118,19 @@ class _DetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Favourite Course',
             value: profile.favouriteCourse ?? 'Not set',
           ),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Location', value: profile.location),
+          QaddyInfoRow(label: 'Location', value: profile.location),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Member Since',
             value: profile.joinedDate.toFriendlyDate(),
           ),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Profile Visibility',
             value: profileVisibilityLabel(profile.profileVisibility),
           ),
@@ -276,7 +277,7 @@ class _PlayingStatisticsCard extends StatelessWidget {
         children: <Widget>[
           for (final (index, row) in rows.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.sm),
-            _InfoRow(label: row.$1, value: row.$2),
+            QaddyInfoRow(label: row.$1, value: row.$2),
           ],
         ],
       ),
@@ -297,13 +298,13 @@ class _CurrentSeasonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(label: 'Season', value: profileCurrentSeasonName),
+          QaddyInfoRow(label: 'Season', value: profileCurrentSeasonName),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Group', value: profileCurrentSeasonGroup),
+          QaddyInfoRow(label: 'Group', value: profileCurrentSeasonGroup),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Position', value: _ordinal(standing.rank)),
+          QaddyInfoRow(label: 'Position', value: _ordinal(standing.rank)),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Points', value: '${standing.points}'),
+          QaddyInfoRow(label: 'Points', value: '${standing.points}'),
         ],
       ),
     );
@@ -346,7 +347,7 @@ class _PersonalBestsCard extends StatelessWidget {
         children: <Widget>[
           for (final (index, row) in rows.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.sm),
-            _InfoRow(label: row.$1, value: row.$2),
+            QaddyInfoRow(label: row.$1, value: row.$2),
           ],
         ],
       ),
@@ -480,7 +481,7 @@ class _EquipmentCard extends StatelessWidget {
         children: <Widget>[
           for (final (index, item) in profileEquipment.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.sm),
-            _InfoRow(label: item.club, value: item.value),
+            QaddyInfoRow(label: item.club, value: item.value),
           ],
         ],
       ),
@@ -525,42 +526,6 @@ class _RecentActivityCard extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: typography.body.copyWith(color: colours.textSecondary),
-        ),
-        SizedBox(width: spacing.sm),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: typography.body.copyWith(
-              color: colours.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

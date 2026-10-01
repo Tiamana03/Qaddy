@@ -8,9 +8,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Travel (route `/trips/travel`).
 class TripTravelScreen extends StatelessWidget {
@@ -36,14 +36,14 @@ class TripTravelScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: 'Airline',
                     value: '${flight.airline} ${flight.flightNumber}',
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Departure', value: flight.departure),
+                  QaddyInfoRow(label: 'Departure', value: flight.departure),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Arrival', value: flight.arrival),
+                  QaddyInfoRow(label: 'Arrival', value: flight.arrival),
                 ],
               ),
             ),
@@ -53,12 +53,12 @@ class TripTravelScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: airportTransfer.details,
                     value: airportTransfer.time,
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Date', value: airportTransfer.date),
+                  QaddyInfoRow(label: 'Date', value: airportTransfer.date),
                 ],
               ),
             ),

@@ -8,9 +8,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Accommodation (route `/trips/accommodation`).
 class TripAccommodationScreen extends StatelessWidget {
@@ -33,16 +33,16 @@ class TripAccommodationScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TripInfoRow(label: 'Check In', value: accommodation.checkIn),
+                  QaddyInfoRow(label: 'Check In', value: accommodation.checkIn),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: 'Check Out',
                     value: accommodation.checkOut,
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Address', value: accommodation.address),
+                  QaddyInfoRow(label: 'Address', value: accommodation.address),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Contact', value: accommodation.contact),
+                  QaddyInfoRow(label: 'Contact', value: accommodation.contact),
                 ],
               ),
             ),

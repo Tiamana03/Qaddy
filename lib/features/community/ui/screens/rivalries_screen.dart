@@ -11,9 +11,9 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
-import 'package:qaddy/features/community/ui/widgets/friend_info_row.dart';
 
 /// Rivalries (route `/friends/rivalries`).
 class RivalriesScreen extends StatelessWidget {
@@ -84,7 +84,7 @@ class RivalriesScreen extends StatelessWidget {
             ),
             SizedBox(height: spacing.sectionGap),
             QaddyCard(
-              child: FriendInfoRow(
+              child: QaddyInfoRow(
                 label: 'Last Result',
                 value: rivalry.lastResult,
               ),

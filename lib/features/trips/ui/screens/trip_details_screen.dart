@@ -16,9 +16,9 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Trip Details (route `/trips/details`) — destination, dates, members,
 /// countdown, weather and quick actions for the shared placeholder trip.
@@ -42,23 +42,23 @@ class TripDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TripInfoRow(label: 'Destination', value: trip.destination),
+                  QaddyInfoRow(label: 'Destination', value: trip.destination),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: 'Dates',
                     value:
                         '${trip.startDate.toFriendlyDate()} – '
                         '${trip.endDate.toFriendlyDate()}',
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: 'Countdown',
                     value: trip.daysUntilStart > 0
                         ? '${trip.daysUntilStart} Days'
                         : 'Underway',
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Players', value: '${trip.playerCount}'),
+                  QaddyInfoRow(label: 'Players', value: '${trip.playerCount}'),
                 ],
               ),
             ),
@@ -132,7 +132,7 @@ class _WeatherCard extends StatelessWidget {
           for (final (index, day)
               in melbourneGolfWeekendWeather.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.sm),
-            TripInfoRow(
+            QaddyInfoRow(
               label: day.day,
               value: '${day.forecast}  ${day.high} / ${day.low}',
             ),

@@ -59,6 +59,30 @@ If multiple documents conflict, the inconsistency must be resolved before implem
 
 ---
 
+# Documentation Precedence
+
+When documentation conflicts, use the following order of precedence.
+
+1. Release Roadmap
+
+2. Product Specification
+
+3. Architecture Documents
+
+4. Feature Integration Documents
+
+5. Engineering Decisions
+
+6. Placeholder Data
+
+7. Flutter Implementation
+
+Lower-priority documents must never contradict higher-priority documents.
+
+If they do, repair the lower document.
+
+---
+
 # Documentation Before Code
 
 Documentation drives implementation.

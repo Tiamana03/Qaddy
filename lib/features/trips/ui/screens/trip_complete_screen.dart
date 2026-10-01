@@ -18,9 +18,9 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Trip Complete (route `/trips/complete`).
 class TripCompleteScreen extends StatelessWidget {
@@ -48,16 +48,16 @@ class TripCompleteScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TripInfoRow(label: 'Destination', value: trip.destination),
+                  QaddyInfoRow(label: 'Destination', value: trip.destination),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(
+                  QaddyInfoRow(
                     label: 'Dates',
                     value:
                         '${trip.startDate.toFriendlyDate()} – '
                         '${trip.endDate.toFriendlyDate()}',
                   ),
                   SizedBox(height: spacing.sm),
-                  TripInfoRow(label: 'Players', value: '${trip.playerCount}'),
+                  QaddyInfoRow(label: 'Players', value: '${trip.playerCount}'),
                 ],
               ),
             ),
@@ -89,7 +89,7 @@ class TripCompleteScreen extends StatelessWidget {
                   for (final (index, award)
                       in melbourneGolfWeekendResults.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: award.award, value: award.winner),
+                    QaddyInfoRow(label: award.award, value: award.winner),
                   ],
                 ],
               ),
@@ -97,7 +97,7 @@ class TripCompleteScreen extends StatelessWidget {
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
               title: 'Expenses',
-              child: TripInfoRow(
+              child: QaddyInfoRow(
                 label: 'Estimated Total',
                 value: estimatedTotal,
               ),

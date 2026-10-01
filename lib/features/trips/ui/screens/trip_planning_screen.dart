@@ -8,9 +8,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Trip Planning (route `/trips/planning`).
 class TripPlanningScreen extends StatelessWidget {
@@ -35,7 +35,7 @@ class TripPlanningScreen extends StatelessWidget {
                   for (final (index, entry)
                       in melbourneGolfWeekendItinerary.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(
+                    QaddyInfoRow(
                       label: '${entry.date} · ${entry.activity}',
                       value: entry.time,
                     ),
@@ -46,7 +46,7 @@ class TripPlanningScreen extends StatelessWidget {
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
               title: 'Flights',
-              child: TripInfoRow(
+              child: QaddyInfoRow(
                 label:
                     '${melbourneGolfWeekendFlight.airline} '
                     '${melbourneGolfWeekendFlight.flightNumber}',
@@ -56,7 +56,7 @@ class TripPlanningScreen extends StatelessWidget {
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
               title: 'Accommodation',
-              child: TripInfoRow(
+              child: QaddyInfoRow(
                 label: melbourneGolfWeekendAccommodation.name,
                 value: melbourneGolfWeekendAccommodation.checkIn,
               ),
@@ -70,7 +70,7 @@ class TripPlanningScreen extends StatelessWidget {
                   for (final (index, leg)
                       in melbourneGolfWeekendTransport.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: leg.type, value: leg.time),
+                    QaddyInfoRow(label: leg.type, value: leg.time),
                   ],
                 ],
               ),
@@ -84,7 +84,7 @@ class TripPlanningScreen extends StatelessWidget {
                   for (final (index, course)
                       in melbourneGolfWeekendCourses.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: course.name, value: course.teeTime),
+                    QaddyInfoRow(label: course.name, value: course.teeTime),
                   ],
                 ],
               ),

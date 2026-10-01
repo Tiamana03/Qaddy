@@ -15,9 +15,9 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
-import 'package:qaddy/features/community/ui/widgets/friend_info_row.dart';
 
 /// Friend Profile (route `/friends/profile`).
 class FriendProfileScreen extends StatelessWidget {
@@ -63,13 +63,13 @@ class FriendProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  FriendInfoRow(label: 'Home Club', value: friend.homeClub),
+                  QaddyInfoRow(label: 'Home Club', value: friend.homeClub),
                   SizedBox(height: spacing.sm),
-                  FriendInfoRow(label: 'Location', value: friend.location),
+                  QaddyInfoRow(label: 'Location', value: friend.location),
                   SizedBox(height: spacing.sm),
-                  FriendInfoRow(label: 'Handicap', value: '${friend.handicap}'),
+                  QaddyInfoRow(label: 'Handicap', value: '${friend.handicap}'),
                   SizedBox(height: spacing.sm),
-                  FriendInfoRow(
+                  QaddyInfoRow(
                     label: 'Member Since',
                     value: friend.createdAt.toFriendlyDate(),
                   ),
@@ -82,12 +82,12 @@ class FriendProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  FriendInfoRow(
+                  QaddyInfoRow(
                     label: 'Rounds Played Together',
                     value: '${friend.roundsPlayed}',
                   ),
                   SizedBox(height: spacing.sm),
-                  FriendInfoRow(
+                  QaddyInfoRow(
                     label: 'Last Played Together',
                     value: friend.lastPlayed.toRelative(),
                   ),

@@ -7,9 +7,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 /// Golf Schedule (route `/trips/golf`).
 class TripGolfScheduleScreen extends StatelessWidget {
@@ -34,7 +34,7 @@ class TripGolfScheduleScreen extends StatelessWidget {
                   for (final (index, course)
                       in melbourneGolfWeekendCourses.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: course.name, value: course.teeTime),
+                    QaddyInfoRow(label: course.name, value: course.teeTime),
                   ],
                 ],
               ),
@@ -48,7 +48,7 @@ class TripGolfScheduleScreen extends StatelessWidget {
                   for (final (index, group)
                       in melbourneGolfWeekendPlayingGroups.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(
+                    QaddyInfoRow(
                       label: group.name,
                       value: group.players.join(', '),
                     ),
@@ -65,7 +65,7 @@ class TripGolfScheduleScreen extends StatelessWidget {
                   for (final (index, game)
                       in melbourneGolfWeekendSideGames.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: game.name, value: 'Hole ${game.hole}'),
+                    QaddyInfoRow(label: game.name, value: 'Hole ${game.hole}'),
                   ],
                 ],
               ),

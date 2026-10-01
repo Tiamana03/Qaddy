@@ -10,9 +10,9 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/ui/widgets/trip_info_row.dart';
 
 String _money(double amount) => '\$${amount.toStringAsFixed(0)}';
 
@@ -33,7 +33,7 @@ class TripExpensesScreen extends StatelessWidget {
             SizedBox(height: spacing.lg),
             QaddySectionCard(
               title: 'Trip Budget',
-              child: TripInfoRow(
+              child: QaddyInfoRow(
                 label: 'Estimated Total',
                 value: _money(melbourneGolfWeekendEstimatedTotal),
               ),
@@ -47,7 +47,7 @@ class TripExpensesScreen extends StatelessWidget {
                   for (final (index, item)
                       in melbourneGolfWeekendExpenses.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(label: item.title, value: _money(item.amount)),
+                    QaddyInfoRow(label: item.title, value: _money(item.amount)),
                   ],
                 ],
               ),
@@ -61,7 +61,7 @@ class TripExpensesScreen extends StatelessWidget {
                   for (final (index, payment)
                       in melbourneGolfWeekendPayments.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
-                    TripInfoRow(
+                    QaddyInfoRow(
                       label: payment.playerName,
                       value: _money(payment.amountPaid),
                     ),
@@ -72,7 +72,7 @@ class TripExpensesScreen extends StatelessWidget {
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
               title: 'Outstanding Balance',
-              child: TripInfoRow(
+              child: QaddyInfoRow(
                 label: 'Balance',
                 value: _money(melbourneGolfWeekendOutstandingBalance),
               ),

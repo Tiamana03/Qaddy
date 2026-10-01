@@ -12,6 +12,7 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
@@ -66,20 +67,26 @@ class _OverviewCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(label: 'Owner', value: group.ownerId),
+          QaddyInfoRow(label: 'Owner', value: group.ownerId),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Member Count', value: '${group.totalMembers}'),
+          QaddyInfoRow(label: 'Member Count', value: '${group.totalMembers}'),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Status', value: statusLabel),
+          QaddyInfoRow(label: 'Status', value: statusLabel),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Home Course', value: group.homeCourse ?? 'Not set'),
+          QaddyInfoRow(
+            label: 'Home Course',
+            value: group.homeCourse ?? 'Not set',
+          ),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Competition',
             value: group.competitionFormat ?? 'Not set',
           ),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Created', value: group.createdAt.toFriendlyDate()),
+          QaddyInfoRow(
+            label: 'Created',
+            value: group.createdAt.toFriendlyDate(),
+          ),
         ],
       ),
     );
@@ -146,21 +153,21 @@ class _SeasonSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(label: 'Season', value: summary.season),
+          QaddyInfoRow(label: 'Season', value: summary.season),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Rounds Completed',
             value: '${summary.roundsCompleted}',
           ),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Rounds Remaining',
             value: '${summary.roundsRemaining}',
           ),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Leader', value: summary.leader),
+          QaddyInfoRow(label: 'Leader', value: summary.leader),
           SizedBox(height: spacing.sm),
-          _InfoRow(
+          QaddyInfoRow(
             label: 'Average Attendance',
             value: '${summary.averageAttendance}',
           ),
@@ -209,55 +216,19 @@ class _UpcomingRoundCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _InfoRow(label: 'Course', value: round.course),
+          QaddyInfoRow(label: 'Course', value: round.course),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Date', value: round.date),
+          QaddyInfoRow(label: 'Date', value: round.date),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Tee Time', value: round.teeTime),
+          QaddyInfoRow(label: 'Tee Time', value: round.teeTime),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Competition', value: round.competition),
+          QaddyInfoRow(label: 'Competition', value: round.competition),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Players', value: '${round.players}'),
+          QaddyInfoRow(label: 'Players', value: '${round.players}'),
           SizedBox(height: spacing.sm),
-          _InfoRow(label: 'Side Games', value: round.sideGames),
+          QaddyInfoRow(label: 'Side Games', value: round.sideGames),
         ],
       ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          label,
-          style: typography.body.copyWith(color: colours.textSecondary),
-        ),
-        SizedBox(width: spacing.sm),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            style: typography.body.copyWith(
-              color: colours.textPrimary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
