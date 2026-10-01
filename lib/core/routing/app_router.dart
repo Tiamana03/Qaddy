@@ -30,6 +30,7 @@ import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/notifications/ui/screens/notifications_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/search/ui/screens/search_screen.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
@@ -67,6 +68,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     name: RouteNames.homeNotifications,
                     builder: (BuildContext context, GoRouterState state) =>
                         const NotificationsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'search',
+                    name: RouteNames.homeSearch,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const SearchScreen(),
                   ),
                 ],
               ),

@@ -97,8 +97,9 @@ Navigation history must be preserved when switching tabs.
 |--------|--------|
 | /home | Dashboard |
 | /home/notifications | Notifications |
+| /home/search | Search |
 
-Selecting the notification bell on Dashboard's app bar opens Notifications — see `docs/features/notifications-feature-integration.md`.
+Selecting the notification bell on Dashboard's app bar opens Notifications — see `docs/features/notifications-feature-integration.md`. Selecting the search icon, to the bell's left, opens Search — see `docs/features/search-feature-integration.md`.
 
 ---
 
@@ -339,7 +340,7 @@ Future routes may include:
 - Premium
 - Referral System
 
-Statistics and Notifications were both in this list previously and are now implemented — see `docs/features/statistics-feature-integration.md` and `docs/features/notifications-feature-integration.md`. Golf Bag and Settings were never in this list; both were added directly to their respective route tables above — see `docs/features/golf-bag-feature-integration.md` and `docs/features/settings-feature-integration.md`.
+Statistics and Notifications were both in this list previously and are now implemented — see `docs/features/statistics-feature-integration.md` and `docs/features/notifications-feature-integration.md`. Golf Bag, Settings and Search were never in this list; each was added directly to its own route table above — see `docs/features/golf-bag-feature-integration.md`, `docs/features/settings-feature-integration.md` and `docs/features/search-feature-integration.md`.
 
 These should extend the existing navigation hierarchy rather than replacing it.
 
@@ -356,6 +357,7 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - golf-bag-data-model.md
 - notifications-data-model.md
 - settings-data-model.md
+- search-data-model.md
 - trips-feature-integration.md
 - rounds-feature-integration.md
 - friends-feature-integration.md
@@ -364,6 +366,7 @@ These should extend the existing navigation hierarchy rather than replacing it.
 - golf-bag-feature-integration.md
 - notifications-feature-integration.md
 - settings-feature-integration.md
+- search-feature-integration.md
 
 ---
 

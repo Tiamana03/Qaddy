@@ -37,15 +37,16 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Feature (folder) | Owns | Public source | Known readers |
 |---|---|---|---|
 | Dashboard (`dashboard`) | Round-summary literals (Rounds Played, Average Score, Best Round, Fairways Hit, GIR) | Private literals only — **no public constant** (see Exception 2 above) | Profile (by convention, not import) |
-| Rounds (`rounds`) | Current/upcoming round data, round leaderboard, `PositionBadge` widget | `lib/features/rounds/models/*`, `lib/features/rounds/ui/widgets/position_badge.dart` | Groups (`GroupLeaderboardRow` reuses `PositionBadge`) |
-| Trips (`trips`) | Trip itinerary data (accommodation, travel, expenses, golf schedule, planning), trip count | `lib/features/trips/models/placeholder_trips.dart` | Profile (Trips count) |
-| Community (`community`) | Friends list, friend profiles, Rivalry Performance | `lib/features/community/models/placeholder_friends.dart` | Profile (Friends count), Statistics (Rivalry Performance) |
-| Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard) |
-| Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility) |
+| Rounds (`rounds`) | Current/upcoming round data (`UpcomingRound`), round leaderboard, `PositionBadge` widget | `lib/features/rounds/models/placeholder_rounds.dart`, `lib/features/rounds/ui/widgets/position_badge.dart` | Groups (`GroupLeaderboardRow` reuses `PositionBadge`), Search (Rounds category) |
+| Trips (`trips`) | Trip itinerary data (accommodation, travel, expenses, golf schedule, planning), trip count, golf-schedule course list (`melbourneGolfWeekendCourses`) | `lib/features/trips/models/placeholder_trips.dart` | Profile (Trips count), Search (Trips and Courses categories) |
+| Community (`community`) | Friends list, friend profiles, Rivalry Performance | `lib/features/community/models/placeholder_friends.dart` | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
+| Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
+| Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting, Favourite Courses (`profileFavouriteCourses`) | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility), Search (Courses category) |
 | Statistics (`statistics`) | Trend deltas only (Handicap, Average Score — two-point, see Exception 1) | `lib/features/statistics/models/placeholder_statistics.dart` | None yet |
 | Golf Bag (`my_bag`) | Club Distances only (Driver, Irons, Wedges — see Exception 1) | `lib/features/my_bag/models/placeholder_my_bag.dart` | None yet |
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
 | Settings (`settings`) | User-facing preference toggles (no new data of its own — reads Profile and Notifications) | — (consumer only) | — |
+| Search (`search`) | `SearchResult`/`SearchCategory` (presentation-only; no placeholder data of its own) | — (consumer only) | — |
 
 Note on folder naming: the Golf Bag feature's folder is `my_bag`, not `golf_bag` — see `technical-architecture.md`'s Features folder-structure example. Do not create a `golf_bag/` folder; the empty scaffold that once existed there was removed (TD-002).
 
@@ -67,6 +68,11 @@ Profile       → Golf Bag        (Equipment)
 Profile       → Settings        (Profile Visibility)
 Notifications → Settings        (NotificationCategory)
 Dashboard     → Profile         (round-summary literals, by convention only — see Exception 2)
+Community     → Search          (Friends category)
+Groups        → Search          (Groups category)
+Trips         → Search          (Trips and Courses categories)
+Rounds        → Search          (Rounds category)
+Profile       → Search          (Courses category — profileFavouriteCourses)
 ```
 
 This is a clean DAG — no cycles exist. The longest chain is five features deep:
@@ -77,7 +83,7 @@ Rounds → Groups → Profile → Statistics
                 → Settings → Notifications (reversed: Settings reads Notifications, not the other way — shown separately above)
 ```
 
-**Implication for future features:** before importing another feature's placeholder data, check this graph for the chain you would be joining. Statistics already reads from three features directly (Community, Groups, Profile); Settings transitively depends on Profile, which transitively depends on Community/Groups/Trips, which depends on Rounds. A breaking change to `PositionBadge` (Rounds) could in principle ripple five features deep before reaching Settings. This has not caused a problem yet — every edge above was the correct call to avoid literal duplication, and the alternative (duplicated literals) already caused one real bug before Profile existed (the Handicap Consistency incident) — but a new feature adding another edge should consult this graph first, not reconstruct it by hand.
+**Implication for future features:** before importing another feature's placeholder data, check this graph for the chain you would be joining. Statistics already reads from three features directly (Community, Groups, Profile); Search reads from five (Community, Groups, Trips, Rounds, Profile) directly, more than any other feature — but all five edges terminate at Search, which nothing else reads from, so Search adds breadth, not depth, to the graph. Settings transitively depends on Profile, which transitively depends on Community/Groups/Trips, which depends on Rounds. A breaking change to `PositionBadge` (Rounds) could in principle ripple five features deep before reaching Settings. This has not caused a problem yet — every edge above was the correct call to avoid literal duplication, and the alternative (duplicated literals) already caused one real bug before Profile existed (the Handicap Consistency incident) — but a new feature adding another edge should consult this graph first, not reconstruct it by hand.
 
 ---
 
@@ -97,3 +103,4 @@ Rounds → Groups → Profile → Statistics
 - `docs/ai/project-rules.md` — "Never invent placeholder data" rule that Exception 1 above exists under
 - `docs/reviews/architecture-review-2.md` — Section 8, the review that identified this document was empty (TD-004) and reconstructed the dependency graph by hand
 - `docs/reviews/technical-debt.md` — TD-004 (this document being empty), TD-005 (Dashboard's missing public constant, Exception 2)
+- `docs/architecture/search-data-model.md`, `docs/architecture/search-engineering-decisions.md` — Search (Feature 10), the first feature to read from five other features directly

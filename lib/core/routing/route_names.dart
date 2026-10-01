@@ -30,4 +30,5 @@ abstract final class RouteNames {
   static const String profileGolfBag = 'profileGolfBag';
   static const String profileSettings = 'profileSettings';
   static const String homeNotifications = 'homeNotifications';
+  static const String homeSearch = 'homeSearch';
 }

@@ -18,6 +18,7 @@ import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/ui/widgets/player_card.dart';
 
 /// The Rounds destination (route `/rounds`) — prepare a round before play.
@@ -139,7 +140,7 @@ class _UpcomingRoundCard extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Text(
-                  'Richmond Golf Club',
+                  upcomingRound.course,
                   style: typography.h4.copyWith(color: colours.textPrimary),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -149,13 +150,13 @@ class _UpcomingRoundCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: spacing.md),
-          const _InfoRow(label: 'Date', value: 'Saturday'),
+          _InfoRow(label: 'Date', value: upcomingRound.date),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Tee Time', value: '8:20 AM'),
+          _InfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Players', value: '8'),
+          _InfoRow(label: 'Players', value: '${upcomingRound.players}'),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Weather', value: '21°C Sunny'),
+          _InfoRow(label: 'Weather', value: upcomingRound.weather),
         ],
       ),
     );
@@ -217,13 +218,13 @@ class _RoundInformationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const _InfoRow(label: 'Course', value: 'Richmond Golf Club'),
+          _InfoRow(label: 'Course', value: upcomingRound.course),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Tee Time', value: '8:20 AM'),
+          _InfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Format', value: 'Stableford'),
+          _InfoRow(label: 'Format', value: upcomingRound.format),
           SizedBox(height: spacing.sm),
-          const _InfoRow(label: 'Holes', value: '18'),
+          _InfoRow(label: 'Holes', value: '${upcomingRound.holes}'),
         ],
       ),
     );
