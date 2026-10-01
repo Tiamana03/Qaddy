@@ -29,7 +29,7 @@ Whenever implementation prompts reference **Feature X**, this document is the si
 8. Notifications ✅
 9. Settings ✅
 10. Search ✅
-11. Authentication
+11. Authentication ✅
 12. Polish & Launch
 
 ---
@@ -47,12 +47,13 @@ Completed:
 - ✅ Notifications
 - ✅ Settings
 - ✅ Search
+- ✅ Authentication
 
 Current Feature:
-- 🔨 Authentication
+- 🔨 Polish & Launch
 
 Remaining:
-- Polish & Launch
+- (none — Polish & Launch is the final feature)
 
 ---
 
@@ -91,7 +92,7 @@ Renumbered to match "Release 1 Feature Order" above exactly — Sprint N corresp
 | Sprint 9 | Notifications | ✅ Complete |
 | Sprint 10 | Settings | ✅ Complete |
 | Sprint 11 | Search | ✅ Complete |
-| Sprint 12 | Authentication | ⏳ Planned |
+| Sprint 12 | Authentication | ✅ Complete |
 | Sprint 13 | Polish & Launch | ⏳ Planned |
 
 ---
