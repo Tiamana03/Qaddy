@@ -280,7 +280,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
         TripRoom(name: 'Room 104', guests: <String>['Liam', 'Jack']),
       ],
       totalCost: 3360,
-      notes: 'Breakfast included. Late check-out requested for Monday.',
+      notes: 'Breakfast included. Late check-out requested for Tuesday.',
     ),
   ],
   transport: <TripTransport>[

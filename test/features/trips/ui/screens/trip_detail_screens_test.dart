@@ -18,6 +18,79 @@ Future<void> _tap(WidgetTester tester, String text) async {
 }
 
 void main() {
+  group('trip details', () {
+    testWidgets('is an overview with a row for every part of the trip', (
+      tester,
+    ) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripDetails(melbourneId),
+        size: const Size(400, 3000),
+      );
+
+      expect(find.text('Melbourne Golf Weekend'), findsWidgets);
+      expect(find.text('Melbourne, Australia'), findsOneWidget);
+      expect(find.text('Private'), findsOneWidget);
+      expect(find.text('Planning'), findsOneWidget);
+      expect(find.textContaining('3 of 6 done'), findsOneWidget);
+      expect(find.text('2 flights'), findsOneWidget);
+      expect(find.text('1 stay'), findsOneWidget);
+      expect(find.text('4 bookings'), findsOneWidget);
+      expect(find.text('3 courses'), findsOneWidget);
+      expect(find.textContaining('to pay'), findsOneWidget);
+      expect(find.text('Luke: See everyone Saturday morning.'), findsOneWidget);
+    });
+
+    testWidgets('marks invited players and shows the weather', (tester) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripDetails(melbourneId),
+        size: const Size(400, 3000),
+      );
+
+      expect(find.text('Tom (invited)'), findsOneWidget);
+      expect(find.text('Tiamana'), findsOneWidget);
+      expect(find.text('Sat'), findsOneWidget);
+      expect(find.text('24°C'), findsOneWidget);
+    });
+
+    testWidgets('each row opens its page', (tester) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripDetails(melbourneId),
+        size: const Size(400, 3000),
+      );
+
+      await _tap(tester, 'Expenses');
+
+      expect(find.text('Trip Cost'), findsOneWidget);
+    });
+
+    testWidgets('a trip with nothing planned says so, and still works', (
+      tester,
+    ) async {
+      final c = await pumpApp(tester);
+      final id = c
+          .read(tripsProvider.notifier)
+          .createTrip(
+            NewTripDraft(
+              name: 'Barossa',
+              destination: 'Barossa Valley, Australia',
+              startDate: DateTime(2027, 3, 12),
+              endDate: DateTime(2027, 3, 14),
+              description: 'Wine and golf.',
+            ),
+          );
+      c.read(appRouterProvider).go(AppRoutes.tripDetails(id));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Start your daily plan and checklist'), findsOneWidget);
+      expect(find.text('Wine and golf.'), findsOneWidget);
+      expect(find.text('Nothing added yet'), findsWidgets);
+      expect(find.text('Weather'), findsNothing);
+    });
+  });
+
   group('golf schedule', () {
     testWidgets('shows every course as a tee-time card under its day', (
       tester,

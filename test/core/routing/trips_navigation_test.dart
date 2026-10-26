@@ -15,16 +15,16 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Melbourne Golf Weekend'));
     await tester.pumpAndSettle();
-    expect(find.text('Quick Actions'), findsOneWidget);
+    expect(find.text('The Trip'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('View Golf'));
-    await tester.tap(find.text('View Golf'));
+    await tester.ensureVisible(find.text('Golf'));
+    await tester.tap(find.text('Golf'));
     await tester.pumpAndSettle();
     expect(find.text('Playing Groups'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('Quick Actions'), findsOneWidget);
+    expect(find.text('The Trip'), findsOneWidget);
   });
 
   testWidgets('Complete Trip -> Return Home returns to the Dashboard', (

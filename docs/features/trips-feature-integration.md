@@ -1,5 +1,7 @@
 # Trips Feature Integration
 
+> **Release Candidate update (October 2026):** the screens described below were extended into a complete, editable feature — id-based routes, Create Trip, Edit Trip, a usable chat, per-course and per-flight pages, expenses with who-owes-who, and a full Planning screen. Where this document and `docs/features/trips-release-candidate.md` differ, the Release Candidate document wins.
+
 ## Overview
 
 This document defines how the complete Trips feature is integrated within Qaddy.

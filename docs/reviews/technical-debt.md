@@ -143,3 +143,91 @@ Action
 Target
 
 Next Rounds-touching feature, or a dedicated cleanup pass.
+
+---
+
+## TD-010 — Trips are not persisted
+
+Priority: Medium
+
+Status: **Open** (logged during the Release Candidate Trips completion, October 2026)
+
+Current State
+
+Trips, their plans, chat and expenses live in `tripsProvider`, an in-memory Riverpod store seeded from `placeholder_trips.dart`. Everything the golfer creates or edits (a new trip, a booked flight, a sent message) is lost when the app restarts. This is intentional for Release 1, which has no backend or local database, but it is the first thing a tester will notice.
+
+Action
+
+Back `TripsController` with a repository (`features/trips/repositories/`, currently empty) once the persistence decision is made. The controller already exposes every change as a method, so only its storage needs to change; screens do not touch the store directly.
+
+Target
+
+Release 2 (Backend & Authentication), or earlier if a local database is approved.
+
+---
+
+## TD-011 — Profile's trip counts are the seed constants, not the live store
+
+Priority: Low
+
+Status: **Open** (logged during the Release Candidate Trips completion, October 2026)
+
+Current State
+
+Profile still reads `upcomingTripsCount`, `pastTripsCount` and `countriesVisitedCount` from `placeholder_trips.dart`. Create or delete a trip and the Trips tab updates but the numbers on Profile do not. Search, by contrast, already reads the live store.
+
+Action
+
+Have Profile derive its counts from `upcomingTripsProvider`, `pastTripsProvider` and the set of countries, then delete the three constants. Do this when Profile is next reviewed, together with TD-012.
+
+Target
+
+Profile Release Candidate review.
+
+---
+
+## TD-012 — Trips and Profile depend on each other
+
+Priority: Low
+
+Status: **Open** (logged during the Release Candidate Trips completion, October 2026)
+
+Current State
+
+Profile reads Trips (counts, TD-011) and Trips reads Profile (the golfer's handicap, via `placeholder_profile.dart`, so a new trip's organiser carries the same handicap Profile shows — the Handicap Consistency rule). That is a feature-level cycle in `docs/architecture/data-ownership.md`'s graph. It is harmless today (no file imports its way back to itself) but it means neither feature can be changed or extracted without the other.
+
+Action
+
+Introduce a small shared current-user provider (name, handicap) outside both features, and have Trips and Profile read from it. Combined with TD-011, Profile then depends on Trips but not the reverse.
+
+Target
+
+Before the backend work, when the current-user model is introduced.
+
+---
+
+## TD-013 — Trips has placeholders where a dependency is needed
+
+Priority: Medium
+
+Status: **Open** — needs a decision (logged during the Release Candidate Trips completion, October 2026)
+
+Current State
+
+No dependency was added during the Trips completion, so the following are placeholders rather than features:
+
+- **Download PDF** shows an honest "coming soon" dialog. Itineraries can be copied as text.
+- **Maps, driving directions, "open in Maps"** are a designed map placeholder plus a "copy address" action.
+- **Phone, website and email** rows copy to the clipboard instead of dialling or opening a browser.
+- **Photos** (courses, accommodation, trip cover) are placeholders; the cover is one of six gradient presets.
+- **Weather** is typed in by hand (Edit Trip → Weather); there is no forecast service.
+- **Invite link** copies a `qaddy.example` placeholder link.
+- **Chat** delivery ticks and the typing indicator are timed simulations.
+
+Action
+
+Decide which of these Release 1 must have for launch. Likely candidates: `url_launcher` (calls, links, maps), `share_plus` (invite link and itinerary), `pdf` + `printing` (PDF export), `image_picker` (cover photo). Each needs a short justification per `docs/CLAUDE.md` ("Add dependencies without justification" is on the never list).
+
+Target
+
+Before the 20 November 2026 soft launch if any are launch-critical.

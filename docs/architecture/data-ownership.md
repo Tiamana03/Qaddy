@@ -38,7 +38,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 |---|---|---|---|
 | Dashboard (`dashboard`) | Round-summary values (Rounds Played, Average Score, Best Round) | `lib/features/dashboard/models/placeholder_dashboard.dart` | Profile (`profileRoundsPlayed`/`profileAverageScore`/`profileBestRound`) |
 | Rounds (`rounds`) | Current/upcoming round data (`UpcomingRound`), round leaderboard, `PositionBadge` widget | `lib/features/rounds/models/placeholder_rounds.dart`, `lib/features/rounds/ui/widgets/position_badge.dart` | Groups (`GroupLeaderboardRow` reuses `PositionBadge`), Search (Rounds category) |
-| Trips (`trips`) | Trip itinerary data (accommodation, travel, expenses, golf schedule, planning), trip count, golf-schedule course list (`melbourneGolfWeekendCourses`) | `lib/features/trips/models/placeholder_trips.dart` | Profile (Trips count), Search (Trips and Courses categories) |
+| Trips (`trips`) | Every trip and its plan (players, courses, flights, accommodation, transport, activities, expenses, checklist, packing, weather, chat, notes). Seeds live in `placeholder_trips.dart`; the *live* trips (created, edited, archived, deleted) live in the `tripsProvider` store, the single source of truth for the app run. | `lib/features/trips/models/placeholder_trips.dart` (seeds, `currentUserName`, count constants), `lib/features/trips/state/trips_controller.dart` (live store) | Profile (Trips count, still the seed constants — see TD-011), Search (Trips and Courses categories, read from the live store) |
 | Community (`community`) | Friends list, friend profiles, Rivalry Performance | `lib/features/community/models/placeholder_friends.dart` | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
 | Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
 | Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting, Favourite Courses (`profileFavouriteCourses`) | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility), Search (Courses category) |
@@ -72,11 +72,13 @@ Dashboard     → Profile         (Rounds Played, Average Score, Best Round)
 Community     → Search          (Friends category)
 Groups        → Search          (Groups category)
 Trips         → Search          (Trips and Courses categories)
+Profile       → Trips           (golfer's name and handicap for a new trip's organiser)
+Community     → Trips           (friends' handicaps and the invite list)
 Rounds        → Search          (Rounds category)
 Profile       → Search          (Courses category — profileFavouriteCourses)
 ```
 
-This is a clean DAG — no cycles exist. The longest chain is five features deep:
+This was a clean DAG until the Trips completion (Release Candidate), which added the `Profile → Trips` and `Community → Trips` edges. `Profile → Trips` closes a two-feature cycle (**Trips ⇄ Profile**: Profile reads Trips' counts; Trips reads the golfer's name and handicap from Profile). There are no import cycles at the file level — `placeholder_trips.dart` imports nothing from Profile — but the feature-level cycle is recorded as **TD-012** with its fix (a shared current-user provider). The longest chain is five features deep:
 
 ```
 Rounds → Groups → Profile → Statistics

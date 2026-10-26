@@ -1,12 +1,12 @@
 /// The Trips screen's hero — the next trip, led by a countdown.
 ///
-/// Replaces the screen's old opening block of three statistic tiles with the
-/// one thing a golfer actually looks forward to. Everything shown comes from
-/// the trip's existing placeholder data (see `trip_snapshot.dart`); the card
-/// itself only lays it out. Text sits on the green brand gradient in both
-/// themes, so it uses `ColorScheme.onPrimary` (the documented "text on a
-/// coloured surface" pairing) rather than `textPrimary`, which is dark green
-/// in Light Mode.
+/// One card that answers "what is the state of my next trip?": how long to
+/// go, how much is planned, what to do next, what you owe, who is coming,
+/// and the latest news from the plan and the chat. Everything shown comes
+/// from the trip's own plan (see `trip_snapshot.dart`); the card itself only
+/// lays it out. Text sits on the green brand gradient in both themes, so it
+/// uses `ColorScheme.onPrimary` (the documented "text on a coloured surface"
+/// pairing) rather than `textPrimary`, which is dark green in Light Mode.
 library;
 
 import 'package:flutter/material.dart';
@@ -23,6 +23,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
 import 'package:qaddy/features/trips/logic/trip_snapshot.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
+import 'package:qaddy/features/trips/ui/widgets/planning/planning_ring.dart';
 
 /// The next-trip hero card.
 class TripHeroCard extends StatelessWidget {
@@ -61,6 +62,7 @@ class TripHeroCard extends StatelessWidget {
     final header = _Header(
       trip: trip,
       countdown: countdown,
+      progress: snapshot?.planningProgress,
       onGradient: onGradient,
     );
     final details = snapshot == null
@@ -138,11 +140,15 @@ class _Header extends StatelessWidget {
   const _Header({
     required this.trip,
     required this.countdown,
+    required this.progress,
     required this.onGradient,
   });
 
   final Trip trip;
   final TripCountdown countdown;
+
+  /// Planning progress (0–1) for the ring, or `null` to leave the ring out.
+  final double? progress;
   final Color onGradient;
 
   @override
@@ -159,6 +165,7 @@ class _Header extends StatelessWidget {
     final valueStyle = countdown.value.length <= 3
         ? typography.display
         : typography.h1;
+    final value = progress;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,20 +187,38 @@ class _Header extends StatelessWidget {
         ),
         SizedBox(height: spacing.md),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
           children: <Widget>[
-            Text(
-              countdown.value,
-              style: valueStyle.copyWith(color: colours.gold),
-            ),
-            SizedBox(width: spacing.sm),
-            Flexible(
-              child: Text(
-                countdown.label,
-                style: typography.bodyLarge.copyWith(color: muted),
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: <Widget>[
+                  _CountUp(
+                    value: countdown.value,
+                    style: valueStyle.copyWith(color: colours.gold),
+                  ),
+                  SizedBox(width: spacing.sm),
+                  Flexible(
+                    child: Text(
+                      countdown.label,
+                      style: typography.bodyLarge.copyWith(color: muted),
+                    ),
+                  ),
+                ],
               ),
             ),
+            if (value != null) ...<Widget>[
+              SizedBox(width: spacing.md),
+              PlanningRing(
+                progress: value,
+                label: '${(value * 100).round()}%',
+                semanticLabel: 'Planning ${(value * 100).round()} percent done',
+                size: spacing.hero + spacing.sm,
+                trackColour: onGradient.withValues(alpha: 0.18),
+                progressColour: colours.gold,
+                labelColour: onGradient,
+              ),
+            ],
           ],
         ),
         SizedBox(height: spacing.sm),
@@ -228,6 +253,30 @@ class _Header extends StatelessWidget {
   }
 }
 
+/// The countdown value, counting up to a numeric value once when it first
+/// appears. Words ("Today", "Now") and reduced-motion settings skip the
+/// animation.
+class _CountUp extends StatelessWidget {
+  const _CountUp({required this.value, required this.style});
+
+  final String value;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final target = int.tryParse(value);
+    if (target == null || MediaQuery.disableAnimationsOf(context)) {
+      return Text(value, style: style);
+    }
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(begin: 0, end: target),
+      duration: const Duration(milliseconds: 900),
+      curve: Curves.easeOutCubic,
+      builder: (context, current, _) => Text('$current', style: style),
+    );
+  }
+}
+
 class _Details extends StatelessWidget {
   const _Details({required this.snapshot, required this.onGradient});
 
@@ -237,77 +286,149 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
     final muted = onGradient.withValues(alpha: 0.78);
 
+    Widget infoRow(IconData icon, String text) => Padding(
+      padding: EdgeInsets.only(top: spacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(icon, size: spacing.lg + spacing.xs, color: colours.gold),
+          SizedBox(width: spacing.sm),
+          Expanded(
+            child: Text(
+              text,
+              style: typography.small.copyWith(color: onGradient),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final going = snapshot.squad.length;
+    final invites = snapshot.pendingInvites;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(height: 1, color: onGradient.withValues(alpha: 0.18)),
         SizedBox(height: spacing.lg),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final half = (constraints.maxWidth - spacing.sm) / 2;
-            return Wrap(
-              spacing: spacing.sm,
-              runSpacing: spacing.sm,
-              children: <Widget>[
-                for (final highlight in snapshot.highlights)
-                  SizedBox(
-                    width: highlight.wide ? constraints.maxWidth : half,
-                    child: _HighlightTile(
-                      highlight: highlight,
-                      onGradient: onGradient,
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
-        if (snapshot.squad.isNotEmpty) ...<Widget>[
+        for (final (index, highlight) in snapshot.highlights.indexed)
+          Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 0 : spacing.sm),
+            child: _HighlightTile(highlight: highlight, onGradient: onGradient),
+          ),
+        if (snapshot.nextTask != null)
+          infoRow(Icons.checklist, 'Next task: ${snapshot.nextTask}'),
+        if (snapshot.upcomingPayment != null)
+          infoRow(Icons.payments_outlined, snapshot.upcomingPayment!),
+        if (snapshot.budgetProgress != null) ...<Widget>[
+          SizedBox(height: spacing.md),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(radius.large),
+            child: LinearProgressIndicator(
+              value: snapshot.budgetProgress,
+              minHeight: 6,
+              backgroundColor: onGradient.withValues(alpha: 0.18),
+              color: colours.gold,
+            ),
+          ),
+          SizedBox(height: spacing.xs),
+          Text(
+            snapshot.budgetLabel ?? '',
+            style: typography.small.copyWith(color: muted),
+          ),
+        ],
+        if (going > 0) ...<Widget>[
           SizedBox(height: spacing.lg),
           Row(
             children: <Widget>[
               _SquadStack(names: snapshot.squad),
               SizedBox(width: spacing.md),
-              Text(
-                '${snapshot.squad.length} going',
-                style: typography.small.copyWith(color: muted),
+              Expanded(
+                child: Text(
+                  invites == 0
+                      ? '$going going'
+                      : '$going going · $invites invited',
+                  style: typography.small.copyWith(color: muted),
+                ),
               ),
             ],
           ),
+        ] else if (invites > 0) ...<Widget>[
+          infoRow(Icons.group_outlined, '$invites invited'),
         ],
-        if (snapshot.latestUpdate != null) ...<Widget>[
-          SizedBox(height: spacing.md),
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.md,
-              vertical: spacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: onGradient.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(radius.medium),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(Icons.chat_bubble_outline, size: spacing.lg, color: muted),
-                SizedBox(width: spacing.sm),
-                Expanded(
-                  child: Text(
-                    snapshot.latestUpdate!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: typography.small.copyWith(color: onGradient),
-                  ),
-                ),
-              ],
-            ),
+        if (snapshot.latestUpdate != null)
+          _Callout(
+            icon: Icons.update,
+            text: snapshot.latestUpdate!,
+            onGradient: onGradient,
           ),
-        ],
+        if (snapshot.latestMessage != null)
+          _Callout(
+            icon: Icons.chat_bubble_outline,
+            text: snapshot.latestMessage!,
+            onGradient: onGradient,
+          ),
       ],
+    );
+  }
+}
+
+/// A rounded one-line strip for the latest plan update or chat message.
+class _Callout extends StatelessWidget {
+  const _Callout({
+    required this.icon,
+    required this.text,
+    required this.onGradient,
+  });
+
+  final IconData icon;
+  final String text;
+  final Color onGradient;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Padding(
+      padding: EdgeInsets.only(top: spacing.md),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: spacing.md,
+          vertical: spacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: onGradient.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(radius.medium),
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              icon,
+              size: spacing.lg,
+              color: onGradient.withValues(alpha: 0.78),
+            ),
+            SizedBox(width: spacing.sm),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: typography.small.copyWith(color: onGradient),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -325,13 +446,28 @@ class _HighlightTile extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
+    final icon = highlight.isCourse
+        // A placeholder for the course's logo.
+        ? Container(
+            width: spacing.xxl,
+            height: spacing.xxl,
+            decoration: BoxDecoration(
+              color: onGradient.withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(highlight.icon, size: spacing.lg, color: colours.gold),
+          )
+        : Icon(
+            highlight.icon,
+            size: spacing.lg + spacing.xs,
+            color: colours.gold,
+          );
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Icon(
-          highlight.icon,
-          size: spacing.lg + spacing.xs,
-          color: colours.gold,
+        SizedBox(
+          width: spacing.xxl,
+          child: Center(child: icon),
         ),
         SizedBox(width: spacing.sm),
         Expanded(
