@@ -38,7 +38,7 @@ class NavigationShell extends StatelessWidget {
           initialLocation: index == navigationShell.currentIndex,
         ),
         backgroundColor: colours.surface1,
-        selectedItemColor: colours.primary,
+        selectedItemColor: colours.accent,
         unselectedItemColor: colours.textTertiary,
         selectedLabelStyle: typography.navigation,
         unselectedLabelStyle: typography.navigation,

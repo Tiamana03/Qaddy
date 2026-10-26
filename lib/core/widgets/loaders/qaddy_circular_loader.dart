@@ -26,7 +26,7 @@ class QaddyCircularLoader extends StatelessWidget {
       height: size,
       child: CircularProgressIndicator(
         strokeWidth: size / 8,
-        valueColor: AlwaysStoppedAnimation<Color>(colours.primary),
+        valueColor: AlwaysStoppedAnimation<Color>(colours.accent),
         backgroundColor: colours.surface2,
       ),
     );

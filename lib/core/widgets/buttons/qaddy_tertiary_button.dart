@@ -39,7 +39,7 @@ class QaddyTertiaryButton extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final enabled = onPressed != null;
-    final foreground = enabled ? colours.primary : colours.disabledForeground;
+    final foreground = enabled ? colours.accent : colours.disabledForeground;
     final borderRadius = BorderRadius.circular(radius.medium);
 
     return Material(

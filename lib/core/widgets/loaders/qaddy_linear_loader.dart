@@ -28,7 +28,7 @@ class QaddyLinearLoader extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius.small),
       child: LinearProgressIndicator(
         value: value,
-        color: colours.primary,
+        color: colours.accent,
         backgroundColor: colours.surface2,
       ),
     );

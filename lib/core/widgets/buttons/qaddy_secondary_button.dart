@@ -38,8 +38,8 @@ class QaddySecondaryButton extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final enabled = onPressed != null;
-    final foreground = enabled ? colours.primary : colours.disabledForeground;
-    final borderColour = enabled ? colours.primary : colours.disabledBorder;
+    final foreground = enabled ? colours.accent : colours.disabledForeground;
+    final borderColour = enabled ? colours.accent : colours.disabledBorder;
     final borderRadius = BorderRadius.circular(radius.medium);
 
     return Material(

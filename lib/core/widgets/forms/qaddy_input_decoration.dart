@@ -54,7 +54,7 @@ InputDecoration buildQaddyInputDecoration({
     errorStyle: typography.caption.copyWith(color: colours.error),
     border: border(colours.border, radius.borderWidthDefault),
     enabledBorder: border(colours.border, radius.borderWidthDefault),
-    focusedBorder: border(colours.primary, radius.borderWidthFocused),
+    focusedBorder: border(colours.accent, radius.borderWidthFocused),
     errorBorder: border(colours.error, radius.borderWidthDefault),
     focusedErrorBorder: border(colours.error, radius.borderWidthFocused),
     disabledBorder: border(colours.disabledBorder, radius.borderWidthDefault),

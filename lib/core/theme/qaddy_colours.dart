@@ -238,6 +238,17 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// Disabled outlined buttons, disabled text fields, disabled cards.
   final Color disabledBorder;
 
+  /// The brand colour to use for *foreground* elements (text, icons,
+  /// outlines, indicators) drawn directly on [background].
+  ///
+  /// [primary] is a deep green that is readable on Light Mode's pale
+  /// background but almost invisible (about 1.4:1 contrast) on Dark Mode's
+  /// near-black one, so Dark Mode uses [gold] instead. Derived from
+  /// [background]'s luminance rather than stored, so it stays correct for
+  /// any theme built from these tokens. [primary] remains the right choice
+  /// for *filled* surfaces such as the primary button.
+  Color get accent => background.computeLuminance() < 0.5 ? gold : primary;
+
   @override
   QaddyColours copyWith({
     Color? primary,

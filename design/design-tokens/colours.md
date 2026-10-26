@@ -198,6 +198,10 @@ Rules from the Colour Library's usage guidance:
 - Don't place text or logos on busy backgrounds (photography, patterns) without a scrim.
 - Never rely on colour alone to communicate state — pair semantic colours with an icon or label.
 
+## Foreground brand colour (`accent`)
+
+`primary` (`#0F3D2E`) is not in the table above because it fails AA as a foreground on the Dark Mode background (about 1.4:1). Use it for **filled** surfaces (the primary button, gradients). For brand-coloured **foreground** elements drawn on the page background — secondary/tertiary button text and outlines, the selected bottom-navigation item, focused input borders, loaders, active page indicators — use `QaddyColours.accent`, which resolves to `gold` in Dark Mode and `primary` in Light Mode. `test/core/theme/qaddy_colours_accent_test.dart` enforces both the ≥ 4.5:1 contrast of `accent` and the failure of bare `primary`.
+
 ---
 
 # Flutter Implementation
