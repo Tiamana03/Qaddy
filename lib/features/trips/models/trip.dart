@@ -2,6 +2,8 @@
 /// "Trip Model" and "Trip Status" sections.
 library;
 
+import 'package:qaddy/core/utils/date_extensions.dart';
+
 /// A Trip's lifecycle status.
 enum TripStatus {
   planning,
@@ -68,5 +70,5 @@ class Trip {
 
   /// Days remaining until [startDate], for a countdown display. Negative
   /// once the trip has started.
-  int get daysUntilStart => startDate.difference(DateTime.now()).inDays;
+  int get daysUntilStart => DateTime.now().calendarDaysUntil(startDate);
 }

@@ -29,6 +29,27 @@ void main() {
     );
   });
 
+  test('calendarDaysUntil counts whole calendar days, not elapsed hours', () {
+    // 26 Sep -> 26 Oct spans the start of daylight saving in southern
+    // hemisphere zones, where the span is 30 days but only 719 hours.
+    expect(DateTime(2026, 9, 26).calendarDaysUntil(DateTime(2026, 10, 26)), 30);
+    expect(
+      DateTime(2026, 10, 26).calendarDaysUntil(DateTime(2026, 9, 26)),
+      -30,
+    );
+    expect(DateTime(2026, 10, 26).calendarDaysUntil(DateTime(2026, 10, 26)), 0);
+    expect(
+      DateTime(
+        2026,
+        10,
+        26,
+        23,
+        30,
+      ).calendarDaysUntil(DateTime(2026, 10, 27, 0, 30)),
+      1,
+    );
+  });
+
   test('toRelative reports weeks and months once a week has passed', () {
     expect(
       DateTime.now().subtract(const Duration(days: 14)).toRelative(),

@@ -58,8 +58,22 @@ extension DateExtensions on DateTime {
   bool get isToday => isSameDay(DateTime.now());
 
   /// Whether this date is yesterday.
-  bool get isYesterday =>
-      isSameDay(DateTime.now().subtract(const Duration(days: 1)));
+  bool get isYesterday {
+    final now = DateTime.now();
+    return isSameDay(DateTime(now.year, now.month, now.day - 1));
+  }
+
+  /// The number of whole calendar days from this date to [other]; negative
+  /// when [other] is earlier.
+  ///
+  /// Compares year/month/day only, as UTC dates, so a daylight-saving shift
+  /// between the two dates can't make a 23-hour day truncate and leave the
+  /// result one day short (`Duration.inDays` on local dates does).
+  int calendarDaysUntil(DateTime other) {
+    final from = DateTime.utc(year, month, day);
+    final to = DateTime.utc(other.year, other.month, other.day);
+    return to.difference(from).inDays;
+  }
 
   /// A friendly, fixed-format date, e.g. "12 Mar 2025".
   String toFriendlyDate() => '$day ${_monthAbbreviations[month - 1]} $year';
@@ -80,7 +94,7 @@ extension DateExtensions on DateTime {
     if (isYesterday) {
       return 'Yesterday';
     }
-    final days = DateTime.now().dateOnly.difference(dateOnly).inDays;
+    final days = calendarDaysUntil(DateTime.now());
     if (days > 0 && days < 7) {
       return '$days days ago';
     }
