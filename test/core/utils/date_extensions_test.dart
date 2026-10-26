@@ -19,6 +19,13 @@ void main() {
     expect(DateTime(2026, 11, 29, 19, 42).toFriendlyTime(), '7:42 PM');
   });
 
+  test('toDayAndTime joins the short date and the time', () {
+    expect(
+      DateTime(2026, 11, 28, 8, 10).toDayAndTime(),
+      'Sat 28 Nov · 8:10 AM',
+    );
+  });
+
   test('toShortWeekdayAndDate formats "Sat 28 Nov"', () {
     expect(DateTime(2026, 11, 28).toShortWeekdayAndDate(), 'Sat 28 Nov');
   });

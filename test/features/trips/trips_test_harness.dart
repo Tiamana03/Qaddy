@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/main.dart';
 
 /// The id of the one fully seeded trip (Melbourne Golf Weekend).
 const melbourneId = 'melbourne-golf-weekend';
@@ -50,5 +52,30 @@ Future<ProviderContainer> pumpTripsRouter(
       ),
     ),
   );
+  return container;
+}
+
+/// Pumps the real app (real router, real theme) on a tall phone-width
+/// screen, then jumps to [location]. Pages opened this way have nothing to
+/// pop back to, which exercises the forms' fallback routes; open a screen
+/// from the Trips tab instead to test push-and-pop behaviour.
+Future<ProviderContainer> pumpApp(
+  WidgetTester tester, {
+  String location = '/trips',
+  Size size = const Size(400, 1800),
+}) async {
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  tester.view.devicePixelRatio = 1.0;
+  tester.view.physicalSize = size;
+
+  final container = ProviderContainer();
+  addTearDown(container.dispose);
+  await tester.pumpWidget(
+    UncontrolledProviderScope(container: container, child: const QaddyApp()),
+  );
+  await tester.pumpAndSettle();
+  container.read(appRouterProvider).go(location);
+  await tester.pumpAndSettle();
   return container;
 }

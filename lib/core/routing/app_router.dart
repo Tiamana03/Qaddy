@@ -38,6 +38,11 @@ import 'package:qaddy/features/search/ui/screens/search_screen.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/create_trip_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/edit/edit_trip_item_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/edit/edit_trip_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/edit/edit_trip_section_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/export_itinerary_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/invite_friends_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_complete_screen.dart';
@@ -46,6 +51,7 @@ import 'package:qaddy/features/trips/ui/screens/trip_expenses_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_flights_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_golf_schedule_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_planning_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_settings_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -194,6 +200,65 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         name: RouteNames.tripComplete,
                         builder: (BuildContext context, GoRouterState state) =>
                             TripCompleteScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'edit',
+                        name: RouteNames.tripEdit,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            EditTripScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                        routes: <RouteBase>[
+                          GoRoute(
+                            path: ':section',
+                            name: RouteNames.tripEditSection,
+                            builder:
+                                (BuildContext context, GoRouterState state) =>
+                                    EditTripSectionScreen(
+                                      tripId: state.pathParameters['tripId']!,
+                                      section: state.pathParameters['section']!,
+                                    ),
+                            routes: <RouteBase>[
+                              GoRoute(
+                                path: ':itemId',
+                                name: RouteNames.tripEditItem,
+                                builder:
+                                    (
+                                      BuildContext context,
+                                      GoRouterState state,
+                                    ) => EditTripItemScreen(
+                                      tripId: state.pathParameters['tripId']!,
+                                      section: state.pathParameters['section']!,
+                                      itemId: state.pathParameters['itemId']!,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      GoRoute(
+                        path: 'settings',
+                        name: RouteNames.tripSettings,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripSettingsScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'invite',
+                        name: RouteNames.tripInvite,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            InviteFriendsScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'export',
+                        name: RouteNames.tripExport,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            ExportItineraryScreen(
                               tripId: state.pathParameters['tripId']!,
                             ),
                       ),

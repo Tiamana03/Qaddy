@@ -38,7 +38,21 @@ class TripDetailsScreen extends ConsumerWidget {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     return QaddyScaffold(
-      appBar: AppBar(title: Text(trip.name)),
+      appBar: AppBar(
+        title: Text(trip.name),
+        actions: <Widget>[
+          IconButton(
+            tooltip: 'Edit Trip',
+            onPressed: () => context.push(AppRoutes.tripEdit(tripId)),
+            icon: const Icon(Icons.edit_outlined),
+          ),
+          IconButton(
+            tooltip: 'Trip Settings',
+            onPressed: () => context.push(AppRoutes.tripSettings(tripId)),
+            icon: const Icon(Icons.more_horiz),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

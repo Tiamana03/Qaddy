@@ -80,6 +80,13 @@ class TripsState {
   TripPlan planFor(String id) => plans[id] ?? TripPlan.empty;
 }
 
+/// The country in a "City, Country" destination (the text after the last
+/// comma), or empty when there is no comma.
+String countryFromDestination(String destination) {
+  final commaAt = destination.lastIndexOf(',');
+  return commaAt == -1 ? '' : destination.substring(commaAt + 1).trim();
+}
+
 /// The clock the store stamps change-log entries and messages with. Tests
 /// override it.
 final tripsClockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
@@ -149,10 +156,7 @@ class TripsController extends Notifier<TripsState> {
   /// members, and an otherwise empty plan.
   String createTrip(NewTripDraft draft) {
     final id = newId('trip');
-    final commaAt = draft.destination.lastIndexOf(',');
-    final country = commaAt == -1
-        ? ''
-        : draft.destination.substring(commaAt + 1).trim();
+    final country = countryFromDestination(draft.destination);
     final description = draft.description.trim();
 
     final trip = Trip(
@@ -326,6 +330,19 @@ class TripsController extends Notifier<TripsState> {
   void setMembers(String id, List<TripMember> members, {String? log}) {
     updatePlan(id, (plan) => plan.copyWith(members: members), log: log);
     _syncPlayerCount(id);
+  }
+
+  /// Takes [name] off the trip. The organiser can't be removed.
+  void removeMember(String id, String name) {
+    final plan = state.planFor(id);
+    final member = plan.members.where((m) => m.displayName == name);
+    if (member.isEmpty || member.first.role == TripRole.organiser) {
+      return;
+    }
+    setMembers(id, <TripMember>[
+      for (final m in plan.members)
+        if (m.displayName != name) m,
+    ], log: 'Removed $name');
   }
 
   /// Invites [names] (as pending members) who aren't already on the trip.

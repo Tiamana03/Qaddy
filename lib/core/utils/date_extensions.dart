@@ -113,6 +113,9 @@ extension DateExtensions on DateTime {
       '${_weekdayNames[weekday - 1].substring(0, 3)} $day '
       '${_monthAbbreviations[month - 1]}';
 
+  /// A short weekday, date and time, e.g. "Sat 28 Nov · 8:10 AM".
+  String toDayAndTime() => '${toShortWeekdayAndDate()} · ${toFriendlyTime()}';
+
   /// A full weekday name and date with no year, e.g. "Tuesday 22 September" —
   /// matches the Dashboard's Welcome Header example in
   /// `docs/sprints/sprint-02-01-dashboard.md`.
