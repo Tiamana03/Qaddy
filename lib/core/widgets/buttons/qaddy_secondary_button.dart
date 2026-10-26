@@ -61,7 +61,14 @@ class QaddySecondaryButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(label, style: typography.button.copyWith(color: foreground)),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.button.copyWith(color: foreground),
+                ),
+              ),
               if (icon != null) ...<Widget>[
                 SizedBox(width: spacing.sm),
                 Icon(icon, color: foreground, size: spacing.md * 2),
