@@ -680,6 +680,34 @@ class TripItemList extends ConsumerWidget {
                   '${expense.paidBy}',
             ),
         ];
+      case TripEditSection.itinerary:
+        return <_ItemRow>[
+          for (final item in plan.itinerary)
+            _ItemRow(
+              id: item.id,
+              title: item.title,
+              icon: item.kind.icon,
+              subtitle: <String>[
+                item.start.toDayAndTime(),
+                if (item.location.isNotEmpty) item.location,
+              ].join(' · '),
+            ),
+        ];
+      case TripEditSection.tasks:
+        return <_ItemRow>[
+          for (final task in plan.tasks)
+            _ItemRow(
+              id: task.id,
+              title: task.title,
+              icon: task.done
+                  ? Icons.check_circle_outline
+                  : Icons.radio_button_unchecked,
+              subtitle: <String>[
+                if (task.done) 'Done' else 'To do',
+                if (task.due != null) 'due ${task.due!.toFriendlyDate()}',
+              ].join(' · '),
+            ),
+        ];
       case TripEditSection.weather:
         return <_ItemRow>[
           for (final day in plan.weather)
@@ -733,6 +761,8 @@ String _noun(TripEditSection section) => switch (section) {
   TripEditSection.transport => 'transport',
   TripEditSection.courses => 'courses',
   TripEditSection.expenses => 'expenses',
+  TripEditSection.itinerary => 'activities',
+  TripEditSection.tasks => 'tasks',
   TripEditSection.weather => 'forecast days',
   TripEditSection.packing => 'packing items',
   _ => section.label.toLowerCase(),
@@ -744,6 +774,8 @@ String _singular(TripEditSection section) => switch (section) {
   TripEditSection.transport => 'Transport',
   TripEditSection.courses => 'Course',
   TripEditSection.expenses => 'Expense',
+  TripEditSection.itinerary => 'Activity',
+  TripEditSection.tasks => 'Task',
   TripEditSection.weather => 'Forecast Day',
   TripEditSection.packing => 'Packing Item',
   _ => section.label,

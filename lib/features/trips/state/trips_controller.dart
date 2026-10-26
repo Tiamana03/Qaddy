@@ -419,6 +419,32 @@ class TripsController extends Notifier<TripsState> {
     log: settled ? '$member paid their share' : null,
   );
 
+  /// Records that [from] has paid [to] what they owe: every unsettled share
+  /// [from] owes [to] is marked paid, and so is every share [to] owed [from]
+  /// (the two cancel out in "who owes who").
+  void settleDebt(String id, {required String from, required String to}) {
+    bool owes(TripExpense e, String debtor, String creditor) =>
+        e.paidBy == creditor &&
+        e.participants.contains(debtor) &&
+        !e.isSettled(debtor);
+
+    updatePlan(
+      id,
+      (plan) => plan.copyWith(
+        expenses: <TripExpense>[
+          for (final expense in plan.expenses)
+            if (owes(expense, from, to))
+              expense.copyWith(settled: <String>{...expense.settled, from})
+            else if (owes(expense, to, from))
+              expense.copyWith(settled: <String>{...expense.settled, to})
+            else
+              expense,
+        ],
+      ),
+      log: '$from paid $to',
+    );
+  }
+
   // ----------------------------------------------------------------- chat
 
   /// Sends [text] from the golfer and returns the new message's id (or

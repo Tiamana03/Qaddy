@@ -142,12 +142,13 @@ List<TimelineDay> buildTimeline(Trip trip, TripPlan plan) {
         date: day,
         events: (byDay[day] ?? <TimelineEvent>[])
           ..sort((a, b) => a.at.compareTo(b.at)),
-        weather: _forecastFor(plan.weather, day),
+        weather: forecastForDay(plan.weather, day),
       ),
   ];
 }
 
-TripWeatherForecast? _forecastFor(
+/// The forecast whose day name matches [day]'s weekday, if one was entered.
+TripWeatherForecast? forecastForDay(
   List<TripWeatherForecast> forecasts,
   DateTime day,
 ) {

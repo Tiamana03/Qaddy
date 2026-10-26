@@ -147,3 +147,16 @@ extension DateExtensions on DateTime {
     return toFriendlyDate();
   }
 }
+
+/// Friendly formatting for lengths of time.
+extension QaddyDurationFormatting on Duration {
+  /// "1h 25m", "45m", "2h" — hours and minutes, dropping a zero part.
+  String toShortLabel() {
+    final hours = inHours;
+    final minutes = inMinutes.remainder(60);
+    if (hours == 0) {
+      return '${minutes}m';
+    }
+    return minutes == 0 ? '${hours}h' : '${hours}h ${minutes}m';
+  }
+}

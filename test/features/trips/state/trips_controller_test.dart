@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_expense.dart';
@@ -167,6 +168,42 @@ void main() {
         'Luke',
       ]);
       expect(state().tripById(id)!.playerCount, 1);
+    });
+  });
+
+  group('settling up', () {
+    test('settleDebt marks both sides of a pair paid', () {
+      final before = summariseExpenses(
+        container.read(tripPlanProvider(_melbourne)).expenses,
+      );
+      final debt = whoOwesWho(
+        container.read(tripPlanProvider(_melbourne)).expenses,
+      ).firstWhere((d) => d.from == currentUserName);
+
+      controller.settleDebt(_melbourne, from: debt.from, to: debt.to);
+
+      final expenses = container.read(tripPlanProvider(_melbourne)).expenses;
+      final remaining = whoOwesWho(expenses);
+      expect(
+        remaining.where((d) => d.from == debt.from && d.to == debt.to),
+        isEmpty,
+      );
+      expect(
+        summariseExpenses(expenses).outstanding,
+        lessThan(before.outstanding),
+      );
+    });
+
+    test('settling a pair with nothing owed changes nothing', () {
+      final before = container.read(tripPlanProvider(_melbourne)).expenses;
+
+      controller.settleDebt(_melbourne, from: 'Nobody', to: 'Ben');
+
+      final after = container.read(tripPlanProvider(_melbourne)).expenses;
+      expect(
+        summariseExpenses(after).outstanding,
+        summariseExpenses(before).outstanding,
+      );
     });
   });
 

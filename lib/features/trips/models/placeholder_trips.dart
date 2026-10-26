@@ -452,7 +452,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
     TripMessage(
       id: 'm-a',
       sender: 'Ben',
-      text: 'Tee times are locked in. 8:10 at Kingston Heath on Saturday ⛳',
+      text: 'Tee times are locked in. 8:10 at Kingston Heath on Sunday ⛳',
       sentAt: DateTime(2026, 10, 22, 18, 5),
     ),
     TripMessage(
@@ -470,7 +470,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
     TripMessage(
       id: 'm-d',
       sender: 'Josh',
-      text: 'Dinner on the Saturday night sorted?',
+      text: 'Dinner on the Sunday night sorted?',
       sentAt: DateTime(2026, 10, 23, 8, 30),
     ),
     TripMessage(

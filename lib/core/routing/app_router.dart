@@ -46,12 +46,15 @@ import 'package:qaddy/features/trips/ui/screens/invite_friends_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_complete_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_course_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_details_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_expenses_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_flight_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_flights_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_golf_schedule_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_planning_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_settings_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_transport_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -162,6 +165,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                             TripFlightsScreen(
                               tripId: state.pathParameters['tripId']!,
                             ),
+                        routes: <RouteBase>[
+                          GoRoute(
+                            path: ':flightId',
+                            name: RouteNames.tripFlight,
+                            builder:
+                                (BuildContext context, GoRouterState state) =>
+                                    TripFlightScreen(
+                                      tripId: state.pathParameters['tripId']!,
+                                      flightId:
+                                          state.pathParameters['flightId']!,
+                                    ),
+                          ),
+                        ],
+                      ),
+                      GoRoute(
+                        path: 'transport',
+                        name: RouteNames.tripTransport,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripTransportScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
                       ),
                       GoRoute(
                         path: 'accommodation',
@@ -178,6 +202,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                             TripGolfScheduleScreen(
                               tripId: state.pathParameters['tripId']!,
                             ),
+                        routes: <RouteBase>[
+                          GoRoute(
+                            path: ':courseId',
+                            name: RouteNames.tripCourse,
+                            builder:
+                                (BuildContext context, GoRouterState state) =>
+                                    TripCourseScreen(
+                                      tripId: state.pathParameters['tripId']!,
+                                      courseId:
+                                          state.pathParameters['courseId']!,
+                                    ),
+                          ),
+                        ],
                       ),
                       GoRoute(
                         path: 'expenses',

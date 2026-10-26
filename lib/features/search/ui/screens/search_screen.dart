@@ -183,7 +183,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             title: course.name,
             subtitle: trip.name,
             icon: Icons.golf_course_outlined,
-            onTap: () => context.push(AppRoutes.tripGolf(trip.id)),
+            onTap: () => context.push(AppRoutes.tripCourse(trip.id, course.id)),
           ),
         );
       }

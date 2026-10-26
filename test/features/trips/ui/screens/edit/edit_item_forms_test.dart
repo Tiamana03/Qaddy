@@ -436,6 +436,58 @@ void main() {
     });
   });
 
+  group('activities and tasks', () {
+    testWidgets('adds an activity to the timeline', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: _item(TripEditSection.itinerary, 'new'),
+      );
+
+      await _enter(tester, 'What are you doing?', 'Dinner at Rosetta');
+      await _enter(tester, 'Where', 'Crown Melbourne');
+      await _tapText(tester, 'Save');
+
+      final item = _plan(c).itinerary.last;
+      expect(item.title, 'Dinner at Rosetta');
+      expect(item.location, 'Crown Melbourne');
+      expect(item.kind.label, 'Food & Drink');
+    });
+
+    testWidgets('an activity needs a name', (tester) async {
+      await pumpApp(tester, location: _item(TripEditSection.itinerary, 'new'));
+
+      await _tapText(tester, 'Save');
+
+      expect(find.text('Give it a name'), findsOneWidget);
+    });
+
+    testWidgets('adds a completed task', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: _item(TripEditSection.tasks, 'new'),
+      );
+
+      await _enter(tester, 'Task', 'Book the airport lounge');
+      await tester.tap(find.text('Done'));
+      await tester.pump();
+      await _tapText(tester, 'Save');
+      final task = _plan(c).tasks.last;
+      expect(task.title, 'Book the airport lounge');
+      expect(task.done, isTrue);
+    });
+
+    testWidgets('deletes a task', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: _item(TripEditSection.tasks, 'task-pack'),
+      );
+
+      await _confirmDelete(tester);
+
+      expect(_plan(c).tasks.map((t) => t.id), isNot(contains('task-pack')));
+    });
+  });
+
   group('packing list', () {
     testWidgets('adds an item and marks it packed', (tester) async {
       final c = await pumpApp(

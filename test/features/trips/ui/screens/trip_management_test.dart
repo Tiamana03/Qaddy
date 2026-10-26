@@ -1,7 +1,6 @@
 // Trip management: settings, duplicate, archive, leave, delete, invite and
 // export.
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/routing/app_router.dart';
@@ -12,27 +11,6 @@ import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../trips_test_harness.dart';
-
-/// Records what the app puts on the clipboard.
-List<String> _captureClipboard(WidgetTester tester) {
-  final copied = <String>[];
-  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-    SystemChannels.platform,
-    (call) async {
-      if (call.method == 'Clipboard.setData') {
-        copied.add((call.arguments as Map)['text'] as String);
-      }
-      return null;
-    },
-  );
-  addTearDown(
-    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      null,
-    ),
-  );
-  return copied;
-}
 
 Future<void> _tapText(WidgetTester tester, String text) async {
   await tester.ensureVisible(find.text(text));
@@ -73,7 +51,7 @@ void main() {
     });
 
     testWidgets('Share Invite Link copies the trip link', (tester) async {
-      final copied = _captureClipboard(tester);
+      final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripSettings(melbourneId));
 
       await _tapText(tester, 'Share Invite Link');
@@ -220,7 +198,7 @@ void main() {
     });
 
     testWidgets('Copy Link copies the invite link', (tester) async {
-      final copied = _captureClipboard(tester);
+      final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripInvite(melbourneId));
 
       await _tapText(tester, 'Copy Link');
@@ -231,7 +209,7 @@ void main() {
 
   group('export itinerary', () {
     testWidgets('previews the itinerary and copies it', (tester) async {
-      final copied = _captureClipboard(tester);
+      final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripExport(melbourneId));
 
       expect(find.textContaining('MELBOURNE GOLF WEEKEND'), findsOneWidget);

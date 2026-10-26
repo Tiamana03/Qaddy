@@ -48,6 +48,14 @@ String tripEditSummary(Trip trip, TripPlan plan, TripEditSection section) {
       final total = summariseExpenses(plan.expenses).total;
       return '${_count(plan.expenses.length, 'expense')} · '
           '${formatMoney(total)}';
+    case TripEditSection.itinerary:
+      return _count(plan.itinerary.length, 'plan', none: 'Nothing planned yet');
+    case TripEditSection.tasks:
+      if (plan.tasks.isEmpty) {
+        return 'No tasks yet';
+      }
+      final done = plan.tasks.where((task) => task.done).length;
+      return '$done of ${plan.tasks.length} done';
     case TripEditSection.notes:
       final firstLine = plan.notes.trim().split('\n').first;
       return firstLine.isEmpty ? 'No notes yet' : firstLine;

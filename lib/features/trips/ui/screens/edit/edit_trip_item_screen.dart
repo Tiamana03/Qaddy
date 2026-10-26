@@ -9,6 +9,7 @@ import 'package:qaddy/features/trips/models/trip_edit_section.dart';
 import 'package:qaddy/features/trips/models/trip_plan.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 import 'package:qaddy/features/trips/ui/screens/edit/forms/accommodation_form.dart';
+import 'package:qaddy/features/trips/ui/screens/edit/forms/activity_task_forms.dart';
 import 'package:qaddy/features/trips/ui/screens/edit/forms/course_form.dart';
 import 'package:qaddy/features/trips/ui/screens/edit/forms/expense_form.dart';
 import 'package:qaddy/features/trips/ui/screens/edit/forms/flight_form.dart';
@@ -112,6 +113,16 @@ class _EditTripItemScreenState extends ConsumerState<EditTripItemScreen> {
                 fallbackRoute: back,
                 expense: expense,
               );
+      case TripEditSection.itinerary:
+        final activity = adding ? null : find(plan.itinerary, (i) => i.id);
+        return !adding && activity == null
+            ? missing()
+            : ActivityForm(tripId: tripId, fallbackRoute: back, item: activity);
+      case TripEditSection.tasks:
+        final task = adding ? null : find(plan.tasks, (t) => t.id);
+        return !adding && task == null
+            ? missing()
+            : TaskForm(tripId: tripId, fallbackRoute: back, task: task);
       case TripEditSection.weather:
         final day = adding ? null : find(plan.weather, (d) => d.id);
         return !adding && day == null

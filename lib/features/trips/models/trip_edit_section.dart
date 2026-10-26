@@ -15,6 +15,8 @@ enum TripEditSection {
   courses('courses', 'Courses & Tee Times', Icons.golf_course_outlined),
   players('players', 'Players', Icons.group_outlined),
   expenses('expenses', 'Expenses', Icons.payments_outlined),
+  itinerary('itinerary', 'Activities & Dining', Icons.restaurant_outlined),
+  tasks('tasks', 'Checklist', Icons.checklist),
   notes('notes', 'Notes', Icons.sticky_note_2_outlined),
   weather('weather', 'Weather', Icons.wb_sunny_outlined),
   packing('packing', 'Packing List', Icons.luggage_outlined),
@@ -39,6 +41,8 @@ enum TripEditSection {
     transport ||
     courses ||
     expenses ||
+    itinerary ||
+    tasks ||
     weather ||
     packing => true,
     _ => false,

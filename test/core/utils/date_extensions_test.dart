@@ -101,4 +101,9 @@ void main() {
       '6 months ago',
     );
   });
+  test('Duration.toShortLabel drops a zero part', () {
+    expect(const Duration(hours: 1, minutes: 25).toShortLabel(), '1h 25m');
+    expect(const Duration(minutes: 45).toShortLabel(), '45m');
+    expect(const Duration(hours: 2).toShortLabel(), '2h');
+  });
 }
