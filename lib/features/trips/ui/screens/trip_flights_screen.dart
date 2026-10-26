@@ -144,22 +144,26 @@ class _BoardingPass extends StatelessWidget {
                   style: typography.h4.copyWith(color: colours.textPrimary),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: spacing.md,
-                  vertical: spacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: checkedIn ? colours.surface2 : Colors.transparent,
-                  borderRadius: BorderRadius.circular(radius.large),
-                  border: Border.all(
-                    color: checkedIn ? colours.accent : colours.border,
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: spacing.md,
+                    vertical: spacing.xs,
                   ),
-                ),
-                child: Text(
-                  checkInLabel(flight.checkInStatus),
-                  style: typography.small.copyWith(
-                    color: checkedIn ? colours.accent : colours.textSecondary,
+                  decoration: BoxDecoration(
+                    color: checkedIn ? colours.surface2 : Colors.transparent,
+                    borderRadius: BorderRadius.circular(radius.large),
+                    border: Border.all(
+                      color: checkedIn ? colours.accent : colours.border,
+                    ),
+                  ),
+                  child: Text(
+                    checkInLabel(flight.checkInStatus),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: typography.small.copyWith(
+                      color: checkedIn ? colours.accent : colours.textSecondary,
+                    ),
                   ),
                 ),
               ),
