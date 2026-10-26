@@ -1,9 +1,10 @@
 /// Qaddy's trip card — summarises a single golf trip in a list.
 ///
-/// See `docs/sprints/sprint-03-01-trips-foundation.md`'s "Trip Card"
-/// section: cover image placeholder, name, destination, dates, player
-/// count, status badge and a chevron, visually matching the Dashboard
-/// cards from Sprint 2.1. Built on [QaddyCard], reusing [QaddyStatusBadge].
+/// Built on [QaddyCard], reusing [QaddyStatusBadge]. A month/day tile leads
+/// the card (replacing the earlier empty "cover image" icon box, which looked
+/// unfinished and squeezed trip names into a truncated "Melbourne …"); the
+/// name now has the full row to itself and may wrap to two lines. Shows the
+/// trip's date range, duration, status and player count.
 library;
 
 import 'package:flutter/material.dart';
@@ -43,74 +44,115 @@ class QaddyTripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
     final (statusLabel, statusTone) = tripStatusBadgeContent(trip.status);
+    final days = trip.durationInDays;
 
     return QaddyCard(
       onTap: onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(radius.medium),
-            child: Container(
-              width: spacing.hero,
-              height: spacing.hero,
-              color: colours.surface2,
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.image_outlined,
-                color: colours.textTertiary,
-                size: spacing.xl,
-              ),
-            ),
-          ),
+          _DateTile(date: trip.startDate),
           SizedBox(width: spacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        trip.name,
-                        style: typography.h4.copyWith(
-                          color: colours.textPrimary,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: spacing.sm),
-                    QaddyStatusBadge(label: statusLabel, tone: statusTone),
-                  ],
+                Text(
+                  trip.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.h4.copyWith(color: colours.textPrimary),
                 ),
                 SizedBox(height: spacing.xs),
                 Text(
                   trip.destination,
-                  style: typography.body.copyWith(color: colours.textSecondary),
                   overflow: TextOverflow.ellipsis,
+                  style: typography.body.copyWith(color: colours.textSecondary),
                 ),
                 SizedBox(height: spacing.xs),
                 Text(
-                  '${trip.startDate.toFriendlyDate()} – '
-                  '${trip.endDate.toFriendlyDate()}  ·  '
-                  '${trip.playerCount} Players',
-                  style: typography.small.copyWith(color: colours.textTertiary),
-                  overflow: TextOverflow.ellipsis,
+                  '${trip.startDate.toFriendlyRange(trip.endDate)}  ·  '
+                  '$days ${days == 1 ? 'day' : 'days'}',
+                  style: typography.small.copyWith(
+                    color: colours.textSecondary,
+                  ),
+                ),
+                SizedBox(height: spacing.sm),
+                Row(
+                  children: <Widget>[
+                    QaddyStatusBadge(label: statusLabel, tone: statusTone),
+                    SizedBox(width: spacing.sm),
+                    Icon(
+                      Icons.people_outline,
+                      size: spacing.lg,
+                      color: colours.textSecondary,
+                    ),
+                    SizedBox(width: spacing.xs),
+                    Flexible(
+                      child: Text(
+                        '${trip.playerCount} Players',
+                        overflow: TextOverflow.ellipsis,
+                        style: typography.small.copyWith(
+                          color: colours.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           if (onTap != null) ...<Widget>[
             SizedBox(width: spacing.sm),
-            Icon(Icons.chevron_right, color: colours.textTertiary),
+            Icon(Icons.chevron_right, color: colours.textSecondary),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// A small calendar-style tile showing the trip's start month and day.
+class _DateTile extends StatelessWidget {
+  const _DateTile({required this.date});
+
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Container(
+      width: spacing.display + spacing.sm,
+      padding: EdgeInsets.symmetric(vertical: spacing.sm),
+      decoration: BoxDecoration(
+        color: colours.surface2,
+        borderRadius: BorderRadius.circular(radius.medium),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            date.monthAbbreviation.toUpperCase(),
+            style: typography.caption.copyWith(
+              color: colours.accent,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1,
+            ),
+          ),
+          Text(
+            '${date.day}',
+            style: typography.h3.copyWith(color: colours.textPrimary),
+          ),
         ],
       ),
     );

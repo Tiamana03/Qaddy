@@ -12,6 +12,25 @@ void main() {
     expect(DateTime(2025, 3, 12).toFriendlyDate(), '12 Mar 2025');
   });
 
+  test('toFriendlyRange drops whatever repeats between the two dates', () {
+    expect(
+      DateTime(2025, 10, 10).toFriendlyRange(DateTime(2025, 10, 15)),
+      '10–15 Oct 2025',
+    );
+    expect(
+      DateTime(2026, 11, 28).toFriendlyRange(DateTime(2026, 12)),
+      '28 Nov – 1 Dec 2026',
+    );
+    expect(
+      DateTime(2026, 12, 30).toFriendlyRange(DateTime(2027, 1, 2)),
+      '30 Dec 2026 – 2 Jan 2027',
+    );
+    expect(
+      DateTime(2026, 3, 4).toFriendlyRange(DateTime(2026, 3, 4)),
+      '4 Mar 2026',
+    );
+  });
+
   test('toWeekdayAndDate formats as "Weekday D Month" with no year', () {
     // 2 September 2024 (US Labor Day) was a Monday.
     expect(DateTime(2024, 9, 2).toWeekdayAndDate(), 'Monday 2 September');

@@ -11,10 +11,12 @@ Future<void> _pumpAtWidth(WidgetTester tester, double width) async {
   await tester.pumpWidget(
     MaterialApp(
       theme: QaddyTheme.dark,
-      home: const TripsSummaryCard(
-        upcomingCount: 2,
-        pastCount: 2,
-        countriesCount: 2,
+      home: const Scaffold(
+        body: TripsSummaryCard(
+          upcomingCount: 3,
+          pastCount: 5,
+          countriesCount: 2,
+        ),
       ),
     ),
   );
@@ -27,20 +29,32 @@ void main() {
     expect(find.text('Upcoming'), findsOneWidget);
     expect(find.text('Past'), findsOneWidget);
     expect(find.text('Countries'), findsOneWidget);
-    expect(find.text('2'), findsNWidgets(3));
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('5'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
   });
 
-  testWidgets('stacks vertically on mobile, horizontally on desktop', (
-    tester,
-  ) async {
-    await _pumpAtWidth(tester, 400);
-    var upcoming = tester.getTopLeft(find.text('Upcoming'));
-    var past = tester.getTopLeft(find.text('Past'));
-    expect(upcoming.dy, isNot(past.dy));
+  testWidgets('stays one compact row at every width', (tester) async {
+    for (final width in <double>[360, 700, 1200]) {
+      await _pumpAtWidth(tester, width);
+      final upcoming = tester.getTopLeft(find.text('Upcoming'));
+      final past = tester.getTopLeft(find.text('Past'));
+      final countries = tester.getTopLeft(find.text('Countries'));
+      expect(upcoming.dy, past.dy);
+      expect(past.dy, countries.dy);
+    }
+  });
 
-    await _pumpAtWidth(tester, 1200);
-    upcoming = tester.getTopLeft(find.text('Upcoming'));
-    past = tester.getTopLeft(find.text('Past'));
-    expect(upcoming.dy, past.dy);
+  testWidgets('reads as a single sentence to screen readers', (tester) async {
+    final handle = tester.ensureSemantics();
+    await _pumpAtWidth(tester, 400);
+
+    expect(
+      find.bySemanticsLabel(
+        '3 upcoming trips, 5 past trips, 2 countries visited',
+      ),
+      findsOneWidget,
+    );
+    handle.dispose();
   });
 }

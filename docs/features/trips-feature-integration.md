@@ -145,7 +145,19 @@ Selecting a trip opens the Trip Details screen.
 
 ## Trips
 
-Displays all active trips.
+Displays all active trips, led by the next one.
+
+Top to bottom the screen shows:
+
+1. **Next Trip hero** — the first upcoming trip as a countdown ("33 days to go"), with its name, destination, dates and duration, status, and — when the trip has detail data (Melbourne Golf Weekend, the shared placeholder trip) — its first tee time, the first day's forecast, whether expenses are settled, who is going, and the latest chat message. Every fact is read from the trip's existing placeholder data; nothing is invented. Selecting the hero opens Trip Details. With no upcoming trips, an empty state invites the user to create one.
+2. **Summary** — one compact row: Upcoming, Past and Countries counts.
+3. **Quick actions** — Create Trip and Browse Trips (scrolls to the lists below).
+4. **Coming Up** — the remaining upcoming trips (the hero's trip is not repeated).
+5. **Past Trips** — completed trips, newest first.
+
+Trip cards open with a month/day tile (the start date) instead of a cover-image placeholder, show the full trip name (wrapping to two lines rather than truncating), and include the date range, duration, status and player count. Only trips with detail data are tappable.
+
+Trip cards lay out in one column on mobile, two on tablet and three on desktop; the hero places its facts beside the headline on tablet and desktop. The hero fades in once on arrival (and not at all when the device requests reduced motion).
 
 Users can:
 

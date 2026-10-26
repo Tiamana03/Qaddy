@@ -75,8 +75,28 @@ extension DateExtensions on DateTime {
     return to.difference(from).inDays;
   }
 
+  /// This date's month as a three-letter abbreviation, e.g. "Nov".
+  String get monthAbbreviation => _monthAbbreviations[month - 1];
+
   /// A friendly, fixed-format date, e.g. "12 Mar 2025".
   String toFriendlyDate() => '$day ${_monthAbbreviations[month - 1]} $year';
+
+  /// A compact date range from this date to [end], dropping whatever repeats:
+  /// "10–15 Oct 2025", "28 Nov – 1 Dec 2026", or two full dates when the
+  /// years differ.
+  String toFriendlyRange(DateTime end) {
+    if (year != end.year) {
+      return '${toFriendlyDate()} – ${end.toFriendlyDate()}';
+    }
+    if (month != end.month) {
+      return '$day ${_monthAbbreviations[month - 1]} – '
+          '${end.day} ${_monthAbbreviations[end.month - 1]} $year';
+    }
+    if (day == end.day) {
+      return toFriendlyDate();
+    }
+    return '$day–${end.day} ${_monthAbbreviations[month - 1]} $year';
+  }
 
   /// A full weekday name and date with no year, e.g. "Tuesday 22 September" —
   /// matches the Dashboard's Welcome Header example in
