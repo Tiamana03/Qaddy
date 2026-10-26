@@ -450,6 +450,36 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
   ],
   messages: <TripMessage>[
     TripMessage(
+      id: 'm-a',
+      sender: 'Ben',
+      text: 'Tee times are locked in. 8:10 at Kingston Heath on Saturday ⛳',
+      sentAt: DateTime(2026, 10, 22, 18, 5),
+    ),
+    TripMessage(
+      id: 'm-b',
+      sender: 'Luke',
+      text: 'Legend. Who is driving up to Healesville?',
+      sentAt: DateTime(2026, 10, 22, 18, 12),
+    ),
+    TripMessage(
+      id: 'm-c',
+      sender: 'Tiamana',
+      text: "I've got the hire car booked. Room for four.",
+      sentAt: DateTime(2026, 10, 22, 18, 20),
+    ),
+    TripMessage(
+      id: 'm-d',
+      sender: 'Josh',
+      text: 'Dinner on the Saturday night sorted?',
+      sentAt: DateTime(2026, 10, 23, 8, 30),
+    ),
+    TripMessage(
+      id: 'm-e',
+      sender: 'Tiamana',
+      text: 'Booked under my name for 7pm 🍽️',
+      sentAt: DateTime(2026, 10, 23, 8, 41),
+    ),
+    TripMessage(
       id: 'm1',
       sender: 'Tiamana',
       text: 'Looking forward to this trip!',
