@@ -19,7 +19,8 @@ class TripMember {
     required this.status,
   });
 
-  /// The participant's name.
+  /// The participant's name. Release 1 has no user-id lookup, so this is
+  /// also the member's identity within a trip.
   final String displayName;
 
   /// The participant's handicap.
@@ -30,4 +31,14 @@ class TripMember {
 
   /// The participant's invitation status.
   final ParticipantStatus status;
+
+  /// A copy with the given fields replaced.
+  TripMember copyWith({TripRole? role, ParticipantStatus? status}) {
+    return TripMember(
+      displayName: displayName,
+      handicap: handicap,
+      role: role ?? this.role,
+      status: status ?? this.status,
+    );
+  }
 }

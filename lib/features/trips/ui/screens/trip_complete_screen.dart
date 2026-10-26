@@ -1,14 +1,11 @@
-/// Qaddy's Trip Complete screen — the end-of-trip experience.
+/// Qaddy's Trip Complete screen — the wrap-up once a trip is over.
 ///
 /// See `docs/features/trips-feature-integration.md`'s "Trip Complete"
-/// section ("Displays: Trip Summary, Courses Played, Winners, Photos,
-/// Expenses, Memories... Users can archive the trip or return home").
-/// Photos/Memories have no placeholder data (see placeholder-trip-data.md's
-/// "Photos" section, "Placeholder artwork should be displayed instead"),
-/// so a placeholder graphic is shown rather than invented content.
+/// section.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
@@ -20,21 +17,34 @@ import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
+import 'package:qaddy/features/trips/models/trip_result.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
-/// Trip Complete (route `/trips/complete`).
-class TripCompleteScreen extends StatelessWidget {
-  const TripCompleteScreen({super.key});
+/// Trip Complete (route `/trips/:tripId/complete`).
+class TripCompleteScreen extends ConsumerWidget {
+  const TripCompleteScreen({required this.tripId, super.key});
+
+  /// The trip being wrapped up.
+  final String tripId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final trip = ref.watch(tripProvider(tripId));
+    if (trip == null) {
+      return const TripNotFound();
+    }
+    final plan = ref.watch(tripPlanProvider(tripId));
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
-    final trip = melbourneGolfWeekend;
-    final estimatedTotal =
-        '\$${melbourneGolfWeekendEstimatedTotal.toStringAsFixed(0)}';
+    final summary = summariseExpenses(plan.expenses);
+    final results = trip.id == melbourneGolfWeekend.id
+        ? melbourneGolfWeekendResults
+        : const <TripAward>[];
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Trip Complete')),
@@ -52,9 +62,7 @@ class TripCompleteScreen extends StatelessWidget {
                   SizedBox(height: spacing.sm),
                   QaddyInfoRow(
                     label: 'Dates',
-                    value:
-                        '${trip.startDate.toFriendlyDate()} – '
-                        '${trip.endDate.toFriendlyDate()}',
+                    value: trip.startDate.toFriendlyRange(trip.endDate),
                   ),
                   SizedBox(height: spacing.sm),
                   QaddyInfoRow(label: 'Players', value: '${trip.playerCount}'),
@@ -67,7 +75,7 @@ class TripCompleteScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  for (final course in melbourneGolfWeekendCourses)
+                  for (final course in plan.courses)
                     Padding(
                       padding: EdgeInsets.only(bottom: spacing.xs),
                       child: Text(
@@ -86,8 +94,7 @@ class TripCompleteScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  for (final (index, award)
-                      in melbourneGolfWeekendResults.indexed) ...<Widget>[
+                  for (final (index, award) in results.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
                     QaddyInfoRow(label: award.award, value: award.winner),
                   ],
@@ -98,8 +105,8 @@ class TripCompleteScreen extends StatelessWidget {
             QaddySectionCard(
               title: 'Expenses',
               child: QaddyInfoRow(
-                label: 'Estimated Total',
-                value: estimatedTotal,
+                label: 'Total Cost',
+                value: formatMoney(summary.total),
               ),
             ),
             SizedBox(height: spacing.sectionGap),
@@ -129,7 +136,10 @@ class TripCompleteScreen extends StatelessWidget {
                 Expanded(
                   child: QaddySecondaryButton(
                     label: 'Archive Trip',
-                    onPressed: () => context.go(AppRoutes.trips),
+                    onPressed: () {
+                      ref.read(tripsProvider.notifier).archiveTrip(tripId);
+                      context.go(AppRoutes.trips);
+                    },
                   ),
                 ),
                 SizedBox(width: spacing.sm),

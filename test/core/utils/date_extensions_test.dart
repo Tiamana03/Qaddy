@@ -12,6 +12,17 @@ void main() {
     expect(DateTime(2025, 3, 12).toFriendlyDate(), '12 Mar 2025');
   });
 
+  test('toFriendlyTime formats a 12-hour clock', () {
+    expect(DateTime(2026, 11, 29, 8, 10).toFriendlyTime(), '8:10 AM');
+    expect(DateTime(2026, 11, 29, 12).toFriendlyTime(), '12:00 PM');
+    expect(DateTime(2026, 11, 29, 0, 5).toFriendlyTime(), '12:05 AM');
+    expect(DateTime(2026, 11, 29, 19, 42).toFriendlyTime(), '7:42 PM');
+  });
+
+  test('toShortWeekdayAndDate formats "Sat 28 Nov"', () {
+    expect(DateTime(2026, 11, 28).toShortWeekdayAndDate(), 'Sat 28 Nov');
+  });
+
   test('toFriendlyRange drops whatever repeats between the two dates', () {
     expect(
       DateTime(2025, 10, 10).toFriendlyRange(DateTime(2025, 10, 15)),

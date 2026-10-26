@@ -37,14 +37,15 @@ import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/search/ui/screens/search_screen.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/create_trip_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_accommodation_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_chat_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_complete_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_details_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_expenses_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trip_flights_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_golf_schedule_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_planning_screen.dart';
-import 'package:qaddy/features/trips/ui/screens/trip_travel_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -125,53 +126,78 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (BuildContext context, GoRouterState state) =>
                     const TripsScreen(),
                 routes: <RouteBase>[
+                  // `create` must precede `:tripId` or it reads as an id.
                   GoRoute(
-                    path: 'details',
+                    path: 'create',
+                    name: RouteNames.tripCreate,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const CreateTripScreen(),
+                  ),
+                  GoRoute(
+                    path: ':tripId',
                     name: RouteNames.tripDetails,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const TripDetailsScreen(),
-                  ),
-                  GoRoute(
-                    path: 'planning',
-                    name: RouteNames.tripPlanning,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripPlanningScreen(),
-                  ),
-                  GoRoute(
-                    path: 'travel',
-                    name: RouteNames.tripTravel,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripTravelScreen(),
-                  ),
-                  GoRoute(
-                    path: 'accommodation',
-                    name: RouteNames.tripAccommodation,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripAccommodationScreen(),
-                  ),
-                  GoRoute(
-                    path: 'golf',
-                    name: RouteNames.tripGolf,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripGolfScheduleScreen(),
-                  ),
-                  GoRoute(
-                    path: 'expenses',
-                    name: RouteNames.tripExpenses,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripExpensesScreen(),
-                  ),
-                  GoRoute(
-                    path: 'chat',
-                    name: RouteNames.tripChat,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripChatScreen(),
-                  ),
-                  GoRoute(
-                    path: 'complete',
-                    name: RouteNames.tripComplete,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const TripCompleteScreen(),
+                        TripDetailsScreen(
+                          tripId: state.pathParameters['tripId']!,
+                        ),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'planning',
+                        name: RouteNames.tripPlanning,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripPlanningScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'flights',
+                        name: RouteNames.tripFlights,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripFlightsScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'accommodation',
+                        name: RouteNames.tripAccommodation,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripAccommodationScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'golf',
+                        name: RouteNames.tripGolf,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripGolfScheduleScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'expenses',
+                        name: RouteNames.tripExpenses,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripExpensesScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'chat',
+                        name: RouteNames.tripChat,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripChatScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                      GoRoute(
+                        path: 'complete',
+                        name: RouteNames.tripComplete,
+                        builder: (BuildContext context, GoRouterState state) =>
+                            TripCompleteScreen(
+                              tripId: state.pathParameters['tripId']!,
+                            ),
+                      ),
+                    ],
                   ),
                 ],
               ),

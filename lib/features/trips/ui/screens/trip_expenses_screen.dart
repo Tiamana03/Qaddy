@@ -1,27 +1,33 @@
-/// Qaddy's Expenses screen.
+/// Qaddy's Expenses screen — what the trip costs and who owes what.
 ///
-/// See `docs/features/trips-feature-integration.md`'s "Expenses" section
-/// ("Displays: Trip Budget, Shared Expenses, Individual Payments,
-/// Outstanding Balances"). Release 1 displays expenses only — no
-/// settlement calculations are performed; `outstandingBalance` is a
-/// sourced placeholder value (see `trip_expense.dart`).
+/// See `docs/features/trips-feature-integration.md`'s "Expenses" section.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
+import 'package:qaddy/features/trips/logic/expense_ledger.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
-String _money(double amount) => '\$${amount.toStringAsFixed(0)}';
+/// Expenses (route `/trips/:tripId/expenses`).
+class TripExpensesScreen extends ConsumerWidget {
+  const TripExpensesScreen({required this.tripId, super.key});
 
-/// Expenses (route `/trips/expenses`).
-class TripExpensesScreen extends StatelessWidget {
-  const TripExpensesScreen({super.key});
+  /// The trip whose expenses are shown.
+  final String tripId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (ref.watch(tripProvider(tripId)) == null) {
+      return const TripNotFound();
+    }
+    final plan = ref.watch(tripPlanProvider(tripId));
+    final summary = summariseExpenses(plan.expenses);
+    final debts = whoOwesWho(plan.expenses);
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     return QaddyScaffold(
@@ -32,38 +38,34 @@ class TripExpensesScreen extends StatelessWidget {
           children: <Widget>[
             SizedBox(height: spacing.lg),
             QaddySectionCard(
-              title: 'Trip Budget',
-              child: QaddyInfoRow(
-                label: 'Estimated Total',
-                value: _money(melbourneGolfWeekendEstimatedTotal),
-              ),
-            ),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionCard(
-              title: 'Shared Expenses',
+              title: 'Trip Cost',
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  for (final (index, item)
-                      in melbourneGolfWeekendExpenses.indexed) ...<Widget>[
-                    if (index > 0) SizedBox(height: spacing.sm),
-                    QaddyInfoRow(label: item.title, value: _money(item.amount)),
-                  ],
+                  QaddyInfoRow(
+                    label: 'Total',
+                    value: formatMoney(summary.total),
+                  ),
+                  SizedBox(height: spacing.sm),
+                  QaddyInfoRow(label: 'Paid', value: formatMoney(summary.paid)),
+                  SizedBox(height: spacing.sm),
+                  QaddyInfoRow(
+                    label: 'Outstanding',
+                    value: formatMoney(summary.outstanding),
+                  ),
                 ],
               ),
             ),
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
-              title: 'Individual Payments',
+              title: 'Expenses',
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  for (final (index, payment)
-                      in melbourneGolfWeekendPayments.indexed) ...<Widget>[
+                  for (final (index, expense)
+                      in plan.expenses.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.sm),
                     QaddyInfoRow(
-                      label: payment.playerName,
-                      value: _money(payment.amountPaid),
+                      label: expense.title,
+                      value: formatMoney(expense.amount),
                     ),
                   ],
                 ],
@@ -71,10 +73,17 @@ class TripExpensesScreen extends StatelessWidget {
             ),
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
-              title: 'Outstanding Balance',
-              child: QaddyInfoRow(
-                label: 'Balance',
-                value: _money(melbourneGolfWeekendOutstandingBalance),
+              title: 'Who Owes Who',
+              child: Column(
+                children: <Widget>[
+                  for (final (index, debt) in debts.indexed) ...<Widget>[
+                    if (index > 0) SizedBox(height: spacing.sm),
+                    QaddyInfoRow(
+                      label: '${debt.from} → ${debt.to}',
+                      value: formatMoney(debt.amount),
+                    ),
+                  ],
+                ],
               ),
             ),
             SizedBox(height: spacing.xl),

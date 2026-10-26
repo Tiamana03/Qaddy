@@ -1,23 +1,33 @@
-/// Qaddy's Trip Planning screen — the complete itinerary at a glance.
+/// Qaddy's Planning screen — the trip's day-by-day plan.
 ///
-/// See `docs/features/trips-feature-integration.md`'s "Planning" section
-/// ("Displays: Flights, Accommodation, Transport, Courses, Tee Times...
-/// Allows users to review the complete itinerary").
+/// See `docs/features/trips-feature-integration.md`'s "Planning" section.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
+import 'package:qaddy/features/trips/logic/trip_timeline.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
-/// Trip Planning (route `/trips/planning`).
-class TripPlanningScreen extends StatelessWidget {
-  const TripPlanningScreen({super.key});
+/// Planning (route `/trips/:tripId/planning`).
+class TripPlanningScreen extends ConsumerWidget {
+  const TripPlanningScreen({required this.tripId, super.key});
+
+  /// The trip being planned.
+  final String tripId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final trip = ref.watch(tripProvider(tripId));
+    if (trip == null) {
+      return const TripNotFound();
+    }
+    final plan = ref.watch(tripPlanProvider(tripId));
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     return QaddyScaffold(
@@ -27,68 +37,28 @@ class TripPlanningScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
-            QaddySectionCard(
-              title: 'Itinerary',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  for (final (index, entry)
-                      in melbourneGolfWeekendItinerary.indexed) ...<Widget>[
-                    if (index > 0) SizedBox(height: spacing.sm),
-                    QaddyInfoRow(
-                      label: '${entry.date} · ${entry.activity}',
-                      value: entry.time,
-                    ),
+            for (final day in buildTimeline(trip, plan)) ...<Widget>[
+              QaddySectionCard(
+                title: day.date.toShortWeekdayAndDate(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (day.events.isEmpty)
+                      const Text('Nothing planned yet')
+                    else
+                      for (final (index, event)
+                          in day.events.indexed) ...<Widget>[
+                        if (index > 0) SizedBox(height: spacing.sm),
+                        QaddyInfoRow(
+                          label: event.title,
+                          value: event.at.toFriendlyTime(),
+                        ),
+                      ],
                   ],
-                ],
+                ),
               ),
-            ),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionCard(
-              title: 'Flights',
-              child: QaddyInfoRow(
-                label:
-                    '${melbourneGolfWeekendFlight.airline} '
-                    '${melbourneGolfWeekendFlight.flightNumber}',
-                value: melbourneGolfWeekendFlight.departure,
-              ),
-            ),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionCard(
-              title: 'Accommodation',
-              child: QaddyInfoRow(
-                label: melbourneGolfWeekendAccommodation.name,
-                value: melbourneGolfWeekendAccommodation.checkIn,
-              ),
-            ),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionCard(
-              title: 'Transport',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  for (final (index, leg)
-                      in melbourneGolfWeekendTransport.indexed) ...<Widget>[
-                    if (index > 0) SizedBox(height: spacing.sm),
-                    QaddyInfoRow(label: leg.type, value: leg.time),
-                  ],
-                ],
-              ),
-            ),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionCard(
-              title: 'Courses & Tee Times',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  for (final (index, course)
-                      in melbourneGolfWeekendCourses.indexed) ...<Widget>[
-                    if (index > 0) SizedBox(height: spacing.sm),
-                    QaddyInfoRow(label: course.name, value: course.teeTime),
-                  ],
-                ],
-              ),
-            ),
+              SizedBox(height: spacing.sectionGap),
+            ],
             SizedBox(height: spacing.xl),
           ],
         ),

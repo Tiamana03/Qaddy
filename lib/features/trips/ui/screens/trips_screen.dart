@@ -4,11 +4,12 @@
 /// See `docs/features/trips-feature-integration.md`'s "Trips" section.
 /// The screen leads with the next trip as a countdown hero (the thing a
 /// golfer actually opens the app to check), then a compact summary, the
-/// quick actions, and the remaining upcoming and past trips. Selecting a
-/// trip opens Trip Details, matching that document's "Navigation Flow".
+/// quick actions, and the remaining upcoming, past and archived trips.
+/// Selecting a trip opens Trip Details.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_animations.dart';
@@ -21,34 +22,27 @@ import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
 import 'package:qaddy/features/trips/logic/trip_snapshot.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_card_grid.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_hero_card.dart';
 import 'package:qaddy/features/trips/ui/widgets/trips_quick_actions.dart';
 import 'package:qaddy/features/trips/ui/widgets/trips_summary_card.dart';
 
 /// The Trips destination (route `/trips`).
-class TripsScreen extends StatefulWidget {
-  /// [upcoming], [past] and [now] default to the shared placeholder trips and
-  /// the real clock; tests pass their own so results don't depend on today's
-  /// date.
-  const TripsScreen({this.upcoming, this.past, this.now, super.key});
-
-  /// Upcoming trips, soonest first. The first one is featured in the hero.
-  final List<Trip>? upcoming;
-
-  /// Past trips, newest first.
-  final List<Trip>? past;
+class TripsScreen extends ConsumerStatefulWidget {
+  /// [now] defaults to the real clock; tests pass a fixed moment so the
+  /// countdown doesn't depend on today's date.
+  const TripsScreen({this.now, super.key});
 
   /// The moment the countdown is measured from.
   final DateTime? now;
 
   @override
-  State<TripsScreen> createState() => _TripsScreenState();
+  ConsumerState<TripsScreen> createState() => _TripsScreenState();
 }
 
-class _TripsScreenState extends State<TripsScreen> {
+class _TripsScreenState extends ConsumerState<TripsScreen> {
   /// Anchors the first list heading so "Browse Trips" can scroll to it.
   final GlobalKey _listKey = GlobalKey();
 
@@ -70,11 +64,24 @@ class _TripsScreenState extends State<TripsScreen> {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    final upcoming = widget.upcoming ?? upcomingTrips;
-    final past = widget.past ?? pastTrips;
+    final upcoming = ref.watch(upcomingTripsProvider);
+    final past = ref.watch(pastTripsProvider);
+    final archived = ref.watch(archivedTripsProvider);
     final nextTrip = upcoming.isEmpty ? null : upcoming.first;
     final moreUpcoming = upcoming.skip(1).toList();
-    final countries = <String>{for (final trip in past) trip.country};
+    final countries = <String>{
+      for (final trip in <Trip>[...upcoming, ...past])
+        if (trip.country.isNotEmpty) trip.country,
+    };
+
+    var listKeyUsed = false;
+    Key? nextListKey() {
+      if (listKeyUsed) {
+        return null;
+      }
+      listKeyUsed = true;
+      return _listKey;
+    }
 
     return QaddyScaffold(
       body: SingleChildScrollView(
@@ -89,14 +96,7 @@ class _TripsScreenState extends State<TripsScreen> {
             SizedBox(height: spacing.xl),
             if (nextTrip != null)
               QaddyFadeSlideIn(
-                child: TripHeroCard(
-                  trip: nextTrip,
-                  countdown: tripCountdown(nextTrip, now: widget.now),
-                  snapshot: tripSnapshot(nextTrip),
-                  onTap: _isDetailed(nextTrip)
-                      ? () => context.push(AppRoutes.tripDetails)
-                      : null,
-                ),
+                child: _NextTripHero(trip: nextTrip, now: widget.now),
               )
             else
               const QaddyEmptyState(
@@ -114,32 +114,27 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
             SizedBox(height: spacing.lg),
             TripsQuickActions(
-              onCreateTrip: () => context.push(AppRoutes.tripDetails),
+              onCreateTrip: () => context.push(AppRoutes.tripCreate),
               onBrowseTrips: _browseTrips,
             ),
-            if (moreUpcoming.isNotEmpty) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              _SectionHeading(label: 'Coming Up', headingKey: _listKey),
-              SizedBox(height: spacing.md),
-              TripCardGrid(
-                children: <Widget>[
-                  for (final trip in moreUpcoming) _TripListCard(trip: trip),
-                ],
+            if (moreUpcoming.isNotEmpty)
+              _TripSection(
+                label: 'Upcoming Trips',
+                trips: moreUpcoming,
+                headingKey: nextListKey(),
               ),
-            ],
-            if (past.isNotEmpty) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              _SectionHeading(
+            if (past.isNotEmpty)
+              _TripSection(
                 label: 'Past Trips',
-                headingKey: moreUpcoming.isEmpty ? _listKey : null,
+                trips: past,
+                headingKey: nextListKey(),
               ),
-              SizedBox(height: spacing.md),
-              TripCardGrid(
-                children: <Widget>[
-                  for (final trip in past) _TripListCard(trip: trip),
-                ],
+            if (archived.isNotEmpty)
+              _TripSection(
+                label: 'Archived',
+                trips: archived,
+                headingKey: nextListKey(),
               ),
-            ],
             SizedBox(height: spacing.xl),
           ],
         ),
@@ -148,48 +143,67 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 }
 
-/// Whether [trip] is the one trip with full detail data (see
-/// `docs/features/trips-feature-integration.md`'s "Shared Placeholder Data").
-bool _isDetailed(Trip trip) => trip.id == melbourneGolfWeekend.id;
+class _NextTripHero extends ConsumerWidget {
+  const _NextTripHero({required this.trip, required this.now});
 
-class _SectionHeading extends StatelessWidget {
-  const _SectionHeading({required this.label, this.headingKey});
+  final Trip trip;
+  final DateTime? now;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plan = ref.watch(tripPlanProvider(trip.id));
+    final snapshot = tripSnapshot(plan);
+
+    return TripHeroCard(
+      trip: trip,
+      countdown: tripCountdown(trip, now: now),
+      snapshot: snapshot.isEmpty ? null : snapshot,
+      onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
+    );
+  }
+}
+
+class _TripSection extends StatelessWidget {
+  const _TripSection({
+    required this.label,
+    required this.trips,
+    required this.headingKey,
+  });
 
   final String label;
+  final List<Trip> trips;
   final Key? headingKey;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return Semantics(
-      header: true,
-      child: Text(
-        label,
-        key: headingKey,
-        style: typography.h3.copyWith(color: colours.textPrimary),
-      ),
-    );
-  }
-}
-
-/// A trip card that opens Trip Details only for Melbourne Golf Weekend — the
-/// only trip with full detail data. Other trips render the same card without
-/// navigation, since there's no detail data for them to open.
-class _TripListCard extends StatelessWidget {
-  const _TripListCard({required this.trip});
-
-  final Trip trip;
-
-  @override
-  Widget build(BuildContext context) {
-    return QaddyTripCard(
-      trip: trip,
-      onTap: _isDetailed(trip)
-          ? () => context.push(AppRoutes.tripDetails)
-          : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(height: spacing.sectionGap),
+        Semantics(
+          header: true,
+          child: Text(
+            label,
+            key: headingKey,
+            style: typography.h3.copyWith(color: colours.textPrimary),
+          ),
+        ),
+        SizedBox(height: spacing.md),
+        TripCardGrid(
+          children: <Widget>[
+            for (final trip in trips)
+              QaddyTripCard(
+                trip: trip,
+                onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
+              ),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -1,12 +1,17 @@
-/// The Trips feature's shared placeholder data.
+/// The Trips feature's seed placeholder data.
 ///
-/// See `docs/standards/placeholder-trip-data.md`. Per
-/// `docs/features/trips-feature-integration.md`'s "Shared Placeholder
-/// Data" section, one trip (Melbourne Golf Weekend) is the single shared
-/// placeholder trip referenced by every detail screen (Trip Details,
-/// Planning, Travel, Accommodation, Golf Schedule, Expenses, Chat,
-/// Complete). The other three trips only need the summary fields shown on
-/// the Trips list screen.
+/// See `docs/standards/placeholder-trip-data.md`. These are the trips the
+/// in-memory store starts with (`state/trips_controller.dart`); everything a
+/// golfer then creates or edits lives in that store, not here.
+///
+/// Melbourne Golf Weekend is the one trip seeded with a complete plan, so
+/// every screen has real content to show. The other three trips start with
+/// only their summary — their detail sections show empty states inviting the
+/// golfer to fill them in, exactly as a trip they had just created would.
+///
+/// Every contact detail, booking reference, rating and price below is
+/// fictional placeholder data (phone numbers use the reserved "555" range
+/// and websites use `.example`).
 library;
 
 import 'package:qaddy/features/trips/models/trip.dart';
@@ -17,6 +22,7 @@ import 'package:qaddy/features/trips/models/trip_golf.dart';
 import 'package:qaddy/features/trips/models/trip_itinerary.dart';
 import 'package:qaddy/features/trips/models/trip_member.dart';
 import 'package:qaddy/features/trips/models/trip_message.dart';
+import 'package:qaddy/features/trips/models/trip_plan.dart';
 import 'package:qaddy/features/trips/models/trip_result.dart';
 import 'package:qaddy/features/trips/models/trip_transport.dart';
 import 'package:qaddy/features/trips/models/trip_weather.dart';
@@ -25,8 +31,11 @@ import 'package:qaddy/features/trips/models/trip_weather.dart';
 // Decisions.
 const String _organiser = 'Tiamana';
 
-/// Melbourne Golf Weekend — the shared placeholder trip with full detail
-/// data across every Trips screen.
+/// The signed-in golfer's name — the organiser of every seeded trip and of
+/// any trip created in the app. Matches Profile's placeholder subject.
+const String currentUserName = _organiser;
+
+/// Melbourne Golf Weekend — the one trip seeded with a complete plan.
 final Trip melbourneGolfWeekend = Trip(
   id: 'melbourne-golf-weekend',
   name: 'Melbourne Golf Weekend',
@@ -37,6 +46,10 @@ final Trip melbourneGolfWeekend = Trip(
   status: TripStatus.confirmed,
   organiserId: _organiser,
   playerCount: 8,
+  coverImage: 'fairway',
+  description:
+      'Three Sandbelt rounds, a winery lunch and a weekend away with the '
+      'Saturday Boys.',
 );
 
 /// Gold Coast Golf Escape — summary-only upcoming trip.
@@ -50,6 +63,7 @@ final Trip goldCoastGolfEscape = Trip(
   status: TripStatus.planning,
   organiserId: _organiser,
   playerCount: 12,
+  coverImage: 'coast',
 );
 
 /// Tasmania Golf Tour — summary-only past trip.
@@ -63,6 +77,7 @@ final Trip tasmaniaGolfTour = Trip(
   status: TripStatus.completed,
   organiserId: _organiser,
   playerCount: 8,
+  coverImage: 'highlands',
 );
 
 /// Queenstown Golf Adventure — summary-only past trip.
@@ -76,196 +91,405 @@ final Trip queenstownGolfAdventure = Trip(
   status: TripStatus.completed,
   organiserId: _organiser,
   playerCount: 10,
+  coverImage: 'sunset',
 );
 
-/// Upcoming trips, ordered by start date — see placeholder-trip-data.md's
-/// "UI Rules" ("Trips are ordered by Start Date").
-final List<Trip> upcomingTrips = <Trip>[
+/// Every seeded trip.
+final List<Trip> seedTrips = <Trip>[
   melbourneGolfWeekend,
   goldCoastGolfEscape,
+  tasmaniaGolfTour,
+  queenstownGolfAdventure,
 ];
 
-/// Past (completed) trips, newest first — see placeholder-trip-data.md's
-/// "UI Rules" ("Completed Trips appear newest first").
-final List<Trip> pastTrips = <Trip>[tasmaniaGolfTour, queenstownGolfAdventure];
-
-/// Melbourne Golf Weekend's participants.
-const List<TripMember> melbourneGolfWeekendMembers = <TripMember>[
-  TripMember(
-    displayName: 'Tiamana',
-    handicap: 8.4,
-    role: TripRole.organiser,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Ben',
-    handicap: 12,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Luke',
-    handicap: 5,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Josh',
-    handicap: 15,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Nick',
-    handicap: 10,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Sam',
-    handicap: 18,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Liam',
-    handicap: 7,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
-  TripMember(
-    displayName: 'Jack',
-    handicap: 22,
-    role: TripRole.player,
-    status: ParticipantStatus.confirmed,
-  ),
+const List<String> _squad = <String>[
+  'Tiamana',
+  'Ben',
+  'Luke',
+  'Josh',
+  'Nick',
+  'Sam',
+  'Liam',
+  'Jack',
 ];
 
-/// Melbourne Golf Weekend's day-by-day schedule.
-const List<TripItineraryEntry> melbourneGolfWeekendItinerary =
-    <TripItineraryEntry>[
-      TripItineraryEntry(
-        date: '28 Nov',
-        activity: 'Arrive Melbourne',
-        time: '11:30 AM',
-      ),
-      TripItineraryEntry(date: '28 Nov', activity: 'Check In', time: '2:00 PM'),
-      TripItineraryEntry(
-        date: '29 Nov',
-        activity: 'Golf - Kingston Heath',
-        time: '8:10 AM',
-      ),
-      TripItineraryEntry(
-        date: '30 Nov',
-        activity: 'Golf - Royal Melbourne',
-        time: '8:00 AM',
-      ),
-      TripItineraryEntry(
-        date: '1 Dec',
-        activity: 'Golf - Peninsula Kingswood',
-        time: '9:20 AM',
-      ),
-    ];
-
-/// Melbourne Golf Weekend's golf courses.
-const List<TripCourse> melbourneGolfWeekendCourses = <TripCourse>[
-  TripCourse(name: 'Kingston Heath', teeTime: '8:10 AM'),
-  TripCourse(name: 'Royal Melbourne', teeTime: '8:00 AM'),
-  TripCourse(name: 'Peninsula Kingswood', teeTime: '9:20 AM'),
-];
-
-/// Melbourne Golf Weekend's Round 1 playing groups.
-const List<TripPlayingGroup> melbourneGolfWeekendPlayingGroups =
-    <TripPlayingGroup>[
-      TripPlayingGroup(
-        name: 'Group 1',
-        players: <String>['Tiamana', 'Ben', 'Luke', 'Josh'],
-      ),
-      TripPlayingGroup(
-        name: 'Group 2',
-        players: <String>['Nick', 'Sam', 'Liam', 'Jack'],
-      ),
-    ];
-
-/// Melbourne Golf Weekend's configured side games.
-const List<TripSideGame> melbourneGolfWeekendSideGames = <TripSideGame>[
-  TripSideGame(name: 'Longest Drive', hole: 5),
-  TripSideGame(name: 'Nearest The Pin', hole: 8),
-  TripSideGame(name: 'Longest Putt', hole: 12),
-];
-
-/// Melbourne Golf Weekend's accommodation.
-const TripAccommodation melbourneGolfWeekendAccommodation = TripAccommodation(
-  name: 'RACV Healesville Resort',
-  address: '122 Healesville-Kinglake Road, Healesville VIC',
-  contact: '(03) 5962 4899',
-  checkIn: '28 November',
-  checkOut: '1 December',
+/// Melbourne Golf Weekend's plan.
+final TripPlan melbourneGolfWeekendPlan = TripPlan(
+  members: const <TripMember>[
+    TripMember(
+      displayName: 'Tiamana',
+      handicap: 8.4,
+      role: TripRole.organiser,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Ben',
+      handicap: 12,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Luke',
+      handicap: 5,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Josh',
+      handicap: 15,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Nick',
+      handicap: 10,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Sam',
+      handicap: 18,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Liam',
+      handicap: 7,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Jack',
+      handicap: 22,
+      role: TripRole.player,
+      status: ParticipantStatus.confirmed,
+    ),
+    TripMember(
+      displayName: 'Tom',
+      handicap: 8,
+      role: TripRole.player,
+      status: ParticipantStatus.pending,
+    ),
+  ],
+  courses: <TripCourse>[
+    TripCourse(
+      id: 'kingston-heath',
+      name: 'Kingston Heath',
+      teeTime: DateTime(2026, 11, 29, 8, 10),
+      address: '1 Heath Road, Cheltenham VIC 3192',
+      phone: '(03) 5550 0141',
+      website: 'www.kingstonheath.example',
+      courseRating: 73.8,
+      slope: 138,
+      players: _squad,
+      greenFee: 250,
+      dressCode:
+          'Collared shirt and tailored shorts or trousers. Soft spikes only.',
+      notes:
+          'Carts are limited, so book early. Meet in the pro shop 30 minutes '
+          'before.',
+    ),
+    TripCourse(
+      id: 'royal-melbourne',
+      name: 'Royal Melbourne',
+      teeTime: DateTime(2026, 11, 30, 8),
+      address: '12 Cheltenham Road, Black Rock VIC 3193',
+      phone: '(03) 5550 0182',
+      website: 'www.royalmelbourne.example',
+      courseRating: 74.5,
+      slope: 140,
+      players: _squad,
+      greenFee: 300,
+      dressCode: 'Jacket not required. Collared shirt, no denim.',
+      notes: 'Caddies available on request — arrange in the pro shop.',
+    ),
+    TripCourse(
+      id: 'peninsula-kingswood',
+      name: 'Peninsula Kingswood',
+      teeTime: DateTime(2026, 12, 1, 9, 20),
+      address: '450 Country Club Drive, Frankston VIC 3199',
+      phone: '(03) 5550 0127',
+      website: 'www.peninsulakingswood.example',
+      courseRating: 72.6,
+      slope: 132,
+      players: _squad,
+      greenFee: 180,
+      dressCode: 'Smart golf attire. Metal spikes not permitted.',
+      notes: 'Last round — leave by 3 pm for the airport.',
+    ),
+  ],
+  playingGroups: const <TripPlayingGroup>[
+    TripPlayingGroup(
+      name: 'Group 1',
+      players: <String>['Tiamana', 'Ben', 'Luke', 'Josh'],
+    ),
+    TripPlayingGroup(
+      name: 'Group 2',
+      players: <String>['Nick', 'Sam', 'Liam', 'Jack'],
+    ),
+  ],
+  sideGames: const <TripSideGame>[
+    TripSideGame(name: 'Longest Drive', hole: 5),
+    TripSideGame(name: 'Nearest The Pin', hole: 8),
+    TripSideGame(name: 'Longest Putt', hole: 12),
+  ],
+  flights: <TripFlight>[
+    TripFlight(
+      id: 'qf431',
+      airline: 'Qantas',
+      flightNumber: 'QF431',
+      fromAirport: 'Sydney',
+      toAirport: 'Melbourne',
+      departure: DateTime(2026, 11, 28, 8, 30),
+      arrival: DateTime(2026, 11, 28, 10, 5),
+      terminal: 'Terminal 3',
+      gate: 'Gate 12',
+      seat: '14A',
+      boarding: DateTime(2026, 11, 28, 7, 55),
+      bookingReference: 'QK7P2M',
+    ),
+    TripFlight(
+      id: 'qf438',
+      airline: 'Qantas',
+      flightNumber: 'QF438',
+      fromAirport: 'Melbourne',
+      toAirport: 'Sydney',
+      departure: DateTime(2026, 12, 1, 18, 15),
+      arrival: DateTime(2026, 12, 1, 19, 50),
+      terminal: 'Terminal 1',
+      gate: 'Gate 24',
+      seat: '14A',
+      boarding: DateTime(2026, 12, 1, 17, 40),
+      bookingReference: 'QK7P2M',
+    ),
+  ],
+  accommodations: <TripAccommodation>[
+    TripAccommodation(
+      id: 'racv-healesville',
+      name: 'RACV Healesville Resort',
+      checkIn: DateTime(2026, 11, 28, 14),
+      checkOut: DateTime(2026, 12, 1, 10),
+      address: '122 Healesville-Kinglake Road, Healesville VIC',
+      phone: '(03) 5550 4899',
+      website: 'www.racvhealesville.example',
+      bookingNumber: 'RHR-482910',
+      rooms: const <TripRoom>[
+        TripRoom(name: 'Room 101', guests: <String>['Tiamana', 'Ben']),
+        TripRoom(name: 'Room 102', guests: <String>['Luke', 'Josh']),
+        TripRoom(name: 'Room 103', guests: <String>['Nick', 'Sam']),
+        TripRoom(name: 'Room 104', guests: <String>['Liam', 'Jack']),
+      ],
+      totalCost: 3360,
+      notes: 'Breakfast included. Late check-out requested for Monday.',
+    ),
+  ],
+  transport: <TripTransport>[
+    TripTransport(
+      id: 'airport-transfer',
+      type: TransportType.airportTransfer,
+      pickup: DateTime(2026, 11, 28, 12, 15),
+      from: 'Melbourne Airport',
+      to: 'RACV Healesville',
+      driver: 'Daniel (Yarra Valley Shuttles)',
+      vehicle: '12-seat minibus',
+      bookingReference: 'YVS-30871',
+    ),
+    TripTransport(
+      id: 'car-sat',
+      type: TransportType.rentalCar,
+      pickup: DateTime(2026, 11, 29, 7),
+      from: 'RACV Healesville',
+      to: 'Kingston Heath',
+      driver: 'Ben',
+      vehicle: '2 × Toyota Kluger (7 seat)',
+      bookingReference: 'HZ-559201',
+    ),
+    TripTransport(
+      id: 'car-sun',
+      type: TransportType.rentalCar,
+      pickup: DateTime(2026, 11, 30, 6, 50),
+      from: 'RACV Healesville',
+      to: 'Royal Melbourne',
+      driver: 'Ben',
+      vehicle: '2 × Toyota Kluger (7 seat)',
+      bookingReference: 'HZ-559201',
+    ),
+    TripTransport(
+      id: 'car-mon',
+      type: TransportType.rentalCar,
+      pickup: DateTime(2026, 12, 1, 8, 10),
+      from: 'RACV Healesville',
+      to: 'Peninsula Kingswood',
+      driver: 'Luke',
+      vehicle: '2 × Toyota Kluger (7 seat)',
+      bookingReference: 'HZ-559201',
+      notes: 'Return the cars to Melbourne Airport after the round.',
+    ),
+  ],
+  itinerary: <TripItineraryItem>[
+    TripItineraryItem(
+      id: 'dinner',
+      kind: ItineraryKind.food,
+      title: 'Team dinner',
+      start: DateTime(2026, 11, 29, 19),
+      location: 'The Healesville Hotel',
+      notes: 'Table booked for 9 under "Tiamana".',
+    ),
+    TripItineraryItem(
+      id: 'winery',
+      kind: ItineraryKind.activity,
+      title: 'Yarra Valley winery visit',
+      start: DateTime(2026, 11, 30, 16),
+      location: 'Yarra Valley',
+    ),
+  ],
+  expenses: <TripExpense>[
+    TripExpense(
+      id: 'exp-accommodation',
+      title: 'RACV Healesville — 3 nights',
+      category: ExpenseCategory.accommodation,
+      amount: 3360,
+      paidBy: 'Tiamana',
+      date: DateTime(2026, 10, 2),
+      participants: _squad,
+      settled: const <String>{'Ben', 'Luke', 'Josh', 'Nick', 'Liam'},
+    ),
+    TripExpense(
+      id: 'exp-golf',
+      title: 'Green fees — 3 rounds',
+      category: ExpenseCategory.golf,
+      amount: 5840,
+      paidBy: 'Ben',
+      date: DateTime(2026, 10, 9),
+      participants: _squad,
+      settled: const <String>{'Luke', 'Josh'},
+    ),
+    TripExpense(
+      id: 'exp-food',
+      title: 'Dinner deposits',
+      category: ExpenseCategory.food,
+      amount: 1200,
+      paidBy: 'Luke',
+      date: DateTime(2026, 10, 15),
+      participants: _squad,
+    ),
+    TripExpense(
+      id: 'exp-transport',
+      title: 'Cars and airport transfer',
+      category: ExpenseCategory.transport,
+      amount: 1100,
+      paidBy: 'Tiamana',
+      date: DateTime(2026, 10, 12),
+      participants: _squad,
+      settled: const <String>{
+        'Ben',
+        'Luke',
+        'Josh',
+        'Nick',
+        'Sam',
+        'Liam',
+        'Jack',
+      },
+    ),
+  ],
+  tasks: <TripTask>[
+    const TripTask(id: 'task-flights', title: 'Book flights', done: true),
+    const TripTask(id: 'task-stay', title: 'Book accommodation', done: true),
+    const TripTask(id: 'task-tee', title: 'Lock in tee times', done: true),
+    TripTask(
+      id: 'task-dinner',
+      title: 'Reserve Sunday dinner',
+      due: DateTime(2026, 11, 20),
+    ),
+    TripTask(
+      id: 'task-cars',
+      title: 'Confirm rental car drivers',
+      due: DateTime(2026, 11, 22),
+    ),
+    const TripTask(id: 'task-pack', title: 'Share the packing list'),
+  ],
+  packing: const <PackingItem>[
+    PackingItem(id: 'pack-clubs', label: 'Clubs and travel bag', packed: true),
+    PackingItem(id: 'pack-shoes', label: 'Golf shoes (soft spikes)'),
+    PackingItem(id: 'pack-glove', label: 'Gloves and balls'),
+    PackingItem(id: 'pack-rain', label: 'Rain jacket'),
+    PackingItem(id: 'pack-sun', label: 'Sunscreen and cap'),
+    PackingItem(id: 'pack-range', label: 'Rangefinder'),
+    PackingItem(id: 'pack-dinner', label: 'Smart casual outfit for dinner'),
+    PackingItem(id: 'pack-charger', label: 'Phone charger'),
+  ],
+  weather: const <TripWeatherForecast>[
+    TripWeatherForecast(
+      id: 'w-sat',
+      day: 'Saturday',
+      condition: WeatherCondition.sunny,
+      high: 24,
+      low: 14,
+    ),
+    TripWeatherForecast(
+      id: 'w-sun',
+      day: 'Sunday',
+      condition: WeatherCondition.partlyCloudy,
+      high: 22,
+      low: 13,
+    ),
+    TripWeatherForecast(
+      id: 'w-mon',
+      day: 'Monday',
+      condition: WeatherCondition.sunny,
+      high: 25,
+      low: 15,
+    ),
+    TripWeatherForecast(
+      id: 'w-tue',
+      day: 'Tuesday',
+      condition: WeatherCondition.showers,
+      high: 20,
+      low: 12,
+    ),
+  ],
+  messages: <TripMessage>[
+    TripMessage(
+      id: 'm1',
+      sender: 'Tiamana',
+      text: 'Looking forward to this trip!',
+      sentAt: DateTime(2026, 10, 24, 19, 12),
+    ),
+    TripMessage(
+      id: 'm2',
+      sender: 'Ben',
+      text: "Can't wait.",
+      sentAt: DateTime(2026, 10, 24, 19, 18),
+    ),
+    TripMessage(
+      id: 'm3',
+      sender: 'Luke',
+      text: 'See everyone Saturday morning.',
+      sentAt: DateTime(2026, 10, 24, 19, 42),
+    ),
+  ],
+  notes:
+      'Bring cash for caddies at Royal Melbourne. Dinner reservations are '
+      'under Tiamana.',
+  updates: <TripUpdate>[
+    TripUpdate(
+      text: 'Added the team dinner on Sunday',
+      at: DateTime(2026, 10, 22, 18, 5),
+    ),
+    TripUpdate(
+      text: 'Royal Melbourne tee time moved to 8:00 AM',
+      at: DateTime(2026, 10, 23, 9, 30),
+    ),
+  ],
 );
 
-/// Melbourne Golf Weekend's flight.
-const TripFlight melbourneGolfWeekendFlight = TripFlight(
-  airline: 'Qantas',
-  flightNumber: 'QF431',
-  departure: 'Sydney 8:30 AM',
-  arrival: 'Melbourne 10:05 AM',
-);
+/// The plan each seeded trip starts with, keyed by trip id. Trips without an
+/// entry start with an empty plan.
+final Map<String, TripPlan> seedPlans = <String, TripPlan>{
+  melbourneGolfWeekend.id: melbourneGolfWeekendPlan,
+};
 
-/// Melbourne Golf Weekend's local transport.
-const List<TripTransportLeg> melbourneGolfWeekendTransport = <TripTransportLeg>[
-  TripTransportLeg(
-    date: '28 Nov',
-    type: 'Airport Transfer',
-    details: 'Melbourne Airport → RACV Healesville',
-    time: '12:15 PM',
-  ),
-  TripTransportLeg(
-    date: '29 Nov',
-    type: 'Rental Car',
-    details: 'RACV → Kingston Heath',
-    time: '7:00 AM',
-  ),
-  TripTransportLeg(
-    date: '30 Nov',
-    type: 'Rental Car',
-    details: 'RACV → Royal Melbourne',
-    time: '6:50 AM',
-  ),
-  TripTransportLeg(
-    date: '1 Dec',
-    type: 'Rental Car',
-    details: 'RACV → Peninsula Kingswood',
-    time: '8:10 AM',
-  ),
-];
-
-/// Melbourne Golf Weekend's shared expense categories.
-const List<TripExpenseItem> melbourneGolfWeekendExpenses = <TripExpenseItem>[
-  TripExpenseItem(title: 'Accommodation', amount: 2100),
-  TripExpenseItem(title: 'Golf', amount: 1350),
-  TripExpenseItem(title: 'Food', amount: 650),
-  TripExpenseItem(title: 'Transport', amount: 420),
-];
-
-/// Melbourne Golf Weekend's estimated total spend.
-const double melbourneGolfWeekendEstimatedTotal = 4520;
-
-/// Melbourne Golf Weekend's individual payments.
-const List<TripPayment> melbourneGolfWeekendPayments = <TripPayment>[
-  TripPayment(playerName: 'Tiamana', amountPaid: 600),
-  TripPayment(playerName: 'Ben', amountPaid: 560),
-  TripPayment(playerName: 'Luke', amountPaid: 550),
-  TripPayment(playerName: 'Josh', amountPaid: 550),
-  TripPayment(playerName: 'Nick', amountPaid: 550),
-  TripPayment(playerName: 'Sam', amountPaid: 550),
-  TripPayment(playerName: 'Liam', amountPaid: 580),
-  TripPayment(playerName: 'Jack', amountPaid: 580),
-];
-
-/// Melbourne Golf Weekend's outstanding balance — all expenses are settled.
-const double melbourneGolfWeekendOutstandingBalance = 0;
-
-/// Melbourne Golf Weekend's final results.
+/// Melbourne Golf Weekend's final results (shown on Trip Complete).
 const List<TripAward> melbourneGolfWeekendResults = <TripAward>[
   TripAward(award: 'Trip Champion', winner: 'Tiamana'),
   TripAward(award: 'Runner Up', winner: 'Ben'),
@@ -273,51 +497,9 @@ const List<TripAward> melbourneGolfWeekendResults = <TripAward>[
   TripAward(award: 'Nearest The Pin', winner: 'Josh'),
 ];
 
-/// Melbourne Golf Weekend's chat messages.
-const List<TripMessage> melbourneGolfWeekendMessages = <TripMessage>[
-  TripMessage(
-    sender: 'Tiamana',
-    message: 'Looking forward to this trip!',
-    time: '7:12 PM',
-  ),
-  TripMessage(sender: 'Ben', message: "Can't wait.", time: '7:18 PM'),
-  TripMessage(
-    sender: 'Luke',
-    message: 'See everyone Saturday morning.',
-    time: '7:42 PM',
-  ),
-];
-
-/// Melbourne Golf Weekend's weather forecast.
-const List<TripWeatherForecast> melbourneGolfWeekendWeather =
-    <TripWeatherForecast>[
-      TripWeatherForecast(
-        day: 'Saturday',
-        forecast: 'Sunny',
-        high: '24°C',
-        low: '14°C',
-      ),
-      TripWeatherForecast(
-        day: 'Sunday',
-        forecast: 'Partly Cloudy',
-        high: '22°C',
-        low: '13°C',
-      ),
-      TripWeatherForecast(
-        day: 'Monday',
-        forecast: 'Sunny',
-        high: '25°C',
-        low: '15°C',
-      ),
-      TripWeatherForecast(
-        day: 'Tuesday',
-        forecast: 'Showers',
-        high: '20°C',
-        low: '12°C',
-      ),
-    ];
-
 /// Trip-wide statistics — see placeholder-trip-data.md's "Trip Statistics".
+/// Profile reads these seed counts for its own summary; they describe the
+/// seeded trips, not trips created since.
 const int upcomingTripsCount = 2;
 const int pastTripsCount = 2;
 const int countriesVisitedCount = 2;

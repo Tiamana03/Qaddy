@@ -75,6 +75,9 @@ extension DateExtensions on DateTime {
     return to.difference(from).inDays;
   }
 
+  /// This date's full weekday name, e.g. "Saturday".
+  String get weekdayName => _weekdayNames[weekday - 1];
+
   /// This date's month as a three-letter abbreviation, e.g. "Nov".
   String get monthAbbreviation => _monthAbbreviations[month - 1];
 
@@ -97,6 +100,18 @@ extension DateExtensions on DateTime {
     }
     return '$day–${end.day} ${_monthAbbreviations[month - 1]} $year';
   }
+
+  /// A 12-hour clock time, e.g. "8:10 AM" or "12:00 PM".
+  String toFriendlyTime() {
+    final hour12 = hour % 12 == 0 ? 12 : hour % 12;
+    final minuteText = minute.toString().padLeft(2, '0');
+    return '$hour12:$minuteText ${hour < 12 ? 'AM' : 'PM'}';
+  }
+
+  /// A short weekday and date, e.g. "Sat 28 Nov".
+  String toShortWeekdayAndDate() =>
+      '${_weekdayNames[weekday - 1].substring(0, 3)} $day '
+      '${_monthAbbreviations[month - 1]}';
 
   /// A full weekday name and date with no year, e.g. "Tuesday 22 September" —
   /// matches the Dashboard's Welcome Header example in

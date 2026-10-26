@@ -81,6 +81,58 @@ abstract final class QaddyTheme {
         elevation: 0,
         foregroundColor: colours.textPrimary,
       ),
+      // Material's default switch uses `primary` for its "on" track — dark
+      // green, invisible on Dark Mode surfaces. Use the readable accent.
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? colours.background
+              : colours.textTertiary,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? colours.accent
+              : colours.surface2,
+        ),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? colours.accent
+              : colours.border,
+        ),
+      ),
+      // Like the switch, these Material controls default to `primary`, which
+      // is dark green in Dark Mode: picker buttons, checkboxes and the
+      // selected day would be near-invisible without the readable accent.
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(foregroundColor: colours.accent),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? colours.accent
+              : Colors.transparent,
+        ),
+        checkColor: WidgetStatePropertyAll<Color>(colours.background),
+        side: BorderSide(color: colours.textTertiary, width: 2),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: colours.surface1,
+        surfaceTintColor: Colors.transparent,
+      ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: colours.surface1,
+        surfaceTintColor: Colors.transparent,
+        dayBackgroundColor: WidgetStateProperty.resolveWith(
+          (states) =>
+              states.contains(WidgetState.selected) ? colours.accent : null,
+        ),
+        dayForegroundColor: WidgetStateProperty.resolveWith(
+          (states) =>
+              states.contains(WidgetState.selected) ? colours.background : null,
+        ),
+        todayForegroundColor: WidgetStatePropertyAll<Color>(colours.accent),
+        todayBorder: BorderSide(color: colours.accent),
+      ),
       extensions: <ThemeExtension<dynamic>>[
         colours,
         QaddyTypography.standard,

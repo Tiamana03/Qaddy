@@ -1,16 +1,15 @@
 /// What the Trips hero can say about a trip beyond its name and dates.
 ///
-/// Everything here is read from the trip's existing placeholder data
-/// (members, courses, weather, expenses, chat) — nothing is invented. Only
-/// the shared placeholder trip (Melbourne Golf Weekend) has that detail
-/// data, so every other trip returns `null`, mirroring how the Trips list
-/// only opens details for that one trip.
+/// Everything here is read from the trip's own plan (courses, weather,
+/// expenses, members, chat) — nothing is invented, and a section the golfer
+/// hasn't filled in simply doesn't appear. A brand-new trip therefore yields
+/// an empty snapshot, and the hero shows only its countdown and dates.
 library;
 
 import 'package:flutter/material.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/models/trip.dart';
-import 'package:qaddy/features/trips/models/trip_member.dart';
+import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/features/trips/logic/expense_ledger.dart';
+import 'package:qaddy/features/trips/models/trip_plan.dart';
 
 /// One labelled fact on the hero, e.g. "First tee — Kingston Heath · 8:10 AM".
 class TripHighlight {
@@ -45,44 +44,50 @@ class TripSnapshot {
 
   /// The most recent chat message, as "Sender: message".
   final String? latestUpdate;
+
+  /// Whether there is anything to show.
+  bool get isEmpty =>
+      highlights.isEmpty && squad.isEmpty && latestUpdate == null;
 }
 
-/// The snapshot for [trip], or `null` when it has no detail data.
-TripSnapshot? tripSnapshot(Trip trip) {
-  if (trip.id != melbourneGolfWeekend.id) {
-    return null;
-  }
-
-  final firstCourse = melbourneGolfWeekendCourses.first;
-  final firstForecast = melbourneGolfWeekendWeather.first;
-  const outstanding = melbourneGolfWeekendOutstandingBalance;
-  final latest = melbourneGolfWeekendMessages.last;
+/// The snapshot for a trip with the given [plan].
+TripSnapshot tripSnapshot(TripPlan plan) {
+  final courses = [...plan.courses]
+    ..sort((a, b) => a.teeTime.compareTo(b.teeTime));
+  final summary = summariseExpenses(plan.expenses);
 
   return TripSnapshot(
     highlights: <TripHighlight>[
-      TripHighlight(
-        icon: Icons.golf_course_outlined,
-        label: 'First tee',
-        value: '${firstCourse.name} · ${firstCourse.teeTime}',
-        wide: true,
-      ),
-      TripHighlight(
-        icon: Icons.wb_sunny_outlined,
-        label: '${firstForecast.day} forecast',
-        value: '${firstForecast.forecast}, ${firstForecast.high}',
-      ),
-      TripHighlight(
-        icon: Icons.receipt_long_outlined,
-        label: 'Expenses',
-        value: outstanding == 0
-            ? 'All settled'
-            : '\$${outstanding.toStringAsFixed(0)} outstanding',
-      ),
+      if (courses.isNotEmpty)
+        TripHighlight(
+          icon: Icons.golf_course_outlined,
+          label: 'First tee',
+          value:
+              '${courses.first.name} · '
+              '${courses.first.teeTime.toFriendlyTime()}',
+          wide: true,
+        ),
+      if (plan.weather.isNotEmpty)
+        TripHighlight(
+          icon: plan.weather.first.condition.icon,
+          label: '${plan.weather.first.day} forecast',
+          value:
+              '${plan.weather.first.forecast}, ${plan.weather.first.highLabel}',
+        ),
+      if (plan.expenses.isNotEmpty)
+        TripHighlight(
+          icon: Icons.receipt_long_outlined,
+          label: 'Expenses',
+          value: summary.isSettled
+              ? 'All settled'
+              : '${formatMoney(summary.outstanding)} outstanding',
+        ),
     ],
     squad: <String>[
-      for (final member in melbourneGolfWeekendMembers)
-        if (member.status == ParticipantStatus.confirmed) member.displayName,
+      for (final member in plan.confirmedMembers) member.displayName,
     ],
-    latestUpdate: '${latest.sender}: ${latest.message}',
+    latestUpdate: plan.messages.isEmpty
+        ? null
+        : '${plan.messages.last.sender}: ${plan.messages.last.text}',
   );
 }

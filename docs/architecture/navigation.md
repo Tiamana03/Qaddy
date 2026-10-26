@@ -156,14 +156,17 @@ Round Complete
 | Route | Screen |
 |--------|--------|
 | /trips | Trips Home |
-| /trips/details | Trip Details |
-| /trips/planning | Trip Planning |
-| /trips/travel | Travel |
-| /trips/accommodation | Accommodation |
-| /trips/golf | Golf Schedule |
-| /trips/expenses | Expenses |
-| /trips/chat | Trip Chat |
-| /trips/complete | Trip Complete |
+| /trips/create | Create Trip |
+| /trips/:tripId | Trip Details |
+| /trips/:tripId/planning | Trip Planning |
+| /trips/:tripId/flights | Flights |
+| /trips/:tripId/accommodation | Accommodation |
+| /trips/:tripId/golf | Golf Schedule |
+| /trips/:tripId/expenses | Expenses |
+| /trips/:tripId/chat | Trip Chat |
+| /trips/:tripId/complete | Trip Complete |
+
+Trip routes carry the trip's id so every trip, not just one, has its own pages. `create` is registered before `:tripId` so it is never read as an id. Further routes (flight and course pages, transport, edit, settings, invite, export) are added with the screens that use them; `AppRoutes` holds a builder for each.
 
 ### Navigation Structure
 
@@ -302,9 +305,10 @@ Example:
 
 ```
 /trips
-    /details
+    /create
+    /:tripId
     /planning
-    /travel
+    /flights
 ```
 
 ---

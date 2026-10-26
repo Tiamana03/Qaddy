@@ -11,14 +11,33 @@ abstract final class AppRoutes {
   static const String home = '/home';
   static const String rounds = '/rounds';
   static const String trips = '/trips';
-  static const String tripDetails = '/trips/details';
-  static const String tripPlanning = '/trips/planning';
-  static const String tripTravel = '/trips/travel';
-  static const String tripAccommodation = '/trips/accommodation';
-  static const String tripGolf = '/trips/golf';
-  static const String tripExpenses = '/trips/expenses';
-  static const String tripChat = '/trips/chat';
-  static const String tripComplete = '/trips/complete';
+  static const String tripCreate = '/trips/create';
+
+  // Trip routes carry the trip's id: `/trips/:tripId/...`. Only the
+  // helpers below build them, so no screen hand-assembles a path.
+  static String tripDetails(String id) => '/trips/$id';
+  static String tripPlanning(String id) => '/trips/$id/planning';
+  static String tripFlights(String id) => '/trips/$id/flights';
+  static String tripFlight(String id, String flightId) =>
+      '/trips/$id/flights/$flightId';
+  static String tripAccommodation(String id) => '/trips/$id/accommodation';
+  static String tripTransport(String id) => '/trips/$id/transport';
+  static String tripGolf(String id) => '/trips/$id/golf';
+  static String tripCourse(String id, String courseId) =>
+      '/trips/$id/golf/$courseId';
+  static String tripExpenses(String id) => '/trips/$id/expenses';
+  static String tripChat(String id) => '/trips/$id/chat';
+  static String tripComplete(String id) => '/trips/$id/complete';
+  static String tripEdit(String id) => '/trips/$id/edit';
+  static String tripEditSection(String id, String section) =>
+      '/trips/$id/edit/$section';
+
+  /// An item form inside an edit section; [itemId] is `new` to add one.
+  static String tripEditItem(String id, String section, String itemId) =>
+      '/trips/$id/edit/$section/$itemId';
+  static String tripSettings(String id) => '/trips/$id/settings';
+  static String tripInvite(String id) => '/trips/$id/invite';
+  static String tripExport(String id) => '/trips/$id/export';
   static const String friends = '/friends';
   static const String friendsList = '/friends/list';
   static const String friendProfile = '/friends/profile';

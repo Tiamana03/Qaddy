@@ -10,6 +10,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
@@ -25,18 +26,17 @@ import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/search/models/search_result.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
-import 'package:qaddy/features/trips/models/trip.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 /// Search (route `/home/search`).
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
   String _query = '';
 
@@ -131,16 +131,16 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    for (final trip in <Trip>[...upcomingTrips, ...pastTrips]) {
+    final tripsState = ref.watch(tripsProvider);
+    for (final trip in tripsState.trips) {
       if (!matches(trip.name)) continue;
-      final isDetailed = trip.id == melbourneGolfWeekend.id;
       results.add(
         SearchResult(
           category: SearchCategory.trips,
           title: trip.name,
           subtitle: trip.destination,
           icon: Icons.flight_takeoff,
-          onTap: isDetailed ? () => context.push(AppRoutes.tripDetails) : null,
+          onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
         ),
       );
     }
@@ -174,17 +174,19 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    for (final course in melbourneGolfWeekendCourses) {
-      if (!matches(course.name)) continue;
-      results.add(
-        SearchResult(
-          category: SearchCategory.courses,
-          title: course.name,
-          subtitle: melbourneGolfWeekend.name,
-          icon: Icons.golf_course_outlined,
-          onTap: () => context.push(AppRoutes.tripGolf),
-        ),
-      );
+    for (final trip in tripsState.trips) {
+      for (final course in tripsState.planFor(trip.id).courses) {
+        if (!matches(course.name)) continue;
+        results.add(
+          SearchResult(
+            category: SearchCategory.courses,
+            title: course.name,
+            subtitle: trip.name,
+            icon: Icons.golf_course_outlined,
+            onTap: () => context.push(AppRoutes.tripGolf(trip.id)),
+          ),
+        );
+      }
     }
 
     return results;

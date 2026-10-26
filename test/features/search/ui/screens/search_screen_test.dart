@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -9,7 +10,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(theme: QaddyTheme.dark, home: const SearchScreen()),
+      ProviderScope(
+        child: MaterialApp(theme: QaddyTheme.dark, home: const SearchScreen()),
+      ),
     );
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
@@ -41,7 +44,9 @@ void main() {
 
   testWidgets('shows an empty state when nothing matches', (tester) async {
     await tester.pumpWidget(
-      MaterialApp(theme: QaddyTheme.dark, home: const SearchScreen()),
+      ProviderScope(
+        child: MaterialApp(theme: QaddyTheme.dark, home: const SearchScreen()),
+      ),
     );
 
     await tester.enterText(find.byType(TextField), 'zzz');

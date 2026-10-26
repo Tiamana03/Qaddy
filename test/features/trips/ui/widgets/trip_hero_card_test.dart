@@ -27,7 +27,9 @@ Future<void> _pump(
               melbourneGolfWeekend,
               now: DateTime(2026, 10, 26),
             ),
-            snapshot: withSnapshot ? tripSnapshot(melbourneGolfWeekend) : null,
+            snapshot: withSnapshot
+                ? tripSnapshot(melbourneGolfWeekendPlan)
+                : null,
             onTap: onTap,
           ),
         ),
@@ -51,7 +53,7 @@ void main() {
     expect(find.text('Confirmed'), findsOneWidget);
     expect(find.text('First tee'), findsOneWidget);
     expect(find.text('Kingston Heath · 8:10 AM'), findsOneWidget);
-    expect(find.text('All settled'), findsOneWidget);
+    expect(find.textContaining('outstanding'), findsOneWidget);
     expect(find.text('8 going'), findsOneWidget);
     expect(find.text('Luke: See everyone Saturday morning.'), findsOneWidget);
     expect(find.text('View trip'), findsOneWidget);

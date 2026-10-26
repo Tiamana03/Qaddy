@@ -2,11 +2,11 @@
 ///
 /// See `docs/features/trips-feature-integration.md`'s "Trip Details"
 /// section ("Acts as the central hub for every trip") and "Button
-/// Behaviour" table. Displays Melbourne Golf Weekend — the shared
-/// placeholder trip (see `placeholder_trips.dart`).
+/// Behaviour" table.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
@@ -18,17 +18,24 @@ import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/trips/models/placeholder_trips.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
-/// Trip Details (route `/trips/details`) — destination, dates, members,
-/// countdown, weather and quick actions for the shared placeholder trip.
-class TripDetailsScreen extends StatelessWidget {
-  const TripDetailsScreen({super.key});
+/// Trip Details (route `/trips/:tripId`).
+class TripDetailsScreen extends ConsumerWidget {
+  const TripDetailsScreen({required this.tripId, super.key});
+
+  /// The trip to show.
+  final String tripId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final trip = ref.watch(tripProvider(tripId));
+    if (trip == null) {
+      return const TripNotFound();
+    }
+    final plan = ref.watch(tripPlanProvider(tripId));
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final trip = melbourneGolfWeekend;
 
     return QaddyScaffold(
       appBar: AppBar(title: Text(trip.name)),
@@ -46,9 +53,7 @@ class TripDetailsScreen extends StatelessWidget {
                   SizedBox(height: spacing.sm),
                   QaddyInfoRow(
                     label: 'Dates',
-                    value:
-                        '${trip.startDate.toFriendlyDate()} – '
-                        '${trip.endDate.toFriendlyDate()}',
+                    value: trip.startDate.toFriendlyRange(trip.endDate),
                   ),
                   SizedBox(height: spacing.sm),
                   QaddyInfoRow(
@@ -63,11 +68,36 @@ class TripDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: spacing.sectionGap),
-            const _MembersCard(),
+            QaddySectionCard(
+              title: 'Members',
+              child: Wrap(
+                spacing: spacing.md,
+                runSpacing: spacing.md,
+                children: <Widget>[
+                  for (final member in plan.members)
+                    _MemberTile(name: member.displayName),
+                ],
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _WeatherCard(),
+            QaddySectionCard(
+              title: 'Weather',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  for (final (index, day) in plan.weather.indexed) ...<Widget>[
+                    if (index > 0) SizedBox(height: spacing.sm),
+                    QaddyInfoRow(
+                      label: day.day,
+                      value:
+                          '${day.forecast}  ${day.highLabel} / ${day.lowLabel}',
+                    ),
+                  ],
+                ],
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _QuickActionsCard(),
+            _QuickActionsCard(tripId: tripId),
             SizedBox(height: spacing.xl),
           ],
         ),
@@ -76,8 +106,10 @@ class TripDetailsScreen extends StatelessWidget {
   }
 }
 
-class _MembersCard extends StatelessWidget {
-  const _MembersCard();
+class _MemberTile extends StatelessWidget {
+  const _MemberTile({required this.name});
+
+  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -86,57 +118,19 @@ class _MembersCard extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddySectionCard(
-      title: 'Members',
-      child: Wrap(
-        spacing: spacing.md,
-        runSpacing: spacing.md,
-        children: <Widget>[
-          for (final member in melbourneGolfWeekendMembers)
-            SizedBox(
-              width: spacing.hero,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  QaddyAvatar(name: member.displayName),
-                  SizedBox(height: spacing.xs),
-                  Text(
-                    member.displayName,
-                    textAlign: TextAlign.center,
-                    style: typography.small.copyWith(
-                      color: colours.textPrimary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _WeatherCard extends StatelessWidget {
-  const _WeatherCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Weather',
+    return SizedBox(
+      width: spacing.hero,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          for (final (index, day)
-              in melbourneGolfWeekendWeather.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            QaddyInfoRow(
-              label: day.day,
-              value: '${day.forecast}  ${day.high} / ${day.low}',
-            ),
-          ],
+          QaddyAvatar(name: name),
+          SizedBox(height: spacing.xs),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            style: typography.small.copyWith(color: colours.textPrimary),
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );
@@ -144,20 +138,30 @@ class _WeatherCard extends StatelessWidget {
 }
 
 class _QuickActionsCard extends StatelessWidget {
-  const _QuickActionsCard();
+  const _QuickActionsCard({required this.tripId});
+
+  final String tripId;
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
-    const actions = <(IconData, String, String)>[
-      (Icons.edit_outlined, 'Edit Trip', AppRoutes.tripPlanning),
-      (Icons.flight_outlined, 'View Flights', AppRoutes.tripTravel),
-      (Icons.hotel_outlined, 'View Accommodation', AppRoutes.tripAccommodation),
-      (Icons.golf_course_outlined, 'View Golf', AppRoutes.tripGolf),
-      (Icons.receipt_long_outlined, 'View Expenses', AppRoutes.tripExpenses),
-      (Icons.chat_bubble_outline, 'Open Chat', AppRoutes.tripChat),
-      (Icons.flag_outlined, 'Complete Trip', AppRoutes.tripComplete),
+    final actions = <(IconData, String, String)>[
+      (Icons.edit_outlined, 'Planning', AppRoutes.tripPlanning(tripId)),
+      (Icons.flight_outlined, 'View Flights', AppRoutes.tripFlights(tripId)),
+      (
+        Icons.hotel_outlined,
+        'View Accommodation',
+        AppRoutes.tripAccommodation(tripId),
+      ),
+      (Icons.golf_course_outlined, 'View Golf', AppRoutes.tripGolf(tripId)),
+      (
+        Icons.receipt_long_outlined,
+        'View Expenses',
+        AppRoutes.tripExpenses(tripId),
+      ),
+      (Icons.chat_bubble_outline, 'Open Chat', AppRoutes.tripChat(tripId)),
+      (Icons.flag_outlined, 'Complete Trip', AppRoutes.tripComplete(tripId)),
     ];
 
     return QaddySectionCard(
