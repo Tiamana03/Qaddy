@@ -146,7 +146,7 @@ class _PageIndicator extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: index == currentPage
-                    ? colours.primary
+                    ? colours.accent
                     : colours.textTertiary,
               ),
             ),
