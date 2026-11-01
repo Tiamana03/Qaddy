@@ -64,6 +64,6 @@ The old Round Setup form (Upcoming Round card, Round Information card, the info-
 
 - One course (Richmond Golf Club) and one format (Stableford). Handicap shots use the rounded handicap index, not a slope-adjusted course handicap.
 - The weather, the invited friends and the side games are placeholder data. Side games are shown on their hole but winners are not recorded yet.
-- Only one round can be in progress; the last finished round is kept, older ones are not (no round history yet).
+- Only one round can be in progress. Every finished round is kept (up to 200) and feeds Statistics; there is no browsable round-by-round history screen yet.
 - Scores are per hole for everyone, entered by one golfer; there is no shared live scoring between phones (a Release 2 feature).
 - Not tried on a real phone, so the haptics and one-handed feel are unverified.

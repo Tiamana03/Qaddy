@@ -1,3 +1,5 @@
+> **Superseded (November 2026).** Statistics no longer has placeholder data: it tells the story of the rounds the golfer has actually played. See `docs/features/statistics-release-candidate.md`. The rest of this document is kept for history.
+
 # Placeholder Statistics Data
 
 **Version:** 1.0

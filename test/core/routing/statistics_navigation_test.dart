@@ -16,7 +16,7 @@ void main() {
 
     await tester.tap(find.text('View Statistics'));
     await tester.pumpAndSettle();
-    expect(find.text('Career Totals'), findsOneWidget);
+    expect(find.text('Your story starts on the first tee'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

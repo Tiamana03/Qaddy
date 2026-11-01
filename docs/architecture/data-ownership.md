@@ -42,7 +42,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Community (`community`) | Friends list, friend profiles, Rivalry Performance; the live friends store (requests, accepted friends, cheers) | `lib/features/community/models/placeholder_friends.dart` (seeds), `lib/features/community/state/friends_controller.dart` (live store) | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
 | Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
 | Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting, Favourite Courses (`profileFavouriteCourses`) | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility), Search (Courses category) |
-| Statistics (`statistics`) | Trend deltas only (Handicap, Average Score — two-point, see Exception 1) | `lib/features/statistics/models/placeholder_statistics.dart` | None yet |
+| Statistics (`statistics`) | Nothing of its own: it is derived from the finished rounds in the rounds store (`logic/career_stats.dart`) and reads the handicap index from Profile | — (no placeholder file) | Dashboard ("Your game") |
 | Golf Bag (`my_bag`) | Club Distances only (Driver, Irons, Wedges — see Exception 1) | `lib/features/my_bag/models/placeholder_my_bag.dart` | None yet |
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
 | Settings (`settings`) | User-facing preference toggles (no new data of its own — reads Profile and Notifications) | — (consumer only) | — |
@@ -60,16 +60,15 @@ Read each line as **Owner → reused by Dependent**:
 ```
 Rounds        → Groups          (PositionBadge widget)
 Community     → Profile         (Friends count)
-Community     → Statistics      (Rivalry Performance)
 Groups        → Profile         (Groups count, season standing)
-Groups        → Statistics      (Season Performance, full leaderboard)
 Trips         → Profile         (Trips count)
-Profile       → Statistics      (Career Totals, Scoring Statistics, Personal Records)
+Rounds        → Statistics      (every finished round: the story is worked out from them)
+Profile       → Statistics      (handicap index only)
 Profile       → Golf Bag        (Equipment)
 Profile       → Settings        (Profile Visibility)
 Notifications → Settings        (NotificationCategory)
 Dashboard     → Profile         (Rounds Played, Average Score, Best Round)
-Dashboard     → Rounds, Statistics, Trips, Friends   (next round, handicap trend, next trip, friends' moments — read only)
+Dashboard     → Rounds, Statistics, Trips, Friends   (next round, your game from real rounds, next trip, friends' moments — read only)
 Community     → Search          (Friends category)
 Groups        → Search          (Groups category)
 Trips         → Search          (Trips and Courses categories)

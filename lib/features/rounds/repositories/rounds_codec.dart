@@ -11,25 +11,25 @@ import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 
 /// The current document format.
-const int roundsDocumentVersion = 1;
+const int roundsDocumentVersion = 2;
 
-/// The round being played and the last finished one, as stored.
+/// The round being played and every finished one, as stored.
 class StoredRounds {
-  const StoredRounds({this.live, this.completed});
+  const StoredRounds({this.live, this.history = const <Round>[]});
 
   /// The round in progress, if any.
   final Round? live;
 
-  /// The last finished round, if any.
-  final Round? completed;
+  /// Every finished round, newest first.
+  final List<Round> history;
 }
 
-/// Encodes the two rounds as a JSON document.
-String encodeRounds({Round? live, Round? completed}) {
+/// Encodes the live round and the history as a JSON document.
+String encodeRounds({Round? live, List<Round> history = const <Round>[]}) {
   return jsonEncode(<String, Object?>{
     'version': roundsDocumentVersion,
     'live': live == null ? null : _round(live),
-    'completed': completed == null ? null : _round(completed),
+    'history': <Object?>[for (final round in history) _round(round)],
   });
 }
 
@@ -38,17 +38,24 @@ String encodeRounds({Round? live, Round? completed}) {
 StoredRounds? decodeRounds(String source) {
   try {
     final root = jsonDecode(source);
-    if (root is! Map<String, dynamic> ||
-        root['version'] != roundsDocumentVersion) {
+    if (root is! Map<String, dynamic>) {
+      return null;
+    }
+    final version = root['version'];
+    if (version != roundsDocumentVersion && version != 1) {
       return null;
     }
     final live = root['live'];
-    final completed = root['completed'];
+    // Version 1 kept only the last finished round, under 'completed'.
+    final stored = version == 1
+        ? <Object?>[root['completed']]
+        : (root['history'] as List<dynamic>? ?? const <dynamic>[]);
     return StoredRounds(
       live: live is Map<String, dynamic> ? _decodeRound(live) : null,
-      completed: completed is Map<String, dynamic>
-          ? _decodeRound(completed)
-          : null,
+      history: <Round>[
+        for (final json in stored)
+          if (json is Map<String, dynamic>) _decodeRound(json),
+      ],
     );
   } on Object {
     return null;

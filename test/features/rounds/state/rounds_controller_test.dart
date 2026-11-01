@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
@@ -218,6 +220,88 @@ void main() {
       c.read(roundSetupProvider.notifier).toggle(you);
 
       expect(c.read(selectedPlayersProvider).first.name, you);
+    });
+  });
+
+  group('history', () {
+    test('keeps every finished round, newest first', () {
+      final c = _container();
+      final store = _store(c);
+
+      for (var i = 0; i < 3; i++) {
+        store
+          ..startRound(<RoundPlayer>[_alex])
+          ..nextHole()
+          ..finishRound();
+      }
+
+      final history = c.read(roundHistoryProvider);
+      expect(history, hasLength(3));
+      expect(history.every((r) => r.isCompleted), isTrue);
+      expect(c.read(completedRoundProvider), same(history.first));
+    });
+
+    test('a discarded round is not history', () {
+      final c = _container();
+      _store(c)
+        ..startRound(<RoundPlayer>[_alex])
+        ..discardRound();
+
+      expect(c.read(roundHistoryProvider), isEmpty);
+    });
+
+    test('only the most recent rounds are kept', () {
+      final c = _container();
+      final store = _store(c);
+
+      for (var i = 0; i < maxHistory + 5; i++) {
+        store
+          ..startRound(<RoundPlayer>[_alex])
+          ..finishRound();
+      }
+
+      expect(c.read(roundHistoryProvider), hasLength(maxHistory));
+    });
+
+    test('the whole history survives a restart', () async {
+      final storage = _MemoryStorage();
+      final first = _container(storage);
+      for (var i = 0; i < 3; i++) {
+        _store(first)
+          ..startRound(<RoundPlayer>[_alex])
+          ..finishRound();
+      }
+      await Future<void>.delayed(Duration.zero);
+
+      final second = _container(storage);
+
+      expect(second.read(roundHistoryProvider), hasLength(3));
+    });
+
+    test('a version 1 document (one finished round) still loads', () {
+      final storage = _MemoryStorage()
+        ..document = jsonEncode(<String, Object?>{
+          'version': 1,
+          'live': null,
+          'completed': <String, Object?>{
+            'id': 'old',
+            'course': 'Richmond Golf Club',
+            'format': 'Stableford',
+            'players': <Object?>[
+              <String, Object?>{'name': 'Alex', 'handicap': 8.4},
+            ],
+            'scores': <String, Object?>{'Alex': List<int?>.filled(18, 4)},
+            'currentHole': 17,
+            'status': 'completed',
+            'startedAt': '2026-10-01T08:00:00.000',
+            'completedAt': '2026-10-01T12:00:00.000',
+          },
+        });
+
+      final c = _container(storage);
+
+      expect(c.read(roundHistoryProvider), hasLength(1));
+      expect(c.read(completedRoundProvider)!.id, 'old');
     });
   });
 

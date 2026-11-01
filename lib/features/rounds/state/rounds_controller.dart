@@ -18,15 +18,18 @@ import 'package:qaddy/features/rounds/models/round_player.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_codec.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 
-/// The round being played and the last one finished.
+/// The round being played and every round finished before it.
 class RoundsState {
-  const RoundsState({this.live, this.completed});
+  const RoundsState({this.live, this.history = const <Round>[]});
 
   /// The round in progress, or `null`.
   final Round? live;
 
+  /// Every finished round, newest first.
+  final List<Round> history;
+
   /// The most recently finished round, or `null`.
-  final Round? completed;
+  Round? get completed => history.isEmpty ? null : history.first;
 }
 
 /// The clock rounds are stamped with. Tests override it.
@@ -36,6 +39,9 @@ final roundsClockProvider = Provider<DateTime Function()>(
 
 /// The most strokes a golfer can record on one hole.
 const int maxStrokes = 15;
+
+/// How many finished rounds are kept.
+const int maxHistory = 200;
 
 /// The rounds store.
 final roundsProvider = NotifierProvider<RoundsController, RoundsState>(
@@ -50,6 +56,12 @@ final liveRoundProvider = Provider<Round?>(
 /// The last finished round, or `null`.
 final completedRoundProvider = Provider<Round?>(
   (ref) => ref.watch(roundsProvider.select((state) => state.completed)),
+);
+
+/// Every finished round, newest first. This is what Statistics tells the story
+/// of.
+final roundHistoryProvider = Provider<List<Round>>(
+  (ref) => ref.watch(roundsProvider.select((state) => state.history)),
 );
 
 /// Who has been picked for the next round: the golfer's own place is always
@@ -104,13 +116,16 @@ class RoundsController extends Notifier<RoundsState> {
         return;
       }
       unawaited(
-        storage.write(encodeRounds(live: next.live, completed: next.completed)),
+        storage.write(encodeRounds(live: next.live, history: next.history)),
       );
     });
 
     final stored = storage.read();
     final restored = stored == null ? null : decodeRounds(stored);
-    return RoundsState(live: restored?.live, completed: restored?.completed);
+    return RoundsState(
+      live: restored?.live,
+      history: restored?.history ?? const <Round>[],
+    );
   }
 
   /// Starts a round for [players] on the first tee. Does nothing if one is
@@ -128,7 +143,7 @@ class RoundsController extends Notifier<RoundsState> {
         players: players,
         now: _now,
       ),
-      completed: state.completed,
+      history: state.history,
     );
   }
 
@@ -201,11 +216,12 @@ class RoundsController extends Notifier<RoundsState> {
     }
     final onLastHole = round.currentHole == round.holes.length - 1;
     final base = onLastHole ? _withParForUnscored(round) : round;
+    final finished = base.copyWith(
+      status: RoundStatus.completed,
+      completedAt: _now,
+    );
     state = RoundsState(
-      completed: base.copyWith(
-        status: RoundStatus.completed,
-        completedAt: _now,
-      ),
+      history: <Round>[finished, ...state.history].take(maxHistory).toList(),
     );
   }
 
@@ -214,7 +230,7 @@ class RoundsController extends Notifier<RoundsState> {
     if (state.live == null) {
       return;
     }
-    state = RoundsState(completed: state.completed);
+    state = RoundsState(history: state.history);
   }
 
   Round _withParForUnscored(Round round) {
@@ -229,6 +245,6 @@ class RoundsController extends Notifier<RoundsState> {
   }
 
   void _emit(Round round) {
-    state = RoundsState(live: round, completed: state.completed);
+    state = RoundsState(live: round, history: state.history);
   }
 }

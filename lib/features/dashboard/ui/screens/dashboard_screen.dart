@@ -26,17 +26,16 @@ import 'package:qaddy/features/community/models/placeholder_friends.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
 import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
-import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/quick_actions_strip.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
+import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
-import 'package:qaddy/features/statistics/logic/stat_trend_formatting.dart';
-import 'package:qaddy/features/statistics/models/placeholder_statistics.dart';
+import 'package:qaddy/features/statistics/logic/career_stats.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 /// The Home / Dashboard destination (route `/home`).
@@ -56,11 +55,10 @@ class DashboardScreen extends ConsumerWidget {
         (trips) => trips.isEmpty ? null : trips.first,
       ),
     );
-    final handicapTrend = statisticsTrends.firstWhere(
-      (trend) => trend.label == 'Handicap',
-    );
     final live = ref.watch(liveRoundProvider);
     final completed = ref.watch(completedRoundProvider);
+    final history = ref.watch(roundHistoryProvider);
+    final stats = CareerStats.of(history, you: currentUserName);
     final lastRound = completed == null
         ? null
         : lastRoundFrom(completed, currentUserName, now);
@@ -116,9 +114,7 @@ class DashboardScreen extends ConsumerWidget {
       Highlight(
         icon: Icons.trending_down,
         colour: colours.gold,
-        text:
-            'Handicap reduced to '
-            '${formatStatValue(handicapTrend.currentValue)}',
+        text: 'Handicap reduced to ${profile.handicap.toStringAsFixed(1)}',
         onTap: () => context.push(AppRoutes.profileStatistics),
       ),
       Highlight(
@@ -159,11 +155,9 @@ class DashboardScreen extends ConsumerWidget {
             QuickActionsStrip(actions: quickActions),
             SizedBox(height: spacing.sectionGap),
             YourGameCard(
-              handicap: handicapTrend,
-              roundsPlayed: dashboardRoundsPlayed,
-              averageScore: dashboardAverageScore,
-              bestRound: dashboardBestRound,
-              lastRound: lastRound ?? dashboardLastRound,
+              handicap: profile.handicap,
+              stats: stats,
+              lastRound: lastRound,
               onOpen: () => context.push(AppRoutes.profileStatistics),
               onOpenLastRound: lastRound == null
                   ? null

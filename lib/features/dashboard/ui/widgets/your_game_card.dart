@@ -1,5 +1,6 @@
-/// "Your game": the handicap and how it is moving, the career numbers and the
-/// last round — one card that leads to the full statistics.
+/// "Your game": the handicap and, once rounds have been played, what they say
+/// — wins, average points, best round and the last round. One card that
+/// leads to the full story in Statistics.
 library;
 
 import 'package:flutter/material.dart';
@@ -11,41 +12,33 @@ import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
-import 'package:qaddy/features/statistics/logic/stat_trend_formatting.dart';
-import 'package:qaddy/features/statistics/models/stat_trend.dart';
+import 'package:qaddy/features/statistics/logic/career_stats.dart';
+import 'package:qaddy/features/statistics/logic/stats_story.dart';
 
 /// A tappable card summarising the golfer's game.
 class YourGameCard extends StatelessWidget {
   const YourGameCard({
     required this.handicap,
-    required this.roundsPlayed,
-    required this.averageScore,
-    required this.bestRound,
+    required this.stats,
     required this.lastRound,
     required this.onOpen,
     this.onOpenLastRound,
     super.key,
   });
 
-  /// How the handicap has moved.
-  final StatTrend handicap;
+  /// The golfer's handicap index.
+  final double handicap;
 
-  /// Career rounds played.
-  final int roundsPlayed;
+  /// What their finished rounds say, or `null` before the first one.
+  final CareerStats? stats;
 
-  /// Average score.
-  final int averageScore;
-
-  /// Best round.
-  final int bestRound;
-
-  /// The most recent completed round.
-  final DashboardLastRound lastRound;
+  /// The round they last finished, or `null`.
+  final DashboardLastRound? lastRound;
 
   /// Opens the full statistics.
   final VoidCallback onOpen;
 
-  /// Opens the last round's results. Omit when it has none to show.
+  /// Opens the last round's results. Omit when there are none to show.
   final VoidCallback? onOpenLastRound;
 
   @override
@@ -57,14 +50,15 @@ class YourGameCard extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
     final animate = !MediaQuery.disableAnimationsOf(context);
 
-    final improving = handicap.isImprovement;
-    final trendColour = improving ? colours.accent : colours.accentOrange;
-    final won = lastRound.position == '1st';
-    final headline = won
-        ? 'Won at ${lastRound.course}'
-        : '${lastRound.position} at ${lastRound.course}';
-    final detail =
-        '${lastRound.score} · ${lastRound.stableford} pts · ${lastRound.when}';
+    final career = stats;
+    final last = lastRound;
+    final won = last?.position == '1st';
+
+    final chipText = career == null
+        ? 'Play a round to build your game'
+        : career.wins == 1
+        ? '1 win in ${roundsLabel(career.rounds)}'
+        : '${career.wins} wins in ${roundsLabel(career.rounds)}';
 
     Widget stat(String value, String label) => Expanded(
       child: Column(
@@ -88,10 +82,7 @@ class YourGameCard extends StatelessWidget {
     );
 
     final handicapFigure = TweenAnimationBuilder<double>(
-      tween: Tween<double>(
-        begin: animate ? 0 : handicap.currentValue,
-        end: handicap.currentValue,
-      ),
+      tween: Tween<double>(begin: animate ? 0 : handicap, end: handicap),
       duration: const Duration(milliseconds: 900),
       curve: Curves.easeOutCubic,
       builder: (context, value, _) => Text(
@@ -104,17 +95,23 @@ class YourGameCard extends StatelessWidget {
       ),
     );
 
+    final spokenStats = career == null
+        ? ''
+        : 'Average ${career.averagePoints.round()} points a round, best '
+              'round ${career.bestRound.points} points. ';
+    final spokenLast = last == null
+        ? ''
+        : 'Last round: ${last.position} at ${last.course}, '
+              '${last.stableford} points. ';
+
     return Semantics(
       button: true,
       onTap: onOpen,
       excludeSemantics: true,
       label:
-          'Your game. Handicap ${formatStatValue(handicap.currentValue)}, '
-          '${formatTrendText(handicap)}. '
-          '$roundsPlayed rounds played, average score $averageScore, '
-          'best round $bestRound. '
-          'Last round: ${lastRound.position} at ${lastRound.course}, '
-          '${lastRound.score}. Opens your statistics.',
+          'Your game. Handicap ${handicap.toStringAsFixed(1)}. $chipText. '
+          '$spokenStats$spokenLast'
+          'Opens your statistics.',
       child: QaddyCard(
         onTap: onOpen,
         child: Column(
@@ -155,27 +152,27 @@ class YourGameCard extends StatelessWidget {
                             vertical: spacing.xs,
                           ),
                           decoration: BoxDecoration(
-                            color: trendColour.withValues(alpha: 0.16),
+                            color: colours.gold.withValues(alpha: 0.16),
                             borderRadius: BorderRadius.circular(radius.large),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               Icon(
-                                improving
-                                    ? Icons.trending_down
-                                    : Icons.trending_up,
+                                career == null
+                                    ? Icons.flag_outlined
+                                    : Icons.emoji_events_outlined,
                                 size: 16,
-                                color: trendColour,
+                                color: colours.gold,
                               ),
                               SizedBox(width: spacing.xs),
                               Flexible(
                                 child: Text(
-                                  formatTrendText(handicap),
+                                  chipText,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: typography.small.copyWith(
-                                    color: trendColour,
+                                    color: colours.gold,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -189,59 +186,66 @@ class YourGameCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: spacing.lg),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                stat('$roundsPlayed', 'Rounds played'),
-                stat('$averageScore', 'Average score'),
-                stat('$bestRound', 'Best round'),
-              ],
-            ),
-            SizedBox(height: spacing.lg),
-            Material(
-              color: colours.surface2,
-              borderRadius: BorderRadius.circular(radius.large),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: onOpenLastRound,
-                child: Padding(
-                  padding: EdgeInsets.all(spacing.md),
-                  child: Row(
-                    children: <Widget>[
-                      QaddyIconBadge(
-                        icon: won ? Icons.emoji_events : Icons.golf_course,
-                        colour: colours.gold,
-                      ),
-                      SizedBox(width: spacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              headline,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: typography.body.copyWith(
-                                color: colours.textPrimary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(height: spacing.xs),
-                            Text(
-                              detail,
-                              style: typography.small.copyWith(
-                                color: colours.textSecondary,
-                              ),
-                            ),
-                          ],
+            if (career != null) ...<Widget>[
+              SizedBox(height: spacing.lg),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  stat('${career.rounds}', 'Rounds played'),
+                  stat('${career.averagePoints.round()}', 'Avg points'),
+                  stat('${career.bestRound.points}', 'Best round pts'),
+                ],
+              ),
+            ],
+            if (last != null) ...<Widget>[
+              SizedBox(height: spacing.lg),
+              Material(
+                color: colours.surface2,
+                borderRadius: BorderRadius.circular(radius.large),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: onOpenLastRound,
+                  child: Padding(
+                    padding: EdgeInsets.all(spacing.md),
+                    child: Row(
+                      children: <Widget>[
+                        QaddyIconBadge(
+                          icon: won ? Icons.emoji_events : Icons.golf_course,
+                          colour: colours.gold,
                         ),
-                      ),
-                    ],
+                        SizedBox(width: spacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                won
+                                    ? 'Won at ${last.course}'
+                                    : '${last.position} at ${last.course}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: typography.body.copyWith(
+                                  color: colours.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: spacing.xs),
+                              Text(
+                                '${last.stableford} pts · ${last.score} '
+                                'strokes · ${last.when}',
+                                style: typography.small.copyWith(
+                                  color: colours.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

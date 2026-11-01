@@ -258,6 +258,7 @@ void main() {
         ..startRound(
           upcomingRoundInvitees.take(2).map((i) => i.player).toList(),
         )
+        ..nextHole()
         ..finishRound();
       useScreen(tester, const Size(400, 3200));
       final router = GoRouter(initialLocation: '/home', routes: _routes());
@@ -275,6 +276,11 @@ void main() {
 
       expect(find.text('Won at Richmond Golf Club'), findsOneWidget);
       expect(find.textContaining('Today'), findsOneWidget);
+      // The numbers now come from the round just played.
+      expect(find.text('1 win in 1 round'), findsOneWidget);
+      expect(find.text('Rounds played'), findsOneWidget);
+      expect(find.text('Avg points'), findsOneWidget);
+      expect(find.text('Best round pts'), findsOneWidget);
 
       await _tap(tester, find.text('Won at Richmond Golf Club'));
 
@@ -283,19 +289,18 @@ void main() {
   });
 
   group('your game', () {
-    testWidgets('shows the handicap, how it is moving and the numbers', (
-      tester,
-    ) async {
-      await _pump(tester);
+    testWidgets(
+      'starts with the handicap and an invitation, not made-up numbers',
+      (tester) async {
+        await _pump(tester);
 
-      expect(find.text('8.4'), findsOneWidget);
-      expect(find.text('↓1.2 (Last 3 months)'), findsOneWidget);
-      expect(find.text('68'), findsOneWidget);
-      expect(find.text('83'), findsOneWidget);
-      expect(find.text('74'), findsOneWidget);
-      expect(find.text('Won at The Dunes Golf Links'), findsOneWidget);
-      expect(find.text('78 · 37 pts · Last Saturday'), findsOneWidget);
-    });
+        expect(find.text('8.4'), findsOneWidget);
+        expect(find.text('Play a round to build your game'), findsOneWidget);
+        expect(find.text('Rounds played'), findsNothing);
+        expect(find.textContaining('Dunes'), findsNothing);
+        expect(find.textContaining('↓'), findsNothing);
+      },
+    );
 
     testWidgets('opens the full statistics', (tester) async {
       await _pump(tester);
