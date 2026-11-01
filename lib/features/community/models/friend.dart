@@ -60,4 +60,22 @@ class Friend {
 
   /// Friendship created date (placeholder-friend-data.md's "Member Since").
   final DateTime createdAt;
+
+  /// A copy with the friendship [status] and/or [favourite] flag changed.
+  Friend copyWith({FriendStatus? status, bool? favourite}) {
+    return Friend(
+      id: id,
+      displayName: displayName,
+      initials: initials,
+      handicap: handicap,
+      homeClub: homeClub,
+      location: location,
+      status: status ?? this.status,
+      favourite: favourite ?? this.favourite,
+      lastPlayed: lastPlayed,
+      roundsPlayed: roundsPlayed,
+      createdAt: createdAt,
+      favouriteCourse: favouriteCourse,
+    );
+  }
 }

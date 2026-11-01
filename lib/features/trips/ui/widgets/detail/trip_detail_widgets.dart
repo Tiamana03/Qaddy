@@ -9,76 +9,17 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/services/link_launcher.dart';
-import 'package:qaddy/core/services/share_service.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/actions/link_actions.dart';
 
-/// Shows a short confirmation at the bottom of the screen.
-void tellUser(BuildContext context, String message) {
-  ScaffoldMessenger.of(context)
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message)));
-}
-
-/// Copies [text] to the clipboard and says [confirmation].
-Future<void> copyToClipboard(
-  BuildContext context,
-  String text,
-  String confirmation,
-) async {
-  await Clipboard.setData(ClipboardData(text: text));
-  QaddyHaptics.light();
-  if (context.mounted) {
-    tellUser(context, confirmation);
-  }
-}
-
-/// Opens [uri] outside the app (dialler, browser, maps). When nothing can open
-/// it — no handler, or a platform without one — copies [fallback] instead and
-/// says so, so the golfer is never left with a dead tap.
-Future<void> openLinkOrCopy(
-  BuildContext context,
-  WidgetRef ref, {
-  required Uri uri,
-  required String fallback,
-  required String label,
-}) async {
-  final opened = await ref.read(linkLauncherProvider).open(uri);
-  if (opened) {
-    QaddyHaptics.light();
-    return;
-  }
-  if (context.mounted) {
-    await copyToClipboard(
-      context,
-      fallback,
-      'Could not open $label — copied it instead',
-    );
-  }
-}
-
-/// Shares [text] through the system share sheet. Where there is none, copies
-/// it and says so.
-Future<void> shareOrCopy(
-  BuildContext context,
-  WidgetRef ref, {
-  required String text,
-  String? subject,
-}) async {
-  final outcome = await ref
-      .read(shareServiceProvider)
-      .shareText(text, subject: subject);
-  if (outcome == ShareOutcome.unavailable && context.mounted) {
-    await copyToClipboard(context, text, 'Copied — paste it into a message');
-  }
-}
+// The trip pages call these through this file as they always have.
+export 'package:qaddy/core/widgets/actions/link_actions.dart';
 
 /// The band at the top of a detail page: an icon, a headline, a subline and
 /// a few facts, on the brand gradient. Text uses `onPrimary` (the documented

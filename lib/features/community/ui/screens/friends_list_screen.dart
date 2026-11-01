@@ -8,21 +8,24 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/models/friend.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_card.dart';
 
 /// Friends List (route `/friends/list`).
-class FriendsListScreen extends StatelessWidget {
+class FriendsListScreen extends ConsumerWidget {
   const FriendsListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
+    final confirmed = ref.watch(confirmedFriendsProvider);
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Friends List')),
@@ -31,7 +34,7 @@ class FriendsListScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
-            for (final (index, friend) in confirmedFriends.indexed) ...<Widget>[
+            for (final (index, friend) in confirmed.indexed) ...<Widget>[
               if (index > 0) SizedBox(height: spacing.cardGap),
               _FriendListCard(friend: friend),
             ],

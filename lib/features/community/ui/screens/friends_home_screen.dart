@@ -1,129 +1,239 @@
-/// Qaddy's Friends Home screen — the central hub for the Friends feature.
+/// Qaddy's Friends Home screen — the clubhouse: your squad, the rivalry that
+/// matters, anyone waiting to join you, what your mates have been up to and the
+/// clubs you play with.
 ///
-/// See `docs/features/friends-feature-integration.md`'s "Friends Home"
-/// section: Friend Summary, Quick Actions (View Friends, Search Friends,
-/// Requests, Groups, View Activity, View Rivalries), Activity Preview and
-/// Pending Requests Preview. Activity Feed and Rivalries are reachable
-/// directly from here — not only through Friend Profile — per
-/// `docs/architecture/navigation.md`'s Friends Navigation Structure, so
-/// both stay within the Three Click Rule.
+/// See `docs/features/friends-feature-integration.md`'s "Friends Home" and
+/// `docs/features/friends-release-candidate.md`. Every destination the screen
+/// has always offered — Friends List, Search, Requests, Groups, Activity and
+/// Rivalries — is still one tap away, now through the content itself (a
+/// section's "See all", a tap on the rivalry) and the two header buttons,
+/// rather than a list of six links.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
-import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
+import 'package:qaddy/features/community/logic/friend_insights.dart';
+import 'package:qaddy/features/community/models/friend.dart';
+import 'package:qaddy/features/community/models/friend_request.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
+import 'package:qaddy/features/community/ui/widgets/clubs_strip.dart';
+import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_request_row.dart';
+import 'package:qaddy/features/community/ui/widgets/rivalry_spotlight.dart';
+import 'package:qaddy/features/community/ui/widgets/squad_strip.dart';
+import 'package:qaddy/features/groups/models/group.dart';
+import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 
 /// Friends Home (route `/friends`) — the Friends destination.
-class FriendsHomeScreen extends StatelessWidget {
+class FriendsHomeScreen extends ConsumerWidget {
   const FriendsHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
+
+    final now = ref.watch(friendsClockProvider)();
+    final squad = ref.watch(confirmedFriendsProvider);
+    final incoming = ref.watch(incomingRequestsProvider);
+    final outgoing = ref.watch(outgoingRequestsProvider);
+    final active = recentlyActive(squad, now);
+
+    final clubs = <ClubPreview>[
+      for (final group in groups)
+        ClubPreview(
+          group: group,
+          nextRound: group.id == saturdayBoys.id
+              ? 'Next round ${saturdayBoysUpcomingRound.date}, '
+                    '${saturdayBoysUpcomingRound.teeTime}'
+              : null,
+        ),
+    ];
+
+    void openClub(Group group) => context.push(
+      group.id == saturdayBoys.id
+          ? AppRoutes.friendsGroupDetails
+          : AppRoutes.friendsGroups,
+    );
 
     return QaddyScaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            Text(
-              'Friends',
-              style: typography.h1.copyWith(color: colours.textPrimary),
+            _Header(
+              onSearch: () => context.push(AppRoutes.friendsSearch),
+              onAll: () => context.push(AppRoutes.friendsList),
             ),
-            SizedBox(height: spacing.sectionGap),
-            const _FriendSummary(),
-            SizedBox(height: spacing.sectionGap),
-            const _QuickActionsCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _ActivityPreview(),
-            SizedBox(height: spacing.sectionGap),
-            const _PendingRequestsPreview(),
+            SizedBox(height: spacing.xs),
+            Text(
+              _summaryLine(squad, active),
+              style: typography.body.copyWith(color: colours.textSecondary),
+            ),
             SizedBox(height: spacing.xl),
-          ],
+            if (squad.isEmpty)
+              QaddyEmptyState(
+                icon: Icons.groups_outlined,
+                title: 'Build your squad',
+                message:
+                    'Add the golfers you play with and their rounds, '
+                    'handicaps and rivalries land right here.',
+                actionLabel: 'Find golfers',
+                onAction: () => context.push(AppRoutes.friendsSearch),
+              )
+            else ...<Widget>[
+              QaddySectionHeading(
+                title: 'Your squad',
+                actionLabel: 'See all',
+                onAction: () => context.push(AppRoutes.friendsList),
+              ),
+              SizedBox(height: spacing.md),
+              SquadStrip(
+                friends: squad,
+                now: now,
+                onFriendTap: (friend) =>
+                    showFriendPeek(context, friend, now: now),
+                onAdd: () => context.push(AppRoutes.friendsSearch),
+              ),
+            ],
+            if (incoming.isNotEmpty || outgoing.isNotEmpty) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              QaddySectionHeading(
+                title: 'Requests',
+                badge: incoming.length,
+                actionLabel: 'See all',
+                onAction: () => context.push(AppRoutes.friendRequests),
+              ),
+              SizedBox(height: spacing.md),
+              _Requests(incoming: incoming, outgoing: outgoing),
+            ],
+            SizedBox(height: spacing.sectionGap),
+            const _Rivalry(),
+            SizedBox(height: spacing.sectionGap),
+            QaddySectionHeading(
+              title: 'Latest from mates',
+              actionLabel: 'See all',
+              onAction: () => context.push(AppRoutes.friendsActivity),
+            ),
+            SizedBox(height: spacing.md),
+            const _Activity(),
+            SizedBox(height: spacing.sectionGap),
+            QaddySectionHeading(
+              title: 'Your clubs',
+              actionLabel: 'See all',
+              onAction: () => context.push(AppRoutes.friendsGroups),
+            ),
+            SizedBox(height: spacing.md),
+            ClubsStrip(clubs: clubs, onOpen: openClub),
+            SizedBox(height: spacing.xl),
+          ]),
         ),
       ),
     );
   }
 }
 
-class _FriendSummary extends StatelessWidget {
-  const _FriendSummary();
+/// "5 friends · Tom and Ben played recently".
+String _summaryLine(List<Friend> squad, List<Friend> active) {
+  if (squad.isEmpty) {
+    return 'Your golf crew, all in one place';
+  }
+  final count = squad.length == 1 ? '1 friend' : '${squad.length} friends';
+  if (active.isEmpty) {
+    return count;
+  }
+  final names = active.map((friend) => friend.displayName).toList();
+  final who = names.length <= 2
+      ? names.join(' and ')
+      : '${names.take(2).join(', ')} and ${names.length - 2} more';
+  return '$count · $who played recently';
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.onSearch, required this.onAll});
+
+  final VoidCallback onSearch;
+  final VoidCallback onAll;
 
   @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    Widget action(IconData icon, String tooltip, VoidCallback onTap) => Padding(
+      padding: EdgeInsets.only(left: spacing.sm),
+      child: IconButton.filledTonal(
+        tooltip: tooltip,
+        onPressed: onTap,
+        style: IconButton.styleFrom(
+          backgroundColor: colours.surface1,
+          foregroundColor: colours.textPrimary,
+          minimumSize: const Size(48, 48),
+        ),
+        icon: Icon(icon),
+      ),
+    );
 
     return Row(
       children: <Widget>[
         Expanded(
-          child: QaddyStatisticCard(
-            label: 'Total',
-            value: '$totalFriendsCount',
+          child: Text(
+            'Friends',
+            style: typography.h1.copyWith(color: colours.textPrimary),
           ),
         ),
-        SizedBox(width: spacing.cardGap),
-        Expanded(
-          child: QaddyStatisticCard(
-            label: 'Confirmed',
-            value: '$confirmedFriendsCount',
-          ),
-        ),
-        SizedBox(width: spacing.cardGap),
-        Expanded(
-          child: QaddyStatisticCard(
-            label: 'Pending',
-            value: '$pendingFriendsCount',
-          ),
-        ),
+        action(Icons.search, 'Search golfers', onSearch),
+        action(Icons.people_outline, 'All friends', onAll),
       ],
     );
   }
 }
 
-class _QuickActionsCard extends StatelessWidget {
-  const _QuickActionsCard();
+class _Requests extends StatelessWidget {
+  const _Requests({required this.incoming, required this.outgoing});
+
+  final List<FriendRequest> incoming;
+  final List<FriendRequest> outgoing;
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
+    final all = <FriendRequest>[...incoming, ...outgoing];
 
-    const actions = <(IconData, String, String)>[
-      (Icons.people_outline, 'View Friends', AppRoutes.friendsList),
-      (Icons.search, 'Search Friends', AppRoutes.friendsSearch),
-      (Icons.mail_outline, 'Requests', AppRoutes.friendRequests),
-      (Icons.groups_outlined, 'Groups', AppRoutes.friendsGroups),
-      (Icons.timeline, 'View Activity', AppRoutes.friendsActivity),
-      (
-        Icons.emoji_events_outlined,
-        'View Rivalries',
-        AppRoutes.friendsRivalries,
-      ),
-    ];
-
-    return QaddySectionCard(
-      title: 'Quick Actions',
+    // The section eases open and shut as requests are answered.
+    return AnimatedSize(
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      alignment: Alignment.topCenter,
       child: Column(
         children: <Widget>[
-          for (final (index, action) in actions.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            _ActionTile(
-              icon: action.$1,
-              label: action.$2,
-              onTap: () => context.push(action.$3),
+          for (final (index, request) in all.indexed) ...<Widget>[
+            if (index > 0) SizedBox(height: spacing.cardGap),
+            FriendRequestRow(
+              key: ValueKey<String>(request.friend.id),
+              request: request,
+              compact: true,
             ),
           ],
         ],
@@ -132,102 +242,44 @@ class _QuickActionsCard extends StatelessWidget {
   }
 }
 
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
+class _Rivalry extends ConsumerWidget {
+  const _Rivalry();
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summary = RivalrySummary.of(tomRivalry);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(radius.medium),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: spacing.sm),
-          child: Row(
-            children: <Widget>[
-              Icon(icon, color: colours.gold),
-              SizedBox(width: spacing.md),
-              Expanded(
-                child: Text(
-                  label,
-                  style: typography.body.copyWith(color: colours.textPrimary),
-                ),
-              ),
-              Icon(Icons.chevron_right, color: colours.textTertiary),
-            ],
-          ),
-        ),
+    return RivalrySpotlight(
+      summary: summary,
+      yourName: currentUserName,
+      onOpen: () => context.push(AppRoutes.friendsRivalries),
+      onChallenge: () => shareOrCopy(
+        context,
+        ref,
+        text: summary.challengeMessage(currentUserName),
+        subject: 'Rematch?',
       ),
     );
   }
 }
 
-class _ActivityPreview extends StatelessWidget {
-  const _ActivityPreview();
+class _Activity extends StatelessWidget {
+  const _Activity();
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final preview = friendActivityFeed.take(3).toList();
+    final recent = friendActivityFeed.take(3).toList();
 
-    return QaddySectionCard(
-      title: 'Activity',
-      onTap: () => context.push(AppRoutes.friendsActivity),
+    return QaddyCard(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          for (final (index, item) in preview.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.md),
+          for (final (index, item) in recent.indexed) ...<Widget>[
+            if (index > 0) SizedBox(height: spacing.lg),
             ActivityFeedTile(item: item),
           ],
         ],
       ),
-    );
-  }
-}
-
-class _PendingRequestsPreview extends StatelessWidget {
-  const _PendingRequestsPreview();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-    final preview = friendRequests.take(2).toList();
-
-    return QaddySectionCard(
-      title: 'Pending Requests',
-      onTap: () => context.push(AppRoutes.friendRequests),
-      child: preview.isEmpty
-          ? Text(
-              'No pending requests.',
-              style: typography.body.copyWith(color: colours.textSecondary),
-            )
-          : Column(
-              children: <Widget>[
-                for (final (index, request) in preview.indexed) ...<Widget>[
-                  if (index > 0) SizedBox(height: spacing.md),
-                  FriendRequestRow(request: request),
-                ],
-              ],
-            ),
     );
   }
 }

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
 
+import '../../community_test_harness.dart';
+
 Future<void> _pumpWithRouter(WidgetTester tester) async {
-  final router = GoRouter(
+  await pumpFriendsRouter(
+    tester,
     initialLocation: '/friends/list',
     routes: <RouteBase>[
       GoRoute(
@@ -18,9 +22,6 @@ Future<void> _pumpWithRouter(WidgetTester tester) async {
         builder: (context, state) => const Text('Friend Profile'),
       ),
     ],
-  );
-  await tester.pumpWidget(
-    MaterialApp.router(theme: QaddyTheme.dark, routerConfig: router),
   );
 }
 
@@ -48,5 +49,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Friend Profile'), findsOneWidget);
+  });
+
+  testWidgets('a friend who just accepted appears in the list', (tester) async {
+    await _pumpWithRouter(tester);
+    expect(find.text('Sam'), findsNothing);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(FriendsListScreen)),
+    );
+    container.read(friendsProvider.notifier).acceptRequest('sam');
+    await tester.pump();
+
+    expect(find.text('Sam'), findsOneWidget);
   });
 }

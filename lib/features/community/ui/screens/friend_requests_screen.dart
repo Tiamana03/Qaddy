@@ -4,27 +4,28 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
-import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_request_row.dart';
 
 /// Friend Requests (route `/friends/requests`).
-class FriendRequestsScreen extends StatelessWidget {
+class FriendRequestsScreen extends ConsumerWidget {
   const FriendRequestsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    final incoming = incomingFriendRequests;
-    final outgoing = outgoingFriendRequests;
+    final incoming = ref.watch(incomingRequestsProvider);
+    final outgoing = ref.watch(outgoingRequestsProvider);
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Friend Requests')),

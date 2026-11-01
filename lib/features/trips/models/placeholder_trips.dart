@@ -14,6 +14,7 @@
 /// and websites use `.example`).
 library;
 
+import 'package:qaddy/core/user/current_user.dart' as user;
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_accommodation.dart';
 import 'package:qaddy/features/trips/models/trip_expense.dart';
@@ -29,7 +30,7 @@ import 'package:qaddy/features/trips/models/trip_weather.dart';
 
 // Every organiser is Tiamana — placeholder-trip-data.md's Engineering
 // Decisions.
-const String _organiser = 'Tiamana';
+const String _organiser = user.currentUserName;
 
 /// The signed-in golfer's name — the organiser of every seeded trip and of
 /// any trip created in the app. Matches Profile's placeholder subject.

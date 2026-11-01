@@ -1,83 +1,198 @@
-/// A single row on the Friend Requests screen — see
-/// `docs/architecture/friend-requests.md`'s "Screen Contents" section.
+/// One friend request, with buttons that work: Accept and Decline for a
+/// request someone sent you, Cancel for one you sent.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/features/community/logic/friend_insights.dart';
 import 'package:qaddy/features/community/models/friend_request.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 
-/// One [FriendRequest]'s row — Accept/Decline for incoming, Cancel for
-/// outgoing. Every action is "Visual only", per
-/// `docs/features/friends-feature-integration.md`'s Button Behaviour table,
-/// so each is wired to a no-op rather than left disabled (see
-/// `docs/architecture/friends-engineering-decisions.md`'s "Visual-Only
-/// Actions Are Explicit, Not Silent").
-class FriendRequestRow extends StatelessWidget {
-  const FriendRequestRow({required this.request, super.key});
+/// A friend request card.
+class FriendRequestRow extends ConsumerWidget {
+  const FriendRequestRow({
+    required this.request,
+    this.compact = false,
+    super.key,
+  });
 
-  /// The friend request to display.
+  /// The request to show.
   final FriendRequest request;
 
+  /// Show a request the golfer sent as one quiet line instead of a card — it
+  /// needs nothing from them, so it shouldn't compete with ones that do.
+  final bool compact;
+
+  void _tell(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
     final friend = request.friend;
+    final incoming = request.direction == FriendRequestDirection.incoming;
+    final controller = ref.read(friendsProvider.notifier);
+
+    if (compact && !incoming) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: spacing.xs),
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 32,
+              height: 32,
+              child: FittedBox(child: QaddyAvatar(name: friend.displayName)),
+            ),
+            SizedBox(width: spacing.md),
+            Expanded(
+              child: Text(
+                'Waiting for ${friend.displayName} to reply',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: typography.small.copyWith(color: colours.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                QaddyHaptics.selection();
+                controller.cancelRequest(friend.id);
+                _tell(context, 'Request to ${friend.displayName} cancelled');
+              },
+              child: Text(
+                'Cancel',
+                semanticsLabel: 'Cancel request to ${friend.displayName}',
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return QaddyCard(
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          QaddyAvatar(name: friend.displayName),
-          SizedBox(width: spacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  friend.displayName,
-                  style: typography.body.copyWith(
-                    color: colours.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+          Row(
+            children: <Widget>[
+              QaddyAvatar(name: friend.displayName),
+              SizedBox(width: spacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      friend.displayName,
+                      style: typography.body.copyWith(
+                        color: colours.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: spacing.xs),
+                    Text(
+                      '${incoming ? 'Wants to play' : 'Waiting for a reply'}'
+                      '  ·  HCP ${handicapLabel(friend.handicap)}'
+                      '  ·  ${request.sentDescription}',
+                      style: typography.small.copyWith(
+                        color: colours.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: spacing.xs),
-                Text(
-                  'HCP ${friend.handicap}  ·  Sent ${request.sentDescription}',
-                  style: typography.small.copyWith(
-                    color: colours.textSecondary,
+              ),
+              if (!incoming)
+                TextButton(
+                  onPressed: () {
+                    QaddyHaptics.selection();
+                    controller.cancelRequest(friend.id);
+                    _tell(
+                      context,
+                      'Request to ${friend.displayName} cancelled',
+                    );
+                  },
+                  child: Text(
+                    'Cancel',
+                    semanticsLabel: 'Cancel request to ${friend.displayName}',
+                  ),
+                ),
+            ],
+          ),
+          if (incoming) ...<Widget>[
+            SizedBox(height: spacing.md),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colours.accent,
+                      foregroundColor: colours.background,
+                      minimumSize: Size.fromHeight(spacing.display),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(radius.medium),
+                      ),
+                    ),
+                    onPressed: () {
+                      QaddyHaptics.success();
+                      controller.acceptRequest(friend.id);
+                      _tell(
+                        context,
+                        'You and ${friend.displayName} are now friends',
+                      );
+                    },
+                    child: Text(
+                      'Accept',
+                      semanticsLabel: 'Accept ${friend.displayName}',
+                      style: typography.button,
+                    ),
+                  ),
+                ),
+                SizedBox(width: spacing.sm),
+                Expanded(
+                  flex: 2,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colours.textSecondary,
+                      side: BorderSide(color: colours.border),
+                      minimumSize: Size.fromHeight(spacing.display),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(radius.medium),
+                      ),
+                    ),
+                    onPressed: () {
+                      QaddyHaptics.selection();
+                      controller.declineRequest(friend.id);
+                      _tell(
+                        context,
+                        'Request from ${friend.displayName} declined',
+                      );
+                    },
+                    child: Text(
+                      'Decline',
+                      semanticsLabel: 'Decline ${friend.displayName}',
+                      style: typography.button,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-          if (request.direction == FriendRequestDirection.incoming) ...<Widget>[
-            QaddyIconButton(
-              icon: Icons.check,
-              onPressed: () {},
-              semanticLabel: 'Accept',
-            ),
-            SizedBox(width: spacing.xs),
-            QaddyIconButton(
-              icon: Icons.close,
-              onPressed: () {},
-              semanticLabel: 'Decline',
-            ),
-          ] else
-            QaddyIconButton(
-              icon: Icons.close,
-              onPressed: () {},
-              semanticLabel: 'Cancel',
-            ),
+          ],
         ],
       ),
     );

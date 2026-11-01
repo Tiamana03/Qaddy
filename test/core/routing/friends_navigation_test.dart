@@ -16,9 +16,9 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.people));
     await tester.pumpAndSettle();
-    expect(find.text('Quick Actions'), findsOneWidget);
+    expect(find.text('Your squad'), findsOneWidget);
 
-    await tester.tap(find.text('View Friends'));
+    await tester.tap(find.byTooltip('All friends'));
     await tester.pumpAndSettle();
     expect(find.text('Friends List'), findsOneWidget);
 
@@ -30,7 +30,10 @@ void main() {
     await tester.tap(find.text('View Activity'));
     await tester.pumpAndSettle();
     expect(
-      find.text('Tom completed a round at Richmond Golf Club'),
+      find.text(
+        'Tom completed a round at Richmond Golf Club',
+        findRichText: true,
+      ),
       findsOneWidget,
     );
 
@@ -46,7 +49,9 @@ void main() {
     await tester.tap(find.byIcon(Icons.people));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Groups'));
+    // Your clubs is the last section on Friends Home.
+    await tester.ensureVisible(find.text('See all').last);
+    await tester.tap(find.text('See all').last);
     await tester.pumpAndSettle();
     expect(find.text('Saturday Boys'), findsOneWidget);
 
@@ -71,6 +76,6 @@ void main() {
     await tester.tap(find.byIcon(Icons.diversity_3));
     await tester.pumpAndSettle();
 
-    expect(find.text('Quick Actions'), findsOneWidget);
+    expect(find.text('Your squad'), findsOneWidget);
   });
 }

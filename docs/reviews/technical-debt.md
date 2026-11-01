@@ -229,3 +229,23 @@ Revisit when the backend (Release 2) lands, or sooner if PDF or photos are judge
 Target
 
 Release 2.
+
+---
+
+## TD-014 — The friends store is in memory, and other features read the placeholder constants
+
+Priority: Medium
+
+Status: **Open** (logged during the Friends Home redesign, November 2026)
+
+Current State
+
+Friends Home, Friends List, Friend Requests and Activity Feed share `friendsProvider` (`features/community/state/friends_controller.dart`), so accepting a request is reflected across them. But the store is in memory — an accepted friend or a cheer is lost on restart (Trips, by contrast, persists) — and Search, Trips (the friend picker and handicaps) and Profile (the friends count) still read `placeholder_friends.dart` directly, so they do not see a friend accepted this session.
+
+Action
+
+Persist the store the same way as Trips (a versioned document behind a small storage interface), and move Search, the Trips friend picker and Profile onto `confirmedFriendsProvider`. Do this when those screens are next reviewed, ahead of the Release 2 backend.
+
+Target
+
+Search and Profile Release Candidate reviews.

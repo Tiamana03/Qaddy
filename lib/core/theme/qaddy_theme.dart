@@ -100,6 +100,20 @@ abstract final class QaddyTheme {
               : colours.border,
         ),
       ),
+      // Floating, themed snackbars: the default is a light bar that clashes
+      // with the dark surfaces, and every screen shows them.
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colours.surface2,
+        contentTextStyle: QaddyTypography.standard.body.copyWith(
+          color: colours.textPrimary,
+        ),
+        actionTextColor: colours.accent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(QaddyRadius.standard.medium),
+          side: BorderSide(color: colours.border),
+        ),
+      ),
       // One modern fade-and-drift transition on every platform, so moving
       // between pages feels the same (and calm) on phone, web and desktop.
       pageTransitionsTheme: const PageTransitionsTheme(

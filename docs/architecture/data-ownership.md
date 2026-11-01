@@ -39,7 +39,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Dashboard (`dashboard`) | Round-summary values (Rounds Played, Average Score, Best Round) | `lib/features/dashboard/models/placeholder_dashboard.dart` | Profile (`profileRoundsPlayed`/`profileAverageScore`/`profileBestRound`) |
 | Rounds (`rounds`) | Current/upcoming round data (`UpcomingRound`), round leaderboard, `PositionBadge` widget | `lib/features/rounds/models/placeholder_rounds.dart`, `lib/features/rounds/ui/widgets/position_badge.dart` | Groups (`GroupLeaderboardRow` reuses `PositionBadge`), Search (Rounds category) |
 | Trips (`trips`) | Every trip and its plan (players, courses, flights, accommodation, transport, activities, expenses, checklist, packing, weather, chat, notes). Seeds live in `placeholder_trips.dart`; the *live* trips (created, edited, archived, deleted) live in the `tripsProvider` store, the single source of truth for the app run. | `lib/features/trips/models/placeholder_trips.dart` (seeds, `currentUserName`, count constants), `lib/features/trips/state/trips_controller.dart` (live store) | Profile (Trips count, still the seed constants — see TD-011), Search (Trips and Courses categories, read from the live store) |
-| Community (`community`) | Friends list, friend profiles, Rivalry Performance | `lib/features/community/models/placeholder_friends.dart` | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
+| Community (`community`) | Friends list, friend profiles, Rivalry Performance; the live friends store (requests, accepted friends, cheers) | `lib/features/community/models/placeholder_friends.dart` (seeds), `lib/features/community/state/friends_controller.dart` (live store) | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
 | Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
 | Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting, Favourite Courses (`profileFavouriteCourses`) | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility), Search (Courses category) |
 | Statistics (`statistics`) | Trend deltas only (Handicap, Average Score — two-point, see Exception 1) | `lib/features/statistics/models/placeholder_statistics.dart` | None yet |
@@ -74,6 +74,7 @@ Groups        → Search          (Groups category)
 Trips         → Search          (Trips and Courses categories)
 Profile       → Trips           (golfer's name and handicap for a new trip's organiser)
 Community     → Trips           (friends' handicaps and the invite list)
+Groups        → Friends Home    (club previews: name, size, season, next round)
 Rounds        → Search          (Rounds category)
 Profile       → Search          (Courses category — profileFavouriteCourses)
 ```
