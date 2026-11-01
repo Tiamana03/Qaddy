@@ -12,7 +12,7 @@ import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/community/ui/widgets/rivalry_spotlight.dart';
 import 'package:qaddy/features/community/ui/widgets/squad_strip.dart';
 
-import '../../community_test_harness.dart';
+import '../../../../support/app_test_harness.dart';
 
 /// A store with no friends at all, for the first-time experience.
 class _NoFriends extends FriendsController {

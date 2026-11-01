@@ -1,59 +1,104 @@
-/// Qaddy's Live Leaderboard — standings for the active round.
+/// The leaderboard: who is winning, by how much and how far through they are.
 ///
-/// Sprint 2.4 — see `docs/sprints/sprint-02-04-leaderboard.md`. Player
-/// standings are sourced from `docs/standards/placeholder-data.md`'s
-/// "Leaderboard" section (8 players, matching the round's Player Count).
-///
-/// Like `LiveScorecardScreen` (Sprint 2.3), this screen is intentionally
-/// not wired into `app_router.dart` — `docs/architecture/navigation.md`
-/// defines no route for it, and neither this sprint's "Build" nor "Do Not
-/// Build" sections ask for one, so none is invented here.
-///
-/// The screen is a plain `StatelessWidget`: nothing on it is interactive
-/// (no score-entry controls — that's `LiveScorecardScreen`'s job), so
-/// there's no state to hold. Ranking is computed once per build from the
-/// static placeholder list via `rankLeaderboard`.
+/// Stableford points decide it. It shows the round being played or, when none
+/// is, the last one finished. See `docs/features/rounds-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/rounds/logic/leaderboard_ranking.dart';
-import 'package:qaddy/features/rounds/models/leaderboard_entry.dart';
-import 'package:qaddy/features/rounds/ui/widgets/leaderboard_row.dart';
+import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
+import 'package:qaddy/features/rounds/logic/round_insights.dart';
+import 'package:qaddy/features/rounds/logic/standings.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+import 'package:qaddy/features/rounds/ui/widgets/standing_row.dart';
 
-/// The Live Leaderboard screen.
-class LeaderboardScreen extends StatelessWidget {
+/// The Leaderboard (route `/rounds/leaderboard`).
+class LeaderboardScreen extends ConsumerWidget {
   const LeaderboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final round =
+        ref.watch(liveRoundProvider) ?? ref.watch(completedRoundProvider);
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    final ranked = rankLeaderboard(richmondGolfClubLeaderboard);
+    if (round == null) {
+      return QaddyScaffold(
+        appBar: AppBar(title: const Text('Leaderboard')),
+        body: Center(
+          child: QaddyEmptyState(
+            icon: Icons.leaderboard_outlined,
+            title: 'No round yet',
+            message: 'Start a round and the leaderboard builds itself.',
+            actionLabel: 'Go to Rounds',
+            onAction: () => context.go(AppRoutes.rounds),
+          ),
+        ),
+      );
+    }
+
+    final standings = standingsOf(round);
+    final played = round.holesPlayed;
+    final leaderPoints = standings.isEmpty ? 0 : standings.first.points;
+    final chase = chaseLine(standings, currentUserName);
+    final status = round.isCompleted
+        ? 'Final · $played holes'
+        : played == 0
+        ? 'Waiting for the first hole'
+        : 'After $played ${played == 1 ? 'hole' : 'holes'}';
 
     return QaddyScaffold(
+      appBar: AppBar(title: const Text('Leaderboard')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
+            QaddyEyebrow(
+              '${round.format.toUpperCase()} · ${status.toUpperCase()}',
+            ),
+            SizedBox(height: spacing.sm),
             Text(
-              'Leaderboard',
+              played == 0
+                  ? 'All square'
+                  : winnersHeadline(
+                      standings,
+                      you: currentUserName,
+                      finished: round.isCompleted,
+                    ),
               style: typography.h1.copyWith(color: colours.textPrimary),
             ),
-            SizedBox(height: spacing.sectionGap),
-            for (final (index, entry) in ranked.indexed) ...<Widget>[
-              if (index > 0) SizedBox(height: spacing.cardGap),
-              LeaderboardRow(ranked: entry),
+            if (chase != null && played > 0) ...<Widget>[
+              SizedBox(height: spacing.xs),
+              Text(
+                chase,
+                style: typography.body.copyWith(color: colours.textSecondary),
+              ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+            for (final (index, standing) in standings.indexed) ...<Widget>[
+              if (index > 0) SizedBox(height: spacing.cardGap),
+              StandingRow(
+                standing: standing,
+                isYou: standing.player.name == currentUserName,
+                leaderPoints: leaderPoints,
+                holesPlayed: played,
+              ),
+            ],
+            SizedBox(height: spacing.xl),
+          ]),
         ),
       ),
     );

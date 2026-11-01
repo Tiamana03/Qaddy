@@ -44,9 +44,12 @@ The countdown works from the round's day name ("Saturday") because the placehold
 - The Dashboard no longer imports a `QuickActionCard`; that file is deleted.
 - Navigation tests that used the Dashboard's "Good Morning," as a marker now use "YOUR GAME", which does not depend on the hour.
 
+# Rounds integration
+
+Once Rounds became real (see `rounds-release-candidate.md`), the hero shows "ROUND IN PROGRESS · Hole N of 18" with **Continue round** while a round is being played, the first shortcut becomes *Continue round*, and the last-round row shows the round just played (winner, points, "Today") and opens its results.
+
 # Placeholders and limits
 
 - The notification dot is always on: Notifications has no read state yet.
-- The last round (The Dunes), the highlights and the friends' moments are placeholder data. The Round Complete screen shows a different round (Richmond), so the last-round card deliberately does not link to it.
-- The Rounds tab, where **Get ready** lands, still has disabled Start / Edit / Cancel buttons. It is the next screen to review.
+- Until a round has been played in the app, the last round (The Dunes), the highlights and the friends' moments are placeholder data, and the placeholder last round has no results to open.
 - Weather is placeholder text ("21°C Sunny"), not a forecast.

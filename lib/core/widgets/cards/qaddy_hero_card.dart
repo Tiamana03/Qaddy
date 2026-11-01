@@ -16,9 +16,9 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 class QaddyHeroCard extends StatelessWidget {
   const QaddyHeroCard({
     required this.gradient,
-    required this.semanticLabel,
-    required this.onTap,
     required this.child,
+    this.semanticLabel,
+    this.onTap,
     this.footer,
     super.key,
   });
@@ -26,11 +26,13 @@ class QaddyHeroCard extends StatelessWidget {
   /// The card's background.
   final Gradient gradient;
 
-  /// What a screen reader says for the story, which is one button.
-  final String semanticLabel;
+  /// What a screen reader says for the story, which is one button. Needed
+  /// with [onTap].
+  final String? semanticLabel;
 
-  /// Opens whatever the story is about.
-  final VoidCallback onTap;
+  /// Opens whatever the story is about. Omit for a card that is only
+  /// for show.
+  final VoidCallback? onTap;
 
   /// The story: eyebrow, headline, details.
   final Widget child;
@@ -45,6 +47,12 @@ class QaddyHeroCard extends StatelessWidget {
     final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final borderRadius = BorderRadius.circular(radius.extraLarge);
+    final story = EdgeInsets.fromLTRB(
+      spacing.xl,
+      spacing.xl,
+      spacing.xl,
+      spacing.lg,
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -60,24 +68,19 @@ class QaddyHeroCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Semantics(
-                  button: true,
-                  onTap: onTap,
-                  excludeSemantics: true,
-                  label: semanticLabel,
-                  child: InkWell(
+                if (onTap == null)
+                  Padding(padding: story, child: child)
+                else
+                  Semantics(
+                    button: true,
                     onTap: onTap,
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        spacing.xl,
-                        spacing.xl,
-                        spacing.xl,
-                        spacing.lg,
-                      ),
-                      child: child,
+                    excludeSemantics: true,
+                    label: semanticLabel,
+                    child: InkWell(
+                      onTap: onTap,
+                      child: Padding(padding: story, child: child),
                     ),
                   ),
-                ),
                 if (footer != null)
                   Padding(
                     padding: EdgeInsets.fromLTRB(

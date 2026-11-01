@@ -1,4 +1,4 @@
-/// Shared setup for Friends widget tests: the dark theme inside a
+/// Shared setup for widget tests: the dark theme inside a
 /// `ProviderScope`, with recording fakes in place of the share sheet and link
 /// launcher so no test ever opens a real app.
 library;

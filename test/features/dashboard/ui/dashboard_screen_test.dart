@@ -6,9 +6,11 @@ import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
-import '../../community/community_test_harness.dart';
+import '../../../support/app_test_harness.dart';
 
 /// A Sunday morning: the round is six days away and the Melbourne trip 27.
 final DateTime _sundayMorning = DateTime(2026, 11, 1, 9);
@@ -25,6 +27,7 @@ const List<String> _destinations = <String>[
   '/home/notifications',
   '/rounds',
   '/rounds/scorecard',
+  '/rounds/complete',
   '/trips',
   '/trips/create',
   '/trips/melbourne-golf-weekend',
@@ -90,7 +93,7 @@ void main() {
       await _pump(tester);
 
       expect(find.text('NEXT ROUND'), findsOneWidget);
-      expect(find.text('Score a round'), findsOneWidget);
+      expect(find.text('Start a round'), findsOneWidget);
       expect(find.text('YOUR GAME'), findsOneWidget);
       expect(find.text('From your mates'), findsOneWidget);
       expect(find.text('Your highlights'), findsOneWidget);
@@ -154,7 +157,7 @@ void main() {
 
   group('shortcuts', () {
     for (final (label, path) in <(String, String)>[
-      ('Score a round', '/rounds/scorecard'),
+      ('Start a round', '/rounds'),
       ('Plan a trip', '/trips/create'),
       ('Add a mate', '/friends/search'),
       ('My stats', '/profile/statistics'),
@@ -184,6 +187,98 @@ void main() {
       };
 
       expect(tops, hasLength(1));
+    });
+  });
+
+  group('with a round under way', () {
+    Future<ProviderContainer> pumpLive(WidgetTester tester) async {
+      final container = friendsContainer(
+        overrides: <Override>[
+          dashboardClockProvider.overrideWithValue(() => _sundayMorning),
+        ],
+      );
+      container
+          .read(roundsProvider.notifier)
+          .startRound(
+            upcomingRoundInvitees.take(3).map((i) => i.player).toList(),
+          );
+      container.read(roundsProvider.notifier).nextHole();
+      useScreen(tester, const Size(400, 3200));
+      final router = GoRouter(initialLocation: '/home', routes: _routes());
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: QaddyTheme.dark,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return container;
+    }
+
+    testWidgets('the hero says so and offers to continue', (tester) async {
+      await pumpLive(tester);
+
+      expect(find.text('ROUND IN PROGRESS'), findsOneWidget);
+      expect(find.text('Hole 2 of 18'), findsOneWidget);
+      expect(find.text('Continue round'), findsWidgets);
+      expect(find.text('Get ready'), findsNothing);
+    });
+
+    testWidgets('Continue round opens the scorecard', (tester) async {
+      await pumpLive(tester);
+
+      await _tap(tester, find.text('Continue round').first);
+
+      expect(find.text('Go: /rounds/scorecard'), findsOneWidget);
+    });
+
+    testWidgets('the first shortcut becomes Continue round', (tester) async {
+      await pumpLive(tester);
+
+      expect(find.text('Start a round'), findsNothing);
+      expect(find.byIcon(Icons.play_arrow_rounded), findsWidgets);
+    });
+  });
+
+  group('after a round', () {
+    testWidgets('your game shows the round just played and opens it', (
+      tester,
+    ) async {
+      final container = friendsContainer(
+        overrides: <Override>[
+          dashboardClockProvider.overrideWithValue(() => _sundayMorning),
+          roundsClockProvider.overrideWithValue(() => _sundayMorning),
+        ],
+      );
+      container.read(roundsProvider.notifier)
+        ..startRound(
+          upcomingRoundInvitees.take(2).map((i) => i.player).toList(),
+        )
+        ..finishRound();
+      useScreen(tester, const Size(400, 3200));
+      final router = GoRouter(initialLocation: '/home', routes: _routes());
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: QaddyTheme.dark,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Won at Richmond Golf Club'), findsOneWidget);
+      expect(find.textContaining('Today'), findsOneWidget);
+
+      await _tap(tester, find.text('Won at Richmond Golf Club'));
+
+      expect(find.text('Go: /rounds/complete'), findsOneWidget);
     });
   });
 

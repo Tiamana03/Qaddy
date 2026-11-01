@@ -1,234 +1,261 @@
-/// Qaddy's Live Scorecard — hole-by-hole score entry during a round.
+/// The scorecard you keep in your pocket on a Saturday: one hole at a time,
+/// everyone's score under your thumb, the leaderboard a tap away.
 ///
-/// Sprint 2.3 — see `docs/sprints/sprint-02-03-live-scoring.md`. Course
-/// data (par/stroke index/distance for all 18 holes) is sourced from
-/// `docs/standards/placeholder-data.md`'s "Richmond Golf Club — Hole
-/// Information" table. Every hole starts at its own par, per
-/// `docs/architecture/round-data-model.md`'s "Hole Score Initial State".
-///
-/// This screen is intentionally not wired into `app_router.dart` —
-/// `docs/architecture/navigation.md` defines no route for it, and neither
-/// this sprint's "Build" nor "Do Not Build" sections ask for one, so none
-/// is invented here.
-///
-/// State is plain, screen-local `StatefulWidget` state rather than a
-/// Riverpod provider: nothing here persists or is shared with another
-/// screen (`engineering-principles.md`'s "Riverpod only" rule governs
-/// shared/app state, not ephemeral widget-local UI state), and the sprint
-/// is explicit that "everything remains in memory."
+/// It replaces the paper card. Scores are saved as they are entered, so a
+/// round survives the app being closed. See
+/// `docs/features/rounds-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/responsive/responsive_max_width.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/rounds/models/hole_score.dart';
-import 'package:qaddy/features/rounds/ui/widgets/hole_header.dart';
-import 'package:qaddy/features/rounds/ui/widgets/running_totals_card.dart';
-import 'package:qaddy/features/rounds/ui/widgets/score_stepper.dart';
+import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
+import 'package:qaddy/features/rounds/logic/stableford.dart';
+import 'package:qaddy/features/rounds/models/round.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_banner.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_progress_strip.dart';
+import 'package:qaddy/features/rounds/ui/widgets/player_score_row.dart';
+import 'package:qaddy/features/rounds/ui/widgets/standings_preview.dart';
 
-/// Richmond Golf Club's 18 holes (par, stroke index, distance in metres) —
-/// see placeholder-data.md's "Richmond Golf Club — Hole Information" table.
-const List<(int par, int strokeIndex, int distance)> _richmondGolfClub =
-    <(int, int, int)>[
-      (4, 11, 352),
-      (5, 3, 486),
-      (3, 17, 148),
-      (4, 7, 371),
-      (4, 1, 414),
-      (5, 13, 471),
-      (4, 9, 364),
-      (3, 15, 163),
-      (4, 5, 390),
-      (4, 10, 360),
-      (5, 2, 502),
-      (3, 18, 141),
-      (4, 6, 384),
-      (4, 8, 373),
-      (5, 4, 495),
-      (3, 16, 158),
-      (4, 12, 347),
-      (4, 14, 401),
-    ];
+/// What the menu in the corner can do.
+enum _MenuAction { finish, discard }
 
-/// The Live Scorecard screen — score entry, hole navigation and running
-/// totals for a round in progress.
-class LiveScorecardScreen extends StatefulWidget {
+/// The Live Scorecard (route `/rounds/scorecard`).
+class LiveScorecardScreen extends ConsumerWidget {
   const LiveScorecardScreen({super.key});
 
   @override
-  State<LiveScorecardScreen> createState() => _LiveScorecardScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final round = ref.watch(liveRoundProvider);
+    if (round == null) {
+      return const _NoRound();
+    }
 
-class _LiveScorecardScreenState extends State<LiveScorecardScreen> {
-  final List<HoleScore> _holes = <HoleScore>[
-    for (final (index, hole) in _richmondGolfClub.indexed)
-      HoleScore(
-        holeNumber: index + 1,
-        par: hole.$1,
-        strokeIndex: hole.$2,
-        distance: hole.$3,
-        grossScore: hole.$1,
-      ),
-  ];
-
-  int _currentHoleIndex = 0;
-
-  HoleScore get _currentHole => _holes[_currentHoleIndex];
-
-  void _incrementScore() {
-    setState(() {
-      _holes[_currentHoleIndex] = _currentHole.copyWithGrossScore(
-        _currentHole.grossScore + 1,
-      );
-    });
-  }
-
-  void _decrementScore() {
-    setState(() {
-      _holes[_currentHoleIndex] = _currentHole.copyWithGrossScore(
-        _currentHole.grossScore - 1,
-      );
-    });
-  }
-
-  void _goToHole(int index) {
-    setState(() => _currentHoleIndex = index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
+    final controller = ref.read(roundsProvider.notifier);
+    final onLast = round.currentHole == round.holes.length - 1;
+    final holes = round.holesPlayed == 1
+        ? 'the 1 hole'
+        : 'the ${round.holesPlayed} holes';
+
+    void finish() {
+      QaddyHaptics.success();
+      controller.finishRound();
+      context.pushReplacement(AppRoutes.roundComplete);
+    }
+
+    Future<void> onMenu(_MenuAction action) async {
+      switch (action) {
+        case _MenuAction.finish:
+          final ok = await showQaddyConfirm(
+            context,
+            title: 'Finish the round?',
+            message: round.holesPlayed == 0
+                ? 'Nothing has been scored yet, so there are no results to '
+                      'show. You may want to discard it instead.'
+                : 'Only $holes everyone has played will count.',
+            confirmLabel: 'Finish round',
+          );
+          if (ok && round.holesPlayed > 0 && context.mounted) {
+            finish();
+          }
+        case _MenuAction.discard:
+          final ok = await showQaddyConfirm(
+            context,
+            title: 'Discard this round?',
+            message: 'The scores you have entered will be lost.',
+            confirmLabel: 'Discard',
+            destructive: true,
+          );
+          if (ok && context.mounted) {
+            controller.discardRound();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.rounds);
+            }
+          }
+      }
+    }
+
+    // You first, then everyone else in the order they were picked.
+    final players = <int>[for (var i = 0; i < round.players.length; i++) i]
+      ..sort((a, b) {
+        final aYou = round.players[a].name == currentUserName ? 0 : 1;
+        final bYou = round.players[b].name == currentUserName ? 0 : 1;
+        return aYou != bYou ? aYou.compareTo(bYou) : a.compareTo(b);
+      });
 
     return QaddyScaffold(
-      // Opened from the Dashboard it sits on top of another screen, so it
-      // gets a way back; on its own there is nothing to go back to.
-      appBar: Navigator.of(context).canPop()
-          ? AppBar(title: const Text('Live Scorecard'))
-          : null,
+      appBar: AppBar(
+        title: Text(round.course),
+        actions: <Widget>[
+          IconButton(
+            tooltip: 'Leaderboard',
+            icon: const Icon(Icons.leaderboard_outlined),
+            onPressed: () => context.push(AppRoutes.roundLeaderboard),
+          ),
+          PopupMenuButton<_MenuAction>(
+            tooltip: 'Round options',
+            onSelected: onMenu,
+            itemBuilder: (context) => const <PopupMenuEntry<_MenuAction>>[
+              PopupMenuItem<_MenuAction>(
+                value: _MenuAction.finish,
+                child: Text('Finish round now'),
+              ),
+              PopupMenuItem<_MenuAction>(
+                value: _MenuAction.discard,
+                child: Text('Discard round'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: spacing.md),
+            HoleProgressStrip(round: round, onSelect: controller.goToHole),
             SizedBox(height: spacing.lg),
-            Text(
-              'Live Scorecard',
-              style: typography.h1.copyWith(color: colours.textPrimary),
-            ),
+            HoleBanner(hole: round.hole, total: round.holes.length),
             SizedBox(height: spacing.lg),
-            _HoleSelector(
-              holes: _holes,
-              currentIndex: _currentHoleIndex,
-              onSelect: _goToHole,
-            ),
-            SizedBox(height: spacing.sectionGap),
-            HoleHeader(hole: _currentHole),
-            SizedBox(height: spacing.sectionGap),
-            ScoreStepper(
-              score: _currentHole.grossScore,
-              onIncrement: _incrementScore,
-              onDecrement: _currentHole.grossScore > 1 ? _decrementScore : null,
-            ),
-            SizedBox(height: spacing.sectionGap),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: QaddySecondaryButton(
-                    label: 'Previous Hole',
-                    onPressed: _currentHoleIndex > 0
-                        ? () => _goToHole(_currentHoleIndex - 1)
-                        : null,
-                  ),
+            for (final (position, index) in players.indexed) ...<Widget>[
+              if (position > 0) SizedBox(height: spacing.cardGap),
+              _ScoreRow(round: round, playerIndex: index),
+            ],
+            if (round.holesPlayed > 0) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              QaddyFadeSlideIn(
+                child: StandingsPreview(
+                  round: round,
+                  onOpen: () => context.push(AppRoutes.roundLeaderboard),
                 ),
-                SizedBox(width: spacing.sm),
-                Expanded(
-                  child: QaddyPrimaryButton(
-                    label: 'Next Hole',
-                    onPressed: _currentHoleIndex < _holes.length - 1
-                        ? () => _goToHole(_currentHoleIndex + 1)
-                        : null,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: spacing.sectionGap),
-            RunningTotalsCard(holes: _holes),
+              ),
+            ],
             SizedBox(height: spacing.xl),
           ],
+        ),
+      ),
+      bottomNavigationBar: ColoredBox(
+        color: colours.surface1,
+        child: SafeArea(
+          top: false,
+          child: ResponsiveMaxWidth(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: spacing.pagePadding,
+                vertical: spacing.md,
+              ),
+              child: Row(
+                children: <Widget>[
+                  IconButton.outlined(
+                    tooltip: 'Previous hole',
+                    onPressed: round.currentHole > 0
+                        ? () {
+                            QaddyHaptics.selection();
+                            controller.previousHole();
+                          }
+                        : null,
+                    style: IconButton.styleFrom(
+                      minimumSize: Size(spacing.display, spacing.display),
+                      side: BorderSide(color: colours.border),
+                    ),
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  SizedBox(width: spacing.md),
+                  Expanded(
+                    child: QaddyGoldButton(
+                      label: onLast ? 'Finish round' : 'Next hole',
+                      icon: onLast
+                          ? Icons.flag_rounded
+                          : Icons.arrow_forward_rounded,
+                      tall: true,
+                      onPressed: onLast
+                          ? finish
+                          : () {
+                              QaddyHaptics.light();
+                              controller.nextHole();
+                            },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// A horizontal, scrollable strip of 18 numbered hole buttons — lets a
-/// player jump directly to any hole while keeping the current one obvious.
-class _HoleSelector extends StatelessWidget {
-  const _HoleSelector({
-    required this.holes,
-    required this.currentIndex,
-    required this.onSelect,
-  });
+/// One player's row, wired to the store.
+class _ScoreRow extends ConsumerWidget {
+  const _ScoreRow({required this.round, required this.playerIndex});
 
-  final List<HoleScore> holes;
-  final int currentIndex;
-  final ValueChanged<int> onSelect;
+  final Round round;
+  final int playerIndex;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final player = round.players[playerIndex];
+    final hole = round.hole;
+    final gross = round.grossAt(player.name, round.currentHole);
+    final shots = shotsReceived(
+      playingHandicap: player.playingHandicap,
+      strokeIndex: hole.strokeIndex,
+    );
+
+    return PlayerScoreRow(
+      name: player.name,
+      isYou: player.name == currentUserName,
+      par: hole.par,
+      shots: shots,
+      gross: gross,
+      points: stablefordPoints(
+        gross: gross ?? hole.par,
+        par: hole.par,
+        shots: shots,
+      ),
+      onNudge: (delta) {
+        QaddyHaptics.selection();
+        ref.read(roundsProvider.notifier).nudgeScore(player.name, delta);
+      },
+    );
+  }
+}
+
+/// Shown when the scorecard is opened with no round to score.
+class _NoRound extends StatelessWidget {
+  const _NoRound();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return SizedBox(
-      height: spacing.iconButtonSize,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: holes.length,
-        separatorBuilder: (BuildContext context, int index) =>
-            SizedBox(width: spacing.sm),
-        itemBuilder: (BuildContext context, int index) {
-          final isSelected = index == currentIndex;
-          final background = isSelected ? colours.primary : colours.surface1;
-          final foreground = isSelected
-              ? theme.colorScheme.onPrimary
-              : colours.textPrimary;
-
-          return Semantics(
-            button: true,
-            label: 'Jump to hole ${holes[index].holeNumber}',
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => onSelect(index),
-                customBorder: const CircleBorder(),
-                child: Container(
-                  width: spacing.iconButtonSize,
-                  height: spacing.iconButtonSize,
-                  decoration: BoxDecoration(
-                    color: background,
-                    shape: BoxShape.circle,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${holes[index].holeNumber}',
-                    style: typography.small.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
+    return QaddyScaffold(
+      appBar: AppBar(title: const Text('Scorecard')),
+      body: Center(
+        child: QaddyEmptyState(
+          icon: Icons.sports_golf,
+          title: 'No round in progress',
+          message:
+              'Pick who is playing and start a round, and your scorecard '
+              'appears here.',
+          actionLabel: 'Go to Rounds',
+          onAction: () => context.go(AppRoutes.rounds),
+        ),
       ),
     );
   }

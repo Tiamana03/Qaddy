@@ -34,6 +34,7 @@ import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/quick_actions_strip.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/stat_trend_formatting.dart';
 import 'package:qaddy/features/statistics/models/placeholder_statistics.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
@@ -58,13 +59,20 @@ class DashboardScreen extends ConsumerWidget {
     final handicapTrend = statisticsTrends.firstWhere(
       (trend) => trend.label == 'Handicap',
     );
+    final live = ref.watch(liveRoundProvider);
+    final completed = ref.watch(completedRoundProvider);
+    final lastRound = completed == null
+        ? null
+        : lastRoundFrom(completed, currentUserName, now);
 
     final quickActions = <QuickAction>[
       QuickAction(
-        icon: Icons.sports_golf,
-        label: 'Score a round',
+        icon: live == null ? Icons.sports_golf : Icons.play_arrow_rounded,
+        label: live == null ? 'Start a round' : 'Continue round',
         colour: colours.accentTeal,
-        onTap: () => context.push(AppRoutes.roundScorecard),
+        onTap: () => live == null
+            ? context.go(AppRoutes.rounds)
+            : context.push(AppRoutes.roundScorecard),
       ),
       QuickAction(
         icon: Icons.luggage_outlined,
@@ -136,7 +144,10 @@ class DashboardScreen extends ConsumerWidget {
                 currentUserName,
                 for (final friend in squad) friend.displayName,
               ],
-              onOpen: () => context.go(AppRoutes.rounds),
+              inProgressHole: live == null ? null : live.currentHole + 1,
+              onOpen: () => live == null
+                  ? context.go(AppRoutes.rounds)
+                  : context.push(AppRoutes.roundScorecard),
               onShare: () => shareOrCopy(
                 context,
                 ref,
@@ -152,8 +163,11 @@ class DashboardScreen extends ConsumerWidget {
               roundsPlayed: dashboardRoundsPlayed,
               averageScore: dashboardAverageScore,
               bestRound: dashboardBestRound,
-              lastRound: dashboardLastRound,
+              lastRound: lastRound ?? dashboardLastRound,
               onOpen: () => context.push(AppRoutes.profileStatistics),
+              onOpenLastRound: lastRound == null
+                  ? null
+                  : () => context.push(AppRoutes.roundComplete),
             ),
             SizedBox(height: spacing.sectionGap),
             NextTripCard(

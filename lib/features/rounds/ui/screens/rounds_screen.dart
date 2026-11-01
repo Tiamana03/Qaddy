@@ -1,148 +1,249 @@
-/// Qaddy's Round Setup screen — the Rounds destination.
+/// Qaddy's Rounds destination — the round, from the first-tee nerves to the
+/// final putt.
 ///
-/// Sprint 2.2 replaces the Sprint 1.2 placeholder with a production-ready
-/// interface for preparing a golf round before play begins — see
-/// `docs/sprints/sprint-02-02-round-setup.md`. Visual foundation only: every
-/// value shown is placeholder data from `docs/standards/placeholder-data.md`.
-/// No backend, business logic or real navigation is wired up (see the
-/// sprint's "Do Not Build" section).
+/// Before the round it is an invitation: when, where, who is playing and one
+/// gold button to start. During the round it is the way back to the
+/// scorecard. After the round it keeps the result, one tap from the
+/// celebration. See `docs/features/rounds-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
-import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
+import 'package:qaddy/features/rounds/logic/round_insights.dart';
+import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
-import 'package:qaddy/features/rounds/ui/widgets/player_card.dart';
+import 'package:qaddy/features/rounds/models/round.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+import 'package:qaddy/features/rounds/ui/widgets/setup_player_tile.dart';
+import 'package:qaddy/features/rounds/ui/widgets/standings_preview.dart';
 
-/// The Rounds destination (route `/rounds`) — prepare a round before play.
-class RoundsScreen extends StatelessWidget {
+/// The Rounds destination (route `/rounds`).
+class RoundsScreen extends ConsumerWidget {
   const RoundsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    final live = ref.watch(liveRoundProvider);
+    final completed = ref.watch(completedRoundProvider);
+    final picked = ref.watch(roundSetupProvider);
 
     return QaddyScaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            const _PageHeader(),
-            SizedBox(height: spacing.sectionGap),
-            const _UpcomingRoundCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _PlayersSection(),
-            SizedBox(height: spacing.sectionGap),
-            const _RoundInformationCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _SideGamesCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _PrimaryActions(),
+            Text(
+              'Rounds',
+              style: typography.h1.copyWith(color: colours.textPrimary),
+            ),
+            SizedBox(height: spacing.xs),
+            Text(
+              live == null
+                  ? '${upcomingRound.date} at ${upcomingRound.course}'
+                  : 'Round in progress',
+              style: typography.body.copyWith(color: colours.textSecondary),
+            ),
             SizedBox(height: spacing.xl),
-          ],
+            if (live != null) _LiveHero(round: live) else const _SetupHero(),
+            if (live != null && live.holesPlayed > 0) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              StandingsPreview(
+                round: live,
+                onOpen: () => context.push(AppRoutes.roundLeaderboard),
+              ),
+            ],
+            if (live == null && completed != null) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              _LastRound(round: completed),
+            ],
+            if (live == null) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              QaddySectionHeading(title: "Who's playing", badge: picked.length),
+              SizedBox(height: spacing.md),
+              const _Players(),
+            ],
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'On the course'),
+            SizedBox(height: spacing.md),
+            const _SideGames(),
+            SizedBox(height: spacing.xl),
+          ]),
         ),
       ),
     );
   }
 }
 
-/// Page title and short description — the sprint document's own example.
-class _PageHeader extends StatelessWidget {
-  const _PageHeader();
+/// Before the round: the invitation and the one button that starts it.
+class _SetupHero extends ConsumerWidget {
+  const _SetupHero();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
+    final onGradient = theme.colorScheme.onPrimary;
+    final muted = onGradient.withValues(alpha: 0.85);
+    final players = ref.watch(selectedPlayersProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Rounds',
-          style: typography.h1.copyWith(color: colours.textPrimary),
-        ),
-        SizedBox(height: spacing.xs),
-        Text(
-          'Create and manage your golf rounds.',
-          style: typography.body.copyWith(color: colours.textSecondary),
-        ),
-      ],
-    );
-  }
-}
-
-/// Placeholder Upcoming Round — see placeholder-data.md's "Upcoming Round".
-class _UpcomingRoundCard extends StatelessWidget {
-  const _UpcomingRoundCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Upcoming Round',
+    return QaddyHeroCard(
+      gradient: colours.gradientGreen,
+      footer: QaddyGoldButton(
+        label: 'Start round',
+        icon: Icons.sports_golf,
+        tall: true,
+        onPressed: () {
+          QaddyHaptics.success();
+          ref.read(roundsProvider.notifier).startRound(players);
+          context.push(AppRoutes.roundScorecard);
+        },
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const QaddyEyebrow('FIRST TEE'),
+          SizedBox(height: spacing.sm),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '${upcomingRound.date}, ${upcomingRound.teeTime}',
+              style: typography.display.copyWith(color: onGradient),
+            ),
+          ),
+          SizedBox(height: spacing.xs),
+          Text(
+            upcomingRound.course,
+            style: typography.body.copyWith(color: muted),
+          ),
+          SizedBox(height: spacing.lg),
+          Wrap(
+            spacing: spacing.sm,
+            runSpacing: spacing.sm,
             children: <Widget>[
-              Expanded(
-                child: Text(
-                  upcomingRound.course,
-                  style: typography.h4.copyWith(color: colours.textPrimary),
-                  overflow: TextOverflow.ellipsis,
-                ),
+              QaddyInfoChip(
+                icon: Icons.wb_sunny_outlined,
+                text: upcomingRound.weather,
               ),
-              SizedBox(width: spacing.sm),
-              const QaddyStatusBadge(label: 'Upcoming'),
+              QaddyInfoChip(
+                icon: Icons.emoji_events_outlined,
+                text: upcomingRound.format,
+              ),
+              QaddyInfoChip(
+                icon: Icons.golf_course,
+                text: '${upcomingRound.holes} holes',
+              ),
             ],
           ),
-          SizedBox(height: spacing.md),
-          QaddyInfoRow(label: 'Date', value: upcomingRound.date),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Players', value: '${upcomingRound.players}'),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Weather', value: upcomingRound.weather),
+          SizedBox(height: spacing.lg),
+          QaddyAvatarHuddle(
+            names: <String>[for (final p in players) p.name],
+            total: players.length,
+            textColour: muted,
+          ),
         ],
       ),
     );
   }
 }
 
-/// Placeholder players — see placeholder-data.md's "Friends" table (8
-/// entries, matching the Upcoming Round's Player Count of 8).
-class _PlayersSection extends StatelessWidget {
-  const _PlayersSection();
+/// During the round: where you are, and the way back to the scorecard.
+class _LiveHero extends ConsumerWidget {
+  const _LiveHero({required this.round});
 
-  static const List<(String, String, PlayerStatus)> _players =
-      <(String, String, PlayerStatus)>[
-        ('Tom', '8', PlayerStatus.confirmed),
-        ('Ben', '12', PlayerStatus.confirmed),
-        ('Luke', '5', PlayerStatus.confirmed),
-        ('Josh', '15', PlayerStatus.pending),
-        ('Nick', '10', PlayerStatus.confirmed),
-        ('Sam', '18', PlayerStatus.confirmed),
-        ('Liam', '7', PlayerStatus.confirmed),
-        ('Tiamana', '8.4', PlayerStatus.confirmed),
-      ];
+  final Round round;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+    final onGradient = theme.colorScheme.onPrimary;
+    final muted = onGradient.withValues(alpha: 0.85);
+
+    final standings = standingsOf(round);
+    final you = standings.where((s) => s.player.name == currentUserName);
+    final line = round.holesPlayed == 0 || you.isEmpty
+        ? "Let's go — the first tee is yours."
+        : 'You: ${you.first.position} · ${you.first.points} pts';
+
+    return QaddyHeroCard(
+      gradient: colours.gradientGreen,
+      onTap: () => context.push(AppRoutes.roundScorecard),
+      semanticLabel:
+          'Round in progress at ${round.course}. '
+          'Hole ${round.currentHole + 1} of ${round.holes.length}. $line. '
+          'Opens the scorecard.',
+      footer: QaddyGoldButton(
+        label: 'Continue round',
+        icon: Icons.play_arrow_rounded,
+        tall: true,
+        onPressed: () => context.push(AppRoutes.roundScorecard),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const QaddyEyebrow('ROUND IN PROGRESS'),
+          SizedBox(height: spacing.sm),
+          Text(
+            'Hole ${round.currentHole + 1} of ${round.holes.length}',
+            style: typography.display.copyWith(color: onGradient),
+          ),
+          SizedBox(height: spacing.xs),
+          Text(round.course, style: typography.body.copyWith(color: muted)),
+          SizedBox(height: spacing.lg),
+          Wrap(
+            spacing: spacing.sm,
+            runSpacing: spacing.sm,
+            children: <Widget>[
+              QaddyInfoChip(
+                icon: Icons.emoji_events_outlined,
+                text: round.format,
+              ),
+              QaddyInfoChip(
+                icon: Icons.groups_outlined,
+                text: '${round.players.length} playing',
+              ),
+              QaddyInfoChip(icon: Icons.leaderboard_outlined, text: line),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The last finished round, one tap from the celebration.
+class _LastRound extends StatelessWidget {
+  const _LastRound({required this.round});
+
+  final Round round;
 
   @override
   Widget build(BuildContext context) {
@@ -151,103 +252,130 @@ class _PlayersSection extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Players',
-          style: typography.h3.copyWith(color: colours.textPrimary),
+    final standings = standingsOf(round);
+    final headline = winnersHeadline(standings, you: currentUserName);
+    final top = standings.first;
+
+    return Semantics(
+      button: true,
+      onTap: () => context.push(AppRoutes.roundComplete),
+      excludeSemantics: true,
+      label:
+          'Last round at ${round.course}. $headline with ${top.points} '
+          'points. Opens the results.',
+      child: QaddyCard(
+        onTap: () => context.push(AppRoutes.roundComplete),
+        child: Row(
+          children: <Widget>[
+            QaddyIconBadge(
+              icon: Icons.emoji_events,
+              colour: colours.gold,
+              size: 48,
+            ),
+            SizedBox(width: spacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const QaddyEyebrow('LAST ROUND'),
+                  SizedBox(height: spacing.xs),
+                  Text(
+                    '$headline · ${top.points} pts',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: typography.body.copyWith(
+                      color: colours.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    'View the results',
+                    style: typography.small.copyWith(color: colours.accent),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: colours.accent),
+          ],
         ),
-        SizedBox(height: spacing.md),
-        for (final (name, handicap, status) in _players) ...<Widget>[
-          PlayerCard(name: name, handicap: handicap, status: status),
-          SizedBox(height: spacing.cardGap),
+      ),
+    );
+  }
+}
+
+/// Everyone invited, each with a switch.
+class _Players extends ConsumerWidget {
+  const _Players();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+    final picked = ref.watch(roundSetupProvider);
+
+    return Column(
+      children: <Widget>[
+        for (final (index, invitee)
+            in upcomingRoundInvitees.indexed) ...<Widget>[
+          if (index > 0) SizedBox(height: spacing.cardGap),
+          SetupPlayerTile(
+            player: invitee.player,
+            isYou: invitee.player.name == currentUserName,
+            included: picked.contains(invitee.player.name),
+            confirmed: invitee.confirmed,
+            onToggle: () => ref
+                .read(roundSetupProvider.notifier)
+                .toggle(invitee.player.name),
+          ),
         ],
       ],
     );
   }
 }
 
-/// Placeholder Round Information — see placeholder-data.md's "Upcoming
-/// Round" (Course, Tee Time, Format, Holes).
-class _RoundInformationCard extends StatelessWidget {
-  const _RoundInformationCard();
+/// The side games, each on its hole.
+class _SideGames extends StatelessWidget {
+  const _SideGames();
 
   @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddySectionCard(
-      title: 'Round Information',
+    return QaddyCard(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          QaddyInfoRow(label: 'Course', value: upcomingRound.course),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Tee Time', value: upcomingRound.teeTime),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Format', value: upcomingRound.format),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Holes', value: '${upcomingRound.holes}'),
-        ],
-      ),
-    );
-  }
-}
-
-/// Placeholder Side Games — see placeholder-data.md's "Side Games". Only
-/// the configured hole is shown; Winner/Distance describe a completed
-/// round's results, which don't belong on a pre-round setup screen.
-class _SideGamesCard extends StatelessWidget {
-  const _SideGamesCard();
-
-  static const List<(String, int)> _games = <(String, int)>[
-    ('Longest Drive', 5),
-    ('Nearest The Pin', 12),
-    ('Drive & Chip', 16),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Side Games',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final (index, game) in _games.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            QaddyInfoRow(label: game.$1, value: 'Hole ${game.$2}'),
+          for (final (index, game)
+              in upcomingRoundSideGames.indexed) ...<Widget>[
+            if (index > 0) SizedBox(height: spacing.md),
+            Row(
+              children: <Widget>[
+                QaddyIconBadge(
+                  icon: Icons.flag_outlined,
+                  colour: colours.accentSky,
+                  size: 36,
+                  iconSize: 20,
+                ),
+                SizedBox(width: spacing.md),
+                Expanded(
+                  child: Text(
+                    game.name,
+                    style: typography.body.copyWith(color: colours.textPrimary),
+                  ),
+                ),
+                Text(
+                  'Hole ${game.hole}',
+                  style: typography.body.copyWith(
+                    color: colours.gold,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ],
         ],
       ),
-    );
-  }
-}
-
-/// Visual-only primary actions — no functionality, per the sprint document.
-class _PrimaryActions extends StatelessWidget {
-  const _PrimaryActions();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return Column(
-      children: <Widget>[
-        const SizedBox(
-          width: double.infinity,
-          child: QaddyPrimaryButton(label: 'Start Round', onPressed: null),
-        ),
-        SizedBox(height: spacing.sm),
-        const SizedBox(
-          width: double.infinity,
-          child: QaddySecondaryButton(label: 'Edit Round', onPressed: null),
-        ),
-        SizedBox(height: spacing.sm),
-        const QaddyTertiaryButton(label: 'Cancel Round', onPressed: null),
-      ],
     );
   }
 }

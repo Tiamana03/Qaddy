@@ -20,11 +20,14 @@ Trips, Friends Home and the Dashboard are the Release Candidate reference screen
 | Everyday primary / secondary / tertiary | `QaddyPrimaryButton`, `QaddySecondaryButton`, `QaddyTertiaryButton` | Plain screens and forms. |
 | Icon badge | `QaddyIconBadge` (`core/widgets/badges`) | The tinted circle that says what a tile or row is about. |
 | Status badge | `QaddyStatusBadge` (`core/widgets/badges`) | A state: Upcoming, Confirmed, Completed. |
+| Info chip | `QaddyInfoChip` (`core/widgets/badges`) | The translucent fact pill under a hero's headline ("21°C Sunny", "18 holes"). |
 | Avatar, avatar huddle | `QaddyAvatar`, `QaddyAvatarHuddle` (`core/widgets/avatars`) | One face; or overlapping faces with "+3 more · 8 playing". |
 | Section heading | `QaddySectionHeading` (`core/widgets/headings`) | A section title with an optional count badge and "See all". |
 | Card, section card, statistic card | `QaddyCard`, `QaddySectionCard`, `QaddyStatisticCard` (`core/widgets/cards`) | Everyday content surfaces; `QaddyCard` has the press-down scale when tappable. |
+| Confetti | `QaddyConfetti` (`core/widgets/motion`) | One burst for a moment worth celebrating (finishing a round). Falls once, stops, off with reduce-motion. |
 | Entrance motion | `QaddyFadeSlideIn`, `staggered(...)`, `staggerDelay` (`core/widgets/motion`) | Sections and tiles that arrive one after another. Respects reduce-motion. |
 | Empty and error states | `QaddyEmptyState`, `QaddyErrorCard` (`core/widgets/states`) | Nothing here yet / something went wrong. |
+| Formatting | `ordinal`, `formatScore`, `formatDistance` (`core/utils/formatting.dart`) | "3rd", "+2", "254m" — never write these by hand in a feature. |
 | Actions | `tellUser`, `copyToClipboard`, `openLinkOrCopy`, `shareOrCopy` (`core/widgets/actions`) | Snackbar, copy, open a link, share — each with a fallback so a tap is never dead. |
 | Haptics | `QaddyHaptics` (`core/utils`) | `selection` for a choice, `light` for a small action, `success` for a win. |
 

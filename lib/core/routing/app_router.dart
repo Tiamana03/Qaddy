@@ -33,7 +33,9 @@ import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/notifications/ui/screens/notifications_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
+import 'package:qaddy/features/rounds/ui/screens/leaderboard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
+import 'package:qaddy/features/rounds/ui/screens/round_complete_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/search/ui/screens/search_screen.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
@@ -59,7 +61,12 @@ import 'package:qaddy/features/trips/ui/screens/trip_transport_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
+  // The app's outermost navigator. Screens that should cover the tab bar (a
+  // round being scored) name it as their parent.
+  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.home,
     routes: <RouteBase>[
       GoRoute(
@@ -125,12 +132,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.rounds,
                 builder: (BuildContext context, GoRouterState state) =>
                     const RoundsScreen(),
+                // Playing a round is full screen: these sit above the tab bar.
                 routes: <RouteBase>[
                   GoRoute(
                     path: 'scorecard',
                     name: RouteNames.roundScorecard,
+                    parentNavigatorKey: rootNavigatorKey,
                     builder: (BuildContext context, GoRouterState state) =>
                         const LiveScorecardScreen(),
+                  ),
+                  GoRoute(
+                    path: 'leaderboard',
+                    name: RouteNames.roundLeaderboard,
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const LeaderboardScreen(),
+                  ),
+                  GoRoute(
+                    path: 'complete',
+                    name: RouteNames.roundComplete,
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const RoundCompleteScreen(),
                   ),
                 ],
               ),

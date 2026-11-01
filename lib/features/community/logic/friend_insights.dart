@@ -3,10 +3,13 @@
 library;
 
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/features/community/models/friend.dart';
 import 'package:qaddy/features/community/models/rivalry_record.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
+
+export 'package:qaddy/core/utils/formatting.dart' show ordinal;
 
 /// Whether [friend] played within the last two days — the gold ring on their
 /// avatar, a quiet "they're out there" signal.
@@ -136,20 +139,6 @@ String groupLine(Group group, {String? nextRound}) {
       : '${group.totalMembers} members';
   final season = group.season;
   return season == null ? members : '$members · $season';
-}
-
-/// "1st", "2nd", "3rd", "4th", "11th", "22nd".
-String ordinal(int n) {
-  final teens = n % 100 >= 11 && n % 100 <= 13;
-  if (teens) {
-    return '${n}th';
-  }
-  return switch (n % 10) {
-    1 => '${n}st',
-    2 => '${n}nd',
-    3 => '${n}rd',
-    _ => '${n}th',
-  };
 }
 
 /// A message inviting [friend] to play, ready for the share sheet.

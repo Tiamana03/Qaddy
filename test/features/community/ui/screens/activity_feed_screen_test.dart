@@ -4,7 +4,7 @@ import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/screens/activity_feed_screen.dart';
 
-import '../../community_test_harness.dart';
+import '../../../../support/app_test_harness.dart';
 
 void main() {
   testWidgets('shows every placeholder activity entry', (tester) async {

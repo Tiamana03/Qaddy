@@ -8,6 +8,7 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
@@ -22,6 +23,7 @@ class NextRoundHero extends StatelessWidget {
     required this.players,
     required this.onOpen,
     required this.onShare,
+    this.inProgressHole,
     super.key,
   });
 
@@ -40,6 +42,10 @@ class NextRoundHero extends StatelessWidget {
   /// Tells the group about the round.
   final VoidCallback onShare;
 
+  /// The hole being played (1-based) when a round is under way; the card then
+  /// says so and offers to continue instead of to get ready.
+  final int? inProgressHole;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -50,7 +56,8 @@ class NextRoundHero extends StatelessWidget {
     final onGradient = theme.colorScheme.onPrimary;
     final muted = onGradient.withValues(alpha: 0.85);
     final animate = !MediaQuery.disableAnimationsOf(context);
-    final count = countdown;
+    final count = inProgressHole == null ? countdown : null;
+    final live = inProgressHole;
     final figure = int.tryParse(count?.value ?? '');
 
     // A clear morning: sky into the deep green of the course.
@@ -63,31 +70,14 @@ class NextRoundHero extends StatelessWidget {
       ],
     );
 
-    Widget chip(IconData icon, String text) => Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: spacing.md,
-        vertical: spacing.xs + 2,
-      ),
-      decoration: BoxDecoration(
-        color: onGradient.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(radius.large),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, size: 16, color: colours.gold),
-          SizedBox(width: spacing.xs),
-          Text(text, style: typography.small.copyWith(color: onGradient)),
-        ],
-      ),
-    );
-
     final headline = count == null
         ? FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(
-              '${round.date}, ${round.teeTime}',
+              live == null
+                  ? '${round.date}, ${round.teeTime}'
+                  : 'Hole $live of ${round.holes}',
               style: typography.display.copyWith(color: onGradient),
             ),
           )
@@ -138,11 +128,15 @@ class NextRoundHero extends StatelessWidget {
             ],
           );
 
+    final spokenEyebrow = live == null
+        ? (count?.eyebrow ?? 'Next round')
+        : 'Round in progress, hole $live';
+
     return QaddyHeroCard(
       gradient: gradient,
       onTap: onOpen,
       semanticLabel:
-          '${count?.eyebrow ?? 'Next round'}. '
+          '$spokenEyebrow. '
           '${count == null ? '' : '${count.value} ${count.label}. '}'
           '${round.date} at ${round.teeTime}, ${round.course}. '
           '${round.weather}. ${round.format}. ${round.players} playing.',
@@ -150,8 +144,10 @@ class NextRoundHero extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: QaddyGoldButton(
-              label: 'Get ready',
-              icon: Icons.flag_rounded,
+              label: live == null ? 'Get ready' : 'Continue round',
+              icon: live == null
+                  ? Icons.flag_rounded
+                  : Icons.play_arrow_rounded,
               onPressed: onOpen,
             ),
           ),
@@ -174,7 +170,11 @@ class NextRoundHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          QaddyEyebrow(count?.eyebrow ?? 'NEXT ROUND'),
+          QaddyEyebrow(
+            live == null
+                ? (count?.eyebrow ?? 'NEXT ROUND')
+                : 'ROUND IN PROGRESS',
+          ),
           SizedBox(height: spacing.sm),
           headline,
           SizedBox(height: spacing.xs),
@@ -189,9 +189,15 @@ class NextRoundHero extends StatelessWidget {
             spacing: spacing.sm,
             runSpacing: spacing.sm,
             children: <Widget>[
-              chip(Icons.wb_sunny_outlined, round.weather),
-              chip(Icons.emoji_events_outlined, round.format),
-              chip(Icons.golf_course, '${round.holes} holes'),
+              QaddyInfoChip(icon: Icons.wb_sunny_outlined, text: round.weather),
+              QaddyInfoChip(
+                icon: Icons.emoji_events_outlined,
+                text: round.format,
+              ),
+              QaddyInfoChip(
+                icon: Icons.golf_course,
+                text: '${round.holes} holes',
+              ),
             ],
           ),
           SizedBox(height: spacing.lg),

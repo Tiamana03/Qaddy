@@ -302,25 +302,12 @@ class _CurrentSeasonCard extends StatelessWidget {
           SizedBox(height: spacing.sm),
           QaddyInfoRow(label: 'Group', value: profileCurrentSeasonGroup),
           SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Position', value: _ordinal(standing.rank)),
+          QaddyInfoRow(label: 'Position', value: ordinal(standing.rank)),
           SizedBox(height: spacing.sm),
           QaddyInfoRow(label: 'Points', value: '${standing.points}'),
         ],
       ),
     );
-  }
-
-  static String _ordinal(int rank) {
-    if (rank % 10 == 1 && rank % 100 != 11) {
-      return '${rank}st';
-    }
-    if (rank % 10 == 2 && rank % 100 != 12) {
-      return '${rank}nd';
-    }
-    if (rank % 10 == 3 && rank % 100 != 13) {
-      return '${rank}rd';
-    }
-    return '${rank}th';
   }
 }
 

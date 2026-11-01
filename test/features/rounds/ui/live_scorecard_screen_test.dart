@@ -1,66 +1,350 @@
-// Verifies Sprint 2.3's Live Scorecard: hole navigation, score entry
-// bounded at 1, and running totals recalculating from in-memory state.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
-import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
 
-Future<void> _pumpScreen(WidgetTester tester) async {
+import '../../../support/app_test_harness.dart';
+
+List<RouteBase> _routes() => <RouteBase>[
+  GoRoute(
+    path: '/rounds',
+    builder: (context, state) => const Text('Go: /rounds'),
+    routes: <RouteBase>[
+      GoRoute(
+        path: 'scorecard',
+        builder: (context, state) => const LiveScorecardScreen(),
+      ),
+      GoRoute(
+        path: 'leaderboard',
+        builder: (context, state) => const Text('Go: /rounds/leaderboard'),
+      ),
+      GoRoute(
+        path: 'complete',
+        builder: (context, state) => const Text('Go: /rounds/complete'),
+      ),
+    ],
+  ),
+];
+
+/// Opens the scorecard on top of a stub Rounds page, so there is somewhere to
+/// go back to. Three players: the golfer, Tom and Ben.
+Future<ProviderContainer> _pump(
+  WidgetTester tester, {
+  bool start = true,
+  Size size = const Size(400, 1400),
+}) async {
+  useScreen(tester, size);
+  final container = friendsContainer();
+  if (start) {
+    container
+        .read(roundsProvider.notifier)
+        .startRound(
+          upcomingRoundInvitees.take(3).map((i) => i.player).toList(),
+        );
+  }
+  final router = GoRouter(initialLocation: '/rounds', routes: _routes());
+  addTearDown(router.dispose);
   await tester.pumpWidget(
-    MaterialApp(theme: QaddyTheme.dark, home: const LiveScorecardScreen()),
+    UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp.router(theme: QaddyTheme.dark, routerConfig: router),
+    ),
   );
+  await tester.pumpAndSettle();
+  unawaited(router.push<void>('/rounds/scorecard'));
+  await tester.pumpAndSettle();
+  return container;
+}
+
+Future<void> _tap(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder.first);
+  await tester.tap(finder.first);
+  await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('starts on hole 1 with the score defaulted to par', (
-    tester,
-  ) async {
-    await _pumpScreen(tester);
+  group('the hole', () {
+    testWidgets('shows the course, the hole, par and the strip of holes', (
+      tester,
+    ) async {
+      await _pump(tester);
 
-    expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('Hole 1'), findsOneWidget);
-    // Hole 1's par is 4 — the score stepper should start there too.
-    expect(find.text('4'), findsWidgets);
-    expect(find.text('Previous Hole'), findsOneWidget);
-    expect(find.text('Next Hole'), findsOneWidget);
+      expect(find.text('Richmond Golf Club'), findsOneWidget);
+      expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+      expect(find.text('Par 4'), findsOneWidget);
+      expect(find.text('352 m · SI 11'), findsOneWidget);
+      expect(find.bySemanticsLabel('Hole 5, not played yet'), findsOneWidget);
+      expect(find.bySemanticsLabel('Hole 1, current hole'), findsOneWidget);
+    });
+
+    testWidgets('a side game is flagged on its hole', (tester) async {
+      final container = await _pump(tester);
+      container.read(roundsProvider.notifier).goToHole(4);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Longest Drive on this hole'), findsOneWidget);
+    });
+
+    testWidgets('the strip jumps to any hole', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.bySemanticsLabel('Hole 6, not played yet'));
+
+      expect(container.read(liveRoundProvider)!.currentHole, 5);
+      expect(find.text('FRONT NINE · HOLE 6 OF 18'), findsOneWidget);
+    });
   });
 
-  testWidgets('Next Hole advances and Previous Hole returns', (tester) async {
-    await _pumpScreen(tester);
+  group('scoring', () {
+    testWidgets('everyone starts on par, you first', (tester) async {
+      await _pump(tester);
 
-    await tester.tap(find.text('Next Hole'));
-    await tester.pump();
-    expect(find.text('Hole 2'), findsOneWidget);
+      expect(find.text('You'), findsOneWidget);
+      expect(find.text('Tom'), findsOneWidget);
+      expect(find.text('Ben'), findsOneWidget);
+      expect(find.text('Par'), findsNWidgets(3));
+      expect(
+        tester.getTopLeft(find.text('You')).dy,
+        lessThan(tester.getTopLeft(find.text('Tom')).dy),
+      );
+    });
 
-    await tester.tap(find.text('Previous Hole'));
-    await tester.pump();
-    expect(find.text('Hole 1'), findsOneWidget);
+    testWidgets('the plus and minus move a score and name it', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+      expect(find.text('Birdie'), findsOneWidget);
+      expect(container.read(liveRoundProvider)!.grossAt('Tom', 0), 3);
+
+      await _tap(tester, find.byTooltip('Add a stroke for Ben'));
+      await _tap(tester, find.byTooltip('Add a stroke for Ben'));
+      expect(find.text('Double bogey'), findsOneWidget);
+      expect(container.read(liveRoundProvider)!.grossAt('Ben', 0), 6);
+    });
+
+    testWidgets('shows the points a score earns and the shots received', (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      // Stroke index 11: Ben (off 12) gets a shot here, the others do not.
+      expect(find.text('2 pts · '), findsNothing);
+      expect(find.text('2 pts'), findsNWidgets(2));
+      expect(find.text('3 pts · +1 shot'), findsOneWidget);
+
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+      expect(find.text('3 pts'), findsOneWidget);
+    });
+
+    testWidgets('a hole can be picked up', (tester) async {
+      final container = await _pump(tester);
+
+      for (var i = 0; i < 4; i++) {
+        await _tap(tester, find.byTooltip('Take a stroke off Ben'));
+      }
+
+      expect(container.read(liveRoundProvider)!.grossAt('Ben', 0), 0);
+      expect(find.text('Picked up'), findsOneWidget);
+      expect(find.text('–'), findsOneWidget);
+      // Nothing further to take off, but a stroke can be put back.
+      final minus = find.ancestor(
+        of: find.byTooltip('Take a stroke off Ben'),
+        matching: find.byType(IconButton),
+      );
+      expect(tester.widget<IconButton>(minus).onPressed, isNull);
+    });
   });
 
-  testWidgets('incrementing the score updates the running total', (
-    tester,
-  ) async {
-    await _pumpScreen(tester);
+  group('moving round the course', () {
+    testWidgets('Next hole scores par for anyone not touched', (tester) async {
+      final container = await _pump(tester);
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
 
-    // 18 holes at par sum to 72, so Total vs Par starts at "E".
-    expect(find.text('E'), findsOneWidget);
+      await _tap(tester, find.text('Next hole'));
 
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      final round = container.read(liveRoundProvider)!;
+      expect(round.currentHole, 1);
+      expect(round.grossAt('Tom', 0), 3);
+      expect(round.grossAt('Ben', 0), 4);
+      expect(find.text('Par 5'), findsOneWidget);
+      expect(find.textContaining('LEADERBOARD · AFTER 1 HOLE'), findsOneWidget);
+    });
 
-    expect(find.text('+1'), findsOneWidget);
+    testWidgets('the arrow goes back a hole, and not before the first', (
+      tester,
+    ) async {
+      await _pump(tester);
+      final back = find.ancestor(
+        of: find.byTooltip('Previous hole'),
+        matching: find.byType(IconButton),
+      );
+      expect(tester.widget<IconButton>(back).onPressed, isNull);
+
+      await _tap(tester, find.text('Next hole'));
+      await _tap(tester, find.byTooltip('Previous hole'));
+
+      expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+    });
+
+    testWidgets('the last hole offers to finish instead', (tester) async {
+      final container = await _pump(tester);
+      container.read(roundsProvider.notifier).goToHole(17);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Next hole'), findsNothing);
+      expect(find.text('Finish round'), findsOneWidget);
+      expect(find.text('BACK NINE · HOLE 18 OF 18'), findsOneWidget);
+    });
+
+    testWidgets('Finish round files the round and opens the results', (
+      tester,
+    ) async {
+      final container = await _pump(tester);
+      container.read(roundsProvider.notifier).goToHole(17);
+      await tester.pumpAndSettle();
+
+      await _tap(tester, find.text('Finish round'));
+
+      expect(container.read(liveRoundProvider), isNull);
+      expect(container.read(completedRoundProvider), isNotNull);
+      expect(find.text('Go: /rounds/complete'), findsOneWidget);
+    });
   });
 
-  testWidgets('score cannot go below 1', (tester) async {
-    await _pumpScreen(tester);
+  group('the corner', () {
+    testWidgets('the leaderboard icon opens the leaderboard', (tester) async {
+      await _pump(tester);
 
-    for (var i = 0; i < 5; i++) {
-      await tester.tap(find.byIcon(Icons.remove));
-      await tester.pump();
+      await _tap(tester, find.byTooltip('Leaderboard'));
+
+      expect(find.text('Go: /rounds/leaderboard'), findsOneWidget);
+    });
+
+    testWidgets('Finish round now asks first, then shows the results', (
+      tester,
+    ) async {
+      final container = await _pump(tester);
+      await _tap(tester, find.text('Next hole'));
+
+      await _tap(tester, find.byTooltip('Round options'));
+      await _tap(tester, find.text('Finish round now'));
+      expect(find.text('Finish the round?'), findsOneWidget);
+      expect(find.textContaining('Only the 1 hole everyone'), findsOneWidget);
+
+      await _tap(tester, find.text('Finish round'));
+
+      expect(container.read(completedRoundProvider)!.holesPlayed, 1);
+      expect(find.text('Go: /rounds/complete'), findsOneWidget);
+    });
+
+    testWidgets('finishing before any hole is played does not finish', (
+      tester,
+    ) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.byTooltip('Round options'));
+      await _tap(tester, find.text('Finish round now'));
+      expect(find.textContaining('Nothing has been scored'), findsOneWidget);
+      await _tap(tester, find.text('Finish round').last);
+
+      expect(container.read(liveRoundProvider), isNotNull);
+    });
+
+    testWidgets('Discard asks first, then goes back', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.byTooltip('Round options'));
+      await _tap(tester, find.text('Discard round'));
+      expect(find.text('Discard this round?'), findsOneWidget);
+      await _tap(tester, find.text('Cancel'));
+      expect(container.read(liveRoundProvider), isNotNull);
+
+      await _tap(tester, find.byTooltip('Round options'));
+      await _tap(tester, find.text('Discard round'));
+      await _tap(tester, find.text('Discard'));
+
+      expect(container.read(liveRoundProvider), isNull);
+      expect(find.text('Go: /rounds'), findsOneWidget);
+    });
+  });
+
+  group('with no round', () {
+    testWidgets('says so and points back to Rounds', (tester) async {
+      await _pump(tester, start: false);
+
+      expect(find.text('No round in progress'), findsOneWidget);
+
+      await _tap(tester, find.text('Go to Rounds'));
+
+      expect(find.text('Go: /rounds'), findsOneWidget);
+    });
+  });
+
+  group('lays out everywhere', () {
+    for (final width in <double>[320, 400, 820, 1280]) {
+      for (final (name, theme) in <(String, ThemeData)>[
+        ('dark', QaddyTheme.dark),
+        ('light', QaddyTheme.light),
+      ]) {
+        testWidgets('at $width px in $name mode with eight players', (
+          tester,
+        ) async {
+          useScreen(tester, Size(width, 2400));
+          final container = friendsContainer();
+          container
+              .read(roundsProvider.notifier)
+              .startRound(upcomingRoundInvitees.map((i) => i.player).toList());
+          container.read(roundsProvider.notifier).nextHole();
+          await tester.pumpWidget(
+            UncontrolledProviderScope(
+              container: container,
+              child: MaterialApp(
+                theme: theme,
+                home: const LiveScorecardScreen(),
+              ),
+            ),
+          );
+          await tester.pump(const Duration(seconds: 2));
+
+          expect(tester.takeException(), isNull);
+        });
+      }
     }
 
-    expect(find.text('1'), findsWidgets);
-    expect(find.text('0'), findsNothing);
+    testWidgets('scoring a whole round settles and never overflows', (
+      tester,
+    ) async {
+      useScreen(tester, const Size(320, 700));
+      final container = friendsContainer();
+      container
+          .read(roundsProvider.notifier)
+          .startRound(upcomingRoundInvitees.map((i) => i.player).toList());
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: QaddyTheme.dark,
+            home: const LiveScorecardScreen(),
+          ),
+        ),
+      );
+
+      final store = container.read(roundsProvider.notifier);
+      for (var hole = 0; hole < 17; hole++) {
+        store
+          ..nudgeScore('Tom', hole.isEven ? -1 : 1)
+          ..nextHole();
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+    });
   });
 }

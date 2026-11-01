@@ -58,4 +58,29 @@ void main() {
 
     expect(find.bySemanticsLabel('The story'), findsOneWidget);
   });
+
+  testWidgets('without onTap the story is not a button', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: QaddyTheme.dark,
+        home: const Scaffold(
+          body: QaddyHeroCard(
+            gradient: LinearGradient(
+              colors: <Color>[Colors.green, Colors.teal],
+            ),
+            child: Text('Story'),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Story'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(QaddyHeroCard),
+        matching: find.byType(InkWell),
+      ),
+      findsNothing,
+    );
+  });
 }

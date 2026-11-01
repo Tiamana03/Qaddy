@@ -256,11 +256,11 @@ Search and Profile Release Candidate reviews.
 
 Priority: Low
 
-Status: **Open** (logged during the Dashboard redesign, November 2026)
+Status: **Open** (partly resolved by the Rounds redesign) (logged during the Dashboard redesign, November 2026)
 
 Current State
 
-`roundCountdown` (`features/dashboard/logic/dashboard_insights.dart`) counts the days to the next round from the round's day name ("Saturday"), because the placeholder round (`placeholder_rounds.dart`) has no calendar date. The notification dot on the bell is always shown (Notifications has no read state). The last round (The Dunes), the highlights and the weather are placeholder text, and the Round Complete screen shows a different round (Richmond), so the last-round card does not link to it. The Rounds tab, where "Get ready" lands, still has disabled Start / Edit / Cancel buttons.
+`roundCountdown` (`features/dashboard/logic/dashboard_insights.dart`) counts the days to the next round from the round's day name ("Saturday"), because the placeholder round (`placeholder_rounds.dart`) has no calendar date. The notification dot on the bell is always shown (Notifications has no read state). The last round (The Dunes), the highlights and the weather are placeholder text, and the Round Complete screen shows a different round (Richmond), so the last-round card does not link to it. 
 
 Action
 

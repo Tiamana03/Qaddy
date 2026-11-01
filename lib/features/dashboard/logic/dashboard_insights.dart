@@ -3,7 +3,11 @@
 library;
 
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/formatting.dart';
+import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
+import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
+import 'package:qaddy/features/rounds/models/round.dart';
 
 /// "Good morning", "Good afternoon" or "Good evening" for [now].
 String greetingFor(DateTime now) {
@@ -90,3 +94,36 @@ String roundShareMessage(UpcomingRound round, String yourName) =>
     '${round.date} at ${round.teeTime}, ${round.course} '
     "(${round.format}, ${round.holes} holes, ${round.weather}). Who's in? "
     '– $yourName';
+
+/// The golfer's most recent finished round, as the "Your game" card shows it.
+///
+/// The golfer is [you]; when they were not in the round, `null`. [now] is the
+/// moment "when" is measured from.
+DashboardLastRound? lastRoundFrom(Round round, String you, DateTime now) {
+  final standing = standingsOf(
+    round,
+  ).where((s) => s.player.name == you).firstOrNull;
+  if (standing == null) {
+    return null;
+  }
+  final rank = int.tryParse(standing.position.replaceAll('T', '')) ?? 1;
+  return DashboardLastRound(
+    course: round.course,
+    when: _whenLabel(
+      (round.completedAt ?? round.startedAt).calendarDaysUntil(now),
+    ),
+    score: standing.gross,
+    stableford: standing.points,
+    position: ordinal(rank),
+  );
+}
+
+String _whenLabel(int daysAgo) {
+  if (daysAgo <= 0) {
+    return 'Today';
+  }
+  if (daysAgo == 1) {
+    return 'Yesterday';
+  }
+  return '$daysAgo days ago';
+}

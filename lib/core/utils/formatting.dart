@@ -42,3 +42,17 @@ String formatDuration(Duration duration) {
 String formatCurrency(double amount, {String symbol = r'$'}) {
   return '$symbol${amount.toStringAsFixed(2)}';
 }
+
+/// A rank as golfers say it: "1st", "2nd", "3rd", "4th", "11th", "22nd".
+String ordinal(int n) {
+  final teens = n % 100 >= 11 && n % 100 <= 13;
+  if (teens) {
+    return '${n}th';
+  }
+  return switch (n % 10) {
+    1 => '${n}st',
+    2 => '${n}nd',
+    3 => '${n}rd',
+    _ => '${n}th',
+  };
+}

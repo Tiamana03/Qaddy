@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/config/app_config.dart';
 import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 import 'package:qaddy/features/trips/repositories/trips_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,18 +18,21 @@ Future<void> main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // Trips are kept on the device. If storage can't be opened the app still
-      // runs; trips just won't survive a restart.
+      // Trips and rounds are kept on the device. If storage can't be opened the
+      // app still runs; they just won't survive a restart.
       final overrides = <Override>[];
       try {
         final preferences = await SharedPreferences.getInstance();
-        overrides.add(
+        overrides.addAll(<Override>[
           tripsStorageProvider.overrideWithValue(
             SharedPreferencesTripsStorage(preferences),
           ),
-        );
+          roundsStorageProvider.overrideWithValue(
+            SharedPreferencesRoundsStorage(preferences),
+          ),
+        ]);
       } on Object catch (error) {
-        debugPrint('Trips storage unavailable: $error');
+        debugPrint('Storage unavailable: $error');
       }
 
       if (config.isBackendConfigured) {

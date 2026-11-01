@@ -23,6 +23,7 @@ class YourGameCard extends StatelessWidget {
     required this.bestRound,
     required this.lastRound,
     required this.onOpen,
+    this.onOpenLastRound,
     super.key,
   });
 
@@ -44,6 +45,9 @@ class YourGameCard extends StatelessWidget {
   /// Opens the full statistics.
   final VoidCallback onOpen;
 
+  /// Opens the last round's results. Omit when it has none to show.
+  final VoidCallback? onOpenLastRound;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -56,6 +60,11 @@ class YourGameCard extends StatelessWidget {
     final improving = handicap.isImprovement;
     final trendColour = improving ? colours.accent : colours.accentOrange;
     final won = lastRound.position == '1st';
+    final headline = won
+        ? 'Won at ${lastRound.course}'
+        : '${lastRound.position} at ${lastRound.course}';
+    final detail =
+        '${lastRound.score} · ${lastRound.stableford} pts · ${lastRound.when}';
 
     Widget stat(String value, String label) => Expanded(
       child: Column(
@@ -190,46 +199,47 @@ class YourGameCard extends StatelessWidget {
               ],
             ),
             SizedBox(height: spacing.lg),
-            Container(
-              padding: EdgeInsets.all(spacing.md),
-              decoration: BoxDecoration(
-                color: colours.surface2,
-                borderRadius: BorderRadius.circular(radius.large),
-              ),
-              child: Row(
-                children: <Widget>[
-                  QaddyIconBadge(
-                    icon: won ? Icons.emoji_events : Icons.golf_course,
-                    colour: colours.gold,
-                  ),
-                  SizedBox(width: spacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          won
-                              ? 'Won at ${lastRound.course}'
-                              : '${lastRound.position} at ${lastRound.course}',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: typography.body.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
+            Material(
+              color: colours.surface2,
+              borderRadius: BorderRadius.circular(radius.large),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onOpenLastRound,
+                child: Padding(
+                  padding: EdgeInsets.all(spacing.md),
+                  child: Row(
+                    children: <Widget>[
+                      QaddyIconBadge(
+                        icon: won ? Icons.emoji_events : Icons.golf_course,
+                        colour: colours.gold,
+                      ),
+                      SizedBox(width: spacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              headline,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: typography.body.copyWith(
+                                color: colours.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: spacing.xs),
+                            Text(
+                              detail,
+                              style: typography.small.copyWith(
+                                color: colours.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: spacing.xs),
-                        Text(
-                          '${lastRound.score} · ${lastRound.stableford} pts · '
-                          '${lastRound.when}',
-                          style: typography.small.copyWith(
-                            color: colours.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],

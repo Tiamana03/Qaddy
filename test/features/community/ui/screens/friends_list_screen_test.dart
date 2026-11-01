@@ -6,7 +6,7 @@ import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
 
-import '../../community_test_harness.dart';
+import '../../../../support/app_test_harness.dart';
 
 Future<void> _pumpWithRouter(WidgetTester tester) async {
   await pumpFriendsRouter(

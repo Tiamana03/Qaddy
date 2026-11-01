@@ -11,6 +11,8 @@ abstract final class AppRoutes {
   static const String home = '/home';
   static const String rounds = '/rounds';
   static const String roundScorecard = '/rounds/scorecard';
+  static const String roundLeaderboard = '/rounds/leaderboard';
+  static const String roundComplete = '/rounds/complete';
   static const String trips = '/trips';
   static const String tripCreate = '/trips/create';
 
