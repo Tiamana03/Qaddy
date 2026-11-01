@@ -249,3 +249,23 @@ Persist the store the same way as Trips (a versioned document behind a small sto
 Target
 
 Search and Profile Release Candidate reviews.
+
+---
+
+## TD-015 — The Dashboard's round countdown works from a day name, and some of its data is placeholder
+
+Priority: Low
+
+Status: **Open** (logged during the Dashboard redesign, November 2026)
+
+Current State
+
+`roundCountdown` (`features/dashboard/logic/dashboard_insights.dart`) counts the days to the next round from the round's day name ("Saturday"), because the placeholder round (`placeholder_rounds.dart`) has no calendar date. The notification dot on the bell is always shown (Notifications has no read state). The last round (The Dunes), the highlights and the weather are placeholder text, and the Round Complete screen shows a different round (Richmond), so the last-round card does not link to it. The Rounds tab, where "Get ready" lands, still has disabled Start / Edit / Cancel buttons.
+
+Action
+
+Give `UpcomingRound` a real `DateTime` and make `roundCountdown` take it; give Notifications a read state and drive the dot from it; make Rounds a real flow (next screen to review) so "Get ready" and the last-round card have real destinations.
+
+Target
+
+Rounds and Notifications Release Candidate reviews.

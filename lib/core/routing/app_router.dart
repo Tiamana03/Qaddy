@@ -33,6 +33,7 @@ import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/notifications/ui/screens/notifications_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
+import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/search/ui/screens/search_screen.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
@@ -124,6 +125,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: RouteNames.rounds,
                 builder: (BuildContext context, GoRouterState state) =>
                     const RoundsScreen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'scorecard',
+                    name: RouteNames.roundScorecard,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const LiveScorecardScreen(),
+                  ),
+                ],
               ),
             ],
           ),

@@ -107,6 +107,11 @@ class _LiveScorecardScreenState extends State<LiveScorecardScreen> {
     final typography = theme.extension<QaddyTypography>()!;
 
     return QaddyScaffold(
+      // Opened from the Dashboard it sits on top of another screen, so it
+      // gets a way back; on its own there is nothing to go back to.
+      appBar: Navigator.of(context).canPop()
+          ? AppBar(title: const Text('Live Scorecard'))
+          : null,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

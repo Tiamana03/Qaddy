@@ -64,16 +64,12 @@ void main() {
     expect(find.text('Wednesday Warriors'), findsOneWidget);
   });
 
-  testWidgets('Dashboard Friends quick action opens Friends Home', (
-    tester,
-  ) async {
+  testWidgets('Dashboard "From your mates" opens Friends Home', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    // The Quick Action tile's icon (`diversity_3`) is distinct from the
-    // bottom nav's Friends tab icon (`people`), disambiguating the two
-    // "Friends"-labelled controls on this screen.
-    await tester.tap(find.byIcon(Icons.diversity_3));
+    await tester.ensureVisible(find.text('See all'));
+    await tester.tap(find.text('See all'));
     await tester.pumpAndSettle();
 
     expect(find.text('Your squad'), findsOneWidget);

@@ -1,97 +1,196 @@
-/// Qaddy's Dashboard — the Home destination and the application's control
-/// centre.
+/// Qaddy's Dashboard — the Home destination and the first thing a golfer sees.
 ///
-/// Sprint 2.1 replaces the Sprint 1.2 placeholder with the first
-/// production feature screen — see
-/// `docs/sprints/sprint-02-01-dashboard.md`. This sprint builds the visual
-/// foundation only: every value shown is placeholder data from
-/// `docs/standards/placeholder-data.md`. No backend, business logic or
-/// real navigation is wired up (see the sprint's "Do Not Build" section).
+/// The Dashboard is the first tee: today, in one screen. It leads with the
+/// round you are about to play (a countdown, who is coming, one tap to get
+/// ready or to tell the group), then your shortcuts, your game, your next
+/// trip, what your mates have been up to and your recent highlights. Every
+/// card and every button leads somewhere real. See
+/// `docs/features/dashboard-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qaddy/core/responsive/responsive_extensions.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
+import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
+import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
 import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/quick_action_card.dart';
+import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/quick_actions_strip.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
+import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
+import 'package:qaddy/features/statistics/logic/stat_trend_formatting.dart';
+import 'package:qaddy/features/statistics/models/placeholder_statistics.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
-/// The Home / Dashboard destination (route `/home`) — Qaddy's control
-/// centre and most-visited screen.
-class DashboardScreen extends StatelessWidget {
+/// The Home / Dashboard destination (route `/home`).
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final colours = Theme.of(context).extension<QaddyColours>()!;
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+
+    final now = ref.watch(dashboardClockProvider)();
+    final squad = ref.watch(confirmedFriendsProvider);
+    final nextTrip = ref.watch(
+      upcomingTripsProvider.select(
+        (trips) => trips.isEmpty ? null : trips.first,
+      ),
+    );
+    final handicapTrend = statisticsTrends.firstWhere(
+      (trend) => trend.label == 'Handicap',
+    );
+
+    final quickActions = <QuickAction>[
+      QuickAction(
+        icon: Icons.sports_golf,
+        label: 'Score a round',
+        colour: colours.accentTeal,
+        onTap: () => context.push(AppRoutes.roundScorecard),
+      ),
+      QuickAction(
+        icon: Icons.luggage_outlined,
+        label: 'Plan a trip',
+        colour: colours.accentSky,
+        onTap: () => context.push(AppRoutes.tripCreate),
+      ),
+      QuickAction(
+        icon: Icons.person_add_alt_1_outlined,
+        label: 'Add a mate',
+        colour: colours.accentPink,
+        onTap: () => context.push(AppRoutes.friendsSearch),
+      ),
+      QuickAction(
+        icon: Icons.bar_chart_rounded,
+        label: 'My stats',
+        colour: colours.accentOrange,
+        onTap: () => context.push(AppRoutes.profileStatistics),
+      ),
+    ];
+
+    final highlights = <Highlight>[
+      Highlight(
+        icon: Icons.golf_course,
+        colour: colours.accentTeal,
+        text: 'Round completed at Richmond Golf Club',
+        onTap: () => context.push(AppRoutes.profileStatistics),
+      ),
+      Highlight(
+        icon: Icons.group_add,
+        colour: colours.accentIndigo,
+        text: 'Josh joined the Saturday Boys group',
+        onTap: () => context.push(AppRoutes.friendsGroupDetails),
+      ),
+      Highlight(
+        icon: Icons.luggage,
+        colour: colours.accentSky,
+        text: 'New golf trip created',
+        onTap: () => context.go(AppRoutes.trips),
+      ),
+      Highlight(
+        icon: Icons.trending_down,
+        colour: colours.gold,
+        text:
+            'Handicap reduced to '
+            '${formatStatValue(handicapTrend.currentValue)}',
+        onTap: () => context.push(AppRoutes.profileStatistics),
+      ),
+      Highlight(
+        icon: Icons.emoji_events,
+        colour: colours.gold,
+        text: 'Achievement unlocked: Personal Best',
+        onTap: () => context.go(AppRoutes.profile),
+      ),
+    ];
 
     return QaddyScaffold(
-      // A bell icon opens Notifications and a search icon opens Search —
-      // see docs/features/notifications-feature-integration.md and
-      // docs/features/search-feature-integration.md. Background/elevation
-      // now come from qaddy_theme.dart's appBarTheme (TD-003) rather than
-      // an explicit override; this AppBar used to be the one screen that
-      // set them, which is what originally exposed the gap.
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search, color: colours.textPrimary),
-            tooltip: 'Search',
-            onPressed: () => context.push(AppRoutes.homeSearch),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.notifications_outlined,
-              color: colours.textPrimary,
-            ),
-            tooltip: 'Notifications',
-            onPressed: () => context.push(AppRoutes.homeNotifications),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            const _WelcomeHeader(),
-            SizedBox(height: spacing.sectionGap),
-            const _QuickActions(),
-            SizedBox(height: spacing.sectionGap),
-            const _UpcomingRoundCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _RecentRoundCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _StatisticsPreview(),
-            SizedBox(height: spacing.sectionGap),
-            const _RecentActivity(),
+            _Header(now: now),
             SizedBox(height: spacing.xl),
-          ],
+            NextRoundHero(
+              round: upcomingRound,
+              countdown: roundCountdown(now, upcomingRound.date),
+              players: <String>[
+                currentUserName,
+                for (final friend in squad) friend.displayName,
+              ],
+              onOpen: () => context.go(AppRoutes.rounds),
+              onShare: () => shareOrCopy(
+                context,
+                ref,
+                text: roundShareMessage(upcomingRound, currentUserName),
+                subject: "Who's in?",
+              ),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            QuickActionsStrip(actions: quickActions),
+            SizedBox(height: spacing.sectionGap),
+            YourGameCard(
+              handicap: handicapTrend,
+              roundsPlayed: dashboardRoundsPlayed,
+              averageScore: dashboardAverageScore,
+              bestRound: dashboardBestRound,
+              lastRound: dashboardLastRound,
+              onOpen: () => context.push(AppRoutes.profileStatistics),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            NextTripCard(
+              trip: nextTrip,
+              now: now,
+              onOpen: () => context.push(
+                nextTrip == null
+                    ? AppRoutes.tripCreate
+                    : AppRoutes.tripDetails(nextTrip.id),
+              ),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            QaddySectionHeading(
+              title: 'From your mates',
+              actionLabel: 'See all',
+              onAction: () => context.go(AppRoutes.friends),
+            ),
+            SizedBox(height: spacing.md),
+            const _Mates(),
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'Your highlights'),
+            SizedBox(height: spacing.md),
+            HighlightsCard(highlights: highlights),
+            SizedBox(height: spacing.xl),
+          ]),
         ),
       ),
     );
   }
 }
 
-/// Greeting, placeholder user name and current date.
-///
-/// "Tiamana" is the placeholder Display Name from placeholder-data.md's
-/// User Profile. The greeting is the sprint document's own worked example
-/// ("Good Morning") rendered as static text — a time-of-day-conditional
-/// greeting would require inventing undocumented hour boundaries, which
-/// `docs/project-rules.md` (Principle 10, "Stop When Uncertain") forbids.
-class _WelcomeHeader extends StatelessWidget {
-  const _WelcomeHeader();
+/// The greeting, the golfer's name, today's date and the way to Search,
+/// Notifications and Profile.
+class _Header extends StatelessWidget {
+  const _Header({required this.now});
+
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
@@ -100,246 +199,117 @@ class _WelcomeHeader extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return Column(
+    Widget action(Widget icon, String tooltip, VoidCallback onTap) => Padding(
+      padding: EdgeInsets.only(left: spacing.sm),
+      child: IconButton.filledTonal(
+        tooltip: tooltip,
+        onPressed: onTap,
+        style: IconButton.styleFrom(
+          backgroundColor: colours.surface1,
+          foregroundColor: colours.textPrimary,
+          minimumSize: const Size(48, 48),
+        ),
+        icon: icon,
+      ),
+    );
+
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Good Morning,',
-          style: typography.body.copyWith(color: colours.textSecondary),
-        ),
-        SizedBox(height: spacing.xs),
-        Text(
-          'Tiamana',
-          style: typography.h1.copyWith(color: colours.textPrimary),
-        ),
-        SizedBox(height: spacing.xs),
-        Text(
-          DateTime.now().toWeekdayAndDate(),
-          style: typography.small.copyWith(color: colours.textTertiary),
-        ),
-      ],
-    );
-  }
-}
-
-/// Four Quick Actions. Create Round, Continue Round and Statistics remain
-/// visual only, per the sprint document ("Buttons remain disabled or
-/// placeholder. No navigation logic is implemented."). Friends now opens
-/// Friends Home, per `docs/features/friends-feature-integration.md`'s
-/// "Dashboard" section ("Selecting it opens Friends Home").
-///
-/// Icons deliberately avoid `NavigationShell`'s bottom-nav icon set
-/// (`home`/`flag`/`card_travel`/`people`/`person`), which stays visible on
-/// screen alongside this content.
-class _QuickActions extends StatelessWidget {
-  const _QuickActions();
-
-  static const List<(IconData, String)> _visualOnlyActions =
-      <(IconData, String)>[
-        (Icons.add_circle_outline, 'Create Round'),
-        (Icons.play_circle_outline, 'Continue Round'),
-        (Icons.bar_chart, 'Statistics'),
-      ];
-
-  @override
-  Widget build(BuildContext context) {
-    return _ResponsiveGrid(
-      children: <Widget>[
-        for (final (icon, label) in _visualOnlyActions)
-          QuickActionCard(icon: icon, label: label),
-        QuickActionCard(
-          icon: Icons.diversity_3,
-          label: 'Friends',
-          onTap: () => context.push(AppRoutes.friends),
-        ),
-      ],
-    );
-  }
-}
-
-/// Placeholder Upcoming Round — see placeholder-data.md's "Upcoming Round".
-class _UpcomingRoundCard extends StatelessWidget {
-  const _UpcomingRoundCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Upcoming Round',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(
+              Text(
+                '${greetingFor(now)},',
+                style: typography.body.copyWith(color: colours.textSecondary),
+              ),
+              SizedBox(height: spacing.xs),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
                 child: Text(
-                  'Richmond Golf Club',
-                  style: typography.h4.copyWith(color: colours.textPrimary),
-                  overflow: TextOverflow.ellipsis,
+                  currentUserName,
+                  style: typography.h1.copyWith(color: colours.textPrimary),
                 ),
               ),
-              SizedBox(width: spacing.sm),
-              const QaddyStatusBadge(label: 'Upcoming'),
+              SizedBox(height: spacing.xs),
+              Text(
+                dateLine(now),
+                style: typography.small.copyWith(color: colours.textTertiary),
+              ),
             ],
           ),
-          SizedBox(height: spacing.sm),
-          Text(
-            'Saturday · 8:20 AM · 8 Players',
-            style: typography.body.copyWith(color: colours.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Placeholder Recent Round — see placeholder-data.md's "Recent Round".
-///
-/// "Winner" is the sprint's own required field; placeholder-data.md records
-/// this round's Position as "1st" for the placeholder user (Tiamana), so
-/// the winner is the placeholder user themselves.
-class _RecentRoundCard extends StatelessWidget {
-  const _RecentRoundCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Recent Round',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'The Dunes Golf Links',
-            style: typography.h4.copyWith(color: colours.textPrimary),
-          ),
-          SizedBox(height: spacing.sm),
-          Text(
-            'Winner: Tiamana · Score: 78 · Last Saturday',
-            style: typography.body.copyWith(color: colours.textSecondary),
-          ),
-          SizedBox(height: spacing.lg),
-          const QaddySecondaryButton(label: 'View Summary', onPressed: null),
-        ],
-      ),
-    );
-  }
-}
-
-/// Four placeholder statistic summaries — see placeholder-data.md's
-/// "Statistics".
-class _StatisticsPreview extends StatelessWidget {
-  const _StatisticsPreview();
-
-  @override
-  Widget build(BuildContext context) {
-    return const _ResponsiveGrid(
-      children: <Widget>[
-        QaddyStatisticCard(
-          label: 'Rounds Played',
-          value: '$dashboardRoundsPlayed',
         ),
-        QaddyStatisticCard(
-          label: 'Average Score',
-          value: '$dashboardAverageScore',
+        action(
+          const Icon(Icons.search),
+          'Search',
+          () => context.push(AppRoutes.homeSearch),
         ),
-        QaddyStatisticCard(label: 'Handicap', value: '8.4'),
-        QaddyStatisticCard(label: 'Best Round', value: '$dashboardBestRound'),
+        action(
+          Stack(
+            clipBehavior: Clip.none,
+            children: <Widget>[
+              const Icon(Icons.notifications_outlined),
+              Positioned(
+                right: -1,
+                top: -1,
+                child: Container(
+                  width: 9,
+                  height: 9,
+                  decoration: BoxDecoration(
+                    color: colours.gold,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colours.surface1, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          'Notifications',
+          () => context.push(AppRoutes.homeNotifications),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: spacing.sm),
+          child: Semantics(
+            button: true,
+            label: 'Your profile',
+            excludeSemantics: true,
+            onTap: () => context.go(AppRoutes.profile),
+            child: InkResponse(
+              onTap: () => context.go(AppRoutes.profile),
+              radius: 28,
+              child: const SizedBox(
+                width: 48,
+                height: 48,
+                child: QaddyAvatar(name: currentUserName),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
 }
 
-/// A simple vertical activity timeline — see placeholder-data.md's "Recent
-/// Activity".
-///
-/// Icons deliberately avoid `NavigationShell`'s bottom-nav icon set
-/// (`home`/`flag`/`card_travel`/`people`/`person`), which stays visible on
-/// screen alongside this content.
-class _RecentActivity extends StatelessWidget {
-  const _RecentActivity();
-
-  static const List<(IconData, String)> _entries = <(IconData, String)>[
-    (Icons.golf_course, 'Round completed at Richmond Golf Club'),
-    (Icons.group_add, 'Josh joined the Saturday Boys group'),
-    (Icons.luggage, 'New golf trip created'),
-    (Icons.trending_down, 'Handicap reduced to 8.4'),
-    (Icons.emoji_events, 'Achievement unlocked: Personal Best'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Recent Activity',
-      child: Column(
-        children: <Widget>[
-          for (final (index, entry) in _entries.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.md),
-            Row(
-              children: <Widget>[
-                Icon(entry.$1, color: colours.gold, size: spacing.lg),
-                SizedBox(width: spacing.sm),
-                Expanded(
-                  child: Text(
-                    entry.$2,
-                    style: typography.body.copyWith(color: colours.textPrimary),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// Lays out [children] two-per-row on mobile and one-per-row-of-four on
-/// tablet/desktop, per the sprint document's Responsive Behaviour section.
-/// Shared by [_QuickActions] and [_StatisticsPreview] to avoid duplicating
-/// the same responsive grid logic twice.
-class _ResponsiveGrid extends StatelessWidget {
-  const _ResponsiveGrid({required this.children});
-
-  final List<Widget> children;
+/// The latest moments from friends, with the same cheer buttons as Friends.
+class _Mates extends StatelessWidget {
+  const _Mates();
 
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final perRow = context.isMobile ? 2 : children.length;
+    final recent = friendActivityFeed.take(2).toList();
 
-    final rows = <Widget>[];
-    for (var i = 0; i < children.length; i += perRow) {
-      final rowItems = children.skip(i).take(perRow).toList();
-      if (rows.isNotEmpty) {
-        rows.add(SizedBox(height: spacing.cardGap));
-      }
-      rows.add(
-        Row(
-          children: <Widget>[
-            for (final (index, item) in rowItems.indexed) ...<Widget>[
-              if (index > 0) SizedBox(width: spacing.cardGap),
-              Expanded(child: item),
-            ],
+    return QaddyCard(
+      child: Column(
+        children: <Widget>[
+          for (final (index, item) in recent.indexed) ...<Widget>[
+            if (index > 0) SizedBox(height: spacing.lg),
+            ActivityFeedTile(item: item),
           ],
-        ),
-      );
-    }
-
-    return Column(children: rows);
+        ],
+      ),
+    );
   }
 }

@@ -11,6 +11,7 @@ abstract final class RouteNames {
   static const String signUp = 'signUp';
   static const String home = 'home';
   static const String rounds = 'rounds';
+  static const String roundScorecard = 'roundScorecard';
   static const String trips = 'trips';
   static const String tripCreate = 'tripCreate';
   static const String tripDetails = 'tripDetails';
