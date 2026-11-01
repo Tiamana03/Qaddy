@@ -5,10 +5,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
-import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/community/logic/friend_insights.dart';
 
 /// The head-to-head card. Tapping the story opens the full rivalry; the
@@ -39,11 +41,9 @@ class RivalrySpotlight extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
-    final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final onGradient = theme.colorScheme.onPrimary;
-    final borderRadius = BorderRadius.circular(radius.extraLarge);
     final muted = onGradient.withValues(alpha: 0.78);
     final animate = !MediaQuery.disableAnimationsOf(context);
 
@@ -130,136 +130,73 @@ class RivalrySpotlight extends StatelessWidget {
 
     // The story is read as one thing; the challenge button stays its own
     // control for screen readers.
-    final story = Semantics(
-      button: true,
+    return QaddyHeroCard(
+      gradient: gradient,
       onTap: onOpen,
-      excludeSemantics: true,
-      label:
+      semanticLabel:
           'Rivalry: you versus ${summary.friendName}. '
           '${summary.youWins} wins to ${summary.theirWins}, '
           '${summary.draws} halved, ${summary.rounds} rounds. '
           '${summary.headline}. Last: ${summary.lastResult}.',
-      child: InkWell(
-        onTap: onOpen,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            spacing.xl,
-            spacing.xl,
-            spacing.xl,
-            spacing.lg,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      footer: QaddyGoldButton(
+        label: 'Send ${summary.friendName} a challenge',
+        icon: Icons.send_rounded,
+        onPressed: onChallenge,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      'RIVALRY',
-                      style: typography.caption.copyWith(
-                        color: colours.gold,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '${summary.rounds} rounds',
-                    style: typography.small.copyWith(color: muted),
-                  ),
-                ],
-              ),
-              SizedBox(height: spacing.lg),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  side(yourName, you: true),
-                  // The score shrinks to fit rather than overflowing a narrow
-                  // screen or a long score like 12 – 10.
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: spacing.sm),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Column(
-                          children: <Widget>[
-                            score,
-                            if (summary.draws > 0)
-                              Text(
-                                '${summary.draws} halved',
-                                style: typography.small.copyWith(color: muted),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  side(summary.friendName, you: false),
-                ],
-              ),
-              SizedBox(height: spacing.lg),
+              const Expanded(child: QaddyEyebrow('RIVALRY')),
               Text(
-                summary.headline,
-                style: typography.h3.copyWith(color: onGradient),
-              ),
-              SizedBox(height: spacing.sm),
-              winBar,
-              SizedBox(height: spacing.md),
-              Text(
-                'Last: ${summary.lastResult}',
+                '${summary.rounds} rounds',
                 style: typography.small.copyWith(color: muted),
               ),
             ],
           ),
-        ),
-      ),
-    );
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: shadows.large,
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Material(
-          color: Colors.transparent,
-          child: Ink(
-            decoration: BoxDecoration(gradient: gradient),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                story,
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    spacing.xl,
-                    0,
-                    spacing.xl,
-                    spacing.xl,
-                  ),
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colours.gold,
-                      foregroundColor: colours.backgroundBase,
-                      minimumSize: Size.fromHeight(spacing.display),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(radius.medium),
-                      ),
-                    ),
-                    onPressed: onChallenge,
-                    icon: const Icon(Icons.send_rounded, size: 18),
-                    label: Text(
-                      'Send ${summary.friendName} a challenge',
-                      overflow: TextOverflow.ellipsis,
-                      style: typography.button,
+          SizedBox(height: spacing.lg),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              side(yourName, you: true),
+              // The score shrinks to fit rather than overflowing a narrow
+              // screen or a long score like 12 – 10.
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: EdgeInsets.only(top: spacing.sm),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Column(
+                      children: <Widget>[
+                        score,
+                        if (summary.draws > 0)
+                          Text(
+                            '${summary.draws} halved',
+                            style: typography.small.copyWith(color: muted),
+                          ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              side(summary.friendName, you: false),
+            ],
           ),
-        ),
+          SizedBox(height: spacing.lg),
+          Text(
+            summary.headline,
+            style: typography.h3.copyWith(color: onGradient),
+          ),
+          SizedBox(height: spacing.sm),
+          winBar,
+          SizedBox(height: spacing.md),
+          Text(
+            'Last: ${summary.lastResult}',
+            style: typography.small.copyWith(color: muted),
+          ),
+        ],
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_cover_tile.dart';
@@ -86,14 +87,7 @@ class NextTripCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              eyebrow,
-                              style: typography.caption.copyWith(
-                                color: colours.gold,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
+                            QaddyEyebrow(eyebrow),
                             SizedBox(height: spacing.sm),
                             Text(
                               title,

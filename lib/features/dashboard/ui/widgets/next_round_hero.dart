@@ -5,10 +5,12 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
-import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
@@ -38,20 +40,15 @@ class NextRoundHero extends StatelessWidget {
   /// Tells the group about the round.
   final VoidCallback onShare;
 
-  /// How many faces are shown before "+N".
-  static const int _faces = 5;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
-    final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final onGradient = theme.colorScheme.onPrimary;
     final muted = onGradient.withValues(alpha: 0.85);
-    final borderRadius = BorderRadius.circular(radius.extraLarge);
     final animate = !MediaQuery.disableAnimationsOf(context);
     final count = countdown;
     final figure = int.tryParse(count?.value ?? '');
@@ -84,11 +81,6 @@ class NextRoundHero extends StatelessWidget {
         ],
       ),
     );
-
-    final shown = players.take(_faces).toList();
-    final more = round.players - shown.length;
-    const faceSize = 34.0;
-    const faceStep = 24.0;
 
     final headline = count == null
         ? FittedBox(
@@ -146,164 +138,69 @@ class NextRoundHero extends StatelessWidget {
             ],
           );
 
-    final story = Semantics(
-      button: true,
+    return QaddyHeroCard(
+      gradient: gradient,
       onTap: onOpen,
-      excludeSemantics: true,
-      label:
+      semanticLabel:
           '${count?.eyebrow ?? 'Next round'}. '
           '${count == null ? '' : '${count.value} ${count.label}. '}'
           '${round.date} at ${round.teeTime}, ${round.course}. '
           '${round.weather}. ${round.format}. ${round.players} playing.',
-      child: InkWell(
-        onTap: onOpen,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            spacing.xl,
-            spacing.xl,
-            spacing.xl,
-            spacing.lg,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                count?.eyebrow ?? 'NEXT ROUND',
-                style: typography.caption.copyWith(
-                  color: colours.gold,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              SizedBox(height: spacing.sm),
-              headline,
-              SizedBox(height: spacing.xs),
-              Text(
-                '${round.course} · ${round.date}, ${round.teeTime}',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: typography.body.copyWith(color: muted),
-              ),
-              SizedBox(height: spacing.lg),
-              Wrap(
-                spacing: spacing.sm,
-                runSpacing: spacing.sm,
-                children: <Widget>[
-                  chip(Icons.wb_sunny_outlined, round.weather),
-                  chip(Icons.emoji_events_outlined, round.format),
-                  chip(Icons.golf_course, '${round.holes} holes'),
-                ],
-              ),
-              SizedBox(height: spacing.lg),
-              Row(
-                children: <Widget>[
-                  SizedBox(
-                    width: faceSize + faceStep * (shown.length - 1),
-                    height: faceSize,
-                    child: Stack(
-                      children: <Widget>[
-                        for (final (index, name) in shown.indexed)
-                          Positioned(
-                            left: faceStep * index,
-                            child: Container(
-                              width: faceSize,
-                              height: faceSize,
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: colours.backgroundBase,
-                              ),
-                              child: FittedBox(child: QaddyAvatar(name: name)),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: spacing.md),
-                  Expanded(
-                    child: Text(
-                      more > 0
-                          ? '+$more more · ${round.players} playing'
-                          : '${round.players} playing',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: typography.small.copyWith(color: muted),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: shadows.large,
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Material(
-          color: Colors.transparent,
-          child: Ink(
-            decoration: BoxDecoration(gradient: gradient),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                story,
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    spacing.xl,
-                    0,
-                    spacing.xl,
-                    spacing.xl,
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: colours.gold,
-                            foregroundColor: colours.backgroundBase,
-                            minimumSize: Size.fromHeight(spacing.display),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                radius.medium,
-                              ),
-                            ),
-                          ),
-                          onPressed: onOpen,
-                          icon: const Icon(Icons.flag_rounded, size: 18),
-                          label: Text(
-                            'Get ready',
-                            overflow: TextOverflow.ellipsis,
-                            style: typography.button,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: spacing.sm),
-                      IconButton.filled(
-                        tooltip: 'Tell the group',
-                        onPressed: onShare,
-                        style: IconButton.styleFrom(
-                          backgroundColor: onGradient.withValues(alpha: 0.16),
-                          foregroundColor: onGradient,
-                          minimumSize: Size(spacing.display, spacing.display),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(radius.medium),
-                          ),
-                        ),
-                        icon: const Icon(Icons.ios_share_rounded),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+      footer: Row(
+        children: <Widget>[
+          Expanded(
+            child: QaddyGoldButton(
+              label: 'Get ready',
+              icon: Icons.flag_rounded,
+              onPressed: onOpen,
             ),
           ),
-        ),
+          SizedBox(width: spacing.sm),
+          IconButton.filled(
+            tooltip: 'Tell the group',
+            onPressed: onShare,
+            style: IconButton.styleFrom(
+              backgroundColor: onGradient.withValues(alpha: 0.16),
+              foregroundColor: onGradient,
+              minimumSize: Size(spacing.display, spacing.display),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radius.medium),
+              ),
+            ),
+            icon: const Icon(Icons.ios_share_rounded),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          QaddyEyebrow(count?.eyebrow ?? 'NEXT ROUND'),
+          SizedBox(height: spacing.sm),
+          headline,
+          SizedBox(height: spacing.xs),
+          Text(
+            '${round.course} · ${round.date}, ${round.teeTime}',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: typography.body.copyWith(color: muted),
+          ),
+          SizedBox(height: spacing.lg),
+          Wrap(
+            spacing: spacing.sm,
+            runSpacing: spacing.sm,
+            children: <Widget>[
+              chip(Icons.wb_sunny_outlined, round.weather),
+              chip(Icons.emoji_events_outlined, round.format),
+              chip(Icons.golf_course, '${round.holes} holes'),
+            ],
+          ),
+          SizedBox(height: spacing.lg),
+          QaddyAvatarHuddle(
+            names: players,
+            total: round.players,
+            textColour: muted,
+          ),
+        ],
       ),
     );
   }

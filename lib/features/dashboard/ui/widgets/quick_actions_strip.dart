@@ -9,6 +9,7 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 
 /// One shortcut: an icon, a short label and where it goes.
@@ -109,14 +110,10 @@ class _ActionTile extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: action.colour.withValues(alpha: 0.18),
-                      ),
-                      child: Icon(action.icon, color: action.colour),
+                    QaddyIconBadge(
+                      icon: action.icon,
+                      colour: action.colour,
+                      size: 44,
                     ),
                     SizedBox(height: spacing.sm),
                     Text(

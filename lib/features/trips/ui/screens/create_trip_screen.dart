@@ -21,6 +21,7 @@ import 'package:qaddy/core/widgets/forms/qaddy_date_time_fields.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_segmented_control.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_text_field.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_cover.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
@@ -371,14 +372,7 @@ class _TripPreview extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(
-                        'YOUR NEXT TRIP',
-                        style: typography.caption.copyWith(
-                          color: colours.gold,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                      const QaddyEyebrow('YOUR NEXT TRIP'),
                       SizedBox(height: spacing.sm),
                       line(
                         name.isEmpty ? 'Name your trip' : name,

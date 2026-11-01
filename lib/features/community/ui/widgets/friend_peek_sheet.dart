@@ -18,6 +18,7 @@ import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/features/community/logic/friend_insights.dart';
 import 'package:qaddy/features/community/models/friend.dart';
@@ -86,7 +87,6 @@ class FriendPeekSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final recent = playedRecently(friend, now);
@@ -180,22 +180,10 @@ class FriendPeekSheet extends StatelessWidget {
             SizedBox(height: spacing.xs),
             place(Icons.place_outlined, friend.location),
             SizedBox(height: spacing.xl),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: colours.gold,
-                foregroundColor: colours.backgroundBase,
-                minimumSize: Size.fromHeight(spacing.display),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(radius.medium),
-                ),
-              ),
+            QaddyGoldButton(
+              label: 'Fancy a round, ${friend.displayName}?',
+              icon: Icons.send_rounded,
               onPressed: onInvite,
-              icon: const Icon(Icons.send_rounded, size: 18),
-              label: Text(
-                'Fancy a round, ${friend.displayName}?',
-                overflow: TextOverflow.ellipsis,
-                style: typography.button,
-              ),
             ),
             if (onViewProfile != null) ...<Widget>[
               SizedBox(height: spacing.md),

@@ -8,6 +8,8 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 
 /// A welcoming card that explains, in three lines, why to plan a trip here,
 /// with the one action that matters.
@@ -94,14 +96,7 @@ class TripsWelcome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'YOUR FIRST TRIP',
-                      style: typography.caption.copyWith(
-                        color: colours.gold,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
+                    const QaddyEyebrow('YOUR FIRST TRIP'),
                     SizedBox(height: spacing.sm),
                     Text(
                       'Plan your next golf trip',
@@ -131,23 +126,10 @@ class TripsWelcome extends StatelessWidget {
                       'One chat for the whole trip.',
                     ),
                     SizedBox(height: spacing.xl),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: colours.gold,
-                          foregroundColor: colours.backgroundBase,
-                          minimumSize: Size.fromHeight(spacing.display + 4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(radius.medium),
-                          ),
-                        ),
-                        onPressed: onCreateTrip,
-                        child: Text(
-                          'Create your first trip',
-                          style: typography.button,
-                        ),
-                      ),
+                    QaddyGoldButton(
+                      label: 'Create your first trip',
+                      tall: true,
+                      onPressed: onCreateTrip,
                     ),
                   ],
                 ),

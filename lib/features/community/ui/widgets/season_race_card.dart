@@ -9,6 +9,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/community/logic/friend_insights.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 
@@ -66,16 +67,7 @@ class SeasonRaceCard extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Expanded(
-                  child: Text(
-                    'SEASON RACE',
-                    style: typography.caption.copyWith(
-                      color: colours.gold,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
+                const Expanded(child: QaddyEyebrow('SEASON RACE')),
                 Text(
                   race.roundsLeft,
                   style: typography.small.copyWith(

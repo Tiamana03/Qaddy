@@ -24,6 +24,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_nav_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
 import 'package:qaddy/features/trips/logic/trip_setup.dart';
@@ -320,14 +321,7 @@ class _Overview extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         Expanded(
-                          child: Text(
-                            tripCountdownEyebrow(countdown),
-                            style: typography.caption.copyWith(
-                              color: colours.gold,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
+                          child: QaddyEyebrow(tripCountdownEyebrow(countdown)),
                         ),
                         QaddyStatusBadge(label: statusLabel, tone: statusTone),
                       ],

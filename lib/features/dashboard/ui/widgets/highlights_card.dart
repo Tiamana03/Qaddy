@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 
 /// One highlight and where it leads.
@@ -62,14 +63,11 @@ class HighlightsCard extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: spacing.sm),
                     child: Row(
                       children: <Widget>[
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: item.colour.withValues(alpha: 0.18),
-                          ),
-                          child: Icon(item.icon, color: item.colour, size: 20),
+                        QaddyIconBadge(
+                          icon: item.icon,
+                          colour: item.colour,
+                          size: 36,
+                          iconSize: 20,
                         ),
                         SizedBox(width: spacing.md),
                         Expanded(

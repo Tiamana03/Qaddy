@@ -7,7 +7,9 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
 import 'package:qaddy/features/statistics/logic/stat_trend_formatting.dart';
 import 'package:qaddy/features/statistics/models/stat_trend.dart';
@@ -111,16 +113,7 @@ class YourGameCard extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Expanded(
-                  child: Text(
-                    'YOUR GAME',
-                    style: typography.caption.copyWith(
-                      color: colours.gold,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
+                const Expanded(child: QaddyEyebrow('YOUR GAME')),
                 Text(
                   'All stats',
                   style: typography.small.copyWith(color: colours.accent),
@@ -205,17 +198,9 @@ class YourGameCard extends StatelessWidget {
               ),
               child: Row(
                 children: <Widget>[
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: colours.gold.withValues(alpha: 0.18),
-                    ),
-                    child: Icon(
-                      won ? Icons.emoji_events : Icons.golf_course,
-                      color: colours.gold,
-                    ),
+                  QaddyIconBadge(
+                    icon: won ? Icons.emoji_events : Icons.golf_course,
+                    colour: colours.gold,
                   ),
                   SizedBox(width: spacing.md),
                   Expanded(
