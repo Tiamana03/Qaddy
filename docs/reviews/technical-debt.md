@@ -150,19 +150,15 @@ Next Rounds-touching feature, or a dedicated cleanup pass.
 
 Priority: Medium
 
-Status: **Open** (logged during the Release Candidate Trips completion, October 2026)
+Status: **Resolved** (Trips delight pass, November 2026)
 
 Current State
 
-Trips, their plans, chat and expenses live in `tripsProvider`, an in-memory Riverpod store seeded from `placeholder_trips.dart`. Everything the golfer creates or edits (a new trip, a booked flight, a sent message) is lost when the app restarts. This is intentional for Release 1, which has no backend or local database, but it is the first thing a tester will notice.
+~~Trips lived in an in-memory store and were lost when the app restarted.~~ `TripsController` now loads the trips on start-up and saves after every change through `TripsStorage`, backed by `shared_preferences` on the device (see `docs/decisions/ADR-002-trips-device-packages.md`). The document is versioned; an unreadable one falls back to the seed trips. This is still on-device only — it does not sync between devices or users, which is Release 2's backend.
 
 Action
 
-Back `TripsController` with a repository (`features/trips/repositories/`, currently empty) once the persistence decision is made. The controller already exposes every change as a method, so only its storage needs to change; screens do not touch the store directly.
-
-Target
-
-Release 2 (Backend & Authentication), or earlier if a local database is approved.
+~~Back the controller with a repository.~~ Done.
 
 ---
 
@@ -206,28 +202,30 @@ Before the backend work, when the current-user model is introduced.
 
 ---
 
-## TD-013 — Trips has placeholders where a dependency is needed
+## TD-013 — Trips still has a few placeholders
 
-Priority: Medium
+Priority: Low
 
-Status: **Open** — needs a decision (logged during the Release Candidate Trips completion, October 2026)
+Status: **Partly resolved** (Trips delight pass, November 2026; the owner approved `shared_preferences`, `url_launcher` and `share_plus`, not the PDF or image packages)
 
 Current State
 
-No dependency was added during the Trips completion, so the following are placeholders rather than features:
+Resolved: phone numbers call, websites and addresses open (a place or a route in the maps app), and the invite message and itinerary go through the system share sheet; each falls back to copying when nothing can open or share. Photos were removed from the course and stay pages rather than shown as empty boxes. The Download PDF button was removed.
 
-- **Download PDF** shows an honest "coming soon" dialog. Itineraries can be copied as text.
-- **Maps, driving directions, "open in Maps"** are a designed map placeholder plus a "copy address" action.
-- **Phone, website and email** rows copy to the clipboard instead of dialling or opening a browser.
-- **Photos** (courses, accommodation, trip cover) are placeholders; the cover is one of six gradient presets.
-- **Weather** is typed in by hand (Edit Trip → Weather); there is no forecast service.
-- **Invite link** copies a `qaddy.example` placeholder link.
-- **Chat** delivery ticks and the typing indicator are timed simulations.
+Still placeholders:
+
+- **PDF export** — the itinerary is shared or copied as text. A formatted PDF needs `pdf` + `printing`, not yet approved.
+- **Trip cover** — one of six gradient presets; a real photo needs `image_picker` (and storage).
+- **Map** — a stylised map tile that opens the real map in a maps app on tap; an embedded map needs a maps package.
+- **Weather** — typed in by hand (Edit Trip → Weather); there is no forecast service.
+- **Invite links** — there are none: "Share Invite" sends a self-contained message instead of a link to a page that does not exist. Real links need the backend and deep-link handling.
+- **Chat** — delivery ticks and the typing indicator are timed simulations; other people's messages need the backend.
+- **Seed websites** use the reserved `.example` domain, so tapping one on a device reaches a "can't reach this site" page.
 
 Action
 
-Decide which of these Release 1 must have for launch. Likely candidates: `url_launcher` (calls, links, maps), `share_plus` (invite link and itinerary), `pdf` + `printing` (PDF export), `image_picker` (cover photo). Each needs a short justification per `docs/CLAUDE.md` ("Add dependencies without justification" is on the never list).
+Revisit when the backend (Release 2) lands, or sooner if PDF or photos are judged launch-critical.
 
 Target
 
-Before the 20 November 2026 soft launch if any are launch-critical.
+Release 2.

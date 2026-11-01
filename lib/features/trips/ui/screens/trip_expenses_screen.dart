@@ -13,9 +13,11 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
@@ -70,6 +72,7 @@ class TripExpensesScreen extends ConsumerWidget {
         confirmLabel: 'Mark Paid',
       );
       if (confirmed) {
+        QaddyHaptics.success();
         ref
             .read(tripsProvider.notifier)
             .settleDebt(tripId, from: debt.from, to: debt.to);
@@ -90,7 +93,7 @@ class TripExpensesScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             if (plan.expenses.isEmpty)
               QaddyEmptyState(
@@ -137,7 +140,7 @@ class TripExpensesScreen extends ConsumerWidget {
                       SizedBox(width: spacing.md),
                       Expanded(
                         child: Text(
-                          'Everyone is settled up.',
+                          'All square — nobody owes anybody.',
                           style: typography.body.copyWith(
                             color: colours.textPrimary,
                           ),
@@ -167,7 +170,7 @@ class TripExpensesScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
@@ -230,11 +233,18 @@ class _CostCard extends StatelessWidget {
             excludeSemantics: true,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(radius.large),
-              child: LinearProgressIndicator(
-                value: summary.paidFraction,
-                minHeight: 8,
-                backgroundColor: colours.surface2,
-                color: colours.accent,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: summary.paidFraction),
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 900),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => LinearProgressIndicator(
+                  value: value,
+                  minHeight: 8,
+                  backgroundColor: colours.surface2,
+                  color: colours.accent,
+                ),
               ),
             ),
           ),

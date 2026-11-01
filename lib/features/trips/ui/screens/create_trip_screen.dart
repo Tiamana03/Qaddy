@@ -9,9 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
+import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_date_time_fields.dart';
@@ -91,7 +94,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     if (!_valid) {
       return;
     }
-    ref
+    final id = ref
         .read(tripsProvider.notifier)
         .createTrip(
           NewTripDraft(
@@ -105,10 +108,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             invitedFriends: _invited.toList(),
           ),
         );
+    QaddyHaptics.success();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${_name.text.trim()} added to Upcoming Trips')),
     );
-    context.go(AppRoutes.trips);
+    // The Trips list first (so Back lands on it, with the new trip in it), then
+    // straight into the trip, where the setup steps are waiting.
+    context
+      ..go(AppRoutes.trips)
+      ..push(AppRoutes.tripDetails(id));
   }
 
   @override
@@ -128,8 +136,12 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
-            Center(
-              child: TripCoverTile(presetId: _cover, size: spacing.hero * 2),
+            _TripPreview(
+              cover: _cover,
+              name: _name.text.trim(),
+              destination: _destination.text.trim(),
+              start: _start,
+              end: _end,
             ),
             SizedBox(height: spacing.sm),
             Center(
@@ -267,6 +279,142 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             ),
             SizedBox(height: spacing.xl),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The trip as it will look, filling in live as the golfer types: their cover,
+/// name, destination and dates on the same gradient the trip's cards use.
+class _TripPreview extends StatelessWidget {
+  const _TripPreview({
+    required this.cover,
+    required this.name,
+    required this.destination,
+    required this.start,
+    required this.end,
+  });
+
+  final String cover;
+  final String name;
+  final String destination;
+  final DateTime? start;
+  final DateTime? end;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final shadows = theme.extension<QaddyShadows>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+    final onGradient = theme.colorScheme.onPrimary;
+    final borderRadius = BorderRadius.circular(radius.extraLarge);
+    final start = this.start;
+    final end = this.end;
+
+    final dates = start == null
+        ? 'When?'
+        : end == null || end.isBefore(start)
+        ? start.toFriendlyDate()
+        : '${start.toFriendlyRange(end)}  ·  '
+              '${start.calendarDaysUntil(end) + 1} days';
+
+    Widget line(
+      String text, {
+      required bool filled,
+      required TextStyle style,
+    }) => Text(
+      text,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: style.copyWith(
+        color: filled ? onGradient : onGradient.withValues(alpha: 0.5),
+      ),
+    );
+
+    return Semantics(
+      label: 'Trip preview: ${name.isEmpty ? 'unnamed trip' : name}',
+      excludeSemantics: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: shadows.large,
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          // The gradient eases from one cover to the next when it changes.
+          child: AnimatedContainer(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 350),
+            curve: Curves.easeOut,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: tripCoverGradient(colours, cover),
+            ),
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  right: -spacing.xl,
+                  top: -spacing.lg,
+                  child: Icon(
+                    tripCoverFor(cover).icon,
+                    size: 200,
+                    color: onGradient.withValues(alpha: 0.08),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(spacing.xl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'YOUR NEXT TRIP',
+                        style: typography.caption.copyWith(
+                          color: colours.gold,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: spacing.sm),
+                      line(
+                        name.isEmpty ? 'Name your trip' : name,
+                        filled: name.isNotEmpty,
+                        style: typography.h2,
+                      ),
+                      SizedBox(height: spacing.xs),
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: spacing.lg,
+                            color: onGradient.withValues(alpha: 0.78),
+                          ),
+                          SizedBox(width: spacing.xs),
+                          Expanded(
+                            child: line(
+                              destination.isEmpty ? 'Where to?' : destination,
+                              filled: destination.isNotEmpty,
+                              style: typography.body,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: spacing.xs),
+                      line(
+                        dates,
+                        filled: start != null,
+                        style: typography.small,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

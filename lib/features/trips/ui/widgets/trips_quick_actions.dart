@@ -33,6 +33,7 @@ class TripsQuickActions extends StatelessWidget {
     return Row(
       children: <Widget>[
         Expanded(
+          flex: 3,
           child: QaddyPrimaryButton(
             label: 'Create Trip',
             onPressed: onCreateTrip,
@@ -40,6 +41,7 @@ class TripsQuickActions extends StatelessWidget {
         ),
         SizedBox(width: spacing.sm),
         Expanded(
+          flex: 2,
           child: QaddySecondaryButton(
             label: 'Browse Trips',
             onPressed: onBrowseTrips,

@@ -9,6 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_router.dart';
+import 'package:qaddy/core/services/link_launcher.dart';
+import 'package:qaddy/core/services/share_service.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/main.dart';
 
@@ -21,7 +23,7 @@ Future<ProviderContainer> pumpTrips(
   Widget home, {
   ThemeData? theme,
 }) async {
-  final container = ProviderContainer();
+  final container = ProviderContainer(overrides: _platformFakes());
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -40,7 +42,7 @@ Future<ProviderContainer> pumpTripsRouter(
   required List<RouteBase> routes,
   ThemeData? theme,
 }) async {
-  final container = ProviderContainer();
+  final container = ProviderContainer(overrides: _platformFakes());
   addTearDown(container.dispose);
   final router = GoRouter(initialLocation: initialLocation, routes: routes);
   addTearDown(router.dispose);
@@ -64,13 +66,16 @@ Future<ProviderContainer> pumpApp(
   WidgetTester tester, {
   String location = '/trips',
   Size size = const Size(400, 1800),
+  List<Override> overrides = const <Override>[],
 }) async {
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   tester.view.devicePixelRatio = 1.0;
   tester.view.physicalSize = size;
 
-  final container = ProviderContainer();
+  final container = ProviderContainer(
+    overrides: <Override>[..._platformFakes(), ...overrides],
+  );
   addTearDown(container.dispose);
   await tester.pumpWidget(
     UncontrolledProviderScope(container: container, child: const QaddyApp()),
@@ -101,3 +106,53 @@ List<String> captureClipboard(WidgetTester tester) {
   );
   return copied;
 }
+
+/// Records the links the app tries to open, and answers whether it could.
+class FakeLinkLauncher implements LinkLauncher {
+  /// Every link opened, in order.
+  final List<Uri> opened = <Uri>[];
+
+  /// What [open] reports. Set to `false` to see the fallback behaviour.
+  bool canOpen = true;
+
+  @override
+  Future<bool> open(Uri uri) async {
+    opened.add(uri);
+    return canOpen;
+  }
+}
+
+/// Records what the app shares, and answers how the share ended.
+class FakeShareService implements ShareService {
+  /// Every text shared, in order.
+  final List<String> shared = <String>[];
+
+  /// The subject of each share.
+  final List<String?> subjects = <String?>[];
+
+  /// What [shareText] reports. Set to [ShareOutcome.unavailable] to see the
+  /// fallback behaviour.
+  ShareOutcome outcome = ShareOutcome.shared;
+
+  @override
+  Future<ShareOutcome> shareText(String text, {String? subject}) async {
+    shared.add(text);
+    subjects.add(subject);
+    return outcome;
+  }
+}
+
+/// The fake launcher the harness installed.
+FakeLinkLauncher launcherOf(ProviderContainer c) =>
+    c.read(linkLauncherProvider) as FakeLinkLauncher;
+
+/// The fake share service the harness installed.
+FakeShareService shareOf(ProviderContainer c) =>
+    c.read(shareServiceProvider) as FakeShareService;
+
+/// The overrides every harness container starts with: recording fakes in
+/// place of the real plugins, so no test ever opens a real app.
+List<Override> _platformFakes() => <Override>[
+  linkLauncherProvider.overrideWithValue(FakeLinkLauncher()),
+  shareServiceProvider.overrideWithValue(FakeShareService()),
+];

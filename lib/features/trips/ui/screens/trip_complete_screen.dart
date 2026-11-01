@@ -15,12 +15,14 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip_result.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
 /// Trip Complete (route `/trips/:tripId/complete`).
@@ -42,6 +44,8 @@ class TripCompleteScreen extends ConsumerWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final summary = summariseExpenses(plan.expenses);
+    final rounds = plan.courses.length;
+    final players = trip.playerCount;
     final results = trip.id == melbourneGolfWeekend.id
         ? melbourneGolfWeekendResults
         : const <TripAward>[];
@@ -51,8 +55,20 @@ class TripCompleteScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
+            DetailHeader(
+              icon: Icons.emoji_events_outlined,
+              title: "That's a wrap",
+              subtitle: trip.name,
+              facts: <String>[
+                trip.startDate.toFriendlyRange(trip.endDate),
+                if (plan.courses.isNotEmpty)
+                  '$rounds ${rounds == 1 ? 'round' : 'rounds'}',
+                '$players ${players == 1 ? 'player' : 'players'}',
+              ],
+            ),
+            SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
               title: 'Trip Summary',
               child: Column(
@@ -152,7 +168,7 @@ class TripCompleteScreen extends ConsumerWidget {
               ],
             ),
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

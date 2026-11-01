@@ -100,6 +100,18 @@ abstract final class QaddyTheme {
               : colours.border,
         ),
       ),
+      // One modern fade-and-drift transition on every platform, so moving
+      // between pages feels the same (and calm) on phone, web and desktop.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
+        },
+      ),
       // Like the switch, these Material controls default to `primary`, which
       // is dark green in Dark Mode: picker buttons, checkboxes and the
       // selected day would be near-invisible without the readable accent.

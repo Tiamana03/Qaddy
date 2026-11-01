@@ -12,6 +12,7 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_chip_selector.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
 import 'package:qaddy/features/trips/models/trip_flight.dart';
@@ -78,7 +79,7 @@ class TripFlightScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             DetailHeader(
               icon: Icons.flight_takeoff,
@@ -180,7 +181,7 @@ class TripFlightScreen extends ConsumerWidget {
             SizedBox(height: spacing.sm),
             MapPlaceholder(label: shown.toAirport, height: 120),
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

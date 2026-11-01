@@ -11,8 +11,10 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_segmented_control.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/trip_timeline.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
@@ -60,6 +62,7 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
     final typography = theme.extension<QaddyTypography>()!;
     final controller = ref.read(tripsProvider.notifier);
 
+    final days = buildTimeline(trip, plan);
     final progress = plan.planningProgress;
     final nextTask = plan.nextTask;
     final done = plan.tasks.where((task) => task.done).length;
@@ -85,7 +88,7 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             QaddyCard(
               child: Row(
@@ -147,13 +150,17 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
             switch (_view) {
               PlanningView.timeline => PlanningTimeline(
                 tripId: widget.tripId,
-                days: buildTimeline(trip, plan),
+                days: days,
+                next: nextTimelineEvent(days, now),
               ),
               PlanningView.checklist => PlanningChecklist(
                 tripId: widget.tripId,
                 tasks: plan.tasks,
                 now: now,
-                onToggle: (id) => controller.toggleTask(widget.tripId, id),
+                onToggle: (id) {
+                  QaddyHaptics.selection();
+                  controller.toggleTask(widget.tripId, id);
+                },
               ),
               PlanningView.packing => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,8 +177,10 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
                   PlanningPacking(
                     tripId: widget.tripId,
                     items: plan.packing,
-                    onToggle: (id) =>
-                        controller.togglePacked(widget.tripId, id),
+                    onToggle: (id) {
+                      QaddyHaptics.selection();
+                      controller.togglePacked(widget.tripId, id);
+                    },
                   ),
                 ],
               ),
@@ -181,7 +190,7 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
               ),
             },
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

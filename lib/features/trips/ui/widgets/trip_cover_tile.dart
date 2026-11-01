@@ -10,6 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_cover.dart';
 
 /// The gradient for the cover preset with the given [id] (the default preset
@@ -125,6 +128,73 @@ class TripCoverPicker extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// A trip's cover with its start date over it — the picture-and-date tile that
+/// leads a trip card. Month and day are drawn in the cover's own colours so
+/// every trip in a list is recognisable at a glance.
+class TripCoverDateTile extends StatelessWidget {
+  const TripCoverDateTile({required this.trip, super.key});
+
+  /// The trip whose cover and start date to show.
+  final Trip trip;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+    final onGradient = theme.colorScheme.onPrimary;
+    final preset = tripCoverFor(trip.coverImage);
+    final edge = spacing.hero + spacing.sm;
+
+    return Semantics(
+      label: 'Starts ${trip.startDate.toFriendlyDate()}',
+      excludeSemantics: true,
+      child: Container(
+        width: edge,
+        height: edge,
+        decoration: BoxDecoration(
+          gradient: tripCoverGradient(colours, trip.coverImage),
+          borderRadius: BorderRadius.circular(radius.medium),
+        ),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              right: -spacing.sm,
+              bottom: -spacing.sm,
+              child: Icon(
+                preset.icon,
+                size: edge * 0.85,
+                color: onGradient.withValues(alpha: 0.14),
+              ),
+            ),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    trip.startDate.monthAbbreviation.toUpperCase(),
+                    style: typography.caption.copyWith(
+                      color: colours.gold,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  Text(
+                    '${trip.startDate.day}',
+                    style: typography.h3.copyWith(color: onGradient),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

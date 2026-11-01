@@ -16,6 +16,7 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
@@ -66,7 +67,7 @@ class TripFlightsScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             if (flights.isEmpty)
               QaddyEmptyState(
@@ -90,7 +91,7 @@ class TripFlightsScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

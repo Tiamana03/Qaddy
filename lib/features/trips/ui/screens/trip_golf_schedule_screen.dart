@@ -17,6 +17,7 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
@@ -68,7 +69,7 @@ class TripGolfScheduleScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             if (courses.isEmpty)
               QaddyEmptyState(
@@ -150,7 +151,7 @@ class TripGolfScheduleScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

@@ -45,9 +45,32 @@ void main() {
     expect(text, isNot(contains('SCHEDULE')));
   });
 
-  test('the invite link carries the trip id on a reserved host', () {
-    final link = tripInviteLink(melbourneGolfWeekend);
+  group('invite message', () {
+    final message = tripInviteMessage(
+      melbourneGolfWeekend,
+      melbourneGolfWeekendPlan,
+    );
 
-    expect(link, 'https://qaddy.example/join/melbourne-golf-weekend');
+    test('says what, where, when and who', () {
+      expect(message, contains("You're invited to Melbourne Golf Weekend!"));
+      expect(message, contains('Melbourne, Australia'));
+      expect(message, contains('28 Nov – 1 Dec 2026'));
+      expect(message, contains('Organised by Tiamana'));
+      expect(message, contains('8 players going so far'));
+      expect(message, contains('First tee: Kingston Heath, Sun 29 Nov'));
+    });
+
+    test('stands on its own, with no link to a page that does not exist', () {
+      expect(message, isNot(contains('http')));
+      expect(message, isNot(contains('example')));
+    });
+
+    test('leaves out what a new trip does not have yet', () {
+      final bare = tripInviteMessage(melbourneGolfWeekend, TripPlan.empty);
+
+      expect(bare, isNot(contains('players going')));
+      expect(bare, isNot(contains('First tee')));
+      expect(bare, contains("You're invited to"));
+    });
   });
 }

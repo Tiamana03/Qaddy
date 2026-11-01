@@ -11,6 +11,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/features/trips/logic/trip_timeline.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
 
@@ -31,7 +32,12 @@ String routeForTimelineEvent(String tripId, TimelineEvent event) =>
 
 /// The whole timeline.
 class PlanningTimeline extends StatelessWidget {
-  const PlanningTimeline({required this.tripId, required this.days, super.key});
+  const PlanningTimeline({
+    required this.tripId,
+    required this.days,
+    this.next,
+    super.key,
+  });
 
   /// The trip the timeline belongs to.
   final String tripId;
@@ -39,18 +45,21 @@ class PlanningTimeline extends StatelessWidget {
   /// The days to draw, in order.
   final List<TimelineDay> days;
 
+  /// The next event still to come, which is highlighted as "NEXT".
+  final TimelineEvent? next;
+
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: staggered(<Widget>[
         for (final (index, day) in days.indexed) ...<Widget>[
           if (index > 0) SizedBox(height: spacing.sectionGap),
-          _DayBlock(tripId: tripId, day: day, number: index + 1),
+          _DayBlock(tripId: tripId, day: day, number: index + 1, next: next),
         ],
-      ],
+      ]),
     );
   }
 }
@@ -60,11 +69,13 @@ class _DayBlock extends StatelessWidget {
     required this.tripId,
     required this.day,
     required this.number,
+    required this.next,
   });
 
   final String tripId;
   final TimelineDay day;
   final int number;
+  final TimelineEvent? next;
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +122,7 @@ class _DayBlock extends StatelessWidget {
               tripId: tripId,
               event: event,
               isLast: index == day.events.length - 1,
+              isNext: identical(event, next),
             ),
       ],
     );
@@ -166,11 +178,13 @@ class _EventRow extends StatelessWidget {
     required this.tripId,
     required this.event,
     required this.isLast,
+    required this.isNext,
   });
 
   final String tripId;
   final TimelineEvent event;
   final bool isLast;
+  final bool isNext;
 
   @override
   Widget build(BuildContext context) {
@@ -183,6 +197,7 @@ class _EventRow extends StatelessWidget {
     return Semantics(
       button: true,
       label:
+          '${isNext ? 'Next up: ' : ''}'
           '${event.at.toFriendlyTime()}, ${event.title}'
           '${event.subtitle.isEmpty ? '' : ', ${event.subtitle}'}',
       excludeSemantics: true,
@@ -209,11 +224,20 @@ class _EventRow extends StatelessWidget {
                 children: <Widget>[
                   SizedBox(height: spacing.md),
                   Container(
-                    width: 10,
-                    height: 10,
+                    width: isNext ? 14 : 10,
+                    height: isNext ? 14 : 10,
                     decoration: BoxDecoration(
                       color: colours.accent,
                       shape: BoxShape.circle,
+                      boxShadow: isNext
+                          ? <BoxShadow>[
+                              BoxShadow(
+                                color: colours.accent.withValues(alpha: 0.5),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
                   if (!isLast)
@@ -226,7 +250,12 @@ class _EventRow extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: spacing.sm),
                 child: Material(
                   color: colours.surface1,
-                  borderRadius: BorderRadius.circular(radius.medium),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(radius.medium),
+                    side: isNext
+                        ? BorderSide(color: colours.accent)
+                        : BorderSide.none,
+                  ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(radius.medium),
                     onTap: () =>
@@ -241,6 +270,20 @@ class _EventRow extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
+                                if (isNext)
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: spacing.xs,
+                                    ),
+                                    child: Text(
+                                      'NEXT',
+                                      style: typography.caption.copyWith(
+                                        color: colours.accent,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ),
                                 Text(
                                   event.title,
                                   style: typography.body.copyWith(

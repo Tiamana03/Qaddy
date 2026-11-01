@@ -61,4 +61,43 @@ void main() {
     await tester.pumpWidget(app(QaddyTripCard(trip: trip, onTap: () {})));
     expect(find.byIcon(Icons.chevron_right), findsOneWidget);
   });
+
+  testWidgets('says "1 Player" for a single player', (tester) async {
+    await tester.pumpWidget(
+      app(QaddyTripCard(trip: trip.copyWith(playerCount: 1))),
+    );
+
+    expect(find.text('1 Player'), findsOneWidget);
+    expect(find.text('1 Players'), findsNothing);
+  });
+
+  testWidgets('can lead with a custom tile instead of the date', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      app(QaddyTripCard(trip: trip, leading: const Text('COVER'))),
+    );
+
+    expect(find.text('COVER'), findsOneWidget);
+    expect(find.text('NOV'), findsNothing);
+  });
+
+  testWidgets('presses down a touch while a finger is on a tappable card', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app(QaddyTripCard(trip: trip, onTap: () {})));
+    double scale() =>
+        tester.widget<AnimatedScale>(find.byType(AnimatedScale)).scale;
+    expect(scale(), 1);
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.text('Melbourne Golf Weekend')),
+    );
+    await tester.pump();
+    expect(scale(), lessThan(1));
+
+    await gesture.up();
+    await tester.pump();
+    expect(scale(), 1);
+  });
 }

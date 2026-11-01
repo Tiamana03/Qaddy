@@ -45,11 +45,52 @@ class QaddyCard extends StatelessWidget {
       return content;
     }
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: borderRadius,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: content),
+    return _PressScale(
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(onTap: onTap, child: content),
+      ),
+    );
+  }
+}
+
+/// Settles the card a touch smaller while a finger is on it, so a tap feels
+/// physical. Skipped when the user has asked to reduce motion.
+class _PressScale extends StatefulWidget {
+  const _PressScale({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_PressScale> createState() => _PressScaleState();
+}
+
+class _PressScaleState extends State<_PressScale> {
+  bool _pressed = false;
+
+  void _set({required bool pressed}) {
+    if (_pressed != pressed) {
+      setState(() => _pressed = pressed);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return widget.child;
+    }
+    return Listener(
+      onPointerDown: (_) => _set(pressed: true),
+      onPointerUp: (_) => _set(pressed: false),
+      onPointerCancel: (_) => _set(pressed: false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.98 : 1,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        child: widget.child,
+      ),
     );
   }
 }

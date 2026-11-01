@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/services/share_service.dart';
 import 'package:qaddy/features/trips/logic/trip_export.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
@@ -39,7 +40,7 @@ void main() {
         'Rename Trip',
         'Change Cover Image',
         'Invite More Friends',
-        'Share Invite Link',
+        'Share Invite',
         'Export Itinerary',
         'Duplicate Trip',
         'Archive Trip',
@@ -50,14 +51,48 @@ void main() {
       }
     });
 
-    testWidgets('Share Invite Link copies the trip link', (tester) async {
+    testWidgets('Share Invite opens the share sheet with the invite', (
+      tester,
+    ) async {
       final copied = captureClipboard(tester);
-      await pumpApp(tester, location: AppRoutes.tripSettings(melbourneId));
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripSettings(melbourneId),
+      );
 
-      await _tapText(tester, 'Share Invite Link');
+      await _tapText(tester, 'Share Invite');
 
-      expect(copied, <String>[tripInviteLink(melbourneGolfWeekend)]);
-      expect(find.text('Invite link copied'), findsOneWidget);
+      final message = shareOf(c).shared.single;
+      expect(
+        message,
+        tripInviteMessage(melbourneGolfWeekend, melbourneGolfWeekendPlan),
+      );
+      expect(message, contains('Melbourne Golf Weekend'));
+      expect(message, isNot(contains('http')));
+      expect(
+        shareOf(c).subjects.single,
+        'Join Melbourne Golf Weekend on Qaddy',
+      );
+      expect(copied, isEmpty);
+    });
+
+    testWidgets('Share Invite copies instead when there is no share sheet', (
+      tester,
+    ) async {
+      final copied = captureClipboard(tester);
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripSettings(melbourneId),
+      );
+      shareOf(c).outcome = ShareOutcome.unavailable;
+
+      await _tapText(tester, 'Share Invite');
+
+      expect(
+        copied.single,
+        tripInviteMessage(melbourneGolfWeekend, melbourneGolfWeekendPlan),
+      );
+      expect(find.text('Copied — paste it into a message'), findsOneWidget);
     });
 
     testWidgets('Duplicate makes a copy and opens it', (tester) async {
@@ -197,24 +232,42 @@ void main() {
       expect(find.text('Invite sent'), findsOneWidget);
     });
 
-    testWidgets('Copy Link copies the invite link', (tester) async {
+    testWidgets('Share Invite shares the invite message', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripInvite(melbourneId),
+      );
+
+      await _tapText(tester, 'Share Invite');
+
+      expect(
+        shareOf(c).shared.single,
+        tripInviteMessage(melbourneGolfWeekend, melbourneGolfWeekendPlan),
+      );
+    });
+
+    testWidgets('Copy Message copies the invite', (tester) async {
       final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripInvite(melbourneId));
 
-      await _tapText(tester, 'Copy Link');
+      await _tapText(tester, 'Copy Message');
 
-      expect(copied.single, startsWith('https://qaddy.example/join/'));
+      expect(
+        copied.single,
+        tripInviteMessage(melbourneGolfWeekend, melbourneGolfWeekendPlan),
+      );
+      expect(find.text('Invite copied'), findsOneWidget);
     });
   });
 
   group('export itinerary', () {
-    testWidgets('previews the itinerary and copies it', (tester) async {
+    testWidgets('previews the itinerary and copies it as text', (tester) async {
       final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripExport(melbourneId));
 
       expect(find.textContaining('MELBOURNE GOLF WEEKEND'), findsOneWidget);
 
-      await _tapText(tester, 'Copy Itinerary');
+      await _tapText(tester, 'Copy as Text');
 
       expect(
         copied.single,
@@ -223,17 +276,27 @@ void main() {
       expect(find.text('Itinerary copied'), findsOneWidget);
     });
 
-    testWidgets('Download PDF is honest that it is not available yet', (
+    testWidgets('Share Itinerary sends the itinerary to the share sheet', (
       tester,
     ) async {
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripExport(melbourneId),
+      );
+
+      await _tapText(tester, 'Share Itinerary');
+
+      expect(
+        shareOf(c).shared.single,
+        itineraryText(melbourneGolfWeekend, melbourneGolfWeekendPlan),
+      );
+      expect(shareOf(c).subjects.single, 'Melbourne Golf Weekend itinerary');
+    });
+
+    testWidgets('has no half-built PDF button', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripExport(melbourneId));
 
-      await _tapText(tester, 'Download PDF');
-
-      expect(find.text('PDF export is coming soon'), findsOneWidget);
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.text('Download PDF'), findsNothing);
     });
   });
 }

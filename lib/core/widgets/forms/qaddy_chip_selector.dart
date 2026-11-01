@@ -11,6 +11,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 
 /// One option in a chip selector.
 class QaddyChipOption<T> {
@@ -130,19 +131,23 @@ class _QaddyChip extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final foreground = selected ? colours.accent : colours.textSecondary;
+    void tap() {
+      QaddyHaptics.selection();
+      onTap();
+    }
 
     return Semantics(
       button: true,
       selected: selected,
       label: label,
       excludeSemantics: true,
-      onTap: onTap,
+      onTap: tap,
       child: Material(
         color: selected ? colours.surface2 : Colors.transparent,
         borderRadius: BorderRadius.circular(radius.large),
         child: InkWell(
           borderRadius: BorderRadius.circular(radius.large),
-          onTap: onTap,
+          onTap: tap,
           child: Container(
             // 44px keeps the chip comfortably tappable.
             constraints: const BoxConstraints(minHeight: 44),

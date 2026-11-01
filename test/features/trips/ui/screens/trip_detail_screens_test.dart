@@ -1,12 +1,14 @@
 // The trip detail pages: golf, course, flights, accommodation, transport,
 // expenses and planning.
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/models/trip_flight.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/planning/planning_ring.dart';
 
 import '../../trips_test_harness.dart';
@@ -159,7 +161,6 @@ void main() {
       expect(find.text('73.8'), findsOneWidget);
       expect(find.text('138'), findsOneWidget);
       expect(find.text('Map & Directions'), findsOneWidget);
-      expect(find.text('Photos'), findsOneWidget);
       expect(find.textContaining('Partly Cloudy'), findsOneWidget);
       expect(find.textContaining('Collared shirt'), findsOneWidget);
       expect(find.textContaining('Carts are limited'), findsOneWidget);
@@ -180,17 +181,94 @@ void main() {
       expect(find.text('Jack'), findsOneWidget);
     });
 
-    testWidgets('copies the phone number and the address', (tester) async {
-      final copied = captureClipboard(tester);
-      await pumpApp(tester, location: course('kingston-heath'));
+    testWidgets('tapping the phone number calls it', (tester) async {
+      final c = await pumpApp(tester, location: course('kingston-heath'));
 
       await _tap(tester, '(03) 5550 0141');
-      await _tap(tester, 'Copy Address for Directions');
+
+      expect(launcherOf(c).opened.single.toString(), 'tel:0355500141');
+    });
+
+    testWidgets('tapping the website opens it', (tester) async {
+      final c = await pumpApp(tester, location: course('kingston-heath'));
+
+      await _tap(tester, 'www.kingstonheath.example');
+
+      expect(
+        launcherOf(c).opened.single.toString(),
+        'https://www.kingstonheath.example',
+      );
+    });
+
+    testWidgets('tapping the address opens it in Maps', (tester) async {
+      final c = await pumpApp(tester, location: course('kingston-heath'));
+
+      // The address also appears in the header and on the map; tap its row.
+      final row = find.descendant(
+        of: find.widgetWithText(
+          ContactRow,
+          '1 Heath Road, Cheltenham VIC 3192',
+        ),
+        matching: find.text('1 Heath Road, Cheltenham VIC 3192'),
+      );
+      await tester.ensureVisible(row);
+      await tester.tap(row);
+      await tester.pumpAndSettle();
+
+      final uri = launcherOf(c).opened.single;
+      expect(uri.host, 'www.google.com');
+      expect(uri.path, '/maps/search/');
+      expect(uri.queryParameters['query'], '1 Heath Road, Cheltenham VIC 3192');
+    });
+
+    testWidgets('the copy buttons copy instead of opening', (tester) async {
+      final copied = captureClipboard(tester);
+      final c = await pumpApp(tester, location: course('kingston-heath'));
+
+      await tester.ensureVisible(find.byTooltip('Copy phone'));
+      await tester.tap(find.byTooltip('Copy phone'));
+      await tester.pump();
+      await tester.ensureVisible(find.byTooltip('Copy address'));
+      await tester.tap(find.byTooltip('Copy address'));
+      await tester.pump();
 
       expect(copied, <String>[
         '(03) 5550 0141',
         '1 Heath Road, Cheltenham VIC 3192',
       ]);
+      expect(launcherOf(c).opened, isEmpty);
+    });
+
+    testWidgets('Get Directions routes from the stay to the course', (
+      tester,
+    ) async {
+      final c = await pumpApp(tester, location: course('kingston-heath'));
+
+      await _tap(tester, 'Get Directions');
+
+      final uri = launcherOf(c).opened.single;
+      expect(uri.path, '/maps/dir/');
+      expect(
+        uri.queryParameters['destination'],
+        '1 Heath Road, Cheltenham VIC 3192',
+      );
+      expect(
+        uri.queryParameters['origin'],
+        '122 Healesville-Kinglake Road, Healesville VIC',
+      );
+    });
+
+    testWidgets('copies the address when nothing can open Maps', (
+      tester,
+    ) async {
+      final copied = captureClipboard(tester);
+      final c = await pumpApp(tester, location: course('kingston-heath'));
+      launcherOf(c).canOpen = false;
+
+      await _tap(tester, 'Get Directions');
+
+      expect(copied.single, '1 Heath Road, Cheltenham VIC 3192');
+      expect(find.textContaining('Could not open'), findsOneWidget);
     });
 
     testWidgets('an unknown course shows not-found', (tester) async {
@@ -289,6 +367,44 @@ void main() {
       expect(find.text(r'$420'), findsOneWidget);
     });
 
+    testWidgets('the phone number calls, and copes when nothing can call', (
+      tester,
+    ) async {
+      final copied = captureClipboard(tester);
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripAccommodation(melbourneId),
+      );
+
+      await _tap(tester, '(03) 5550 4899');
+      expect(launcherOf(c).opened.single.toString(), 'tel:0355504899');
+
+      launcherOf(c).canOpen = false;
+      await _tap(tester, '(03) 5550 4899');
+      expect(copied.single, '(03) 5550 4899');
+      expect(find.textContaining('Could not open phone'), findsOneWidget);
+    });
+
+    testWidgets('the map opens the stay in Maps', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripAccommodation(melbourneId),
+      );
+
+      await tester.ensureVisible(
+        find.bySemanticsLabel(RegExp('Open in Maps')).last,
+      );
+      await tester.tap(find.byIcon(Icons.open_in_new));
+      await tester.pumpAndSettle();
+
+      final uri = launcherOf(c).opened.single;
+      expect(uri.path, '/maps/search/');
+      expect(
+        uri.queryParameters['query'],
+        '122 Healesville-Kinglake Road, Healesville VIC',
+      );
+    });
+
     testWidgets('a trip with no stay invites the first one', (tester) async {
       final c = await pumpApp(tester);
       final id = c
@@ -321,6 +437,22 @@ void main() {
       );
       expect(find.text('YVS-30871'), findsOneWidget);
       expect(find.text('Rental Car'), findsNWidgets(3));
+    });
+
+    testWidgets('each leg map opens its route in Maps', (tester) async {
+      final c = await pumpApp(
+        tester,
+        location: AppRoutes.tripTransport(melbourneId),
+        size: const Size(400, 4000),
+      );
+
+      await tester.tap(find.byIcon(Icons.open_in_new).first);
+      await tester.pumpAndSettle();
+
+      final uri = launcherOf(c).opened.single;
+      expect(uri.path, '/maps/dir/');
+      expect(uri.queryParameters['origin'], 'Melbourne Airport');
+      expect(uri.queryParameters['destination'], 'RACV Healesville');
     });
 
     testWidgets('copies a booking reference', (tester) async {
@@ -422,7 +554,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('All settled'), findsOneWidget);
-      expect(find.text('Everyone is settled up.'), findsOneWidget);
+      expect(find.text('All square — nobody owes anybody.'), findsOneWidget);
     });
 
     testWidgets('Add Expense opens the form', (tester) async {
@@ -454,6 +586,62 @@ void main() {
     });
   });
 
+  group('first steps', () {
+    Future<(ProviderContainer, String)> newTrip(WidgetTester tester) async {
+      final c = await pumpApp(tester);
+      final id = c
+          .read(tripsProvider.notifier)
+          .createTrip(
+            NewTripDraft(
+              name: 'Barossa',
+              destination: 'Barossa Valley, Australia',
+              startDate: DateTime(2027, 3, 12),
+              endDate: DateTime(2027, 3, 14),
+            ),
+          );
+      c.read(appRouterProvider).go(AppRoutes.tripDetails(id));
+      await tester.pumpAndSettle();
+      return (c, id);
+    }
+
+    testWidgets('a new trip shows what to do first', (tester) async {
+      await newTrip(tester);
+
+      expect(find.text('Set up your trip'), findsOneWidget);
+      expect(find.text('0 of 5'), findsOneWidget);
+      expect(find.text('Invite your squad'), findsOneWidget);
+      expect(find.text('Add your flights'), findsOneWidget);
+    });
+
+    testWidgets('a step opens the page where it is done', (tester) async {
+      await newTrip(tester);
+
+      await _tap(tester, 'Add your flights');
+
+      expect(find.text('Add Flight'), findsWidgets);
+      expect(find.text('Airline'), findsOneWidget);
+    });
+
+    testWidgets('steps tick off as the trip fills in', (tester) async {
+      final (c, id) = await newTrip(tester);
+
+      c.read(tripsProvider.notifier).inviteFriends(id, <String>['Ben']);
+      await tester.pumpAndSettle();
+
+      expect(find.text('1 of 5'), findsOneWidget);
+    });
+
+    testWidgets('a fully planned trip has no setup card', (tester) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripDetails(melbourneId),
+        size: const Size(400, 3000),
+      );
+
+      expect(find.text('Set up your trip'), findsNothing);
+    });
+  });
+
   group('planning', () {
     testWidgets('shows planning progress and the next task', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripPlanning(melbourneId));
@@ -462,6 +650,44 @@ void main() {
       expect(find.text('50%'), findsOneWidget);
       expect(find.text('3 of 6 tasks done'), findsOneWidget);
       expect(find.text('Next: Reserve Sunday dinner'), findsOneWidget);
+    });
+
+    testWidgets('highlights the next event as NEXT', (tester) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripPlanning(melbourneId),
+        size: const Size(400, 4000),
+        overrides: [
+          tripsClockProvider.overrideWithValue(
+            () => DateTime(2026, 11, 29, 7, 30),
+          ),
+        ],
+      );
+
+      expect(find.text('NEXT'), findsOneWidget);
+      // At 7:30 on the Sunday the next thing is the first tee, not the flight.
+      final next = find.ancestor(
+        of: find.text('NEXT'),
+        matching: find.byType(Material),
+      );
+      expect(
+        find.descendant(
+          of: next.first,
+          matching: find.text('Golf · Kingston Heath'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('shows no NEXT marker once the trip is over', (tester) async {
+      await pumpApp(
+        tester,
+        location: AppRoutes.tripPlanning(melbourneId),
+        size: const Size(400, 4000),
+        overrides: [tripsClockProvider.overrideWithValue(() => DateTime(2027))],
+      );
+
+      expect(find.text('NEXT'), findsNothing);
     });
 
     testWidgets('the timeline lists each day with weather and events', (

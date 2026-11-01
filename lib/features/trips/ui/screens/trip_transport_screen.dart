@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/services/link_launcher.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
@@ -59,7 +61,7 @@ class TripTransportScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             if (legs.isEmpty)
               QaddyEmptyState(
@@ -99,25 +101,28 @@ class TripTransportScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
   }
 }
 
-class _TransportCard extends StatelessWidget {
+class _TransportCard extends ConsumerWidget {
   const _TransportCard({required this.tripId, required this.leg});
 
   final String tripId;
   final TripTransport leg;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
+    final place = leg.to.isNotEmpty
+        ? leg.to
+        : (leg.from.isNotEmpty ? leg.from : leg.type.label);
 
     return QaddyCard(
       onTap: () => context.push(
@@ -175,10 +180,22 @@ class _TransportCard extends StatelessWidget {
           ],
           SizedBox(height: spacing.md),
           MapPlaceholder(
-            label: leg.to.isNotEmpty
-                ? leg.to
-                : (leg.from.isNotEmpty ? leg.from : leg.type.label),
+            label: place,
             height: 90,
+            onTap: leg.routeLabel.isEmpty
+                ? null
+                : () => openLinkOrCopy(
+                    context,
+                    ref,
+                    uri: leg.to.isNotEmpty
+                        ? mapDirectionsUri(
+                            destination: leg.to,
+                            origin: leg.from,
+                          )
+                        : mapSearchUri(leg.from),
+                    fallback: leg.routeLabel,
+                    label: 'the route',
+                  ),
           ),
         ],
       ),

@@ -508,6 +508,6 @@ Trip Results (Trip Complete) are unchanged and exist only for Melbourne.
 
 Release 1 has no image upload. A trip's cover is one of six designed placeholders, each a gradient and an icon: Fairway, Coast, Sunset, City, Highlands, Links. The chosen preset's id is stored on `Trip.coverImage`.
 
-## Invite Link
+## Invite Message
 
-Placeholder format `https://qaddy.example/join/<tripId>` — the `.example` host is reserved so the placeholder can never point at a real site.
+There is no invite link in Release 1 (a link needs the backend). "Share Invite" sends a self-contained message — "You're invited to Melbourne Golf Weekend!", destination · dates · days, organiser, how many players are going, the first tee, and a line asking the friend to reply to the organiser — so a friend can read it without having the app.

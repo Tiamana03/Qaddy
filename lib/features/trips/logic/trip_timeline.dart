@@ -159,3 +159,20 @@ TripWeatherForecast? forecastForDay(
   }
   return null;
 }
+
+/// The first event at or after [now], across all [days], or `null` when
+/// everything is in the past (or nothing is planned).
+TimelineEvent? nextTimelineEvent(List<TimelineDay> days, DateTime now) {
+  TimelineEvent? best;
+  for (final day in days) {
+    for (final event in day.events) {
+      if (event.at.isBefore(now)) {
+        continue;
+      }
+      if (best == null || event.at.isBefore(best.at)) {
+        best = event;
+      }
+    }
+  }
+  return best;
+}

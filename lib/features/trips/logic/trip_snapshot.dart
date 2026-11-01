@@ -9,48 +9,76 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
+import 'package:qaddy/features/trips/logic/trip_timeline.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
+import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_plan.dart';
+import 'package:qaddy/features/trips/models/trip_weather.dart';
 
-/// One labelled fact on the hero, e.g. "First tee — Kingston Heath · 8:10 AM".
-class TripHighlight {
-  const TripHighlight({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.wide = false,
-    this.isCourse = false,
+/// The first round of the trip: where, when, and what the weather will do.
+class TripFirstTee {
+  const TripFirstTee({
+    required this.course,
+    required this.time,
+    required this.day,
+    this.weather,
   });
 
+  /// The course's name.
+  final String course;
+
+  /// The tee time, e.g. "8:10 AM".
+  final String time;
+
+  /// The day, e.g. "Sun 29 Nov".
+  final String day;
+
+  /// The forecast for that day, when one was entered.
+  final TripWeatherForecast? weather;
+}
+
+/// The very next thing on the trip's timeline: a flight, a tee time, dinner.
+class TripUpNext {
+  const TripUpNext({
+    required this.icon,
+    required this.title,
+    required this.when,
+  });
+
+  /// The kind of event, as an icon.
   final IconData icon;
-  final String label;
-  final String value;
 
-  /// Whether the fact needs a full row (long values) rather than half of one.
-  final bool wide;
+  /// What it is, e.g. "Qantas QF431".
+  final String title;
 
-  /// Whether the fact is about a course, so its icon is drawn as a course
-  /// logo placeholder (a flag on a disc).
-  final bool isCourse;
+  /// When, e.g. "Tomorrow, 8:30 AM" or "Sat 28 Nov · 8:30 AM".
+  final String when;
 }
 
 /// The hero's supporting facts for one trip.
 class TripSnapshot {
   const TripSnapshot({
-    required this.highlights,
     required this.squad,
+    this.firstTee,
+    this.upNext,
     this.pendingInvites = 0,
     this.planningProgress,
+    this.tasksDone = 0,
+    this.tasksTotal = 0,
     this.nextTask,
     this.upcomingPayment,
+    this.paymentFor,
     this.budgetProgress,
     this.budgetLabel,
     this.latestMessage,
     this.latestUpdate,
   });
 
-  /// Short facts: first tee time and the forecast.
-  final List<TripHighlight> highlights;
+  /// The first round, if any course is planned.
+  final TripFirstTee? firstTee;
+
+  /// The next event on the timeline, if the trip has one still to come.
+  final TripUpNext? upNext;
 
   /// Names of the confirmed players ("who's going").
   final List<String> squad;
@@ -61,11 +89,20 @@ class TripSnapshot {
   /// Share of checklist tasks done (0–1), or `null` with no tasks.
   final double? planningProgress;
 
+  /// Checklist tasks done.
+  final int tasksDone;
+
+  /// Checklist tasks in total.
+  final int tasksTotal;
+
   /// The next task to do, if any.
   final String? nextTask;
 
-  /// What the golfer owes next, e.g. "You owe Ben $730 · Green fees".
+  /// What the golfer owes next, e.g. "You owe Ben $730".
   final String? upcomingPayment;
+
+  /// What that payment is for, e.g. "Green fees — 3 rounds".
+  final String? paymentFor;
 
   /// Share of the trip's cost that is paid (0–1), or `null` with no expenses.
   final double? budgetProgress;
@@ -81,7 +118,8 @@ class TripSnapshot {
 
   /// Whether there is anything to show.
   bool get isEmpty =>
-      highlights.isEmpty &&
+      firstTee == null &&
+      upNext == null &&
       squad.isEmpty &&
       pendingInvites == 0 &&
       planningProgress == null &&
@@ -92,47 +130,65 @@ class TripSnapshot {
       latestUpdate == null;
 }
 
+/// "Today, 8:30 AM", "Tomorrow, 8:30 AM" or "Sat 28 Nov · 8:30 AM".
+String _whenLabel(DateTime at, DateTime now) {
+  final today = now.dateOnly;
+  if (at.isSameDay(today)) {
+    return 'Today, ${at.toFriendlyTime()}';
+  }
+  if (at.isSameDay(DateTime(today.year, today.month, today.day + 1))) {
+    return 'Tomorrow, ${at.toFriendlyTime()}';
+  }
+  return at.toDayAndTime();
+}
+
 /// The snapshot for a trip with the given [plan], as seen by [viewer]
-/// (defaults to the signed-in golfer, for "you owe …").
-TripSnapshot tripSnapshot(TripPlan plan, {String? viewer}) {
+/// (defaults to the signed-in golfer, for "you owe …"). Pass [trip] and [now]
+/// to include what is coming up next.
+TripSnapshot tripSnapshot(
+  TripPlan plan, {
+  Trip? trip,
+  DateTime? now,
+  String? viewer,
+}) {
   final courses = [...plan.courses]
     ..sort((a, b) => a.teeTime.compareTo(b.teeTime));
   final summary = summariseExpenses(plan.expenses);
   final payment = upcomingPaymentFor(plan.expenses, viewer ?? currentUserName);
   final nextTask = plan.nextTask;
   final latestMessage = plan.messages.isEmpty ? null : plan.messages.last;
+  final next = trip == null || now == null
+      ? null
+      : nextTimelineEvent(buildTimeline(trip, plan), now);
 
   return TripSnapshot(
-    highlights: <TripHighlight>[
-      if (courses.isNotEmpty)
-        TripHighlight(
-          icon: Icons.flag_outlined,
-          label: 'First tee',
-          value:
-              '${courses.first.name} · '
-              '${courses.first.teeTime.toFriendlyTime()}',
-          wide: true,
-          isCourse: true,
-        ),
-      if (plan.weather.isNotEmpty)
-        TripHighlight(
-          icon: plan.weather.first.condition.icon,
-          label: '${plan.weather.first.day} forecast',
-          value:
-              '${plan.weather.first.forecast}, ${plan.weather.first.highLabel}',
-          wide: true,
-        ),
-    ],
+    firstTee: courses.isEmpty
+        ? null
+        : TripFirstTee(
+            course: courses.first.name,
+            time: courses.first.teeTime.toFriendlyTime(),
+            day: courses.first.teeTime.toShortWeekdayAndDate(),
+            weather: forecastForDay(plan.weather, courses.first.teeTime),
+          ),
+    upNext: next == null
+        ? null
+        : TripUpNext(
+            icon: next.kind.icon,
+            title: next.title,
+            when: _whenLabel(next.at, now!),
+          ),
     squad: <String>[
       for (final member in plan.confirmedMembers) member.displayName,
     ],
     pendingInvites: plan.pendingMembers.length,
     planningProgress: plan.planningProgress,
+    tasksDone: plan.tasks.where((task) => task.done).length,
+    tasksTotal: plan.tasks.length,
     nextTask: nextTask?.title,
     upcomingPayment: payment == null
         ? null
-        : 'You owe ${payment.to} ${formatMoney(payment.amount)} · '
-              '${payment.forExpense}',
+        : 'You owe ${payment.to} ${formatMoney(payment.amount)}',
+    paymentFor: payment?.forExpense,
     budgetProgress: plan.expenses.isEmpty ? null : summary.paidFraction,
     budgetLabel: plan.expenses.isEmpty
         ? null

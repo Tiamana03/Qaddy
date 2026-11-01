@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
+import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
@@ -20,11 +21,14 @@ import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_nav_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
+import 'package:qaddy/features/trips/logic/trip_setup.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
+import 'package:qaddy/features/trips/models/trip_cover.dart';
 import 'package:qaddy/features/trips/models/trip_member.dart';
 import 'package:qaddy/features/trips/models/trip_plan.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
@@ -33,6 +37,7 @@ import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart'
 import 'package:qaddy/features/trips/ui/widgets/planning/planning_ring.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_cover_tile.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
+import 'package:qaddy/features/trips/ui/widgets/trip_setup_card.dart';
 
 /// Trip Details (route `/trips/:tripId`).
 class TripDetailsScreen extends ConsumerWidget {
@@ -61,6 +66,7 @@ class TripDetailsScreen extends ConsumerWidget {
     final summary = summariseExpenses(plan.expenses);
     final latest = plan.messages.isEmpty ? null : plan.messages.last;
     final progress = plan.planningProgress;
+    final setup = tripSetupSteps(tripId, plan);
     final done = plan.tasks.where((task) => task.done).length;
 
     return QaddyScaffold(
@@ -82,9 +88,13 @@ class TripDetailsScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             _Overview(trip: trip, countdown: countdown),
+            if (setup.any((step) => !step.done)) ...<Widget>[
+              SizedBox(height: spacing.cardGap),
+              TripSetupCard(steps: setup),
+            ],
             SizedBox(height: spacing.cardGap),
             QaddyCard(
               onTap: () => context.push(AppRoutes.tripPlanning(tripId)),
@@ -231,7 +241,7 @@ class TripDetailsScreen extends ConsumerWidget {
               onPressed: () => context.push(AppRoutes.tripComplete(tripId)),
             ),
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
@@ -249,107 +259,169 @@ class _Overview extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
+    final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
+    final onGradient = theme.colorScheme.onPrimary;
+    final muted = onGradient.withValues(alpha: 0.78);
     final (statusLabel, statusTone) = tripStatusBadgeContent(trip.status);
     final description = trip.description;
+    final borderRadius = BorderRadius.circular(radius.extraLarge);
 
-    return QaddyCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    Widget chip(IconData icon, String label) => Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.md,
+        vertical: spacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: onGradient.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(radius.large),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Row(
+          Icon(icon, size: spacing.lg, color: onGradient),
+          SizedBox(width: spacing.xs),
+          Text(label, style: typography.small.copyWith(color: onGradient)),
+        ],
+      ),
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        boxShadow: shadows.large,
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: tripCoverGradient(colours, trip.coverImage),
+          ),
+          child: Stack(
             children: <Widget>[
-              TripCoverTile(
-                presetId: trip.coverImage,
-                size: spacing.hero * 1.5,
+              Positioned(
+                right: -spacing.xl,
+                top: -spacing.lg,
+                child: ExcludeSemantics(
+                  child: Icon(
+                    tripCoverFor(trip.coverImage).icon,
+                    size: 220,
+                    color: onGradient.withValues(alpha: 0.05),
+                  ),
+                ),
               ),
-              SizedBox(width: spacing.lg),
-              Expanded(
+              Padding(
+                padding: EdgeInsets.all(spacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            tripCountdownEyebrow(countdown),
+                            style: typography.caption.copyWith(
+                              color: colours.gold,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ),
+                        QaddyStatusBadge(label: statusLabel, tone: statusTone),
+                      ],
+                    ),
+                    SizedBox(height: spacing.sm),
+                    Semantics(
+                      label: 'Countdown: ${countdown.value} ${countdown.label}',
+                      excludeSemantics: true,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            countdown.value,
+                            style:
+                                (countdown.value.length <= 3
+                                        ? typography.display
+                                        : typography.h1)
+                                    .copyWith(color: colours.gold),
+                          ),
+                          SizedBox(width: spacing.sm),
+                          Flexible(
+                            child: Text(
+                              countdown.label,
+                              style: typography.bodyLarge.copyWith(
+                                color: muted,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: spacing.sm),
                     Text(
                       trip.name,
-                      style: typography.h3.copyWith(color: colours.textPrimary),
+                      style: typography.h2.copyWith(color: onGradient),
                     ),
                     SizedBox(height: spacing.xs),
-                    Text(
-                      trip.destination,
-                      style: typography.body.copyWith(
-                        color: colours.textSecondary,
-                      ),
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: spacing.lg,
+                          color: muted,
+                        ),
+                        SizedBox(width: spacing.xs),
+                        Expanded(
+                          child: Text(
+                            trip.destination,
+                            style: typography.body.copyWith(color: muted),
+                          ),
+                        ),
+                      ],
                     ),
                     Text(
-                      trip.startDate.toFriendlyRange(trip.endDate),
-                      style: typography.small.copyWith(
-                        color: colours.textSecondary,
-                      ),
+                      '${trip.startDate.toFriendlyRange(trip.endDate)}  ·  '
+                      '${trip.durationInDays} days',
+                      style: typography.small.copyWith(color: muted),
                     ),
+                    SizedBox(height: spacing.md),
+                    Wrap(
+                      spacing: spacing.sm,
+                      runSpacing: spacing.sm,
+                      children: <Widget>[
+                        chip(
+                          trip.visibility == TripVisibility.public
+                              ? Icons.public
+                              : Icons.lock_outline,
+                          trip.visibility == TripVisibility.public
+                              ? 'Public'
+                              : 'Private',
+                        ),
+                        chip(
+                          Icons.groups_outlined,
+                          trip.playerCount == 1
+                              ? '1 player'
+                              : '${trip.playerCount} players',
+                        ),
+                      ],
+                    ),
+                    if (description != null && description.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(top: spacing.md),
+                        child: Text(
+                          description,
+                          style: typography.body.copyWith(color: onGradient),
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: spacing.md),
-          Wrap(
-            spacing: spacing.sm,
-            runSpacing: spacing.sm,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: <Widget>[
-              QaddyStatusBadge(label: statusLabel, tone: statusTone),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: spacing.md,
-                  vertical: spacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius.large),
-                  border: Border.all(color: colours.border),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      trip.visibility == TripVisibility.public
-                          ? Icons.public
-                          : Icons.lock_outline,
-                      size: spacing.lg,
-                      color: colours.textSecondary,
-                    ),
-                    SizedBox(width: spacing.xs),
-                    Text(
-                      trip.visibility == TripVisibility.public
-                          ? 'Public'
-                          : 'Private',
-                      style: typography.small.copyWith(
-                        color: colours.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                'Countdown',
-                style: typography.small.copyWith(color: colours.textTertiary),
-              ),
-              Text(
-                '${countdown.value} ${countdown.label}',
-                style: typography.small.copyWith(
-                  color: colours.accent,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          if (description != null && description.isNotEmpty) ...<Widget>[
-            SizedBox(height: spacing.md),
-            Text(
-              description,
-              style: typography.body.copyWith(color: colours.textPrimary),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

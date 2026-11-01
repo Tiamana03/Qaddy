@@ -1,11 +1,14 @@
-/// The in-memory store behind every Trips screen.
+/// The store behind every Trips screen.
 ///
 /// Release 1 has no backend (`AppConfig.isBackendConfigured` is false), so
-/// trips live in memory: they survive navigation but reset when the app
-/// restarts. Every screen reads through the providers below and changes data
-/// only through [TripsController], which is the one seam Release 2 swaps for
-/// a Supabase-backed repository — screens never touch storage themselves.
+/// trips live on the device: the controller loads them when the app starts and
+/// saves after every change (see `TripsStorage`). Every screen reads through
+/// the providers below and changes data only through [TripsController], which
+/// is the one seam Release 2 swaps for a Supabase-backed repository — screens
+/// never touch storage themselves.
 library;
+
+import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
@@ -16,6 +19,8 @@ import 'package:qaddy/features/trips/models/trip_expense.dart';
 import 'package:qaddy/features/trips/models/trip_member.dart';
 import 'package:qaddy/features/trips/models/trip_message.dart';
 import 'package:qaddy/features/trips/models/trip_plan.dart';
+import 'package:qaddy/features/trips/repositories/trips_codec.dart';
+import 'package:qaddy/features/trips/repositories/trips_storage.dart';
 
 /// What the Create Trip form collects.
 class NewTripDraft {
@@ -140,10 +145,27 @@ class TripsController extends Notifier<TripsState> {
   DateTime get _now => ref.read(tripsClockProvider)();
 
   @override
-  TripsState build() => TripsState(
-    trips: List<Trip>.of(seedTrips),
-    plans: Map<String, TripPlan>.of(seedPlans),
-  );
+  TripsState build() {
+    final storage = ref.read(tripsStorageProvider);
+    // Save after every change from here on (the starting state is not a
+    // change, so seeds are only stored once the golfer does something).
+    listenSelf((previous, next) {
+      if (previous == null) {
+        return;
+      }
+      unawaited(storage.write(encodeTrips(next.trips, next.plans)));
+    });
+
+    final stored = storage.read();
+    final restored = stored == null ? null : decodeTrips(stored);
+    if (restored != null) {
+      return TripsState(trips: restored.trips, plans: restored.plans);
+    }
+    return TripsState(
+      trips: List<Trip>.of(seedTrips),
+      plans: Map<String, TripPlan>.of(seedPlans),
+    );
+  }
 
   /// A fresh id with the given prefix, unique within this app run.
   String newId(String prefix) =>

@@ -1,4 +1,4 @@
-/// Export Itinerary — the trip as text to copy, and a PDF placeholder.
+/// Export Itinerary — the trip as text to share or copy.
 library;
 
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/trip_export.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
 /// Export Itinerary (route `/trips/:tripId/export`).
@@ -44,24 +45,6 @@ class ExportItineraryScreen extends ConsumerWidget {
       }
     }
 
-    Future<void> pdf() => showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('PDF export is coming soon'),
-        content: const Text(
-          'Saving a PDF needs a document tool Qaddy doesn’t include yet. '
-          'Copy the itinerary as text for now and paste it into a message '
-          'or document.',
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Export Itinerary')),
       body: SingleChildScrollView(
@@ -80,9 +63,17 @@ class ExportItineraryScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: spacing.lg),
-            QaddyPrimaryButton(label: 'Copy Itinerary', onPressed: copy),
+            QaddyPrimaryButton(
+              label: 'Share Itinerary',
+              onPressed: () => shareOrCopy(
+                context,
+                ref,
+                text: text,
+                subject: '${trip.name} itinerary',
+              ),
+            ),
             SizedBox(height: spacing.sm),
-            QaddySecondaryButton(label: 'Download PDF', onPressed: pdf),
+            QaddySecondaryButton(label: 'Copy as Text', onPressed: copy),
             SizedBox(height: spacing.xl),
           ],
         ),

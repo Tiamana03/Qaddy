@@ -155,11 +155,14 @@ void main() {
     }
     await tester.pumpAndSettle();
 
-    expect(find.text('No trips planned yet'), findsOneWidget);
+    // A welcome, not an empty list.
+    expect(find.text('Plan your next golf trip'), findsOneWidget);
+    expect(find.text('Plan every day'), findsOneWidget);
+    expect(find.text('Split costs fairly'), findsOneWidget);
+    expect(find.text('Create your first trip'), findsOneWidget);
     expect(find.text('NEXT TRIP'), findsNothing);
     expect(find.text('Upcoming Trips'), findsNothing);
     expect(find.text('Past Trips'), findsNothing);
-    expect(find.text('Create Trip'), findsOneWidget);
   });
 
   testWidgets('shows the lists in more columns on a desktop-width screen', (

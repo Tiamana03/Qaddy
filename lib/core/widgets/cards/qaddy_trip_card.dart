@@ -32,10 +32,18 @@ import 'package:qaddy/features/trips/models/trip.dart';
 
 /// A summary card for one [Trip], used in the Trips list.
 class QaddyTripCard extends StatelessWidget {
-  const QaddyTripCard({required this.trip, this.onTap, super.key});
+  const QaddyTripCard({
+    required this.trip,
+    this.leading,
+    this.onTap,
+    super.key,
+  });
 
   /// The trip to summarise.
   final Trip trip;
+
+  /// Replaces the default date tile (e.g. with a cover-art tile).
+  final Widget? leading;
 
   /// Called when the card is tapped. Omit for a non-interactive card.
   final VoidCallback? onTap;
@@ -55,7 +63,7 @@ class QaddyTripCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _DateTile(date: trip.startDate),
+          leading ?? _DateTile(date: trip.startDate),
           SizedBox(width: spacing.md),
           Expanded(
             child: Column(
@@ -95,7 +103,9 @@ class QaddyTripCard extends StatelessWidget {
                     SizedBox(width: spacing.xs),
                     Flexible(
                       child: Text(
-                        '${trip.playerCount} Players',
+                        trip.playerCount == 1
+                            ? '1 Player'
+                            : '${trip.playerCount} Players',
                         overflow: TextOverflow.ellipsis,
                         style: typography.small.copyWith(
                           color: colours.textSecondary,

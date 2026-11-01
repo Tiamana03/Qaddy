@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/services/link_launcher.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
 import 'package:qaddy/features/trips/logic/trip_timeline.dart';
@@ -61,6 +63,15 @@ class TripCourseScreen extends ConsumerWidget {
     final fee = course.greenFee;
     final total = course.totalGreenFees;
     final stay = plan.accommodations.isEmpty ? null : plan.accommodations.first;
+    final place = course.address.isEmpty ? course.name : course.address;
+    final shownCourse = course;
+    void directions() => openLinkOrCopy(
+      context,
+      ref,
+      uri: mapDirectionsUri(destination: place, origin: stay?.address),
+      fallback: place,
+      label: 'directions to ${shownCourse.name}',
+    );
     final headerFacts = <String>[
       course.teeTime.toDayAndTime(),
       if (course.courseRating != null) 'Rating ${course.courseRating}',
@@ -87,7 +98,7 @@ class TripCourseScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             DetailHeader(
               // A placeholder for the course's logo.
@@ -193,25 +204,16 @@ class TripCourseScreen extends ConsumerWidget {
               child: Column(
                 children: <Widget>[
                   if (course.phone.isNotEmpty)
-                    CopyableRow(
-                      icon: Icons.phone_outlined,
-                      label: 'Phone',
-                      value: course.phone,
-                      copiedMessage: 'Phone number copied',
-                    ),
+                    ContactRow(kind: ContactKind.phone, value: course.phone),
                   if (course.website.isNotEmpty)
-                    CopyableRow(
-                      icon: Icons.language,
-                      label: 'Website',
+                    ContactRow(
+                      kind: ContactKind.website,
                       value: course.website,
-                      copiedMessage: 'Website copied',
                     ),
                   if (course.address.isNotEmpty)
-                    CopyableRow(
-                      icon: Icons.place_outlined,
-                      label: 'Address',
+                    ContactRow(
+                      kind: ContactKind.address,
                       value: course.address,
-                      copiedMessage: 'Address copied',
                     ),
                   if (course.phone.isEmpty &&
                       course.website.isEmpty &&
@@ -228,6 +230,7 @@ class TripCourseScreen extends ConsumerWidget {
             const DetailSectionTitle('Map & Directions'),
             MapPlaceholder(
               label: course.address.isEmpty ? course.name : course.address,
+              onTap: directions,
             ),
             SizedBox(height: spacing.sm),
             if (stay != null)
@@ -237,17 +240,9 @@ class TripCourseScreen extends ConsumerWidget {
               ),
             SizedBox(height: spacing.sm),
             QaddySecondaryButton(
-              label: 'Copy Address for Directions',
-              onPressed: course.address.isEmpty
-                  ? null
-                  : () => copyToClipboard(
-                      context,
-                      course!.address,
-                      'Address copied — paste it into your maps app',
-                    ),
+              label: 'Get Directions',
+              onPressed: directions,
             ),
-            const DetailSectionTitle('Photos'),
-            const PhotoPlaceholders(icon: Icons.landscape_outlined),
             if (course.notes.isNotEmpty) ...<Widget>[
               const DetailSectionTitle('Notes'),
               QaddyCard(
@@ -258,7 +253,7 @@ class TripCourseScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

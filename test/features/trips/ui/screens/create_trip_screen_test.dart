@@ -29,6 +29,12 @@ Future<ProviderContainer> _pump(WidgetTester tester) async {
             path: 'create',
             builder: (context, state) => const CreateTripScreen(),
           ),
+          GoRoute(
+            path: ':tripId',
+            builder: (context, state) => Scaffold(
+              body: Text('Details of ${state.pathParameters['tripId']}'),
+            ),
+          ),
         ],
       ),
     ],
@@ -78,6 +84,38 @@ void main() {
     expect(find.text('Save Trip'), findsOneWidget);
   });
 
+  testWidgets('previews the trip live as it is filled in', (tester) async {
+    await _pump(tester);
+
+    expect(find.text('Name your trip'), findsOneWidget);
+    expect(find.text('Where to?'), findsOneWidget);
+    expect(find.text('When?'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Trip Name'),
+      'Barossa Weekend',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Destination'),
+      'Barossa Valley, Australia',
+    );
+    await tester.pump();
+
+    expect(find.text('Barossa Weekend'), findsWidgets);
+    expect(find.text('Barossa Valley, Australia'), findsWidgets);
+    expect(find.text('Name your trip'), findsNothing);
+    expect(find.text('Where to?'), findsNothing);
+  });
+
+  testWidgets('the preview takes on the chosen cover', (tester) async {
+    await _pump(tester);
+
+    await tester.tap(find.bySemanticsLabel('Coast cover'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cover image — Coast'), findsOneWidget);
+  });
+
   testWidgets('shows no errors until the first save attempt', (tester) async {
     await _pump(tester);
 
@@ -103,7 +141,7 @@ void main() {
     expect(find.text('Trips Overview'), findsNothing);
   });
 
-  testWidgets('saving adds an upcoming, private trip and returns to Trips', (
+  testWidgets('saving adds an upcoming, private trip and opens it', (
     tester,
   ) async {
     final container = await _pump(tester);
@@ -119,8 +157,13 @@ void main() {
     expect(created.country, 'Australia');
     expect(created.status, TripStatus.planning);
     expect(created.visibility, TripVisibility.private);
-    expect(find.text('Trips Overview'), findsOneWidget);
+    // Straight into the new trip, with the Trips list behind it.
+    expect(find.text('Details of ${created.id}'), findsOneWidget);
     expect(find.text('Barossa added to Upcoming Trips'), findsOneWidget);
+
+    tester.state<NavigatorState>(find.byType(Navigator).first).pop();
+    await tester.pumpAndSettle();
+    expect(find.text('Trips Overview'), findsOneWidget);
   });
 
   testWidgets('Public is saved as the trip visibility', (tester) async {

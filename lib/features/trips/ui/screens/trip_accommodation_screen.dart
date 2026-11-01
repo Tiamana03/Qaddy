@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/services/link_launcher.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -16,6 +17,7 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
@@ -61,7 +63,7 @@ class TripAccommodationScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             if (stays.isEmpty)
               QaddyEmptyState(
@@ -85,21 +87,21 @@ class TripAccommodationScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
   }
 }
 
-class _StayDetail extends StatelessWidget {
+class _StayDetail extends ConsumerWidget {
   const _StayDetail({required this.tripId, required this.stay});
 
   final String tripId;
   final TripAccommodation stay;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
@@ -148,26 +150,11 @@ class _StayDetail extends StatelessWidget {
           child: Column(
             children: <Widget>[
               if (stay.phone.isNotEmpty)
-                CopyableRow(
-                  icon: Icons.phone_outlined,
-                  label: 'Phone',
-                  value: stay.phone,
-                  copiedMessage: 'Phone number copied',
-                ),
+                ContactRow(kind: ContactKind.phone, value: stay.phone),
               if (stay.website.isNotEmpty)
-                CopyableRow(
-                  icon: Icons.language,
-                  label: 'Website',
-                  value: stay.website,
-                  copiedMessage: 'Website copied',
-                ),
+                ContactRow(kind: ContactKind.website, value: stay.website),
               if (stay.address.isNotEmpty)
-                CopyableRow(
-                  icon: Icons.place_outlined,
-                  label: 'Address',
-                  value: stay.address,
-                  copiedMessage: 'Address copied',
-                ),
+                ContactRow(kind: ContactKind.address, value: stay.address),
               if (stay.phone.isEmpty &&
                   stay.website.isEmpty &&
                   stay.address.isEmpty)
@@ -232,9 +219,16 @@ class _StayDetail extends StatelessWidget {
           ),
         ],
         const DetailSectionTitle('Map'),
-        MapPlaceholder(label: stay.address.isEmpty ? stay.name : stay.address),
-        const DetailSectionTitle('Photos'),
-        const PhotoPlaceholders(icon: Icons.bed_outlined),
+        MapPlaceholder(
+          label: stay.address.isEmpty ? stay.name : stay.address,
+          onTap: () => openLinkOrCopy(
+            context,
+            ref,
+            uri: mapSearchUri(stay.address.isEmpty ? stay.name : stay.address),
+            fallback: stay.address.isEmpty ? stay.name : stay.address,
+            label: 'the map',
+          ),
+        ),
         if (stay.notes.isNotEmpty) ...<Widget>[
           const DetailSectionTitle('Notes'),
           QaddyCard(

@@ -19,7 +19,6 @@ void main() {
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
     expect(find.text('Melbourne, Australia'), findsOneWidget);
-    expect(find.text('Countdown'), findsOneWidget);
     expect(find.text('Tiamana'), findsWidgets);
   });
 

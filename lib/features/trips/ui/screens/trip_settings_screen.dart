@@ -3,7 +3,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
@@ -18,6 +17,7 @@ import 'package:qaddy/features/trips/logic/trip_export.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_edit_section.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
 /// Trip Settings (route `/trips/:tripId/settings`).
@@ -46,12 +46,13 @@ class TripSettingsScreen extends ConsumerWidget {
     final controller = ref.read(tripsProvider.notifier);
     final archived = trip.status == TripStatus.archived;
 
-    Future<void> copyLink() async {
-      await Clipboard.setData(ClipboardData(text: tripInviteLink(trip)));
-      if (context.mounted) {
-        _tell(context, 'Invite link copied');
-      }
-    }
+    final plan = ref.watch(tripPlanProvider(tripId));
+    Future<void> shareInvite() => shareOrCopy(
+      context,
+      ref,
+      text: tripInviteMessage(trip, plan),
+      subject: 'Join ${trip.name} on Qaddy',
+    );
 
     Future<void> duplicate() async {
       final confirmed = await showQaddyConfirm(
@@ -180,15 +181,15 @@ class TripSettingsScreen extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.tripInvite(tripId)),
               ),
               QaddyNavRow(
-                icon: Icons.link,
-                title: 'Share Invite Link',
-                subtitle: 'Copies a link to your clipboard',
-                onTap: copyLink,
+                icon: Icons.send_outlined,
+                title: 'Share Invite',
+                subtitle: 'Send the trip details to your squad',
+                onTap: shareInvite,
               ),
               QaddyNavRow(
                 icon: Icons.ios_share,
                 title: 'Export Itinerary',
-                subtitle: 'Copy the plan as text, or save a PDF',
+                subtitle: 'Share or copy the plan as text',
                 onTap: () => context.push(AppRoutes.tripExport(tripId)),
               ),
             ]),

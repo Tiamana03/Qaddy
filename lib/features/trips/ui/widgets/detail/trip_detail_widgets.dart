@@ -1,19 +1,24 @@
 /// Building blocks shared by the trip detail pages (course, flight,
-/// accommodation, transport): a header band, placeholder map and photos,
-/// copyable contact rows and small labels.
+/// accommodation, transport): a header band, a placeholder map, copyable
+/// contact rows and small labels.
 ///
-/// There is no maps, photos or link-launching dependency yet, so the map and
-/// photos are designed placeholders and phone numbers, addresses and links
-/// are copied to the clipboard rather than opened.
+/// There is no maps, photos or link-launching dependency yet, so the map is a
+/// designed placeholder and phone numbers, addresses and links are copied to
+/// the clipboard rather than opened. Photos are left out until uploads exist,
+/// rather than shown as empty boxes.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/services/link_launcher.dart';
+import 'package:qaddy/core/services/share_service.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 
 /// Shows a short confirmation at the bottom of the screen.
 void tellUser(BuildContext context, String message) {
@@ -29,8 +34,49 @@ Future<void> copyToClipboard(
   String confirmation,
 ) async {
   await Clipboard.setData(ClipboardData(text: text));
+  QaddyHaptics.light();
   if (context.mounted) {
     tellUser(context, confirmation);
+  }
+}
+
+/// Opens [uri] outside the app (dialler, browser, maps). When nothing can open
+/// it — no handler, or a platform without one — copies [fallback] instead and
+/// says so, so the golfer is never left with a dead tap.
+Future<void> openLinkOrCopy(
+  BuildContext context,
+  WidgetRef ref, {
+  required Uri uri,
+  required String fallback,
+  required String label,
+}) async {
+  final opened = await ref.read(linkLauncherProvider).open(uri);
+  if (opened) {
+    QaddyHaptics.light();
+    return;
+  }
+  if (context.mounted) {
+    await copyToClipboard(
+      context,
+      fallback,
+      'Could not open $label — copied it instead',
+    );
+  }
+}
+
+/// Shares [text] through the system share sheet. Where there is none, copies
+/// it and says so.
+Future<void> shareOrCopy(
+  BuildContext context,
+  WidgetRef ref, {
+  required String text,
+  String? subject,
+}) async {
+  final outcome = await ref
+      .read(shareServiceProvider)
+      .shareText(text, subject: subject);
+  if (outcome == ShareOutcome.unavailable && context.mounted) {
+    await copyToClipboard(context, text, 'Copied — paste it into a message');
   }
 }
 
@@ -144,13 +190,21 @@ class DetailHeader extends StatelessWidget {
 /// A placeholder map: a quiet road grid with a pin and the place's name. A
 /// real map needs a maps dependency; until then the address is copied.
 class MapPlaceholder extends StatelessWidget {
-  const MapPlaceholder({required this.label, this.height = 150, super.key});
+  const MapPlaceholder({
+    required this.label,
+    this.height = 150,
+    this.onTap,
+    super.key,
+  });
 
   /// The place the pin stands for (shown over the map).
   final String label;
 
   /// The map's height.
   final double height;
+
+  /// Opens the real map (in a maps app) when the placeholder is tapped.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -160,9 +214,15 @@ class MapPlaceholder extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
+    final tap = onTap;
+
     return Semantics(
-      label: 'Map preview of $label',
+      button: tap != null,
+      label: tap == null
+          ? 'Map preview of $label'
+          : 'Map of $label. Open in Maps.',
       excludeSemantics: true,
+      onTap: tap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius.medium),
         child: Container(
@@ -189,16 +249,37 @@ class MapPlaceholder extends StatelessWidget {
                     color: colours.surface1.withValues(alpha: 0.92),
                     borderRadius: BorderRadius.circular(radius.small),
                   ),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: typography.small.copyWith(
-                      color: colours.textPrimary,
-                    ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: typography.small.copyWith(
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                      ),
+                      if (tap != null) ...<Widget>[
+                        SizedBox(width: spacing.sm),
+                        Icon(
+                          Icons.open_in_new,
+                          size: spacing.lg,
+                          color: colours.accent,
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
+              if (tap != null)
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(onTap: tap),
+                  ),
+                ),
             ],
           ),
         ),
@@ -238,59 +319,6 @@ class _RoadGridPainter extends CustomPainter {
   @override
   bool shouldRepaint(_RoadGridPainter oldDelegate) =>
       oldDelegate.colour != colour;
-}
-
-/// A row of photo placeholders ("photos arrive with uploads").
-class PhotoPlaceholders extends StatelessWidget {
-  const PhotoPlaceholders({required this.icon, this.count = 3, super.key});
-
-  /// The icon drawn in each tile.
-  final IconData icon;
-
-  /// How many tiles to show.
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          height: spacing.hero + spacing.lg,
-          child: Row(
-            children: <Widget>[
-              for (var i = 0; i < count; i++)
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: i < count - 1 ? spacing.sm : 0,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colours.surface2,
-                        borderRadius: BorderRadius.circular(radius.medium),
-                      ),
-                      child: Icon(icon, color: colours.textTertiary),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        SizedBox(height: spacing.xs),
-        Text(
-          'Photos will appear here once uploads are available.',
-          style: typography.small.copyWith(color: colours.textTertiary),
-        ),
-      ],
-    );
-  }
 }
 
 /// A labelled value with an icon; tapping it copies the value.
@@ -361,6 +389,133 @@ class CopyableRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// What a [ContactRow] does when tapped.
+enum ContactKind {
+  /// Calls the number.
+  phone,
+
+  /// Opens the website.
+  website,
+
+  /// Opens the address in a maps app.
+  address,
+}
+
+/// A contact detail you can act on: tap it to call, browse or navigate; tap
+/// the small copy button to copy it instead.
+class ContactRow extends ConsumerWidget {
+  const ContactRow({
+    required this.kind,
+    required this.value,
+    this.label,
+    super.key,
+  });
+
+  /// What kind of detail this is, which decides what tapping does.
+  final ContactKind kind;
+
+  /// The phone number, website or address.
+  final String value;
+
+  /// Overrides the default label (Phone, Website, Address).
+  final String? label;
+
+  String get _label =>
+      label ??
+      switch (kind) {
+        ContactKind.phone => 'Phone',
+        ContactKind.website => 'Website',
+        ContactKind.address => 'Address',
+      };
+
+  IconData get _icon => switch (kind) {
+    ContactKind.phone => Icons.phone_outlined,
+    ContactKind.website => Icons.language,
+    ContactKind.address => Icons.place_outlined,
+  };
+
+  String get _action => switch (kind) {
+    ContactKind.phone => 'Call',
+    ContactKind.website => 'Open website',
+    ContactKind.address => 'Open in Maps',
+  };
+
+  Uri get _uri => switch (kind) {
+    ContactKind.phone => phoneUri(value),
+    ContactKind.website => websiteUri(value),
+    ContactKind.address => mapSearchUri(value),
+  };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    void open() => openLinkOrCopy(
+      context,
+      ref,
+      uri: _uri,
+      fallback: value,
+      label: _label.toLowerCase(),
+    );
+
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Semantics(
+            button: true,
+            label: '$_label, $value. $_action.',
+            excludeSemantics: true,
+            onTap: open,
+            child: InkWell(
+              onTap: open,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: spacing.sm),
+                child: Row(
+                  children: <Widget>[
+                    Icon(_icon, color: colours.accent),
+                    SizedBox(width: spacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            _label,
+                            style: typography.small.copyWith(
+                              color: colours.textSecondary,
+                            ),
+                          ),
+                          Text(
+                            value,
+                            style: typography.body.copyWith(
+                              color: colours.accent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        IconButton(
+          tooltip: 'Copy ${_label.toLowerCase()}',
+          onPressed: () => copyToClipboard(context, value, '$_label copied'),
+          icon: Icon(
+            Icons.copy_outlined,
+            size: 18,
+            color: colours.textTertiary,
+          ),
+        ),
+      ],
     );
   }
 }

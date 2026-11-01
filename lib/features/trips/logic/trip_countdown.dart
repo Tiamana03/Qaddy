@@ -37,3 +37,26 @@ TripCountdown tripCountdown(Trip trip, {DateTime? now}) {
   }
   return const TripCountdown(value: 'Done', label: 'trip finished');
 }
+
+/// The small caption above the countdown. It changes with how close the trip
+/// is, so the card builds anticipation as the day approaches.
+String tripCountdownEyebrow(TripCountdown countdown) {
+  switch (countdown.value) {
+    case 'Today':
+      return "IT'S TRIP DAY";
+    case 'Now':
+      return 'LIVE NOW';
+  }
+  final days = int.tryParse(countdown.value);
+  if (days != null && days <= 7) {
+    return 'GET READY';
+  }
+  return 'NEXT TRIP';
+}
+
+/// Whether the countdown is close enough to deserve a little glow (a week or
+/// less, today, or underway).
+bool tripCountdownIsImminent(TripCountdown countdown) {
+  final days = int.tryParse(countdown.value);
+  return days == null ? countdown.value != 'Done' : days <= 7;
+}

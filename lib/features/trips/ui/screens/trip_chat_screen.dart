@@ -13,6 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
@@ -40,6 +42,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   /// Who the placeholder typing indicator names, while it is showing.
   String? _typing;
+
+  /// Messages sent in this visit; they slide in when they appear.
+  final Set<String> _justSent = <String>{};
 
   @override
   void dispose() {
@@ -69,6 +74,8 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
     _text.clear();
+    _justSent.add(id);
+    QaddyHaptics.light();
     _simulateDelivery(id);
   }
 
@@ -111,6 +118,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       });
     }
   }
+
+  Widget _arrive(String id, Widget bubble) => _justSent.contains(id)
+      ? QaddyFadeSlideIn(offset: 16, child: bubble)
+      : bubble;
 
   /// The list is reversed, so offset 0 is the newest message.
   void _scrollToLatest() {
@@ -210,11 +221,14 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
                       return switch (item) {
                         _DayItem(:final day) => ChatDaySeparator(day: day),
                         _MessageItem(:final message, :final startsRun) =>
-                          TripMessageBubble(
-                            message: message,
-                            isMine: message.sender == currentUserName,
-                            startsRun: startsRun,
-                            showReceipt: plan.chatSettings.readReceipts,
+                          _arrive(
+                            message.id,
+                            TripMessageBubble(
+                              message: message,
+                              isMine: message.sender == currentUserName,
+                              startsRun: startsRun,
+                              showReceipt: plan.chatSettings.readReceipts,
+                            ),
                           ),
                       };
                     },

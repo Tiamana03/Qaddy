@@ -14,6 +14,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/trips/logic/trip_export.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_friend_picker.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
@@ -38,10 +39,10 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> _copyLink(String link) async {
-    await Clipboard.setData(ClipboardData(text: link));
+  Future<void> _copyMessage(String message) async {
+    await Clipboard.setData(ClipboardData(text: message));
     if (mounted) {
-      _tell('Invite link copied');
+      _tell('Invite copied');
     }
   }
 
@@ -57,7 +58,7 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final onTrip = plan.members.map((member) => member.displayName).toSet();
-    final link = tripInviteLink(trip);
+    final message = tripInviteMessage(trip, plan);
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Invite Friends')),
@@ -93,26 +94,36 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
             ),
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
-              title: 'Invite Link',
+              title: 'Invite by Message',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Anyone with this link can ask to join. (Placeholder — '
-                    'links go live with accounts.)',
+                    'Send this to anyone — they can read it without the app. '
+                    '(Invite links arrive with accounts.)',
                     style: typography.small.copyWith(
                       color: colours.textSecondary,
                     ),
                   ),
                   SizedBox(height: spacing.sm),
                   SelectableText(
-                    link,
-                    style: typography.body.copyWith(color: colours.accent),
+                    message,
+                    style: typography.body.copyWith(color: colours.textPrimary),
                   ),
                   SizedBox(height: spacing.md),
+                  QaddyPrimaryButton(
+                    label: 'Share Invite',
+                    onPressed: () => shareOrCopy(
+                      context,
+                      ref,
+                      text: message,
+                      subject: 'Join ${trip.name} on Qaddy',
+                    ),
+                  ),
+                  SizedBox(height: spacing.sm),
                   QaddySecondaryButton(
-                    label: 'Copy Link',
-                    onPressed: () => _copyLink(link),
+                    label: 'Copy Message',
+                    onPressed: () => _copyMessage(message),
                   ),
                 ],
               ),

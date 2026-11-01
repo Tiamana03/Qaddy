@@ -11,6 +11,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/haptics.dart';
 
 /// One option in a [QaddySegmentedControl].
 class QaddySegment<T> {
@@ -68,7 +69,10 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                 selected: segment.value == selected,
                 label: segment.label,
                 excludeSemantics: true,
-                onTap: () => onChanged(segment.value),
+                onTap: () {
+                  QaddyHaptics.selection();
+                  onChanged(segment.value);
+                },
                 child: Material(
                   color: segment.value == selected
                       ? colours.surface2
@@ -76,7 +80,10 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                   borderRadius: BorderRadius.circular(radius.small),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(radius.small),
-                    onTap: () => onChanged(segment.value),
+                    onTap: () {
+                      QaddyHaptics.selection();
+                      onChanged(segment.value);
+                    },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: spacing.md),
                       decoration: segment.value == selected
