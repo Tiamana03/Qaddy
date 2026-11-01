@@ -33,7 +33,9 @@ import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
 import 'package:qaddy/features/community/ui/widgets/clubs_strip.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_request_row.dart';
+import 'package:qaddy/features/community/ui/widgets/next_round_banner.dart';
 import 'package:qaddy/features/community/ui/widgets/rivalry_spotlight.dart';
+import 'package:qaddy/features/community/ui/widgets/season_race_card.dart';
 import 'package:qaddy/features/community/ui/widgets/squad_strip.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
@@ -56,14 +58,9 @@ class FriendsHomeScreen extends ConsumerWidget {
     final active = recentlyActive(squad, now);
 
     final clubs = <ClubPreview>[
-      for (final group in groups)
-        ClubPreview(
-          group: group,
-          nextRound: group.id == saturdayBoys.id
-              ? 'Next round ${saturdayBoysUpcomingRound.date}, '
-                    '${saturdayBoysUpcomingRound.teeTime}'
-              : null,
-        ),
+      // The next round has its own card above; a club here is its crest and
+      // its size.
+      for (final group in groups) ClubPreview(group: group),
     ];
 
     void openClub(Group group) => context.push(
@@ -88,6 +85,8 @@ class FriendsHomeScreen extends ConsumerWidget {
               style: typography.body.copyWith(color: colours.textSecondary),
             ),
             SizedBox(height: spacing.xl),
+            const _NextRound(),
+            SizedBox(height: spacing.sectionGap),
             if (squad.isEmpty)
               QaddyEmptyState(
                 icon: Icons.groups_outlined,
@@ -109,7 +108,7 @@ class FriendsHomeScreen extends ConsumerWidget {
                 friends: squad,
                 now: now,
                 onFriendTap: (friend) =>
-                    showFriendPeek(context, friend, now: now),
+                    showFriendPeek(context, ref, friend, now: now),
                 onAdd: () => context.push(AppRoutes.friendsSearch),
               ),
             ],
@@ -126,6 +125,8 @@ class FriendsHomeScreen extends ConsumerWidget {
             ],
             SizedBox(height: spacing.sectionGap),
             const _Rivalry(),
+            SizedBox(height: spacing.sectionGap),
+            const _SeasonRace(),
             SizedBox(height: spacing.sectionGap),
             QaddySectionHeading(
               title: 'Latest from mates',
@@ -238,6 +239,48 @@ class _Requests extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+class _NextRound extends ConsumerWidget {
+  const _NextRound();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return NextRoundBanner(
+      groupName: saturdayBoys.name,
+      round: saturdayBoysUpcomingRound,
+      players: <String>[for (final member in saturdayBoysMembers) member.name],
+      onOpen: () => context.push(AppRoutes.friendsGroupDetails),
+      onRally: () => shareOrCopy(
+        context,
+        ref,
+        text: rallyMessage(
+          groupName: saturdayBoys.name,
+          round: saturdayBoysUpcomingRound,
+          yourName: currentUserName,
+        ),
+        subject: "Who's in?",
+      ),
+    );
+  }
+}
+
+class _SeasonRace extends StatelessWidget {
+  const _SeasonRace();
+
+  @override
+  Widget build(BuildContext context) {
+    return SeasonRaceCard(
+      race: SeasonRace.of(
+        saturdayBoysLeaderboard,
+        yourName: currentUserName,
+        roundsRemaining: saturdayBoysSeasonSummary.roundsRemaining,
+      ),
+      groupName: saturdayBoys.name,
+      yourName: currentUserName,
+      onOpen: () => context.push(AppRoutes.friendsGroupDetails),
     );
   }
 }

@@ -29,12 +29,21 @@ List<RouteBase> _routes() => <RouteBase>[
         'list',
         'search',
         'requests',
-        'groups',
         'activity',
         'rivalries',
         'profile',
       ])
         GoRoute(path: name, builder: (context, state) => Text('Go: $name')),
+      GoRoute(
+        path: 'groups',
+        builder: (context, state) => const Text('Go: groups'),
+        routes: <RouteBase>[
+          GoRoute(
+            path: 'details',
+            builder: (context, state) => const Text('Go: details'),
+          ),
+        ],
+      ),
     ],
   ),
 ];
@@ -129,12 +138,28 @@ void main() {
       await _pump(tester);
 
       await _tap(tester, find.bySemanticsLabel(RegExp('^Ben,')));
+      await tester.pumpAndSettle();
 
       expect(find.byType(FriendPeekSheet), findsOneWidget);
-      expect(find.text('Brookwater Golf Club'), findsOneWidget);
+      expect(find.text('Loves Brookwater Golf Club'), findsOneWidget);
       expect(find.text('Ipswich, QLD'), findsOneWidget);
+      expect(find.text('Rounds together'), findsOneWidget);
       // Ben has no full profile, so there's nothing to open.
       expect(find.text('View profile'), findsNothing);
+    });
+
+    testWidgets('a quick look ends with an invitation to play', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.bySemanticsLabel(RegExp('^Ben,')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Fancy a round, Ben?'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FriendPeekSheet), findsNothing);
+      expect(shareOf(container).shared, hasLength(1));
+      expect(shareOf(container).shared.single, contains('Fancy a round, Ben?'));
+      expect(shareOf(container).shared.single, endsWith('– Tiamana'));
     });
 
     testWidgets("Tom's look offers his full profile", (tester) async {
@@ -372,10 +397,65 @@ void main() {
     });
   });
 
-  group('clubs', () {
-    testWidgets('shows every group, with the next round for Saturday Boys', (
+  group('next round', () {
+    testWidgets('invites the golfer to the next tee time', (tester) async {
+      await _pump(tester);
+
+      expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
+      expect(find.text('Richmond Golf Club · Stableford'), findsOneWidget);
+      expect(find.text('8 playing'), findsNothing);
+      expect(find.textContaining('+3 more · 8 playing'), findsOneWidget);
+    });
+
+    testWidgets('rallies the group with when, where and who is in', (
       tester,
     ) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.text("Who's in? Rally the group"));
+
+      expect(shareOf(container).shared.single, contains('Saturday Boys'));
+      expect(shareOf(container).shared.single, contains('8:20 AM'));
+      expect(shareOf(container).shared.single, contains("Who's in?"));
+    });
+
+    testWidgets('opens the group from the story', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text('Saturday, 8:20 AM'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Go: details'), findsOneWidget);
+    });
+  });
+
+  group('season race', () {
+    testWidgets('shows the podium and where the golfer stands', (tester) async {
+      await _pump(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('SEASON RACE'), findsOneWidget);
+      for (final name in <String>['Luke', 'Tom', 'Nick']) {
+        expect(find.text(name), findsWidgets, reason: name);
+      }
+      expect(find.text('118'), findsOneWidget);
+      expect(find.text("You're 5th"), findsOneWidget);
+      expect(find.text('4 points behind Ben'), findsOneWidget);
+      expect(find.text('10 rounds to go'), findsOneWidget);
+    });
+
+    testWidgets('opens the group leaderboard', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text("You're 5th"));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Go: details'), findsOneWidget);
+    });
+  });
+
+  group('clubs', () {
+    testWidgets('shows every group with its size and season', (tester) async {
       // A wide screen, so the whole strip is built at once.
       await _pump(tester, size: const Size(1280, 3000));
 
@@ -387,7 +467,7 @@ void main() {
       ]) {
         expect(find.text(name), findsOneWidget, reason: name);
       }
-      expect(find.text('Next round Saturday, 8:20 AM'), findsOneWidget);
+      expect(find.text('8 members · 2026 Season'), findsOneWidget);
       expect(find.textContaining('6 members'), findsOneWidget);
     });
 
