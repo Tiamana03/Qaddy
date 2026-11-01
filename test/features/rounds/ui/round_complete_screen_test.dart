@@ -167,6 +167,64 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('last place gets a good-natured wooden spoon', (tester) async {
+    await _pump(
+      tester,
+      play: (store) {
+        final names = upcomingRoundInvitees.take(3).map((i) => i.player.name);
+        store
+          ..startRound(
+            upcomingRoundInvitees.take(3).map((i) => i.player).toList(),
+          )
+          ..setScore(names.first, 2)
+          ..setScore(names.last, 7)
+          ..nextHole()
+          ..finishRound();
+      },
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wooden spoon'), findsOneWidget);
+  });
+
+  testWidgets('no wooden spoon in a twosome, or when last place is level', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      play: (store) => store
+        ..startRound(
+          upcomingRoundInvitees.take(2).map((i) => i.player).toList(),
+        )
+        ..setScore(upcomingRoundInvitees.first.player.name, 2)
+        ..nextHole()
+        ..finishRound(),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Wooden spoon'), findsNothing);
+  });
+
+  testWidgets('your points count up to the final figure', (tester) async {
+    await _pump(
+      tester,
+      play: (store) => store
+        ..startRound(
+          upcomingRoundInvitees.take(3).map((i) => i.player).toList(),
+        )
+        ..setScore(upcomingRoundInvitees.first.player.name, 2)
+        ..nextHole()
+        ..finishRound(),
+    );
+    // The figure is still counting up shortly after arrival, and settles.
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.hasRunningAnimations, isTrue);
+
+    await tester.pumpAndSettle();
+    expect(tester.hasRunningAnimations, isFalse);
+    expect(find.text('4'), findsWidgets);
+  });
+
   testWidgets('with no finished round, says so', (tester) async {
     await _pump(tester, play: null);
 

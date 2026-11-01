@@ -187,6 +187,78 @@ void main() {
     });
   });
 
+  group('holeResultLine', () {
+    test('names who took the hole and with what', () {
+      final round = _round(<String, List<int?>>{
+        'Alex': <int?>[2],
+        'Tom': <int?>[4],
+        'Ben': <int?>[4],
+      });
+
+      expect(
+        holeResultLine(round, 0, you: 'Alex'),
+        'You win the hole with an eagle',
+      );
+      expect(
+        holeResultLine(round, 0, you: 'Ben'),
+        'Alex wins the hole with an eagle',
+      );
+    });
+
+    test('says when the hole is shared', () {
+      final round = _round(<String, List<int?>>{
+        'Alex': <int?>[3],
+        'Tom': <int?>[5],
+        'Ben': <int?>[3],
+      });
+
+      expect(
+        holeResultLine(round, 0, you: 'Alex'),
+        'You and Ben share the hole',
+      );
+    });
+
+    test('counts handicap shots, so a net score can win the hole', () {
+      // Tom plays off 18, so his par is worth a point more than a gross par.
+      final round = _round(<String, List<int?>>{
+        'Alex': <int?>[4],
+        'Tom': <int?>[4],
+        'Ben': <int?>[5],
+      });
+
+      expect(
+        holeResultLine(round, 0, you: 'Alex'),
+        'Tom wins the hole with a net birdie',
+      );
+    });
+
+    test('has nothing to say when everyone ties', () {
+      final round = _round(<String, List<int?>>{
+        'Alex': <int?>[4],
+        'Tom': <int?>[5],
+        'Ben': <int?>[4],
+      });
+
+      expect(holeResultLine(round, 0, you: 'Alex'), isNull);
+      final pair = _round(
+        <String, List<int?>>{
+          'Alex': <int?>[4],
+          'Tom': <int?>[5],
+        },
+        players: const <RoundPlayer>[_alex, _tom],
+      );
+      expect(holeResultLine(pair, 0, you: 'Alex'), isNull);
+    });
+
+    test('waits until everyone has a score', () {
+      final round = _round(<String, List<int?>>{
+        'Alex': <int?>[3],
+      });
+
+      expect(holeResultLine(round, 0, you: 'Alex'), isNull);
+    });
+  });
+
   group('recapOf', () {
     test("summarises one golfer's round", () {
       final round = _round(<String, List<int?>>{

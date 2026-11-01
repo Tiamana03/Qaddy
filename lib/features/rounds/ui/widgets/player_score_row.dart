@@ -23,6 +23,8 @@ class PlayerScoreRow extends StatefulWidget {
     required this.gross,
     required this.points,
     required this.onNudge,
+    this.onTapScore,
+    this.onBigMoment,
     super.key,
   });
 
@@ -47,6 +49,12 @@ class PlayerScoreRow extends StatefulWidget {
   /// Adds (`1`) or takes away (`-1`) a stroke.
   final ValueChanged<int> onNudge;
 
+  /// Called when the score itself is tapped, to pick it in golf's words.
+  final VoidCallback? onTapScore;
+
+  /// Called when an eagle or better is recorded, for the bigger celebration.
+  final VoidCallback? onBigMoment;
+
   @override
   State<PlayerScoreRow> createState() => _PlayerScoreRowState();
 }
@@ -69,6 +77,17 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
         now != oldWidget.gross &&
         isCelebration(now, widget.par)) {
       QaddyHaptics.success();
+      final kind = scoreKind(now, widget.par);
+      if (kind == ScoreKind.ace ||
+          kind == ScoreKind.albatross ||
+          kind == ScoreKind.eagle) {
+        // After this frame: the parent cannot rebuild while its child builds.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            widget.onBigMoment?.call();
+          }
+        });
+      }
       if (!MediaQuery.disableAnimationsOf(context)) {
         _burst.forward(from: 0);
       }
@@ -204,37 +223,43 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
                       '${_shown == 0 ? 'picked up' : '$_shown'}, $label, '
                       '${widget.points} points',
                   excludeSemantics: true,
-                  child: SizedBox(
-                    width: 64,
-                    child: Opacity(
-                      opacity: recorded ? 1 : 0.6,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Transform.scale(
-                            scale: pop,
-                            child: Text(
-                              shown,
-                              style: typography.display.copyWith(
-                                color: scoreColour,
-                                fontSize: 34,
-                                height: 1.1,
-                                fontFeatures: const <FontFeature>[
-                                  FontFeature.tabularFigures(),
-                                ],
+                  onTap: widget.onTapScore,
+                  hint: 'Pick the score',
+                  child: InkWell(
+                    onTap: widget.onTapScore,
+                    borderRadius: BorderRadius.circular(radius.medium),
+                    child: SizedBox(
+                      width: 64,
+                      child: Opacity(
+                        opacity: recorded ? 1 : 0.6,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Transform.scale(
+                              scale: pop,
+                              child: Text(
+                                shown,
+                                style: typography.display.copyWith(
+                                  color: scoreColour,
+                                  fontSize: 34,
+                                  height: 1.1,
+                                  fontFeatures: const <FontFeature>[
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Text(
-                            label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: typography.caption.copyWith(
-                              color: scoreColour,
-                              fontWeight: FontWeight.w600,
+                            Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: typography.caption.copyWith(
+                                color: scoreColour,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

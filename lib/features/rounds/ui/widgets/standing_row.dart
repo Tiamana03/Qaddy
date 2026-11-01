@@ -20,6 +20,7 @@ class StandingRow extends StatelessWidget {
     required this.isYou,
     required this.leaderPoints,
     required this.holesPlayed,
+    this.tag,
     super.key,
   });
 
@@ -34,6 +35,9 @@ class StandingRow extends StatelessWidget {
 
   /// How many holes the table covers.
   final int holesPlayed;
+
+  /// A light-hearted label beside the name, such as "Wooden spoon".
+  final String? tag;
 
   @override
   Widget build(BuildContext context) {
@@ -93,14 +97,46 @@ class StandingRow extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: typography.body.copyWith(
-                            color: colours.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        Row(
+                          children: <Widget>[
+                            Flexible(
+                              child: Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: typography.body.copyWith(
+                                  color: colours.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            if (tag != null) ...<Widget>[
+                              SizedBox(width: spacing.sm),
+                              Flexible(
+                                flex: 2,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: spacing.sm,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      radius.large,
+                                    ),
+                                    border: Border.all(color: colours.border),
+                                  ),
+                                  child: Text(
+                                    tag!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: typography.caption.copyWith(
+                                      color: colours.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         Text(
                           detail,

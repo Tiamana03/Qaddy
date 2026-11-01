@@ -6,6 +6,7 @@ import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/features/rounds/logic/stableford.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
+import 'package:qaddy/features/rounds/models/round_player.dart';
 
 /// "Tiamana wins", "Tom and Ben share the win" — the winners, in words. While
 /// the round is still [finished]=false it says who leads instead: "Tom leads",
@@ -164,4 +165,53 @@ String? chaseLine(List<PlayerStanding> standings, String you) {
   return gap == 0
       ? 'Level on points with ${behind.player.name}'
       : '${points(gap)} clear of ${behind.player.name}';
+}
+
+/// The banter after a hole: who took it and with what — "You win the hole
+/// with a birdie", "Tom wins the hole with an eagle", "You and Ben share the
+/// hole". Judged on Stableford points, so handicaps count. `null` when the
+/// hole is not fully scored, when nobody scored a point, or when everyone
+/// tied (nothing to say).
+String? holeResultLine(Round round, int holeIndex, {required String you}) {
+  if (!round.isHolePlayed(holeIndex)) {
+    return null;
+  }
+  final points = <RoundPlayer, int>{
+    for (final player in round.players)
+      player: pointsAt(round, player, holeIndex),
+  };
+  final best = points.values.fold<int>(0, (a, b) => a > b ? a : b);
+  if (best == 0) {
+    return null;
+  }
+  final winners = <RoundPlayer>[
+    for (final entry in points.entries)
+      if (entry.value == best) entry.key,
+  ];
+  if (winners.length == round.players.length) {
+    return null;
+  }
+
+  String name(RoundPlayer p) => p.name == you ? 'You' : p.name;
+  if (winners.length > 1) {
+    final names = winners.map(name).toList();
+    final last = names.removeLast();
+    return '${names.join(', ')} and $last share the hole';
+  }
+
+  final winner = winners.single;
+  final hole = round.holes[holeIndex];
+  final gross = round.grossAt(winner.name, holeIndex)!;
+  final shots = shotsReceived(
+    playingHandicap: winner.playingHandicap,
+    strokeIndex: hole.strokeIndex,
+  );
+  // A golfer given a shot wins on their net score, so say so: "a net birdie".
+  final net = gross - shots;
+  final lower = shots > 0 && gross > 0 && net != gross
+      ? 'net ${scoreLabel(net, hole.par).toLowerCase()}'
+      : scoreLabel(gross, hole.par).toLowerCase();
+  final article = RegExp('^[aeiou]').hasMatch(lower) ? 'an' : 'a';
+  final verb = winner.name == you ? 'win' : 'wins';
+  return '${name(winner)} $verb the hole with $article $lower';
 }

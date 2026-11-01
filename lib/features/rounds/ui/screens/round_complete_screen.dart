@@ -81,6 +81,15 @@ class _Results extends ConsumerWidget {
     final chase = chaseLine(standings, currentUserName);
     final played = round.holesPlayed;
 
+    // Last place gets a good-natured label, but only when there is a proper
+    // field and the last player is genuinely behind the one above.
+    final woodenSpoon =
+        standings.length >= 3 &&
+            played > 0 &&
+            standings.last.position != standings[standings.length - 2].position
+        ? standings.last.player.name
+        : null;
+
     final hero = QaddyHeroCard(
       gradient: LinearGradient(
         begin: Alignment.topLeft,
@@ -183,6 +192,9 @@ class _Results extends ConsumerWidget {
                     isYou: standing.player.name == currentUserName,
                     leaderPoints: top.points,
                     holesPlayed: played,
+                    tag: woodenSpoon == standing.player.name
+                        ? 'Wooden spoon'
+                        : null,
                   ),
                 ],
                 SizedBox(height: spacing.sectionGap),
@@ -265,11 +277,22 @@ class _YourRound extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
-              Text(
-                '${standing.points}',
-                style: typography.display.copyWith(
-                  color: colours.textPrimary,
-                  fontSize: 56,
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                  begin: MediaQuery.disableAnimationsOf(context) ? 1 : 0,
+                  end: 1,
+                ),
+                duration: const Duration(milliseconds: 1200),
+                curve: Curves.easeOutCubic,
+                builder: (context, t, _) => Text(
+                  '${(standing.points * t).round()}',
+                  style: typography.display.copyWith(
+                    color: colours.textPrimary,
+                    fontSize: 56,
+                    fontFeatures: const <FontFeature>[
+                      FontFeature.tabularFigures(),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(width: spacing.md),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_confetti.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
@@ -271,6 +272,92 @@ void main() {
 
       expect(container.read(liveRoundProvider), isNull);
       expect(find.text('Go: /rounds'), findsOneWidget);
+    });
+  });
+
+  group('golf moments', () {
+    testWidgets('the first tee wishes the golfer well, once', (tester) async {
+      await _pump(tester);
+
+      expect(find.textContaining('Enjoy it out there'), findsOneWidget);
+
+      await _tap(tester, find.text('Next hole'));
+
+      expect(find.textContaining('Enjoy it out there'), findsNothing);
+    });
+
+    testWidgets('Next hole says who took the hole', (tester) async {
+      await _pump(tester);
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+
+      await _tap(tester, find.text('Next hole'));
+
+      expect(find.text('Tom wins the hole with an eagle'), findsOneWidget);
+    });
+
+    testWidgets('says nothing when the hole is a dead heat', (tester) async {
+      await _pump(tester);
+      // Ben is given a shot here, so a bogey from him is a net par: all level.
+      await _tap(tester, find.byTooltip('Add a stroke for Ben'));
+
+      await _tap(tester, find.text('Next hole'));
+
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('a shot can win the hole: a net birdie', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text('Next hole'));
+
+      expect(find.text('Ben wins the hole with a net birdie'), findsOneWidget);
+    });
+
+    testWidgets('tapping a score offers it in golf words', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.bySemanticsLabel(RegExp('^Tom: 4')));
+
+      expect(find.text('Hole 1 · Par 4'), findsOneWidget);
+      for (final word in <String>[
+        'Eagle',
+        'Birdie',
+        'Bogey',
+        'Double bogey',
+        'Picked up',
+      ]) {
+        expect(find.text(word), findsWidgets, reason: word);
+      }
+
+      await _tap(tester, find.text('Birdie').last);
+
+      expect(container.read(liveRoundProvider)!.grossAt('Tom', 0), 3);
+    });
+
+    testWidgets('picking up from the picker records no score', (tester) async {
+      final container = await _pump(tester);
+
+      await _tap(tester, find.bySemanticsLabel(RegExp('^Ben: 4')));
+      await _tap(tester, find.text('Picked up').last);
+
+      expect(container.read(liveRoundProvider)!.grossAt('Ben', 0), 0);
+    });
+
+    testWidgets('an eagle earns confetti, a birdie does not', (tester) async {
+      await _pump(tester);
+      expect(find.byType(QaddyConfetti), findsNothing);
+
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+      expect(find.byType(QaddyConfetti), findsNothing);
+
+      await _tap(tester, find.byTooltip('Take a stroke off Tom'));
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.byType(QaddyConfetti), findsOneWidget);
+
+      // The burst ends on its own.
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
     });
   });
 

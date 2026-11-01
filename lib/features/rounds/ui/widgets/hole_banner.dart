@@ -14,13 +14,22 @@ import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
 /// The banner for [hole] of [total] holes.
 class HoleBanner extends StatelessWidget {
-  const HoleBanner({required this.hole, required this.total, super.key});
+  const HoleBanner({
+    required this.hole,
+    required this.total,
+    this.greeting,
+    super.key,
+  });
 
   /// The hole being played.
   final CourseHole hole;
 
   /// How many holes the round has.
   final int total;
+
+  /// A friendly line under the details — on the first tee, "Enjoy it out
+  /// there."
+  final String? greeting;
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +119,16 @@ class HoleBanner extends StatelessWidget {
                   ),
                 ],
               ),
+              if (greeting != null) ...<Widget>[
+                SizedBox(height: spacing.md),
+                Text(
+                  greeting!,
+                  style: typography.body.copyWith(
+                    color: onGradient.withValues(alpha: 0.9),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
               if (sideGames.isNotEmpty) ...<Widget>[
                 SizedBox(height: spacing.md),
                 QaddyInfoChip(
