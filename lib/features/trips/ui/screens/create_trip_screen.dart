@@ -15,11 +15,12 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_date_time_fields.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_segmented_control.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_text_field.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
@@ -135,7 +136,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             _TripPreview(
               cover: _cover,
@@ -147,7 +148,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             SizedBox(height: spacing.sm),
             Center(
               child: Text(
-                'Cover image — ${tripCoverFor(_cover).label}',
+                'Pick a look — ${tripCoverFor(_cover).label}',
                 style: typography.small.copyWith(color: colours.textSecondary),
               ),
             ),
@@ -255,7 +256,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   Text(
                     _visibility == TripVisibility.private
                         ? 'Only people you invite can see this trip.'
-                        : 'Anyone with the invite link can view this trip.',
+                        : 'Anyone you share the trip with can view it.',
                     style: typography.small.copyWith(
                       color: colours.textSecondary,
                     ),
@@ -272,14 +273,15 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
               ),
             ),
             SizedBox(height: spacing.sectionGap),
-            QaddyPrimaryButton(
+            QaddyGoldButton(
               label: _invited.isEmpty
                   ? 'Save Trip'
                   : 'Save Trip & Invite ${_invited.length}',
+              icon: Icons.flight_takeoff,
               onPressed: _save,
             ),
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );

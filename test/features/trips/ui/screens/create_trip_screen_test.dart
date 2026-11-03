@@ -80,7 +80,7 @@ void main() {
     expect(find.text('Private'), findsOneWidget);
     expect(find.text('Public'), findsOneWidget);
     expect(find.text('Invite Friends'), findsOneWidget);
-    expect(find.textContaining('Cover image'), findsOneWidget);
+    expect(find.textContaining('Pick a look'), findsOneWidget);
     expect(find.text('Save Trip'), findsOneWidget);
   });
 
@@ -113,7 +113,7 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Coast cover'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Cover image — Coast'), findsOneWidget);
+    expect(find.text('Pick a look — Coast'), findsOneWidget);
   });
 
   testWidgets('shows no errors until the first save attempt', (tester) async {
@@ -172,7 +172,10 @@ void main() {
     await _fillValidForm(tester);
     await tester.tap(find.text('Public'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Anyone with the invite link'), findsOneWidget);
+    expect(
+      find.textContaining('Anyone you share the trip with'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Save Trip'));
     await tester.pumpAndSettle();
 
