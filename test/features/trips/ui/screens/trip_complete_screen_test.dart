@@ -24,17 +24,48 @@ Future<void> _pumpWithRouter(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('shows summary, courses played, winners and expenses', (
-    tester,
-  ) async {
+  testWidgets('celebrates the champion and the other awards', (tester) async {
     await _pumpWithRouter(tester);
 
-    expect(find.text('Trip Summary'), findsOneWidget);
-    expect(find.text('Courses Played'), findsOneWidget);
+    expect(find.text("That's a wrap"), findsOneWidget);
+    expect(find.text('TRIP CHAMPION'), findsOneWidget);
+    expect(find.text('Tiamana'), findsOneWidget);
+    expect(find.text('Ben'), findsOneWidget);
+    expect(find.text('Runner Up'), findsOneWidget);
+    expect(find.text('Longest Drive'), findsOneWidget);
+    expect(find.text('Nearest The Pin'), findsOneWidget);
+    expect(find.text('Winners'), findsNothing);
+    expect(find.text('Memories'), findsNothing);
+  });
+
+  testWidgets('lists the courses played and the bill', (tester) async {
+    await _pumpWithRouter(tester);
+
+    expect(find.text('Courses played'), findsOneWidget);
     expect(find.text('Kingston Heath'), findsOneWidget);
-    expect(find.text('Winners'), findsOneWidget);
-    expect(find.text('Trip Champion'), findsOneWidget);
-    expect(find.text('Tiamana'), findsWidgets);
+    expect(find.text('Royal Melbourne'), findsOneWidget);
+    expect(find.text('The bill'), findsOneWidget);
+    expect(find.text('Total cost'), findsOneWidget);
+    expect(find.text('each'), findsOneWidget);
+  });
+
+  testWidgets('a trip with no results shows no empty awards', (tester) async {
+    await pumpTripsRouter(
+      tester,
+      initialLocation: '/complete',
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/complete',
+          builder: (context, state) =>
+              const TripCompleteScreen(tripId: 'gold-coast-golf-escape'),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text("That's a wrap"), findsOneWidget);
+    expect(find.text('TRIP CHAMPION'), findsNothing);
+    expect(find.text('The bill'), findsOneWidget);
   });
 
   testWidgets('Return Home navigates to /home', (tester) async {
