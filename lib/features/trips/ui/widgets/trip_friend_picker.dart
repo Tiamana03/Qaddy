@@ -2,18 +2,23 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/features/community/models/friend.dart';
-import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 
 /// The friends who can be invited: confirmed friends, favourites first, minus
 /// anyone in [exclude] (e.g. people already on the trip).
-List<Friend> invitableFriends({Set<String> exclude = const <String>{}}) {
-  return confirmedFriends
+List<Friend> invitableFriends(
+  List<Friend> confirmed, {
+  Set<String> exclude = const <String>{},
+}) {
+  return confirmed
       .where((friend) => !exclude.contains(friend.displayName))
       .toList()
     ..sort((a, b) {
@@ -25,7 +30,7 @@ List<Friend> invitableFriends({Set<String> exclude = const <String>{}}) {
 }
 
 /// Tickable rows, one per invitable friend.
-class TripFriendPicker extends StatelessWidget {
+class TripFriendPicker extends ConsumerWidget {
   const TripFriendPicker({
     required this.selected,
     required this.onChanged,
@@ -43,13 +48,16 @@ class TripFriendPicker extends StatelessWidget {
   final Set<String> exclude;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
-    final candidates = invitableFriends(exclude: exclude);
+    final candidates = invitableFriends(
+      ref.watch(confirmedFriendsProvider),
+      exclude: exclude,
+    );
 
     if (candidates.isEmpty) {
       return Padding(
@@ -74,7 +82,9 @@ class TripFriendPicker extends StatelessWidget {
         for (final friend in candidates)
           Semantics(
             checked: selected.contains(friend.displayName),
-            label: '${friend.displayName}, handicap ${friend.handicap}',
+            label:
+                '${friend.displayName}, handicap '
+                '${handicapLabel(friend.handicap)}',
             excludeSemantics: true,
             onTap: () => toggle(friend.displayName),
             child: InkWell(
@@ -97,7 +107,7 @@ class TripFriendPicker extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Handicap ${friend.handicap.toStringAsFixed(1)}'
+                            'Handicap ${handicapLabel(friend.handicap)}'
                             ' · ${friend.homeClub}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

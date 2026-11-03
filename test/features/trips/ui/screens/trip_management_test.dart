@@ -205,6 +205,17 @@ void main() {
       );
     });
 
+    testWidgets('opens with who is coming and waits to offer the button', (
+      tester,
+    ) async {
+      await pumpApp(tester, location: AppRoutes.tripInvite(melbourneId));
+
+      expect(find.text("Who's coming?"), findsOneWidget);
+      expect(find.text('Your mates'), findsOneWidget);
+      expect(find.text('Or send a message'), findsOneWidget);
+      expect(find.textContaining('Invite 1'), findsNothing);
+    });
+
     testWidgets('invites ticked friends and says so', (tester) async {
       final c = await pumpApp(tester);
       final id = c
@@ -221,7 +232,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Ben'));
-      await tester.pump();
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Invite 1 friend'));
       await tester.pumpAndSettle();
 
