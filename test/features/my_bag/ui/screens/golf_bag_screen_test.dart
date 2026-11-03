@@ -67,9 +67,13 @@ void main() {
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('YOUR BAG'), findsOneWidget);
-      expect(find.text('12'), findsOneWidget);
+      expect(find.text('14'), findsOneWidget);
       expect(find.text('clubs in\nthe bag'), findsOneWidget);
       expect(find.textContaining('Nicely spread.'), findsOneWidget);
+      expect(
+        find.textContaining('23m gap between your Hybrid and 5 iron'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('highlights the longest club, the go-to and the ball', (
@@ -102,23 +106,25 @@ void main() {
       for (final name in <String>[
         'Driver',
         '3 wood',
+        '5 wood',
         'Hybrid',
         '5 iron',
         '7 iron',
         '9 iron',
         'Pitching wedge',
         'Sand wedge',
+        'Lob wedge',
       ]) {
         expect(find.text(name), findsWidgets, reason: name);
       }
       expect(find.text('235m'), findsOneWidget);
-      expect(find.text('80m'), findsOneWidget);
+      expect(find.text('76m'), findsOneWidget);
       // The first club has no gap above it; the rest show one.
-      expect(find.text('−20'), findsOneWidget);
-      expect(find.text('−25'), findsNWidgets(2));
+      expect(find.text('−18'), findsOneWidget);
+      expect(find.text('−23'), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('Driver').first).dy,
-        lessThan(tester.getTopLeft(find.text('Sand wedge').first).dy),
+        lessThan(tester.getTopLeft(find.text('Lob wedge').first).dy),
       );
     });
 
@@ -148,7 +154,7 @@ void main() {
           matching: find.byType(FractionallySizedBox),
         ),
       );
-      expect(bars, hasLength(11));
+      expect(bars, hasLength(13));
       for (final bar in bars) {
         final size = tester.getSize(find.byWidget(bar));
         expect(size.height, 14);

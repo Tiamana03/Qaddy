@@ -6,8 +6,8 @@
 /// the golfer's placeholder kit has always had (TaylorMade Qi35 driver and
 /// P790 irons, Cleveland RTX wedges, an Odyssey White Hot putter, Titleist Pro
 /// V1 balls); the woods, the hybrid and the individual irons and wedges fill
-/// out a realistic bag, with carries whose averages match the old
-/// "Driver 235 m / Irons 145 m / Wedges 95 m".
+/// out a complete 14-club bag (the most the rules allow) plus the ball, with
+/// carries that average to the old "Driver 235 m / Irons 145 m / Wedges 95 m".
 library;
 
 import 'package:qaddy/features/my_bag/models/bag_club.dart';
@@ -28,7 +28,16 @@ const List<BagClub> seedBagClubs = <BagClub>[
     name: '3 wood',
     family: ClubFamily.wood,
     model: 'TaylorMade Qi35 Fairway',
-    carryMetres: 215,
+    carryMetres: 217,
+    confidence: 3,
+  ),
+  BagClub(
+    id: '5-wood',
+    name: '5 wood',
+    family: ClubFamily.wood,
+    model: 'TaylorMade Qi35 Fairway',
+    carryMetres: 202,
+    note: 'Great off the deck on a long par 5.',
     confidence: 3,
   ),
   BagClub(
@@ -36,7 +45,7 @@ const List<BagClub> seedBagClubs = <BagClub>[
     name: 'Hybrid',
     family: ClubFamily.hybrid,
     model: 'TaylorMade Qi35 Rescue',
-    carryMetres: 190,
+    carryMetres: 188,
     note: 'Out of the rough, this is my friend.',
     confidence: 4,
   ),
@@ -94,7 +103,7 @@ const List<BagClub> seedBagClubs = <BagClub>[
     name: 'Gap wedge',
     family: ClubFamily.wedge,
     model: 'Cleveland RTX',
-    carryMetres: 95,
+    carryMetres: 100,
     confidence: 4,
   ),
   BagClub(
@@ -102,8 +111,17 @@ const List<BagClub> seedBagClubs = <BagClub>[
     name: 'Sand wedge',
     family: ClubFamily.wedge,
     model: 'Cleveland RTX',
-    carryMetres: 80,
+    carryMetres: 88,
     note: 'Open the face, trust the bounce.',
+    confidence: 3,
+  ),
+  BagClub(
+    id: 'lob-wedge',
+    name: 'Lob wedge',
+    family: ClubFamily.wedge,
+    model: 'Cleveland RTX',
+    carryMetres: 76,
+    note: 'Only when I am short-sided. Commit to it.',
     confidence: 3,
   ),
   BagClub(

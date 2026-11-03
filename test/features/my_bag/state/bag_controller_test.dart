@@ -39,14 +39,23 @@ void main() {
       expect(_club(c, '7-iron').carryMetres, 145);
     });
 
-    test('has a driver, a putter and a ball, and keeps to 14 clubs', () {
+    test('is a complete bag: 14 clubs and a ball', () {
       final names = seedBagClubs.map((club) => club.id).toList();
 
       expect(names, containsAll(<String>['driver', 'putter', 'ball']));
       expect(
         seedBagClubs.where((club) => club.family != ClubFamily.ball),
-        hasLength(lessThanOrEqualTo(14)),
+        hasLength(14),
       );
+      expect(seedBagClubs, hasLength(15));
+      // A bag needs the full range: woods, a hybrid, irons, wedges, a putter.
+      for (final family in ClubFamily.values) {
+        expect(
+          seedBagClubs.any((club) => club.family == family),
+          isTrue,
+          reason: family.name,
+        );
+      }
     });
   });
 

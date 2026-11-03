@@ -18,7 +18,7 @@ The golfer's **personal equipment locker** — the screen you would open before 
 
 # The screen
 
-1. **Your bag (hero)** — a warm, leathery card: "12 clubs in the bag", one sentence on the gapping ("Nicely spread. Keep an eye on the 25m gap between your 3 wood and Hybrid."), and chips for the longest club, the **go-to club** and the ball.
+1. **Your bag (hero)** — a warm, leathery card: "14 clubs in the bag", one sentence on the gapping ("Nicely spread. Keep an eye on the 23m gap between your Hybrid and 5 iron."), and chips for the longest club, the **go-to club** and the ball.
 2. **Your distances** — the distance ladder. Every club from the longest to the shortest as a bar that grows in, coloured by kind (woods gold, hybrid orange, irons teal, wedges blue), with the carry on the right and, beneath it, the **gap down** from the club above, coloured **tight** (18 m or less), **watch** (up to 25 m) or **a hole** (more). Each club shows five **confidence** dots, a star if it is the go-to and a note icon if it has a note. A hole in the bag is visible at a glance.
 3. **Putter and ball** — their own tiles: model, and the putter's confidence.
 4. **Notes to self** — the golfer's own words, quoted back ("My go-to. Smooth tempo, never force it.").
@@ -37,7 +37,7 @@ Tap any club, the putter or the ball and a sheet opens:
 # How it is built
 
 - `models/bag_club.dart` — a club or the ball: id, name, family, model, carry, note, confidence.
-- `models/placeholder_my_bag.dart` — the starting bag: Driver, 3 wood, Hybrid, 5–9 iron, pitching/gap/sand wedge, putter and ball (12 clubs and a ball, under the 14-club limit). The models are the golfer's placeholder kit from before (TaylorMade Qi35 / P790, Cleveland RTX, Odyssey White Hot, Titleist Pro V1); the carries average to the old "Driver 235 m / Irons 145 m / Wedges 95 m".
+- `models/placeholder_my_bag.dart` — the starting bag: Driver, 3 wood, 5 wood, Hybrid, 5–9 iron, pitching, gap, sand and lob wedge and a putter: a complete bag of 14 clubs (the most the rules allow) plus the ball. The models are the golfer's placeholder kit from before (TaylorMade Qi35 / P790, Cleveland RTX, Odyssey White Hot, Titleist Pro V1); the carries average to the old "Driver 235 m / Irons 145 m / Wedges 95 m".
 - `logic/bag_insights.dart` — pure, tested: ordering by carry, gaps and how they read, the widest gap, the go-to club, the gapping sentence, the confidence words.
 - `state/bag_controller.dart` — `BagController` is the only way a club changes (clamped carry, trimmed model and note). The bag is saved on the device after every change.
 - `repositories/bag_codec.dart` — stores only the editable fields, keyed by club id, **laid over the starting bag**; a club added to the starting bag later still appears, and an unreadable document starts the bag as new.
