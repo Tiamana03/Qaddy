@@ -19,8 +19,8 @@ class RivalrySpotlight extends StatelessWidget {
   const RivalrySpotlight({
     required this.summary,
     required this.yourName,
-    required this.onOpen,
     required this.onChallenge,
+    this.onOpen,
     super.key,
   });
 
@@ -30,8 +30,8 @@ class RivalrySpotlight extends StatelessWidget {
   /// The golfer's own name.
   final String yourName;
 
-  /// Opens the full Rivalries screen.
-  final VoidCallback onOpen;
+  /// Opens the full Rivalries screen. Omit on that screen itself.
+  final VoidCallback? onOpen;
 
   /// Shares a challenge with the rival.
   final VoidCallback onChallenge;
