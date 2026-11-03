@@ -382,10 +382,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         const GroupsScreen(),
                     routes: <RouteBase>[
                       GoRoute(
-                        path: 'details',
+                        path: ':groupId',
                         name: RouteNames.friendsGroupDetails,
                         builder: (BuildContext context, GoRouterState state) =>
-                            const GroupDetailsScreen(),
+                            GroupDetailsScreen(
+                              groupId: state.pathParameters['groupId']!,
+                            ),
                       ),
                     ],
                   ),

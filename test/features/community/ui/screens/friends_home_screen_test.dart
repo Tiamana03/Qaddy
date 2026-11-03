@@ -39,8 +39,9 @@ List<RouteBase> _routes() => <RouteBase>[
         builder: (context, state) => const Text('Go: groups'),
         routes: <RouteBase>[
           GoRoute(
-            path: 'details',
-            builder: (context, state) => const Text('Go: details'),
+            path: ':id',
+            builder: (context, state) =>
+                Text('Go: group ${state.pathParameters["id"]}'),
           ),
         ],
       ),
@@ -425,7 +426,7 @@ void main() {
       await _tap(tester, find.text('Saturday, 8:20 AM'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Go: details'), findsOneWidget);
+      expect(find.text('Go: group saturday-boys'), findsOneWidget);
     });
   });
 
@@ -450,7 +451,7 @@ void main() {
       await _tap(tester, find.text("You're 5th"));
       await tester.pumpAndSettle();
 
-      expect(find.text('Go: details'), findsOneWidget);
+      expect(find.text('Go: group saturday-boys'), findsOneWidget);
     });
   });
 
@@ -471,15 +472,13 @@ void main() {
       expect(find.textContaining('6 members'), findsOneWidget);
     });
 
-    testWidgets('Saturday Boys opens its details; the others, the list', (
-      tester,
-    ) async {
+    testWidgets('every club opens its own page', (tester) async {
       await _pump(tester);
 
       await _tap(tester, find.text('Wednesday Warriors'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Go: groups'), findsOneWidget);
+      expect(find.text('Go: group wednesday-warriors'), findsOneWidget);
     });
   });
 

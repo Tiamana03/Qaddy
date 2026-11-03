@@ -30,15 +30,16 @@ import 'package:qaddy/features/community/models/friend_request.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
-import 'package:qaddy/features/community/ui/widgets/clubs_strip.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_request_row.dart';
-import 'package:qaddy/features/community/ui/widgets/next_round_banner.dart';
 import 'package:qaddy/features/community/ui/widgets/rivalry_spotlight.dart';
-import 'package:qaddy/features/community/ui/widgets/season_race_card.dart';
 import 'package:qaddy/features/community/ui/widgets/squad_strip.dart';
+import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
+import 'package:qaddy/features/groups/ui/widgets/clubs_strip.dart';
+import 'package:qaddy/features/groups/ui/widgets/next_round_banner.dart';
+import 'package:qaddy/features/groups/ui/widgets/season_race_card.dart';
 
 /// Friends Home (route `/friends`) — the Friends destination.
 class FriendsHomeScreen extends ConsumerWidget {
@@ -63,11 +64,8 @@ class FriendsHomeScreen extends ConsumerWidget {
       for (final group in groups) ClubPreview(group: group),
     ];
 
-    void openClub(Group group) => context.push(
-      group.id == saturdayBoys.id
-          ? AppRoutes.friendsGroupDetails
-          : AppRoutes.friendsGroups,
-    );
+    void openClub(Group group) =>
+        context.push(AppRoutes.friendsGroup(group.id));
 
     return QaddyScaffold(
       body: SingleChildScrollView(
@@ -252,7 +250,7 @@ class _NextRound extends ConsumerWidget {
       groupName: saturdayBoys.name,
       round: saturdayBoysUpcomingRound,
       players: <String>[for (final member in saturdayBoysMembers) member.name],
-      onOpen: () => context.push(AppRoutes.friendsGroupDetails),
+      onOpen: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
       onRally: () => shareOrCopy(
         context,
         ref,
@@ -280,7 +278,7 @@ class _SeasonRace extends StatelessWidget {
       ),
       groupName: saturdayBoys.name,
       yourName: currentUserName,
-      onOpen: () => context.push(AppRoutes.friendsGroupDetails),
+      onOpen: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
     );
   }
 }

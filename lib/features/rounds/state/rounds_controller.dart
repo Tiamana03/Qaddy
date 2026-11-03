@@ -98,6 +98,19 @@ class RoundSetupController extends Notifier<Set<String>> {
         ? (<String>{...state}..remove(name))
         : <String>{...state, name};
   }
+
+  /// Picks exactly [names] (those who are invited to the round) plus the
+  /// golfer, who is always in. Used to start a round with a whole group.
+  void pick(Iterable<String> names) {
+    final invited = <String>{
+      for (final invitee in upcomingRoundInvitees) invitee.player.name,
+    };
+    state = <String>{
+      currentUserName,
+      for (final name in names)
+        if (invited.contains(name)) name,
+    };
+  }
 }
 
 /// Starts, scores and finishes rounds.

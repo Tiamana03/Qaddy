@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 
-**Status:** Active
+**Status:** Superseded for screen contents by `docs/features/groups-release-candidate.md`
 
 ---
 

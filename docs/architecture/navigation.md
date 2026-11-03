@@ -203,7 +203,7 @@ Buttons linking to implemented screens must never remain disabled.
 | /friends/requests | Friend Requests |
 | /friends/search | Search Friends |
 | /friends/groups | Groups |
-| /friends/groups/details | Group Details |
+| /friends/groups/:groupId | Group (clubhouse) |
 | /friends/rivalries | Rivalries |
 
 ### Navigation Structure

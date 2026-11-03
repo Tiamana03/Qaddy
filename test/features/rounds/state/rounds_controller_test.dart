@@ -213,6 +213,21 @@ void main() {
       );
     });
 
+    test('a whole group can be picked at once', () {
+      final c = _container();
+
+      c.read(roundSetupProvider.notifier).pick(<String>[
+        'Tom',
+        'Luke',
+        'Stranger',
+      ]);
+
+      expect(
+        c.read(selectedPlayersProvider).map((p) => p.name).toSet(),
+        <String>{upcomingRoundInvitees.first.player.name, 'Tom', 'Luke'},
+      );
+    });
+
     test('the golfer cannot be taken out of their own round', () {
       final c = _container();
       final you = upcomingRoundInvitees.first.player.name;

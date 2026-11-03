@@ -56,3 +56,8 @@ String ordinal(int n) {
     _ => '${n}th',
   };
 }
+
+/// A handicap as golfers write it: "8", "8.4", "12".
+String handicapLabel(double handicap) => handicap == handicap.roundToDouble()
+    ? handicap.toStringAsFixed(0)
+    : handicap.toStringAsFixed(1);

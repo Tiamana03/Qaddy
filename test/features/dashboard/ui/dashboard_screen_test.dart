@@ -33,7 +33,7 @@ const List<String> _destinations = <String>[
   '/trips/melbourne-golf-weekend',
   '/friends',
   '/friends/search',
-  '/friends/groups/details',
+  '/friends/groups/saturday-boys',
   '/profile',
   '/profile/statistics',
 ];
@@ -362,7 +362,7 @@ void main() {
   group('highlights', () {
     for (final (text, path) in <(String, String)>[
       ('Round completed at Richmond Golf Club', '/profile/statistics'),
-      ('Josh joined the Saturday Boys group', '/friends/groups/details'),
+      ('Josh joined the Saturday Boys group', '/friends/groups/saturday-boys'),
       ('New golf trip created', '/trips'),
       ('Handicap reduced to 8.4', '/profile/statistics'),
       ('Achievement unlocked: Personal Best', '/profile'),

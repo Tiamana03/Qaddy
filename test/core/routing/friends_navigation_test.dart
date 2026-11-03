@@ -57,7 +57,7 @@ void main() {
 
     await tester.tap(find.text('Saturday Boys'));
     await tester.pumpAndSettle();
-    expect(find.text('Season Summary'), findsOneWidget);
+    expect(find.text('The squad'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

@@ -48,7 +48,9 @@ abstract final class AppRoutes {
   static const String friendRequests = '/friends/requests';
   static const String friendsSearch = '/friends/search';
   static const String friendsGroups = '/friends/groups';
-  static const String friendsGroupDetails = '/friends/groups/details';
+
+  /// A group's own page, e.g. `/friends/groups/saturday-boys`.
+  static String friendsGroup(String id) => '/friends/groups/$id';
   static const String friendsRivalries = '/friends/rivalries';
   static const String profile = '/profile';
   static const String profileStatistics = '/profile/statistics';

@@ -32,6 +32,7 @@ import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
+import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -103,7 +104,7 @@ class DashboardScreen extends ConsumerWidget {
         icon: Icons.group_add,
         colour: colours.accentIndigo,
         text: 'Josh joined the Saturday Boys group',
-        onTap: () => context.push(AppRoutes.friendsGroupDetails),
+        onTap: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
       ),
       Highlight(
         icon: Icons.luggage,

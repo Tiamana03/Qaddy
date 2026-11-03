@@ -10,6 +10,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
@@ -21,6 +22,7 @@ class GroupLeaderboardRow extends StatelessWidget {
     required this.rank,
     required this.player,
     required this.points,
+    this.isYou = false,
     super.key,
   });
 
@@ -33,6 +35,10 @@ class GroupLeaderboardRow extends StatelessWidget {
   /// The player's season points.
   final int points;
 
+  /// Whether this is the golfer keeping the app: shown as "You" with a gold
+  /// edge.
+  final bool isYou;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -40,26 +46,36 @@ class GroupLeaderboardRow extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddyCard(
-      child: Row(
-        children: <Widget>[
-          PositionBadge(position: '$rank', isLeader: rank == 1),
-          SizedBox(width: spacing.md),
-          Expanded(
-            child: Text(
-              player,
-              style: typography.body.copyWith(
-                color: colours.textPrimary,
-                fontWeight: FontWeight.w600,
+    return Container(
+      decoration: isYou
+          ? BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                theme.extension<QaddyRadius>()!.large,
               ),
-              overflow: TextOverflow.ellipsis,
+              border: Border.all(color: colours.gold, width: 1.5),
+            )
+          : null,
+      child: QaddyCard(
+        child: Row(
+          children: <Widget>[
+            PositionBadge(position: '$rank', isLeader: rank == 1),
+            SizedBox(width: spacing.md),
+            Expanded(
+              child: Text(
+                isYou ? 'You' : player,
+                style: typography.body.copyWith(
+                  color: colours.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          Text(
-            '$points pts',
-            style: typography.body.copyWith(color: colours.textSecondary),
-          ),
-        ],
+            Text(
+              '$points pts',
+              style: typography.body.copyWith(color: colours.textSecondary),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -10,7 +10,7 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
-import 'package:qaddy/features/community/logic/friend_insights.dart';
+import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 
 /// A card showing the season's podium. Tapping it opens the group.
@@ -20,6 +20,8 @@ class SeasonRaceCard extends StatelessWidget {
     required this.groupName,
     required this.yourName,
     required this.onOpen,
+    this.roundsPlayed,
+    this.roundsTotal,
     super.key,
   });
 
@@ -34,6 +36,12 @@ class SeasonRaceCard extends StatelessWidget {
 
   /// Opens the group's full leaderboard.
   final VoidCallback onOpen;
+
+  /// How many rounds of the season are done, for the progress line.
+  final int? roundsPlayed;
+
+  /// How many rounds the season has in all.
+  final int? roundsTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +100,27 @@ class SeasonRaceCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (roundsPlayed != null && roundsTotal != null) ...<Widget>[
+              SizedBox(height: spacing.lg),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  theme.extension<QaddyRadius>()!.large,
+                ),
+                child: LinearProgressIndicator(
+                  value: roundsTotal == 0 ? 0 : roundsPlayed! / roundsTotal!,
+                  minHeight: 6,
+                  backgroundColor: colours.surface2,
+                  valueColor: AlwaysStoppedAnimation<Color>(colours.gold),
+                ),
+              ),
+              SizedBox(height: spacing.xs),
+              Text(
+                '$roundsPlayed of $roundsTotal rounds played',
+                style: typography.caption.copyWith(
+                  color: colours.textSecondary,
+                ),
+              ),
+            ],
             SizedBox(height: spacing.lg),
             Text(
               race.headline,

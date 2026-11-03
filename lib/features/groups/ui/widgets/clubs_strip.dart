@@ -9,8 +9,9 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
-import 'package:qaddy/features/community/logic/friend_insights.dart';
+import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group.dart';
+import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
 
 /// What a club card says beyond its name.
 class ClubPreview {
@@ -84,13 +85,7 @@ class _ClubCard extends StatelessWidget {
     final line = groupLine(group, nextRound: club.nextRound);
 
     // Each club gets its own colour (by position, so neighbours never match).
-    final palette = <Color>[
-      colours.accentTeal,
-      colours.accentIndigo,
-      colours.accentOrange,
-      colours.accentPink,
-    ];
-    final base = palette[index % palette.length];
+    final base = groupAccent(colours, index);
     final borderRadius = BorderRadius.circular(radius.large);
 
     return Semantics(
@@ -126,24 +121,7 @@ class _ClubCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      // The club's crest: its initial on a ring.
-                      Container(
-                        width: 36,
-                        height: 36,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: colours.gold, width: 2),
-                          color: onGradient.withValues(alpha: 0.10),
-                        ),
-                        child: Text(
-                          group.name.characters.first,
-                          style: typography.body.copyWith(
-                            color: colours.gold,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                      GroupCrest(name: group.name, size: 36),
                       const Spacer(),
                       Text(
                         group.name,

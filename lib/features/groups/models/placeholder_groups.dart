@@ -31,6 +31,7 @@ final Group saturdayBoys = Group(
   updatedAt: DateTime(2024),
   totalRounds: 18,
   totalTrips: 0,
+  description: 'Saturday mornings at Richmond. The banter is compulsory.',
   homeCourse: 'Richmond Golf Club',
   competitionFormat: 'Stableford',
   season: '2026 Season',
@@ -47,6 +48,7 @@ final Group _wednesdayWarriors = Group(
   updatedAt: DateTime(2025, 7),
   totalRounds: 0,
   totalTrips: 0,
+  description: 'Midweek rounds and long lunches.',
   season: '2026 Season',
 );
 
@@ -61,6 +63,7 @@ final Group _fridaySocialClub = Group(
   updatedAt: DateTime(2023, 3),
   totalRounds: 0,
   totalTrips: 0,
+  description: 'Nine holes, a cold one and a Summer Cup to win.',
   season: 'Summer Cup',
 );
 
@@ -75,6 +78,7 @@ final Group _familyGolfDays = Group(
   updatedAt: DateTime(2024, 9),
   totalRounds: 0,
   totalTrips: 0,
+  description: 'Three generations, one fairway.',
   season: 'Casual',
 );
 
@@ -130,3 +134,35 @@ const GroupUpcomingRound saturdayBoysUpcomingRound = GroupUpcomingRound(
   players: 8,
   sideGames: 'Longest Drive, Nearest the Pin',
 );
+
+// Group detail data is keyed by group id. Release 1 has full detail for
+// Saturday Boys only (see the file header); every other group answers with an
+// empty list or `null`, and the screens say so kindly instead of inventing it.
+
+/// The named members of [group] with their handicaps.
+List<GroupMember> membersOf(Group group) =>
+    group.id == saturdayBoys.id ? saturdayBoysMembers : const <GroupMember>[];
+
+/// [group]'s season standings, best first.
+List<GroupLeaderboardEntry> leaderboardOf(Group group) =>
+    group.id == saturdayBoys.id
+    ? saturdayBoysLeaderboard
+    : const <GroupLeaderboardEntry>[];
+
+/// [group]'s season summary, or `null` when there is none.
+GroupSeasonSummary? seasonSummaryOf(Group group) =>
+    group.id == saturdayBoys.id ? saturdayBoysSeasonSummary : null;
+
+/// [group]'s next round, or `null` when none is planned.
+GroupUpcomingRound? upcomingRoundOf(Group group) =>
+    group.id == saturdayBoys.id ? saturdayBoysUpcomingRound : null;
+
+/// The group with [id], or `null`.
+Group? groupById(String id) {
+  for (final group in groups) {
+    if (group.id == id) {
+      return group;
+    }
+  }
+  return null;
+}

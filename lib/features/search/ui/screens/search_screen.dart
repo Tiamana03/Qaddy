@@ -147,16 +147,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     for (final group in groups) {
       if (!matches(group.name)) continue;
-      final isDetailed = group.id == saturdayBoys.id;
       results.add(
         SearchResult(
           category: SearchCategory.groups,
           title: group.name,
           subtitle: '${group.totalMembers} members',
           icon: Icons.groups_outlined,
-          onTap: isDetailed
-              ? () => context.push(AppRoutes.friendsGroupDetails)
-              : null,
+          onTap: () => context.push(AppRoutes.friendsGroup(group.id)),
         ),
       );
     }

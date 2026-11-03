@@ -1,48 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 
-Future<void> _pumpWithRouter(WidgetTester tester) async {
-  final router = GoRouter(
+import '../../../../support/app_test_harness.dart';
+
+Future<void> _pump(WidgetTester tester, {Size? size}) async {
+  await pumpFriendsRouter(
+    tester,
     initialLocation: '/friends/groups',
+    size: size ?? const Size(400, 2400),
     routes: <RouteBase>[
       GoRoute(
         path: '/friends/groups',
         builder: (context, state) => const GroupsScreen(),
         routes: <RouteBase>[
           GoRoute(
-            path: 'details',
-            builder: (context, state) => const Text('Group Details'),
+            path: ':id',
+            builder: (context, state) =>
+                Text('Group: ${state.pathParameters['id']}'),
           ),
         ],
       ),
     ],
   );
-  await tester.pumpWidget(
-    MaterialApp.router(theme: QaddyTheme.dark, routerConfig: router),
-  );
+  await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('shows every placeholder group', (tester) async {
-    await _pumpWithRouter(tester);
+  testWidgets('shows every group with what it is about', (tester) async {
+    await _pump(tester);
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('Saturday Boys'), findsOneWidget);
-    expect(find.text('Wednesday Warriors'), findsOneWidget);
-    expect(find.text('Friday Social Club'), findsOneWidget);
-    expect(find.text('Family Golf Days'), findsOneWidget);
+    expect(find.text('Your crews'), findsOneWidget);
+    expect(find.text('4 groups · Saturday Boys play next'), findsOneWidget);
+    for (final name in <String>[
+      'Saturday Boys',
+      'Wednesday Warriors',
+      'Friday Social Club',
+      'Family Golf Days',
+    ]) {
+      expect(find.text(name), findsOneWidget, reason: name);
+    }
+    expect(
+      find.text('Saturday mornings at Richmond. The banter is compulsory.'),
+      findsOneWidget,
+    );
+    expect(find.text('Three generations, one fairway.'), findsOneWidget);
+    expect(find.text('8 members · 2026 Season'), findsOneWidget);
   });
 
-  testWidgets('tapping Saturday Boys opens Group Details', (tester) async {
-    await _pumpWithRouter(tester);
+  testWidgets('only the group with a round coming up says so', (tester) async {
+    await _pump(tester);
 
-    await tester.tap(find.text('Saturday Boys'));
-    await tester.pumpAndSettle();
+    expect(find.text('Next round Saturday, 8:20 AM'), findsOneWidget);
+  });
 
-    expect(find.text('Group Details'), findsOneWidget);
+  testWidgets('every group opens its own page', (tester) async {
+    for (final (name, id) in <(String, String)>[
+      ('Saturday Boys', 'saturday-boys'),
+      ('Wednesday Warriors', 'wednesday-warriors'),
+      ('Friday Social Club', 'friday-social-club'),
+      ('Family Golf Days', 'family-golf-days'),
+    ]) {
+      await _pump(tester);
+
+      await tester.tap(find.text(name));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Group: $id'), findsOneWidget, reason: name);
+    }
+  });
+
+  testWidgets('lays out on a small phone', (tester) async {
+    await _pump(tester, size: const Size(320, 2400));
+
+    expect(tester.takeException(), isNull);
   });
 }
