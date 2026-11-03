@@ -91,18 +91,23 @@ class RoundInvitee {
 
 /// Everyone invited to Saturday's round — see placeholder-data.md's "Friends"
 /// table (8 entries, matching the round's player count). The golfer is first.
-const List<RoundInvitee> upcomingRoundInvitees = <RoundInvitee>[
-  RoundInvitee(player: RoundPlayer(name: currentUserName, handicap: 8.4)),
-  RoundInvitee(player: RoundPlayer(name: 'Tom', handicap: 8)),
-  RoundInvitee(player: RoundPlayer(name: 'Ben', handicap: 12)),
-  RoundInvitee(player: RoundPlayer(name: 'Luke', handicap: 5)),
+final List<RoundInvitee> upcomingRoundInvitees = <RoundInvitee>[
   RoundInvitee(
+    player: RoundPlayer(
+      name: currentUserName,
+      handicap: currentUserHandicap ?? 0,
+    ),
+  ),
+  const RoundInvitee(player: RoundPlayer(name: 'Tom', handicap: 8)),
+  const RoundInvitee(player: RoundPlayer(name: 'Ben', handicap: 12)),
+  const RoundInvitee(player: RoundPlayer(name: 'Luke', handicap: 5)),
+  const RoundInvitee(
     player: RoundPlayer(name: 'Josh', handicap: 15),
     confirmed: false,
   ),
-  RoundInvitee(player: RoundPlayer(name: 'Nick', handicap: 10)),
-  RoundInvitee(player: RoundPlayer(name: 'Sam', handicap: 18)),
-  RoundInvitee(player: RoundPlayer(name: 'Liam', handicap: 7)),
+  const RoundInvitee(player: RoundPlayer(name: 'Nick', handicap: 10)),
+  const RoundInvitee(player: RoundPlayer(name: 'Sam', handicap: 18)),
+  const RoundInvitee(player: RoundPlayer(name: 'Liam', handicap: 7)),
 ];
 
 /// A side game played on one hole.

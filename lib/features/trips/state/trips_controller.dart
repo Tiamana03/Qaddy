@@ -11,8 +11,8 @@ library;
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_expense.dart';
@@ -199,7 +199,7 @@ class TripsController extends Notifier<TripsState> {
     final members = <TripMember>[
       TripMember(
         displayName: currentUserName,
-        handicap: profile.handicap,
+        handicap: ref.read(golferDetailsProvider).handicap ?? 0,
         role: TripRole.organiser,
         status: ParticipantStatus.confirmed,
       ),

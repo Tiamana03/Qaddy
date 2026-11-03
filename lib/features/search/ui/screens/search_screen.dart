@@ -16,6 +16,7 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
@@ -30,7 +31,6 @@ import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/search/models/search_result.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
@@ -218,13 +218,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    for (final course in profileFavouriteCourses) {
+    final home = ref.watch(golferDetailsProvider).homeCourse;
+    for (final course in <String>[if (home != null) home]) {
       if (!matches(course)) continue;
       results.add(
         SearchResult(
           category: SearchCategory.courses,
           title: course,
-          subtitle: 'Favourite course',
+          subtitle: 'Your home course',
           icon: Icons.golf_course_outlined,
           accent: colours.accentOrange,
           onTap: () => context.go(AppRoutes.profile),
@@ -309,7 +310,7 @@ class _SearchResultRow extends StatelessWidget {
                       color: colours.textPrimary,
                       fontWeight: FontWeight.w600,
                     ),
-                    highlight: colours.gold,
+                    highlight: colours.accent,
                   ),
                   if (result.subtitle != null) ...<Widget>[
                     SizedBox(height: spacing.xs),

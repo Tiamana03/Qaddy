@@ -238,6 +238,14 @@ class RoundsController extends Notifier<RoundsState> {
     );
   }
 
+  /// Forgets every finished round (a round in progress is left alone).
+  void clearHistory() {
+    if (state.history.isEmpty) {
+      return;
+    }
+    state = RoundsState(live: state.live);
+  }
+
   /// Throws the round away, keeping the last finished one.
   void discardRound() {
     if (state.live == null) {

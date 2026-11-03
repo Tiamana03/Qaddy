@@ -15,7 +15,10 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/golfer.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
@@ -28,7 +31,6 @@ import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/achievements/ui/widgets/achievement_shelf.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/profile/ui/widgets/player_card.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
@@ -45,6 +47,7 @@ class ProfileScreen extends ConsumerWidget {
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
 
+    final golfer = ref.watch(golferDetailsProvider);
     final history = ref.watch(roundHistoryProvider);
     final stats = CareerStats.of(history, you: currentUserName);
     final achievements = achievementsFor(stats);
@@ -83,15 +86,15 @@ class ProfileScreen extends ConsumerWidget {
           children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
             PlayerCard(
-              profile: profile,
+              golfer: golfer,
               stats: stats,
               onOpenStats: () => context.push(AppRoutes.profileStatistics),
               onStartRound: () => context.go(AppRoutes.rounds),
               onShare: () => shareOrCopy(
                 context,
                 ref,
-                text: _cardMessage(stats),
-                subject: '${profile.displayName} on Qaddy',
+                text: _cardMessage(golfer, stats),
+                subject: '${golfer.firstName} on Qaddy',
               ),
             ),
             SizedBox(height: spacing.sectionGap),
@@ -127,13 +130,20 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 /// The message shared with "Share my golf card".
-String _cardMessage(CareerStats? stats) {
-  final handicap = profile.handicap.toStringAsFixed(1);
+String _cardMessage(GolferProfile golfer, CareerStats? stats) {
+  final handicap = golfer.handicap;
+  final facts = <String>[
+    if (handicap != null) 'handicap ${handicapLabel(handicap)}',
+    if (golfer.homeCourse != null) 'plays at ${golfer.homeCourse}',
+  ].join(' · ');
   if (stats == null) {
-    return '${profile.displayName}: handicap $handicap at '
-        '${profile.homeCourse}. See you on the first tee. Played with Qaddy.';
+    return '${golfer.firstName}${facts.isEmpty ? '' : ': $facts'}. '
+        'See you on the first tee. Played with Qaddy.';
   }
-  return '${profile.displayName}: handicap $handicap · '
+  final lead = handicap == null
+      ? golfer.firstName
+      : '${golfer.firstName}: handicap ${handicapLabel(handicap)}';
+  return '$lead · '
       '${roundsLabel(stats.rounds)} · ${stats.wins} '
       '${stats.wins == 1 ? 'win' : 'wins'} · '
       '${stats.averagePoints.round()} points a round. Played with Qaddy.';

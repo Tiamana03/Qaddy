@@ -367,7 +367,7 @@ class _SideGames extends StatelessWidget {
                 Text(
                   'Hole ${game.hole}',
                   style: typography.body.copyWith(
-                    color: colours.gold,
+                    color: colours.accent,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

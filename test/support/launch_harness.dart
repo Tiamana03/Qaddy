@@ -9,7 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/features/authentication/state/session_controller.dart';
+import 'package:qaddy/features/authentication/ui/screens/golfer_setup_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/login_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/onboarding_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/sign_up_screen.dart';
@@ -19,11 +22,12 @@ import 'memory_document_storage.dart';
 
 /// What [pumpLaunch] gives back.
 class LaunchHarness {
-  LaunchHarness(this.container, this.router, this.storage);
+  LaunchHarness(this.container, this.router, this.storage, this.golferStorage);
 
   final ProviderContainer container;
   final GoRouter router;
   final MemoryDocumentStorage storage;
+  final MemoryDocumentStorage golferStorage;
 
   /// The location the router is at.
   String get location =>
@@ -38,6 +42,7 @@ Future<LaunchHarness> pumpLaunch(
   WidgetTester tester, {
   String initialLocation = AppRoutes.onboarding,
   MemoryDocumentStorage? storage,
+  MemoryDocumentStorage? golferStorage,
   bool reduceMotion = true,
   Size size = const Size(400, 800),
 }) async {
@@ -50,8 +55,14 @@ Future<LaunchHarness> pumpLaunch(
   addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
   final memory = storage ?? MemoryDocumentStorage();
+  final golfer = golferStorage ?? MemoryDocumentStorage();
+  // Saving a golfer changes who the app thinks you are; put it back after.
+  addTearDown(resetGolferForTests);
   final container = ProviderContainer(
-    overrides: <Override>[sessionStorageProvider.overrideWithValue(memory)],
+    overrides: <Override>[
+      sessionStorageProvider.overrideWithValue(memory),
+      golferStorageProvider.overrideWithValue(golfer),
+    ],
   );
   addTearDown(container.dispose);
   final router = GoRouter(
@@ -61,6 +72,10 @@ Future<LaunchHarness> pumpLaunch(
       GoRoute(
         path: AppRoutes.onboarding,
         builder: (_, __) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.setup,
+        builder: (_, __) => const GolferSetupScreen(),
       ),
       GoRoute(path: AppRoutes.login, builder: (_, __) => const LoginScreen()),
       GoRoute(path: AppRoutes.signUp, builder: (_, __) => const SignUpScreen()),
@@ -74,5 +89,5 @@ Future<LaunchHarness> pumpLaunch(
       child: MaterialApp.router(theme: QaddyTheme.light, routerConfig: router),
     ),
   );
-  return LaunchHarness(container, router, memory);
+  return LaunchHarness(container, router, memory, golfer);
 }

@@ -16,6 +16,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
@@ -23,6 +24,7 @@ import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/widgets/activity_feed_tile.dart';
@@ -32,8 +34,9 @@ import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
+import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
+import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
@@ -93,36 +96,47 @@ class DashboardScreen extends ConsumerWidget {
       ),
     ];
 
+    final golfer = ref.watch(golferDetailsProvider);
+    final earned = achievementsFor(stats).where((a) => a.unlocked).length;
+    final requests = ref.watch(incomingRequestsProvider);
+    final race = SeasonRace.of(
+      saturdayBoysLeaderboard,
+      yourName: currentUserName,
+      roundsRemaining: saturdayBoysSeasonSummary.roundsRemaining,
+    );
+
+    // Only what has really happened: the last round, what it earned, who is
+    // waiting on you and where the season stands.
     final highlights = <Highlight>[
+      if (lastRound != null)
+        Highlight(
+          icon: Icons.golf_course,
+          colour: colours.accentTeal,
+          text:
+              '${lastRound.position} at ${lastRound.course} · '
+              '${lastRound.stableford} points',
+          onTap: () => context.push(AppRoutes.roundComplete),
+        ),
+      if (earned > 0)
+        Highlight(
+          icon: Icons.emoji_events,
+          colour: colours.gold,
+          text:
+              '$earned ${earned == 1 ? 'achievement' : 'achievements'} earned',
+          onTap: () => context.go(AppRoutes.profile),
+        ),
+      for (final request in requests.take(2))
+        Highlight(
+          icon: Icons.group_add,
+          colour: colours.accentIndigo,
+          text: '${request.friend.displayName} wants to play with you',
+          onTap: () => context.push(AppRoutes.friendRequests),
+        ),
       Highlight(
-        icon: Icons.golf_course,
-        colour: colours.accentTeal,
-        text: 'Round completed at Richmond Golf Club',
-        onTap: () => context.push(AppRoutes.profileStatistics),
-      ),
-      Highlight(
-        icon: Icons.group_add,
-        colour: colours.accentIndigo,
-        text: 'Josh joined the Saturday Boys group',
+        icon: Icons.leaderboard_outlined,
+        colour: colours.accentOrange,
+        text: '${race.headline} in the ${saturdayBoys.name} table',
         onTap: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
-      ),
-      Highlight(
-        icon: Icons.luggage,
-        colour: colours.accentSky,
-        text: 'New golf trip created',
-        onTap: () => context.go(AppRoutes.trips),
-      ),
-      Highlight(
-        icon: Icons.trending_down,
-        colour: colours.gold,
-        text: 'Handicap reduced to ${profile.handicap.toStringAsFixed(1)}',
-        onTap: () => context.push(AppRoutes.profileStatistics),
-      ),
-      Highlight(
-        icon: Icons.emoji_events,
-        colour: colours.gold,
-        text: 'Achievement unlocked: Personal Best',
-        onTap: () => context.go(AppRoutes.profile),
       ),
     ];
 
@@ -156,7 +170,7 @@ class DashboardScreen extends ConsumerWidget {
             QaddyQuickActions(actions: quickActions),
             SizedBox(height: spacing.sectionGap),
             YourGameCard(
-              handicap: profile.handicap,
+              handicap: golfer.handicap,
               stats: stats,
               lastRound: lastRound,
               onOpen: () => context.push(AppRoutes.profileStatistics),
@@ -196,13 +210,14 @@ class DashboardScreen extends ConsumerWidget {
 
 /// The greeting, the golfer's name, today's date and the way to Search,
 /// Notifications and Profile.
-class _Header extends StatelessWidget {
+class _Header extends ConsumerWidget {
   const _Header({required this.now});
 
   final DateTime now;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unread = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
@@ -238,7 +253,7 @@ class _Header extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  currentUserName,
+                  currentUserDisplayName,
                   style: typography.h1.copyWith(color: colours.textPrimary),
                 ),
               ),
@@ -260,22 +275,23 @@ class _Header extends StatelessWidget {
             clipBehavior: Clip.none,
             children: <Widget>[
               const Icon(Icons.notifications_outlined),
-              Positioned(
-                right: -1,
-                top: -1,
-                child: Container(
-                  width: 9,
-                  height: 9,
-                  decoration: BoxDecoration(
-                    color: colours.gold,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: colours.surface1, width: 1.5),
+              if (unread > 0)
+                Positioned(
+                  right: -1,
+                  top: -1,
+                  child: Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: colours.gold,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: colours.surface1, width: 1.5),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
-          'Notifications',
+          unread > 0 ? 'Notifications, $unread new' : 'Notifications',
           () => context.push(AppRoutes.homeNotifications),
         ),
         Padding(
@@ -288,7 +304,7 @@ class _Header extends StatelessWidget {
             child: InkResponse(
               onTap: () => context.go(AppRoutes.profile),
               radius: 28,
-              child: const SizedBox(
+              child: SizedBox(
                 width: 48,
                 height: 48,
                 child: QaddyAvatar(name: currentUserName),

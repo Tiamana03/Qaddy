@@ -6,9 +6,15 @@ import 'package:qaddy/core/config/app_config.dart';
 import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/services/document_storage.dart';
+import 'package:qaddy/core/services/local_data.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/theme/theme_mode_controller.dart';
+import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/golfer.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/features/authentication/state/session_controller.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
+import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 import 'package:qaddy/features/trips/repositories/trips_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -31,6 +37,9 @@ Future<void> main() async {
       ];
       try {
         final preferences = await SharedPreferences.getInstance();
+        // Who the golfer is must be known before any seeded data is read.
+        final storedGolfer = preferences.getString(golferStorageKey);
+        useGolfer(storedGolfer == null ? null : decodeGolfer(storedGolfer));
         overrides.addAll(<Override>[
           tripsStorageProvider.overrideWithValue(
             SharedPreferencesTripsStorage(preferences),
@@ -43,6 +52,21 @@ Future<void> main() async {
           ),
           sessionStorageProvider.overrideWithValue(
             SharedPreferencesDocumentStorage(preferences, sessionStorageKey),
+          ),
+          golferStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(preferences, golferStorageKey),
+          ),
+          themeStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(preferences, themeStorageKey),
+          ),
+          notificationsStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(
+              preferences,
+              notificationsStorageKey,
+            ),
+          ),
+          localDataProvider.overrideWithValue(
+            SharedPreferencesLocalData(preferences),
           ),
         ]);
       } on Object catch (error) {
@@ -92,6 +116,7 @@ class QaddyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Qaddy',
@@ -103,6 +128,7 @@ class QaddyApp extends ConsumerWidget {
       // active theme follows the platform setting rather than forcing one.
       theme: QaddyTheme.light,
       darkTheme: QaddyTheme.dark,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }

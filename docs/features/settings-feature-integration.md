@@ -1,5 +1,7 @@
 # Settings Feature Integration
 
+> **Superseded in part (November 2026):** Settings now has working controls; see `docs/features/settings-release-candidate.md`.
+
 ## Overview
 
 This document defines how the complete Settings feature is integrated within Qaddy.

@@ -9,6 +9,7 @@ abstract final class RouteNames {
   static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String signUp = 'signUp';
+  static const String setup = 'setup';
   static const String home = 'home';
   static const String rounds = 'rounds';
   static const String roundScorecard = 'roundScorecard';

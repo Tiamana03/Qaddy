@@ -197,7 +197,7 @@ class _PodiumPlace extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: typography.small.copyWith(
-              color: isYou ? colours.gold : colours.textPrimary,
+              color: isYou ? colours.accent : colours.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),

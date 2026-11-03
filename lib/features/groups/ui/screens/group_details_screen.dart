@@ -461,7 +461,7 @@ class _MemberTile extends StatelessWidget {
                         child: Icon(
                           Icons.workspace_premium,
                           size: 18,
-                          color: colours.gold,
+                          color: colours.accent,
                         ),
                       ),
                     ),
@@ -473,7 +473,7 @@ class _MemberTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: typography.small.copyWith(
-                  color: isYou ? colours.gold : colours.textPrimary,
+                  color: isYou ? colours.accent : colours.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),

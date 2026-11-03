@@ -8,6 +8,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
@@ -26,8 +27,8 @@ class YourGameCard extends StatelessWidget {
     super.key,
   });
 
-  /// The golfer's handicap index.
-  final double handicap;
+  /// The golfer's handicap index, or `null` when they have not given one.
+  final double? handicap;
 
   /// What their finished rounds say, or `null` before the first one.
   final CareerStats? stats;
@@ -81,12 +82,20 @@ class YourGameCard extends StatelessWidget {
       ),
     );
 
+    final handicapValue = handicap;
     final handicapFigure = TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: animate ? 0 : handicap, end: handicap),
+      tween: Tween<double>(
+        begin: animate ? 0 : handicapValue ?? 0,
+        end: handicapValue ?? 0,
+      ),
       duration: const Duration(milliseconds: 900),
       curve: Curves.easeOutCubic,
       builder: (context, value, _) => Text(
-        value.toStringAsFixed(1),
+        handicapValue == null
+            ? '–'
+            : value == handicapValue
+            ? handicapLabel(value)
+            : value.toStringAsFixed(1),
         style: typography.display.copyWith(
           color: colours.textPrimary,
           fontSize: 56,
@@ -109,7 +118,7 @@ class YourGameCard extends StatelessWidget {
       onTap: onOpen,
       excludeSemantics: true,
       label:
-          'Your game. Handicap ${handicap.toStringAsFixed(1)}. $chipText. '
+          'Your game. ${handicapPhrase(handicapValue)}. $chipText. '
           '$spokenStats$spokenLast'
           'Opens your statistics.',
       child: QaddyCard(
@@ -172,7 +181,7 @@ class YourGameCard extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: typography.small.copyWith(
-                                    color: colours.gold,
+                                    color: colours.accent,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),

@@ -12,6 +12,7 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
@@ -59,7 +60,10 @@ class AccountsNotice extends StatelessWidget {
 void enterAsGuest(BuildContext context, WidgetRef ref) {
   QaddyHaptics.light();
   ref.read(sessionProvider.notifier).continueAsGuest();
-  context.go(AppRoutes.home);
+  // A golfer who has not said who they are is asked first.
+  context.go(
+    ref.read(golferProvider) == null ? AppRoutes.setup : AppRoutes.home,
+  );
 }
 
 /// What a valid sign-in or sign-up says when accounts are not open yet: the

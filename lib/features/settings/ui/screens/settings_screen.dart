@@ -1,149 +1,477 @@
-/// Qaddy's Settings screen — a read-only view of preferences that already
-/// exist elsewhere.
+/// Qaddy's Settings screen — the golfer's own details, how the app looks, which
+/// notifications they want, what is kept on their phone, and the plain facts
+/// about Qaddy. Everything here does something.
 ///
-/// See `docs/features/settings-feature-integration.md`. Release 1 is a
-/// single screen reached from Profile — see
-/// `docs/architecture/settings-engineering-decisions.md`'s "Settings Is
-/// Reached From Profile, Not the Bottom Navigation". This feature
-/// introduces no new model — see that same document's "Settings
-/// Introduces No New Model" — every value below is read from Profile,
-/// Notifications or `pubspec.yaml` directly.
+/// See `docs/features/settings-release-candidate.md`. Reached from Profile.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/config/app_info.dart';
+import 'package:qaddy/core/services/local_data.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
-import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
+import 'package:qaddy/core/theme/theme_mode_controller.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/golfer_form.dart';
+import 'package:qaddy/core/utils/formatting.dart';
+import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
+import 'package:qaddy/core/widgets/forms/qaddy_segmented_control.dart';
+import 'package:qaddy/core/widgets/forms/qaddy_switch_row.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
+import 'package:qaddy/core/widgets/rows/qaddy_nav_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/notifications/models/notification_item.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
-import 'package:qaddy/features/profile/models/profile.dart';
-
-/// The application version — sourced from `pubspec.yaml`'s `version` field,
-/// per `docs/standards/placeholder-settings-data.md`'s "Application"
-/// section. Kept here as a literal rather than read at runtime, since no
-/// package for reading `pubspec.yaml` (e.g. `package_info_plus`) exists in
-/// this project yet, and adding one for this alone is unjustified.
-const String _appVersion = '0.1.0';
+import 'package:qaddy/features/notifications/state/notifications_controller.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 
 /// Settings (route `/profile/settings`).
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    final golfer = ref.watch(golferDetailsProvider);
+    final mode = ref.watch(themeModeProvider);
+    final muted = ref.watch(notificationsProvider.select((s) => s.muted));
+    final rounds = ref.watch(roundHistoryProvider).length;
+
+    Future<void> editProfile() => showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: colours.surface1,
+      builder: (sheetContext) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          spacing.lg,
+          0,
+          spacing.lg,
+          MediaQuery.viewInsetsOf(sheetContext).bottom + spacing.xl,
+        ),
+        child: SingleChildScrollView(
+          child: GolferForm(
+            initial: golfer,
+            nameEditable: false,
+            submitLabel: 'Save',
+            onSubmit: (name, handicap, course) {
+              ref
+                  .read(golferProvider.notifier)
+                  .save(
+                    firstName: name,
+                    handicap: handicap,
+                    homeCourse: course,
+                  );
+              QaddyHaptics.success();
+              Navigator.of(sheetContext).pop();
+            },
+          ),
+        ),
+      ),
+    );
+
+    Future<void> clearRounds() async {
+      final sure = await showQaddyConfirm(
+        context,
+        title: 'Clear your rounds?',
+        message:
+            'This deletes the $rounds ${rounds == 1 ? 'round' : 'rounds'} '
+            'saved on this phone, along with the statistics and achievements '
+            'they built. It cannot be undone.',
+        confirmLabel: 'Clear rounds',
+        destructive: true,
+      );
+      if (sure) {
+        ref.read(roundsProvider.notifier).clearHistory();
+      }
+    }
+
+    Future<void> startOver() async {
+      final sure = await showQaddyConfirm(
+        context,
+        title: 'Start over?',
+        message:
+            'This clears everything Qaddy keeps on this phone — your name, '
+            'rounds, trips, bag and settings — and cannot be undone.',
+        confirmLabel: 'Start over',
+        destructive: true,
+      );
+      if (!sure || !context.mounted) {
+        return;
+      }
+      await ref.read(localDataProvider).clear();
+      if (!context.mounted) {
+        return;
+      }
+      // The seeded world was built around the old name, so a clean start needs
+      // the app opened afresh.
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => const PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: Text('Fresh start'),
+            content: Text(
+              'Everything has been cleared. Close Qaddy completely and open '
+              'it again to set up from scratch.',
+            ),
+          ),
+        ),
+      );
+    }
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            const _PrivacyCard(),
+            QaddyCard(
+              onTap: editProfile,
+              child: Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: FittedBox(
+                      child: QaddyAvatar(name: golfer.firstName),
+                    ),
+                  ),
+                  SizedBox(width: spacing.lg),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          golfer.firstName,
+                          style: typography.h2.copyWith(
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: spacing.xs),
+                        Text(
+                          '${handicapPhrase(golfer.handicap)} · '
+                          '${golfer.homeCourse ?? 'No home course yet'}',
+                          style: typography.small.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    'Edit',
+                    style: typography.body.copyWith(
+                      color: colours.accent,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _NotificationPreferencesCard(),
+            const QaddySectionHeading(title: 'Appearance'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  QaddySegmentedControl<ThemeMode>(
+                    segments: const <QaddySegment<ThemeMode>>[
+                      QaddySegment(
+                        value: ThemeMode.system,
+                        label: 'Auto',
+                        icon: Icons.brightness_auto_outlined,
+                      ),
+                      QaddySegment(
+                        value: ThemeMode.light,
+                        label: 'Light',
+                        icon: Icons.light_mode_outlined,
+                      ),
+                      QaddySegment(
+                        value: ThemeMode.dark,
+                        label: 'Dark',
+                        icon: Icons.dark_mode_outlined,
+                      ),
+                    ],
+                    selected: mode,
+                    onChanged: (value) {
+                      QaddyHaptics.selection();
+                      ref.read(themeModeProvider.notifier).choose(value);
+                    },
+                  ),
+                  SizedBox(height: spacing.sm),
+                  Text(
+                    mode == ThemeMode.system
+                        ? 'Qaddy follows your phone.'
+                        : 'Qaddy is always '
+                              '${themeModeLabel(mode).toLowerCase()}.',
+                    style: typography.small.copyWith(
+                      color: colours.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _AppearanceCard(),
+            const QaddySectionHeading(title: 'Notifications'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  for (final category in NotificationCategory.values)
+                    QaddySwitchRow(
+                      title: notificationCategoryLabel(category),
+                      subtitle: notificationCategoryBlurb(category),
+                      value: !muted.contains(category),
+                      onChanged: (on) => ref
+                          .read(notificationsProvider.notifier)
+                          .setEnabled(category, enabled: on),
+                    ),
+                  SizedBox(height: spacing.sm),
+                  Text(
+                    'These choose what shows in your Notifications and on the '
+                    "bell. Qaddy doesn't send push notifications yet.",
+                    style: typography.small.copyWith(
+                      color: colours.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _ApplicationCard(),
+            const QaddySectionHeading(title: 'Your account'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Icon(Icons.person_outline, color: colours.gold),
+                  SizedBox(width: spacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Playing as a guest',
+                          style: typography.body.copyWith(
+                            color: colours.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: spacing.xs),
+                        Text(
+                          'Everything is saved on this phone. Accounts open '
+                          'after the soft launch.',
+                          style: typography.small.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'Your data'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    _savedLine(rounds),
+                    style: typography.body.copyWith(
+                      color: colours.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: spacing.sm),
+                  if (rounds > 0)
+                    QaddyNavRow(
+                      icon: Icons.delete_outline,
+                      title: 'Clear my rounds',
+                      subtitle:
+                          'Delete $rounds saved '
+                          '${rounds == 1 ? 'round' : 'rounds'}',
+                      destructive: true,
+                      onTap: clearRounds,
+                    ),
+                  QaddyNavRow(
+                    icon: Icons.restart_alt,
+                    title: 'Start over',
+                    subtitle: 'Clear everything and set Qaddy up again',
+                    destructive: true,
+                    onTap: startOver,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'About'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Column(
+                children: <Widget>[
+                  QaddyNavRow(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Privacy',
+                    subtitle: 'Your golf stays on your phone',
+                    onTap: () => _showPrivacy(context),
+                  ),
+                  QaddyNavRow(
+                    icon: Icons.info_outline,
+                    title: 'About Qaddy',
+                    subtitle: 'Version $appVersionLabel',
+                    onTap: () => _showAbout(context),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: spacing.lg),
+            Center(
+              child: Text(
+                'Qaddy $appVersion · $appReleaseLabel',
+                style: typography.caption.copyWith(color: colours.textTertiary),
+              ),
+            ),
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
   }
 }
 
-class _PrivacyCard extends StatelessWidget {
-  const _PrivacyCard();
+Future<void> _showPrivacy(BuildContext context) {
+  final theme = Theme.of(context);
+  final colours = theme.extension<QaddyColours>()!;
+  final spacing = theme.extension<QaddySpacing>()!;
+  final typography = theme.extension<QaddyTypography>()!;
 
-  @override
-  Widget build(BuildContext context) {
-    return QaddySectionCard(
-      title: 'Privacy',
-      child: QaddyInfoRow(
-        label: 'Profile Visibility',
-        value: profileVisibilityLabel(profile.profileVisibility),
-      ),
-    );
-  }
-}
-
-class _NotificationPreferencesCard extends StatelessWidget {
-  const _NotificationPreferencesCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Notification Preferences',
-      child: Column(
-        children: <Widget>[
-          for (final (index, category)
-              in NotificationCategory.values.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            _PreferenceRow(label: notificationCategoryLabel(category)),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _PreferenceRow extends StatelessWidget {
-  const _PreferenceRow({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Row(
+  Widget point(String text) => Padding(
+    padding: EdgeInsets.only(bottom: spacing.md),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+        Icon(Icons.check_circle_outline, size: 20, color: colours.gold),
+        SizedBox(width: spacing.md),
         Expanded(
           child: Text(
-            label,
+            text,
             style: typography.body.copyWith(color: colours.textPrimary),
           ),
         ),
-        const QaddyStatusBadge(
-          label: 'Enabled',
-          tone: QaddyStatusBadgeTone.success,
-        ),
       ],
-    );
-  }
+    ),
+  );
+
+  return showModalBottomSheet<void>(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    showDragHandle: true,
+    backgroundColor: colours.surface1,
+    builder: (sheetContext) => SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(spacing.lg, 0, spacing.lg, spacing.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Your golf stays on your phone',
+            style: typography.h2.copyWith(color: colours.textPrimary),
+          ),
+          SizedBox(height: spacing.lg),
+          point(
+            'There are no accounts in this release. Your name, handicap, '
+            'rounds, trips and bag are saved only on this phone.',
+          ),
+          point(
+            "Nothing is sent to a Qaddy server, and Qaddy doesn't track you "
+            'or show ads. Crash reports are off.',
+          ),
+          point(
+            "Sharing an invite, a challenge or a scorecard uses your phone's "
+            'share sheet, and goes only where you send it.',
+          ),
+          point(
+            'You are in control: clear your rounds, or start over, any time '
+            'in Settings under Your data.',
+          ),
+          QaddyTertiaryButton(
+            label: 'Close',
+            onPressed: () => Navigator.of(sheetContext).pop(),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
-class _AppearanceCard extends StatelessWidget {
-  const _AppearanceCard();
+Future<void> _showAbout(BuildContext context) {
+  final theme = Theme.of(context);
+  final colours = theme.extension<QaddyColours>()!;
+  final spacing = theme.extension<QaddySpacing>()!;
+  final typography = theme.extension<QaddyTypography>()!;
 
-  @override
-  Widget build(BuildContext context) {
-    return const QaddySectionCard(
-      title: 'Appearance',
-      child: QaddyInfoRow(label: 'Theme', value: 'Dark'),
-    );
-  }
+  return showModalBottomSheet<void>(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    showDragHandle: true,
+    backgroundColor: colours.surface1,
+    builder: (sheetContext) => SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(spacing.lg, 0, spacing.lg, spacing.xl),
+      child: Column(
+        children: <Widget>[
+          const QaddyMark(size: 88),
+          SizedBox(height: spacing.lg),
+          Text('Qaddy', style: typography.h1.copyWith(color: colours.accent)),
+          SizedBox(height: spacing.xs),
+          Text(
+            "The golfer's ecosystem",
+            style: typography.body.copyWith(color: colours.textSecondary),
+          ),
+          SizedBox(height: spacing.lg),
+          Text(
+            'Score your rounds, plan the golf trip and play with your mates — '
+            'all in one place.',
+            textAlign: TextAlign.center,
+            style: typography.body.copyWith(color: colours.textPrimary),
+          ),
+          SizedBox(height: spacing.lg),
+          Text(
+            'Version $appVersionLabel · $appReleaseLabel',
+            style: typography.small.copyWith(color: colours.textTertiary),
+          ),
+          SizedBox(height: spacing.md),
+          QaddyTertiaryButton(
+            label: 'Close',
+            onPressed: () => Navigator.of(sheetContext).pop(),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
-class _ApplicationCard extends StatelessWidget {
-  const _ApplicationCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return const QaddySectionCard(
-      title: 'Application',
-      child: QaddyInfoRow(label: 'App Version', value: _appVersion),
-    );
-  }
-}
+/// What is kept on the phone, in a sentence.
+String _savedLine(int rounds) => rounds == 0
+    ? 'Your trips, bag and settings are saved on this phone.'
+    : 'On this phone: $rounds ${rounds == 1 ? 'round' : 'rounds'}, your '
+          'trips, your bag and your settings.';

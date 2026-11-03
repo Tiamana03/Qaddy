@@ -309,3 +309,23 @@ Make `TripsStorage` and `RoundsStorage` use `DocumentStorage` (keeping their pro
 Target
 
 Next Trips or Rounds review.
+
+---
+
+## TD-018 — Every golfer gets the same seeded world
+
+Priority: Medium
+
+Status: **Open** (logged during the Identity pass, November 2026)
+
+Current State
+
+The golfer is now their own (name, handicap, home course — `docs/features/identity.md`), but the friends, groups, trips, season table and rivalry around them are the same seeded data for every golfer, and the seeded world is built once per launch around the golfer's id, which is why the name cannot be changed without "Start over".
+
+Action
+
+When the backend arrives, replace the seeded world with real data and let the id be a real account id (then a name can change freely). Until then, keep it clearly labelled and out of the way.
+
+Target
+
+Release 2.

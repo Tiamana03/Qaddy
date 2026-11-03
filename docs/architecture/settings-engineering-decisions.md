@@ -1,5 +1,7 @@
 # Settings Engineering Decisions
 
+> **Superseded in part (November 2026):** Settings is no longer read-only; see `docs/features/settings-release-candidate.md`.
+
 **Version:** 1.0
 
 **Status:** Active

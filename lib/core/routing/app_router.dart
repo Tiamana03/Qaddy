@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/routing/navigation_shell.dart';
 import 'package:qaddy/core/routing/route_names.dart';
+import 'package:qaddy/features/authentication/ui/screens/golfer_setup_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/login_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/onboarding_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/sign_up_screen.dart';
@@ -91,6 +92,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.login,
         pageBuilder: (BuildContext context, GoRouterState state) =>
             _fadePage(state, const LoginScreen()),
+      ),
+      GoRoute(
+        path: AppRoutes.setup,
+        name: RouteNames.setup,
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _fadePage(state, const GolferSetupScreen()),
       ),
       GoRoute(
         path: AppRoutes.signUp,

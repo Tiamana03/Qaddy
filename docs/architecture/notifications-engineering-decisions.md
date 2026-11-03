@@ -1,5 +1,7 @@
 # Notifications Engineering Decisions
 
+> **Superseded in part (November 2026):** Notifications are no longer a fixed list of four placeholder messages. See `docs/features/notifications-release-candidate.md`.
+
 **Version:** 1.0
 
 **Status:** Active

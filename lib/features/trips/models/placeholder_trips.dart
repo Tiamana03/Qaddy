@@ -28,13 +28,16 @@ import 'package:qaddy/features/trips/models/trip_result.dart';
 import 'package:qaddy/features/trips/models/trip_transport.dart';
 import 'package:qaddy/features/trips/models/trip_weather.dart';
 
-// Every organiser is Tiamana — placeholder-trip-data.md's Engineering
-// Decisions.
-const String _organiser = user.currentUserName;
+// Every organiser is the golfer — placeholder-trip-data.md's Engineering
+// Decisions. Read lazily, so the seeded trips are built around whoever the
+// golfer said they are (see `docs/features/identity.md`).
+String get _organiser => user.currentUserName;
 
-/// The signed-in golfer's name — the organiser of every seeded trip and of
-/// any trip created in the app. Matches Profile's placeholder subject.
-const String currentUserName = _organiser;
+String get _organiserDisplay => user.currentUserDisplayName;
+
+/// The signed-in golfer's id — the organiser of every seeded trip and of any
+/// trip created in the app.
+String get currentUserName => _organiser;
 
 /// Melbourne Golf Weekend — the one trip seeded with a complete plan.
 final Trip melbourneGolfWeekend = Trip(
@@ -103,8 +106,8 @@ final List<Trip> seedTrips = <Trip>[
   queenstownGolfAdventure,
 ];
 
-const List<String> _squad = <String>[
-  'Tiamana',
+final List<String> _squad = <String>[
+  _organiser,
   'Ben',
   'Luke',
   'Josh',
@@ -116,56 +119,56 @@ const List<String> _squad = <String>[
 
 /// Melbourne Golf Weekend's plan.
 final TripPlan melbourneGolfWeekendPlan = TripPlan(
-  members: const <TripMember>[
+  members: <TripMember>[
     TripMember(
-      displayName: 'Tiamana',
-      handicap: 8.4,
+      displayName: _organiser,
+      handicap: user.currentUserHandicap ?? 0,
       role: TripRole.organiser,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Ben',
       handicap: 12,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Luke',
       handicap: 5,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Josh',
       handicap: 15,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Nick',
       handicap: 10,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Sam',
       handicap: 18,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Liam',
       handicap: 7,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Jack',
       handicap: 22,
       role: TripRole.player,
       status: ParticipantStatus.confirmed,
     ),
-    TripMember(
+    const TripMember(
       displayName: 'Tom',
       handicap: 8,
       role: TripRole.player,
@@ -219,12 +222,12 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
       notes: 'Last round — leave by 3 pm for the airport.',
     ),
   ],
-  playingGroups: const <TripPlayingGroup>[
+  playingGroups: <TripPlayingGroup>[
     TripPlayingGroup(
       name: 'Group 1',
-      players: <String>['Tiamana', 'Ben', 'Luke', 'Josh'],
+      players: <String>[_organiser, 'Ben', 'Luke', 'Josh'],
     ),
-    TripPlayingGroup(
+    const TripPlayingGroup(
       name: 'Group 2',
       players: <String>['Nick', 'Sam', 'Liam', 'Jack'],
     ),
@@ -274,11 +277,11 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
       phone: '(03) 5550 4899',
       website: 'www.racvhealesville.example',
       bookingNumber: 'RHR-482910',
-      rooms: const <TripRoom>[
-        TripRoom(name: 'Room 101', guests: <String>['Tiamana', 'Ben']),
-        TripRoom(name: 'Room 102', guests: <String>['Luke', 'Josh']),
-        TripRoom(name: 'Room 103', guests: <String>['Nick', 'Sam']),
-        TripRoom(name: 'Room 104', guests: <String>['Liam', 'Jack']),
+      rooms: <TripRoom>[
+        TripRoom(name: 'Room 101', guests: <String>[_organiser, 'Ben']),
+        const TripRoom(name: 'Room 102', guests: <String>['Luke', 'Josh']),
+        const TripRoom(name: 'Room 103', guests: <String>['Nick', 'Sam']),
+        const TripRoom(name: 'Room 104', guests: <String>['Liam', 'Jack']),
       ],
       totalCost: 3360,
       notes: 'Breakfast included. Late check-out requested for Tuesday.',
@@ -334,7 +337,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
       title: 'Team dinner',
       start: DateTime(2026, 11, 29, 19),
       location: 'The Healesville Hotel',
-      notes: 'Table booked for 9 under "Tiamana".',
+      notes: 'Table booked for 9 under "$_organiserDisplay".',
     ),
     TripItineraryItem(
       id: 'winery',
@@ -350,7 +353,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
       title: 'RACV Healesville — 3 nights',
       category: ExpenseCategory.accommodation,
       amount: 3360,
-      paidBy: 'Tiamana',
+      paidBy: _organiser,
       date: DateTime(2026, 10, 2),
       participants: _squad,
       settled: const <String>{'Ben', 'Luke', 'Josh', 'Nick', 'Liam'},
@@ -379,7 +382,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
       title: 'Cars and airport transfer',
       category: ExpenseCategory.transport,
       amount: 1100,
-      paidBy: 'Tiamana',
+      paidBy: _organiser,
       date: DateTime(2026, 10, 12),
       participants: _squad,
       settled: const <String>{
@@ -464,7 +467,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
     ),
     TripMessage(
       id: 'm-c',
-      sender: 'Tiamana',
+      sender: _organiser,
       text: "I've got the hire car booked. Room for four.",
       sentAt: DateTime(2026, 10, 22, 18, 20),
     ),
@@ -476,13 +479,13 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
     ),
     TripMessage(
       id: 'm-e',
-      sender: 'Tiamana',
+      sender: _organiser,
       text: 'Booked under my name for 7pm 🍽️',
       sentAt: DateTime(2026, 10, 23, 8, 41),
     ),
     TripMessage(
       id: 'm1',
-      sender: 'Tiamana',
+      sender: _organiser,
       text: 'Looking forward to this trip!',
       sentAt: DateTime(2026, 10, 24, 19, 12),
     ),
@@ -501,7 +504,7 @@ final TripPlan melbourneGolfWeekendPlan = TripPlan(
   ],
   notes:
       'Bring cash for caddies at Royal Melbourne. Dinner reservations are '
-      'under Tiamana.',
+      'under $_organiserDisplay.',
   updates: <TripUpdate>[
     TripUpdate(
       text: 'Added the team dinner on Sunday',
@@ -521,11 +524,11 @@ final Map<String, TripPlan> seedPlans = <String, TripPlan>{
 };
 
 /// Melbourne Golf Weekend's final results (shown on Trip Complete).
-const List<TripAward> melbourneGolfWeekendResults = <TripAward>[
-  TripAward(award: 'Trip Champion', winner: 'Tiamana'),
-  TripAward(award: 'Runner Up', winner: 'Ben'),
-  TripAward(award: 'Longest Drive', winner: 'Luke'),
-  TripAward(award: 'Nearest The Pin', winner: 'Josh'),
+final List<TripAward> melbourneGolfWeekendResults = <TripAward>[
+  TripAward(award: 'Trip Champion', winner: _organiser),
+  const TripAward(award: 'Runner Up', winner: 'Ben'),
+  const TripAward(award: 'Longest Drive', winner: 'Luke'),
+  const TripAward(award: 'Nearest The Pin', winner: 'Josh'),
 ];
 
 /// Trip-wide statistics — see placeholder-trip-data.md's "Trip Statistics".

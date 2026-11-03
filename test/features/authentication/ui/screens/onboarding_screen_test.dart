@@ -67,7 +67,9 @@ void main() {
     expect(h.storage.document, contains('"onboardingComplete":true'));
   });
 
-  testWidgets('Continue as guest goes into the app as a guest', (tester) async {
+  testWidgets('Continue as guest asks who is playing, as a guest', (
+    tester,
+  ) async {
     final h = await pumpLaunch(tester);
     await tester.tap(find.text('Skip'));
     await tester.pumpAndSettle();
@@ -75,7 +77,7 @@ void main() {
     await tester.tap(find.text('Continue as guest'));
     await tester.pumpAndSettle();
 
-    expect(h.location, AppRoutes.home);
+    expect(h.location, AppRoutes.setup);
     expect(h.container.read(sessionProvider).isGuest, isTrue);
   });
 

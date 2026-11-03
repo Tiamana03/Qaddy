@@ -85,7 +85,7 @@ void main() {
     await tester.tap(find.text('Continue as guest').last);
     await tester.pumpAndSettle();
 
-    expect(h.location, AppRoutes.home);
+    expect(h.location, AppRoutes.setup);
     expect(h.container.read(sessionProvider).isGuest, isTrue);
   });
 
@@ -109,7 +109,7 @@ void main() {
 
     await _tap(tester, 'Continue as guest');
 
-    expect(h.location, AppRoutes.home);
+    expect(h.location, AppRoutes.setup);
     expect(h.container.read(sessionProvider).isGuest, isTrue);
   });
 

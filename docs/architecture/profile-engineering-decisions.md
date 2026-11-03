@@ -1,5 +1,7 @@
 # Profile Engineering Decisions
 
+> **Superseded in part (November 2026):** the placeholder `Profile` model is gone; the golfer is now a local guest profile, see `docs/features/identity.md`.
+
 **Version:** 1.0
 
 **Status:** Active

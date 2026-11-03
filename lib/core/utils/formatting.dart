@@ -61,3 +61,14 @@ String ordinal(int n) {
 String handicapLabel(double handicap) => handicap == handicap.roundToDouble()
     ? handicap.toStringAsFixed(0)
     : handicap.toStringAsFixed(1);
+
+/// "Handicap 8.4", or "No handicap yet" for a golfer who has not given one.
+String handicapPhrase(double? handicap) => handicap == null
+    ? 'No handicap yet'
+    : 'Handicap ${handicapLabel(handicap)}';
+
+/// The number to show while a countdown counts up to [target], [t] of the way
+/// there (0–1). It never passes through 1 on the way to a bigger number, so a
+/// caption like "days to go" is never briefly wrong ("1 days").
+int countedUp(int target, double t) =>
+    target <= 1 ? target : (target * t).round().clamp(2, target);

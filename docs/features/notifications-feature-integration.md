@@ -1,5 +1,7 @@
 # Notifications Feature Integration
 
+> **Superseded in part (November 2026):** Notifications are now derived from real state with read/unread; see `docs/features/notifications-release-candidate.md`.
+
 ## Overview
 
 This document defines how the complete Notifications feature is integrated within Qaddy.

@@ -7,6 +7,7 @@
 /// three groups only need the summary fields shown on the Groups list.
 library;
 
+import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 
@@ -14,9 +15,9 @@ import 'package:qaddy/features/groups/models/group_detail.dart';
 final Group saturdayBoys = Group(
   id: 'saturday-boys',
   name: 'Saturday Boys',
-  ownerId: 'Tiamana',
-  memberIds: const <String>[
-    'Tiamana',
+  ownerId: currentUserName,
+  memberIds: <String>[
+    currentUserName,
     'Tom',
     'Ben',
     'Luke',
@@ -92,15 +93,15 @@ final List<Group> groups = <Group>[
 
 /// Saturday Boys' named members with handicaps — see
 /// placeholder-group-data.md's "Saturday Boys > Members" table.
-const List<GroupMember> saturdayBoysMembers = <GroupMember>[
-  GroupMember(name: 'Tiamana', handicap: 8.4),
-  GroupMember(name: 'Tom', handicap: 8),
-  GroupMember(name: 'Ben', handicap: 12),
-  GroupMember(name: 'Luke', handicap: 5),
-  GroupMember(name: 'Josh', handicap: 15),
-  GroupMember(name: 'Nick', handicap: 10),
-  GroupMember(name: 'Sam', handicap: 18),
-  GroupMember(name: 'Liam', handicap: 7),
+final List<GroupMember> saturdayBoysMembers = <GroupMember>[
+  GroupMember(name: currentUserName, handicap: currentUserHandicap ?? 0),
+  const GroupMember(name: 'Tom', handicap: 8),
+  const GroupMember(name: 'Ben', handicap: 12),
+  const GroupMember(name: 'Luke', handicap: 5),
+  const GroupMember(name: 'Josh', handicap: 15),
+  const GroupMember(name: 'Nick', handicap: 10),
+  const GroupMember(name: 'Sam', handicap: 18),
+  const GroupMember(name: 'Liam', handicap: 7),
 ];
 
 /// Saturday Boys' current season summary.
@@ -113,16 +114,16 @@ const GroupSeasonSummary saturdayBoysSeasonSummary = GroupSeasonSummary(
 );
 
 /// Saturday Boys' season leaderboard.
-const List<GroupLeaderboardEntry> saturdayBoysLeaderboard =
+final List<GroupLeaderboardEntry> saturdayBoysLeaderboard =
     <GroupLeaderboardEntry>[
-      GroupLeaderboardEntry(rank: 1, player: 'Luke', points: 118),
-      GroupLeaderboardEntry(rank: 2, player: 'Tom', points: 111),
-      GroupLeaderboardEntry(rank: 3, player: 'Nick', points: 105),
-      GroupLeaderboardEntry(rank: 4, player: 'Ben', points: 101),
-      GroupLeaderboardEntry(rank: 5, player: 'Tiamana', points: 97),
-      GroupLeaderboardEntry(rank: 6, player: 'Liam', points: 93),
-      GroupLeaderboardEntry(rank: 7, player: 'Josh', points: 89),
-      GroupLeaderboardEntry(rank: 8, player: 'Sam', points: 84),
+      const GroupLeaderboardEntry(rank: 1, player: 'Luke', points: 118),
+      const GroupLeaderboardEntry(rank: 2, player: 'Tom', points: 111),
+      const GroupLeaderboardEntry(rank: 3, player: 'Nick', points: 105),
+      const GroupLeaderboardEntry(rank: 4, player: 'Ben', points: 101),
+      GroupLeaderboardEntry(rank: 5, player: currentUserName, points: 97),
+      const GroupLeaderboardEntry(rank: 6, player: 'Liam', points: 93),
+      const GroupLeaderboardEntry(rank: 7, player: 'Josh', points: 89),
+      const GroupLeaderboardEntry(rank: 8, player: 'Sam', points: 84),
     ];
 
 /// Saturday Boys' upcoming group round.

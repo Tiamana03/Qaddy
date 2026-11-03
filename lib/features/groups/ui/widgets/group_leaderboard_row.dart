@@ -89,7 +89,7 @@ class GroupLeaderboardRow extends StatelessWidget {
                       label,
                       overflow: TextOverflow.ellipsis,
                       style: typography.body.copyWith(
-                        color: isYou ? colours.gold : colours.textPrimary,
+                        color: isYou ? colours.accent : colours.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/user/golfer.dart';
 import 'package:qaddy/features/authentication/models/session.dart';
 import 'package:qaddy/features/authentication/state/session_controller.dart';
 import 'package:qaddy/features/authentication/ui/screens/splash_screen.dart';
@@ -45,6 +46,30 @@ void main() {
     final storage = MemoryDocumentStorage(
       encodeSession(const AuthSession(onboardingComplete: true, isGuest: true)),
     );
+    final golfer = MemoryDocumentStorage(
+      encodeGolfer(GolferProfile(firstName: 'Sam', joinedAt: DateTime(2026))),
+    );
+    final h = await pumpLaunch(
+      tester,
+      initialLocation: AppRoutes.splash,
+      storage: storage,
+      golferStorage: golfer,
+      reduceMotion: false,
+    );
+
+    await tester.pump(splashDuration + const Duration(milliseconds: 50));
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(h.location, AppRoutes.home);
+    expect(find.text('The app'), findsOneWidget);
+  });
+
+  testWidgets('a golfer who has not said who they are is asked first', (
+    tester,
+  ) async {
+    final storage = MemoryDocumentStorage(
+      encodeSession(const AuthSession(onboardingComplete: true, isGuest: true)),
+    );
     final h = await pumpLaunch(
       tester,
       initialLocation: AppRoutes.splash,
@@ -55,8 +80,8 @@ void main() {
     await tester.pump(splashDuration + const Duration(milliseconds: 50));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(h.location, AppRoutes.home);
-    expect(find.text('The app'), findsOneWidget);
+    expect(h.location, AppRoutes.setup);
+    expect(find.text("Who's teeing off?"), findsOneWidget);
   });
 
   testWidgets('with reduced motion the splash is brief', (tester) async {

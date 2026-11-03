@@ -13,7 +13,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.notifications_outlined));
     await tester.pumpAndSettle();
-    expect(find.text('Total Notifications'), findsOneWidget);
+    expect(find.text("What's happening"), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

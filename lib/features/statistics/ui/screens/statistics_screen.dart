@@ -17,7 +17,9 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
@@ -28,7 +30,6 @@ import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
 import 'package:qaddy/features/statistics/logic/stats_story.dart';
@@ -79,7 +80,11 @@ class _Story extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: staggered(<Widget>[
           SizedBox(height: spacing.lg),
-          _Hero(stats: stats, hasResults: hasResults),
+          _Hero(
+            stats: stats,
+            hasResults: hasResults,
+            handicap: ref.watch(golferDetailsProvider).handicap,
+          ),
           SizedBox(height: spacing.sectionGap),
           const QaddySectionHeading(title: 'Your form'),
           SizedBox(height: spacing.md),
@@ -113,7 +118,13 @@ class _Story extends ConsumerWidget {
 
 /// The headline: the average, said big, and what is behind it.
 class _Hero extends StatelessWidget {
-  const _Hero({required this.stats, required this.hasResults});
+  const _Hero({
+    required this.stats,
+    required this.hasResults,
+    required this.handicap,
+  });
+
+  final double? handicap;
 
   final CareerStats stats;
   final bool hasResults;
@@ -201,10 +212,11 @@ class _Hero extends StatelessWidget {
                     ? '1 win · ${winRateLabel(stats)}'
                     : '${stats.wins} wins · ${winRateLabel(stats)}',
               ),
-              QaddyInfoChip(
-                icon: Icons.speed_outlined,
-                text: 'Handicap ${profile.handicap.toStringAsFixed(1)}',
-              ),
+              if (handicap case final handicap?)
+                QaddyInfoChip(
+                  icon: Icons.speed_outlined,
+                  text: 'Handicap ${handicapLabel(handicap)}',
+                ),
             ],
           ),
         ],

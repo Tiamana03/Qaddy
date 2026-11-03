@@ -11,6 +11,7 @@ import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../../support/app_test_harness.dart';
+import '../../../support/played_rounds.dart';
 
 /// A Sunday morning: the round is six days away and the Melbourne trip 27.
 final DateTime _sundayMorning = DateTime(2026, 11, 1, 9);
@@ -33,6 +34,7 @@ const List<String> _destinations = <String>[
   '/trips/melbourne-golf-weekend',
   '/friends',
   '/friends/search',
+  '/friends/requests',
   '/friends/groups/saturday-boys',
   '/profile',
   '/profile/statistics',
@@ -361,11 +363,11 @@ void main() {
 
   group('highlights', () {
     for (final (text, path) in <(String, String)>[
-      ('Round completed at Richmond Golf Club', '/profile/statistics'),
-      ('Josh joined the Saturday Boys group', '/friends/groups/saturday-boys'),
-      ('New golf trip created', '/trips'),
-      ('Handicap reduced to 8.4', '/profile/statistics'),
-      ('Achievement unlocked: Personal Best', '/profile'),
+      (
+        "You're 5th in the Saturday Boys table",
+        '/friends/groups/saturday-boys',
+      ),
+      ('Sam wants to play with you', '/friends/requests'),
     ]) {
       testWidgets('"$text" leads to $path', (tester) async {
         await _pump(tester);
@@ -375,6 +377,41 @@ void main() {
         expect(find.text('Go: $path'), findsOneWidget);
       });
     }
+
+    testWidgets('nothing is made up before any round is played', (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      expect(find.textContaining('Round completed'), findsNothing);
+      expect(find.textContaining('Handicap reduced'), findsNothing);
+      expect(find.textContaining('achievement'), findsNothing);
+    });
+
+    testWidgets('a played round shows its result and what it earned', (
+      tester,
+    ) async {
+      final played = PlayedRounds()..play(1, List<int>.filled(18, 4));
+      useScreen(tester, const Size(400, 3200));
+      final router = GoRouter(initialLocation: '/home', routes: _routes());
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: played.container,
+          child: MaterialApp.router(
+            theme: QaddyTheme.dark,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('points'), findsWidgets);
+      expect(find.textContaining('achievement'), findsOneWidget);
+
+      await _tap(tester, find.textContaining('achievement'));
+      expect(find.text('Go: /profile'), findsOneWidget);
+    });
   });
 
   group('the header', () {
@@ -388,7 +425,7 @@ void main() {
     testWidgets('the bell opens Notifications', (tester) async {
       await _pump(tester);
 
-      await _tap(tester, find.byTooltip('Notifications'));
+      await _tap(tester, find.byIcon(Icons.notifications_outlined));
 
       expect(find.text('Go: /home/notifications'), findsOneWidget);
     });

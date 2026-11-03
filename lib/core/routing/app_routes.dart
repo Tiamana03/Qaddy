@@ -8,6 +8,7 @@ abstract final class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signUp = '/signup';
+  static const String setup = '/setup';
   static const String home = '/home';
   static const String rounds = '/rounds';
   static const String roundScorecard = '/rounds/scorecard';

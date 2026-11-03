@@ -14,6 +14,7 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
 import 'package:qaddy/features/authentication/state/session_controller.dart';
 import 'package:qaddy/features/authentication/ui/widgets/launch_scaffold.dart';
@@ -51,7 +52,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return;
     }
     final seen = ref.read(sessionProvider).onboardingComplete;
-    context.go(seen ? AppRoutes.home : AppRoutes.onboarding);
+    final known = ref.read(golferProvider) != null;
+    context.go(
+      !seen
+          ? AppRoutes.onboarding
+          : known
+          ? AppRoutes.home
+          : AppRoutes.setup,
+    );
   }
 
   @override
