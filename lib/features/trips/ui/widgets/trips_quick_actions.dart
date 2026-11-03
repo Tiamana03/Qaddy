@@ -20,7 +20,7 @@ class TripsQuickActions extends StatelessWidget {
     super.key,
   });
 
-  /// Called when "Create Trip" is tapped.
+  /// Called when "Create trip" is tapped.
   final VoidCallback onCreateTrip;
 
   /// Called when "Browse Trips" is tapped.
@@ -34,7 +34,7 @@ class TripsQuickActions extends StatelessWidget {
       children: <Widget>[
         Expanded(
           flex: 3,
-          child: QaddyGoldButton(label: 'Create Trip', onPressed: onCreateTrip),
+          child: QaddyGoldButton(label: 'Create trip', onPressed: onCreateTrip),
         ),
         SizedBox(width: spacing.sm),
         Expanded(

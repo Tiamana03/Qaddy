@@ -161,7 +161,7 @@ void main() {
     for (final (label, path) in <(String, String)>[
       ('Start a round', '/rounds'),
       ('Plan a trip', '/trips/create'),
-      ('Add a mate', '/friends/search'),
+      ('Invite a mate', '/friends/search'),
       ('My stats', '/profile/statistics'),
     ]) {
       testWidgets('$label opens $path', (tester) async {

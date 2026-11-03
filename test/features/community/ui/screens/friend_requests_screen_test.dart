@@ -11,7 +11,7 @@ void main() {
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
     expect(find.text('Incoming'), findsOneWidget);
-    expect(find.text('Outgoing'), findsOneWidget);
+    expect(find.text('Sent'), findsOneWidget);
     expect(find.text('Sam'), findsOneWidget);
     expect(find.text('Josh'), findsOneWidget);
   });
@@ -23,7 +23,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(find.text('Sam'), findsNothing);
-    expect(find.text('No incoming requests'), findsOneWidget);
+    expect(find.text('Incoming'), findsNothing);
     expect(c.read(confirmedFriendsProvider).map((f) => f.id), contains('sam'));
   });
 
@@ -35,7 +35,6 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pump(const Duration(milliseconds: 400));
 
-    expect(find.text('No incoming requests'), findsOneWidget);
-    expect(find.text('No outgoing requests'), findsOneWidget);
+    expect(find.text('No requests'), findsOneWidget);
   });
 }

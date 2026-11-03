@@ -162,7 +162,7 @@ class _CourseFormState extends ConsumerState<CourseForm> {
     final plan = ref.watch(tripPlanProvider(widget.tripId));
 
     return TripFormPage(
-      title: course == null ? 'Add Course' : 'Edit Course',
+      title: course == null ? 'Add course' : 'Edit course',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _valid,
       onSave: _save,
@@ -185,7 +185,7 @@ class _CourseFormState extends ConsumerState<CourseForm> {
       builder: (context, {required submitted}) => <Widget>[
         QaddyTextField(
           controller: _name,
-          label: 'Course Name',
+          label: 'Course name',
           hintText: 'Kingston Heath',
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
@@ -232,7 +232,7 @@ class _CourseFormState extends ConsumerState<CourseForm> {
         FieldPair(
           left: QaddyTextField(
             controller: _rating,
-            label: 'Course Rating',
+            label: 'Course rating',
             hintText: '73.4',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: <TextInputFormatter>[
@@ -277,7 +277,7 @@ class _CourseFormState extends ConsumerState<CourseForm> {
         const TripFieldGap(),
         QaddyTextField(
           controller: _dressCode,
-          label: 'Dress Code',
+          label: 'Dress code',
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.next,
         ),

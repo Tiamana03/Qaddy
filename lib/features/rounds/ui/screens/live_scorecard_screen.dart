@@ -112,7 +112,9 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
           final ok = await showQaddyConfirm(
             context,
             title: 'Discard this round?',
-            message: 'The scores you have entered will be lost.',
+            message:
+                'The scores you have entered will be lost. This can’t be '
+                'undone.',
             confirmLabel: 'Discard',
             destructive: true,
           );

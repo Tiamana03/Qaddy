@@ -67,14 +67,14 @@ void main() {
     expect(find.text('Upcoming'), findsOneWidget);
     expect(find.text('Past'), findsOneWidget);
     expect(find.text('Countries'), findsOneWidget);
-    expect(find.text('Create Trip'), findsOneWidget);
+    expect(find.text('Create trip'), findsOneWidget);
     expect(find.text('Browse Trips'), findsOneWidget);
 
     // The rest of the upcoming trips, then the past ones — the featured trip
     // is not repeated in the list.
-    expect(find.text('Upcoming Trips'), findsOneWidget);
+    expect(find.text('Upcoming trips'), findsOneWidget);
     expect(find.text('Gold Coast Golf Escape'), findsOneWidget);
-    expect(find.text('Past Trips'), findsOneWidget);
+    expect(find.text('Past trips'), findsOneWidget);
     expect(find.text('Tasmania Golf Tour'), findsOneWidget);
     expect(find.text('Queenstown Golf Adventure'), findsOneWidget);
   });
@@ -105,8 +105,8 @@ void main() {
   ) async {
     await _pump(tester);
 
-    await tester.ensureVisible(find.text('Create Trip'));
-    await tester.tap(find.text('Create Trip'));
+    await tester.ensureVisible(find.text('Create trip'));
+    await tester.tap(find.text('Create trip'));
     await tester.pumpAndSettle();
 
     expect(find.text('Create Trip Form'), findsOneWidget);
@@ -114,13 +114,13 @@ void main() {
 
   testWidgets('Browse Trips scrolls down to the trip lists', (tester) async {
     await _pump(tester);
-    final before = tester.getTopLeft(find.text('Upcoming Trips')).dy;
+    final before = tester.getTopLeft(find.text('Upcoming trips')).dy;
 
     await tester.ensureVisible(find.text('Browse Trips'));
     await tester.tap(find.text('Browse Trips'));
     await tester.pumpAndSettle();
 
-    expect(tester.getTopLeft(find.text('Upcoming Trips')).dy, lessThan(before));
+    expect(tester.getTopLeft(find.text('Upcoming trips')).dy, lessThan(before));
   });
 
   testWidgets('a newly created trip appears under Upcoming Trips', (
@@ -142,7 +142,7 @@ void main() {
 
     await tester.ensureVisible(find.text('Barossa Valley Weekend'));
     expect(find.text('Barossa Valley Weekend'), findsOneWidget);
-    expect(find.text('Upcoming Trips'), findsOneWidget);
+    expect(find.text('Upcoming trips'), findsOneWidget);
   });
 
   testWidgets('shows an empty state instead of a hero with no trips', (
@@ -161,8 +161,8 @@ void main() {
     expect(find.text('Split costs fairly'), findsOneWidget);
     expect(find.text('Create your first trip'), findsOneWidget);
     expect(find.text('NEXT TRIP'), findsNothing);
-    expect(find.text('Upcoming Trips'), findsNothing);
-    expect(find.text('Past Trips'), findsNothing);
+    expect(find.text('Upcoming trips'), findsNothing);
+    expect(find.text('Past trips'), findsNothing);
   });
 
   testWidgets('shows the lists in more columns on a desktop-width screen', (

@@ -87,7 +87,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       QaddyQuickAction(
         icon: Icons.person_add_alt_1_outlined,
-        label: 'Add a mate',
+        label: 'Invite a mate',
         colour: colours.accentPink,
         onTap: () => context.push(AppRoutes.friendsSearch),
       ),

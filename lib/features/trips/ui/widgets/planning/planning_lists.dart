@@ -171,7 +171,7 @@ class PlanningChecklist extends StatelessWidget {
           ),
         SizedBox(height: spacing.md),
         QaddySecondaryButton(
-          label: 'Add Task',
+          label: 'Add task',
           onPressed: () => context.push(addRoute),
         ),
       ],
@@ -242,7 +242,7 @@ class PlanningPacking extends StatelessWidget {
           ),
         SizedBox(height: spacing.md),
         QaddySecondaryButton(
-          label: 'Add Packing Item',
+          label: 'Add packing item',
           onPressed: () => context.push(addRoute),
         ),
       ],

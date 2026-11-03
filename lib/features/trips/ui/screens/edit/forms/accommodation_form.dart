@@ -176,7 +176,7 @@ class _AccommodationFormState extends ConsumerState<AccommodationForm> {
     final typography = theme.extension<QaddyTypography>()!;
 
     return TripFormPage(
-      title: stay == null ? 'Add Accommodation' : 'Edit Accommodation',
+      title: stay == null ? 'Add accommodation' : 'Edit accommodation',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _valid,
       onSave: _save,
@@ -254,13 +254,13 @@ class _AccommodationFormState extends ConsumerState<AccommodationForm> {
         FieldPair(
           left: QaddyTextField(
             controller: _booking,
-            label: 'Booking Number',
+            label: 'Booking number',
             textCapitalization: TextCapitalization.characters,
             textInputAction: TextInputAction.next,
           ),
           right: QaddyTextField(
             controller: _cost,
-            label: 'Total Cost',
+            label: 'Total cost',
             hintText: r'$3,360',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             errorText: submitted && !_costOk ? 'Check this number' : null,
@@ -316,7 +316,7 @@ class _AccommodationFormState extends ConsumerState<AccommodationForm> {
             ),
           ),
         QaddySecondaryButton(
-          label: 'Add Room',
+          label: 'Add room',
           onPressed: () =>
               setState(() => _rooms.add(_RoomDraft('', <String>{}))),
         ),

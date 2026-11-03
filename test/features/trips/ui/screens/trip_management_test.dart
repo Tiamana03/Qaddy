@@ -37,15 +37,15 @@ void main() {
       await pumpApp(tester, location: AppRoutes.tripSettings(melbourneId));
 
       for (final label in <String>[
-        'Rename Trip',
-        'Change Cover Image',
-        'Invite More Friends',
-        'Share Invite',
-        'Export Itinerary',
-        'Duplicate Trip',
-        'Archive Trip',
-        'Leave Trip',
-        'Delete Trip',
+        'Rename trip',
+        'Change cover image',
+        'Invite more friends',
+        'Share invite',
+        'Export itinerary',
+        'Duplicate trip',
+        'Archive trip',
+        'Leave trip',
+        'Delete trip',
       ]) {
         expect(find.text(label), findsOneWidget, reason: label);
       }
@@ -60,7 +60,7 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Share Invite');
+      await _tapText(tester, 'Share invite');
 
       final message = shareOf(c).shared.single;
       expect(
@@ -86,7 +86,7 @@ void main() {
       );
       shareOf(c).outcome = ShareOutcome.unavailable;
 
-      await _tapText(tester, 'Share Invite');
+      await _tapText(tester, 'Share invite');
 
       expect(
         copied.single,
@@ -101,7 +101,7 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Duplicate Trip');
+      await _tapText(tester, 'Duplicate trip');
       await _confirm(tester, 'Duplicate');
 
       final copy = c
@@ -123,7 +123,7 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Archive Trip');
+      await _tapText(tester, 'Archive trip');
       await _confirm(tester, 'Archive');
 
       expect(_trip(c, melbourneId)!.status, TripStatus.archived);
@@ -138,7 +138,7 @@ void main() {
       c.read(tripsProvider.notifier).archiveTrip(melbourneId);
       await tester.pumpAndSettle();
 
-      expect(find.text('Archive Trip'), findsNothing);
+      expect(find.text('Archive trip'), findsNothing);
       await _tapText(tester, 'Restore from Archive');
 
       expect(_trip(c, melbourneId)!.isUpcoming, isTrue);
@@ -150,7 +150,7 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Delete Trip');
+      await _tapText(tester, 'Delete trip');
       expect(find.text('Delete this trip?'), findsOneWidget);
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
@@ -164,12 +164,12 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Delete Trip');
-      await _confirm(tester, 'Delete Trip');
+      await _tapText(tester, 'Delete trip');
+      await _confirm(tester, 'Delete trip');
 
       expect(_trip(c, melbourneId), isNull);
       expect(find.text('Melbourne Golf Weekend'), findsNothing);
-      expect(find.text('Create Trip'), findsOneWidget);
+      expect(find.text('Create trip'), findsOneWidget);
     });
 
     testWidgets('Leave removes the trip from my list', (tester) async {
@@ -178,7 +178,7 @@ void main() {
         location: AppRoutes.tripSettings(melbourneId),
       );
 
-      await _tapText(tester, 'Leave Trip');
+      await _tapText(tester, 'Leave trip');
       await _confirm(tester, 'Leave');
 
       expect(_trip(c, melbourneId), isNull);
@@ -191,7 +191,7 @@ void main() {
 
       await tester.tap(find.byTooltip('Trip Settings'));
       await tester.pumpAndSettle();
-      expect(find.text('Duplicate Trip'), findsOneWidget);
+      expect(find.text('Duplicate trip'), findsOneWidget);
     });
   });
 
@@ -249,7 +249,7 @@ void main() {
         location: AppRoutes.tripInvite(melbourneId),
       );
 
-      await _tapText(tester, 'Share Invite');
+      await _tapText(tester, 'Share invite');
 
       expect(
         shareOf(c).shared.single,
@@ -261,7 +261,7 @@ void main() {
       final copied = captureClipboard(tester);
       await pumpApp(tester, location: AppRoutes.tripInvite(melbourneId));
 
-      await _tapText(tester, 'Copy Message');
+      await _tapText(tester, 'Copy message');
 
       expect(
         copied.single,
@@ -295,7 +295,7 @@ void main() {
         location: AppRoutes.tripExport(melbourneId),
       );
 
-      await _tapText(tester, 'Share Itinerary');
+      await _tapText(tester, 'Share itinerary');
 
       expect(
         shareOf(c).shared.single,

@@ -177,7 +177,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     final equalShare = people == 0 ? 0.0 : (_amountValue ?? 0) / people;
 
     return TripFormPage(
-      title: expense == null ? 'Add Expense' : 'Edit Expense',
+      title: expense == null ? 'Add expense' : 'Edit expense',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _valid,
       onSave: _save,

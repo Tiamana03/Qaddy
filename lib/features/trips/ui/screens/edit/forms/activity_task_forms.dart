@@ -111,7 +111,7 @@ class _ActivityFormState extends ConsumerState<ActivityForm> {
     ];
 
     return TripFormPage(
-      title: item == null ? 'Add Activity' : 'Edit Activity',
+      title: item == null ? 'Add activity' : 'Edit activity',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _title.text.trim().isNotEmpty,
       onSave: _save,
@@ -243,7 +243,7 @@ class _TaskFormState extends ConsumerState<TaskForm> {
     final task = widget.task;
 
     return TripFormPage(
-      title: task == null ? 'Add Task' : 'Edit Task',
+      title: task == null ? 'Add task' : 'Edit task',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _title.text.trim().isNotEmpty,
       onSave: _save,

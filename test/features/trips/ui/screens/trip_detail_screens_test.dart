@@ -65,7 +65,7 @@ void main() {
 
       await _tap(tester, 'Expenses');
 
-      expect(find.text('Trip Cost'), findsOneWidget);
+      expect(find.text('Trip cost'), findsOneWidget);
     });
 
     testWidgets('a trip with nothing planned says so, and still works', (
@@ -180,7 +180,7 @@ void main() {
     testWidgets('works out the green fees from the players', (tester) async {
       await pumpApp(tester, location: course('kingston-heath'));
 
-      expect(find.text('Green Fees'), findsOneWidget);
+      expect(find.text('Green fees'), findsOneWidget);
       expect(find.text(r'$250'), findsOneWidget);
       expect(find.text(r'$2,000'), findsOneWidget);
     });
@@ -255,7 +255,7 @@ void main() {
     ) async {
       final c = await pumpApp(tester, location: course('kingston-heath'));
 
-      await _tap(tester, 'Get Directions');
+      await _tap(tester, 'Get directions');
 
       final uri = launcherOf(c).opened.single;
       expect(uri.path, '/maps/dir/');
@@ -276,7 +276,7 @@ void main() {
       final c = await pumpApp(tester, location: course('kingston-heath'));
       launcherOf(c).canOpen = false;
 
-      await _tap(tester, 'Get Directions');
+      await _tap(tester, 'Get directions');
 
       expect(copied.single, '1 Heath Road, Cheltenham VIC 3192');
       expect(find.textContaining('Could not open'), findsOneWidget);
@@ -500,9 +500,9 @@ void main() {
     testWidgets('lists who owes who and every expense', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripExpenses(melbourneId));
 
-      expect(find.text('Who Owes Who'), findsOneWidget);
+      expect(find.text('Who owes who'), findsOneWidget);
       expect(find.text('Tiamana owes Ben'), findsOneWidget);
-      expect(find.text('Expense History'), findsOneWidget);
+      expect(find.text('Expense history'), findsOneWidget);
       expect(find.text('Green fees — 3 rounds'), findsOneWidget);
       expect(find.text('Dinner deposits'), findsOneWidget);
     });
@@ -519,7 +519,7 @@ void main() {
       await tester.tap(find.bySemanticsLabel('Mark Tiamana paid').first);
       await tester.pumpAndSettle();
       expect(find.text('Mark as paid?'), findsOneWidget);
-      await tester.tap(find.text('Mark Paid').last);
+      await tester.tap(find.text('Mark paid').last);
       await tester.pumpAndSettle();
 
       final after = summariseExpenses(
@@ -571,7 +571,7 @@ void main() {
     testWidgets('Add Expense opens the form', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripExpenses(melbourneId));
 
-      await _tap(tester, 'Add Expense');
+      await _tap(tester, 'Add expense');
 
       expect(find.text('What was it for?'), findsOneWidget);
     });
@@ -629,7 +629,7 @@ void main() {
 
       await _tap(tester, 'Add your flights');
 
-      expect(find.text('Add Flight'), findsWidgets);
+      expect(find.text('Add flight'), findsWidgets);
       expect(find.text('Airline'), findsOneWidget);
     });
 
@@ -796,9 +796,9 @@ void main() {
       await pumpApp(tester, location: AppRoutes.tripPlanning(melbourneId));
 
       await _tap(tester, 'Tasks');
-      await _tap(tester, 'Add Task');
+      await _tap(tester, 'Add task');
 
-      expect(find.text('Add Task'), findsWidgets);
+      expect(find.text('Add task'), findsWidgets);
       expect(find.text('Book the Saturday dinner'), findsOneWidget);
     });
   });

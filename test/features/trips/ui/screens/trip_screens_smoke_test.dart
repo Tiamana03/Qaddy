@@ -50,7 +50,7 @@ void main() {
   testWidgets('expenses shows the trip cost', (tester) async {
     await pumpTrips(tester, const TripExpensesScreen(tripId: melbourneId));
 
-    expect(find.text('Trip Cost'), findsOneWidget);
+    expect(find.text('Trip cost'), findsOneWidget);
     expect(find.text(r'$11,500'), findsOneWidget);
   });
 

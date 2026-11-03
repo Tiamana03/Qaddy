@@ -76,7 +76,7 @@ class TripDetailsScreen extends ConsumerWidget {
         title: Text(trip.name),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Edit Trip',
+            tooltip: 'Edit trip',
             onPressed: () => context.push(AppRoutes.tripEdit(tripId)),
             icon: const Icon(Icons.edit_outlined),
           ),
@@ -218,7 +218,7 @@ class TripDetailsScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: spacing.md),
                   QaddySecondaryButton(
-                    label: 'Invite Friends',
+                    label: 'Invite friends',
                     onPressed: () => context.push(AppRoutes.tripInvite(tripId)),
                   ),
                 ],
@@ -239,7 +239,7 @@ class TripDetailsScreen extends ConsumerWidget {
             ],
             SizedBox(height: spacing.sectionGap),
             QaddySecondaryButton(
-              label: 'Complete Trip',
+              label: 'Complete trip',
               onPressed: () => context.push(AppRoutes.tripComplete(tripId)),
             ),
             SizedBox(height: spacing.xl),

@@ -65,3 +65,9 @@ Search Friends listed the seeded mates with an **Add Friend** button that did no
 # Limits
 
 The Sample Clubhouse is the same for every golfer, and some sample people still appear in places a golfer can act on (inviting "Tom" to a sample round). That is intended: it is the demonstration. The next step (Release 2) is real mates, groups and trips created by the golfer.
+
+# Where the sample lives on the community screens (added with the RC polish)
+
+- **Friend Requests** and **Activity Feed** carry the Sample Clubhouse banner (they only ever hold sample people today). Each request has a SAMPLE badge. With nothing to show they say so ("No requests", "Nothing yet") and offer *Invite a mate*, instead of two empty boxes or a blank page.
+- **Friends List** rows all open something: Tom his profile, everyone else a quick look with an invite. With no mates it invites one.
+- **Rounds**: a saved round keeps the course and the hole layout it was played on, so changing the home course or removing the Sample Clubhouse never makes past rounds unreadable.

@@ -49,3 +49,13 @@ These still appear in more than one feature and should be extracted the next tim
 - The press-down tile (Dashboard shortcuts, club cards, squad faces).
 - The outlined cheer pill (activity tile) and the info chip on the Dashboard hero.
 - The big-number-over-caption stat (Dashboard "Your game", Friends peek sheet).
+
+---
+
+# Copy conventions (November 2026)
+
+- **Sentence case** for everything a golfer taps or fills in: buttons ("Add flight", "Start round"), field labels ("Trip name", "Booking reference"), list actions ("Duplicate trip") and section headings ("Who owes who", "Notes to self"). The one exception is a destination that is a proper name: Trips, Home, Rounds, Settings, Golf Bag ("Back to Trips", "Open Settings").
+- **Title Case** only for navigation-bar titles that name a feature ("Trip Details", "Friends List", "Friend Requests").
+- **Confirmations** all go through `showQaddyConfirm`: a question title ("Delete this trip?"), one sentence on what happens, and a verb that matches the action ("Delete trip", not "OK"). Anything that cannot be undone is `destructive` and says so.
+- **Empty states** all use `QaddyEmptyState`: say why it is empty, then offer the one next step. A screen whose only content is sample content labels it (`SampleBanner`).
+- **Never a pretend person.** See `docs/features/sample-clubhouse.md`.

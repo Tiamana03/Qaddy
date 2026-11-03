@@ -152,7 +152,7 @@ class _FlightFormState extends ConsumerState<FlightForm> {
     final flight = widget.flight;
 
     return TripFormPage(
-      title: flight == null ? 'Add Flight' : 'Edit Flight',
+      title: flight == null ? 'Add flight' : 'Edit flight',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _valid,
       onSave: _save,
@@ -185,7 +185,7 @@ class _FlightFormState extends ConsumerState<FlightForm> {
           ),
           right: QaddyTextField(
             controller: _number,
-            label: 'Flight Number',
+            label: 'Flight number',
             hintText: 'QF431',
             textCapitalization: TextCapitalization.characters,
             textInputAction: TextInputAction.next,
@@ -263,7 +263,7 @@ class _FlightFormState extends ConsumerState<FlightForm> {
         const TripFieldGap(),
         QaddyTextField(
           controller: _reference,
-          label: 'Booking Reference',
+          label: 'Booking reference',
           textCapitalization: TextCapitalization.characters,
         ),
         const FormLabel('Check-in'),

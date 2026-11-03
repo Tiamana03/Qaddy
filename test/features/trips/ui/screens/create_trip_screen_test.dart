@@ -53,7 +53,7 @@ Future<void> _pickToday(WidgetTester tester, int fieldIndex) async {
 
 Future<void> _fillValidForm(WidgetTester tester) async {
   await tester.enterText(
-    find.widgetWithText(TextField, 'Trip Name'),
+    find.widgetWithText(TextField, 'Trip name'),
     'Barossa',
   );
   await tester.enterText(
@@ -71,17 +71,17 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(AlertDialog), findsNothing);
-    expect(find.text('Create Trip'), findsOneWidget);
-    expect(find.text('Trip Name'), findsOneWidget);
+    expect(find.text('Create trip'), findsOneWidget);
+    expect(find.text('Trip name'), findsOneWidget);
     expect(find.text('Destination'), findsOneWidget);
-    expect(find.text('Start Date'), findsOneWidget);
-    expect(find.text('End Date'), findsOneWidget);
+    expect(find.text('Start date'), findsOneWidget);
+    expect(find.text('End date'), findsOneWidget);
     expect(find.text('Description'), findsOneWidget);
     expect(find.text('Private'), findsOneWidget);
     expect(find.text('Public'), findsOneWidget);
-    expect(find.text('Invite Friends'), findsOneWidget);
+    expect(find.text('Invite friends'), findsOneWidget);
     expect(find.textContaining('Pick a look'), findsOneWidget);
-    expect(find.text('Save Trip'), findsOneWidget);
+    expect(find.text('Save trip'), findsOneWidget);
   });
 
   testWidgets('previews the trip live as it is filled in', (tester) async {
@@ -92,7 +92,7 @@ void main() {
     expect(find.text('When?'), findsOneWidget);
 
     await tester.enterText(
-      find.widgetWithText(TextField, 'Trip Name'),
+      find.widgetWithText(TextField, 'Trip name'),
       'Barossa Weekend',
     );
     await tester.enterText(
@@ -121,7 +121,7 @@ void main() {
 
     expect(find.text('Give your trip a name'), findsNothing);
 
-    await tester.tap(find.text('Save Trip'));
+    await tester.tap(find.text('Save trip'));
     await tester.pumpAndSettle();
 
     expect(find.text('Give your trip a name'), findsOneWidget);
@@ -134,7 +134,7 @@ void main() {
     final container = await _pump(tester);
     final before = container.read(tripsProvider).trips.length;
 
-    await tester.tap(find.text('Save Trip'));
+    await tester.tap(find.text('Save trip'));
     await tester.pumpAndSettle();
 
     expect(container.read(tripsProvider).trips, hasLength(before));
@@ -147,7 +147,7 @@ void main() {
     final container = await _pump(tester);
 
     await _fillValidForm(tester);
-    await tester.tap(find.text('Save Trip'));
+    await tester.tap(find.text('Save trip'));
     await tester.pumpAndSettle();
 
     final created = container
@@ -176,7 +176,7 @@ void main() {
       find.textContaining('Anyone you share the trip with'),
       findsOneWidget,
     );
-    await tester.tap(find.text('Save Trip'));
+    await tester.tap(find.text('Save trip'));
     await tester.pumpAndSettle();
 
     final created = container

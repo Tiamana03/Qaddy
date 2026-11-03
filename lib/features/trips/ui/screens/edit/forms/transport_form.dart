@@ -113,7 +113,7 @@ class _TransportFormState extends ConsumerState<TransportForm> {
     final leg = widget.transport;
 
     return TripFormPage(
-      title: leg == null ? 'Add Transport' : 'Edit Transport',
+      title: leg == null ? 'Add transport' : 'Edit transport',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _hasPlace,
       onSave: _save,
@@ -195,7 +195,7 @@ class _TransportFormState extends ConsumerState<TransportForm> {
           const TripFieldGap(),
           QaddyTextField(
             controller: _reference,
-            label: 'Booking Reference',
+            label: 'Booking reference',
             textCapitalization: TextCapitalization.characters,
             textInputAction: TextInputAction.next,
           ),

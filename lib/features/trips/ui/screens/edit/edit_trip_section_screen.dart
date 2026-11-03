@@ -151,7 +151,7 @@ class _DetailsFormState extends ConsumerState<_DetailsForm> {
         SizedBox(height: spacing.lg),
         QaddyTextField(
           controller: _name,
-          label: 'Trip Name',
+          label: 'Trip name',
           textCapitalization: TextCapitalization.words,
           errorText: submitted && _name.text.trim().isEmpty
               ? 'Give your trip a name'
@@ -226,7 +226,7 @@ class _DatesFormState extends ConsumerState<_DatesForm> {
           ),
       builder: (context, {required submitted}) => <Widget>[
         QaddyDateField(
-          label: 'Start Date',
+          label: 'Start date',
           value: _start,
           onChanged: (date) => setState(() {
             _start = date;
@@ -237,7 +237,7 @@ class _DatesFormState extends ConsumerState<_DatesForm> {
         ),
         const TripFieldGap(),
         QaddyDateField(
-          label: 'End Date',
+          label: 'End date',
           value: _end,
           firstDate: _start,
           errorText: valid ? null : 'End date must be on or after the start',
@@ -770,14 +770,14 @@ String _noun(TripEditSection section) => switch (section) {
 };
 
 String _singular(TripEditSection section) => switch (section) {
-  TripEditSection.accommodation => 'Accommodation',
-  TripEditSection.flights => 'Flight',
-  TripEditSection.transport => 'Transport',
-  TripEditSection.courses => 'Course',
-  TripEditSection.expenses => 'Expense',
-  TripEditSection.itinerary => 'Activity',
-  TripEditSection.tasks => 'Task',
-  TripEditSection.weather => 'Forecast Day',
-  TripEditSection.packing => 'Packing Item',
+  TripEditSection.accommodation => 'accommodation',
+  TripEditSection.flights => 'flight',
+  TripEditSection.transport => 'transport',
+  TripEditSection.courses => 'course',
+  TripEditSection.expenses => 'expense',
+  TripEditSection.itinerary => 'activity',
+  TripEditSection.tasks => 'task',
+  TripEditSection.weather => 'forecast day',
+  TripEditSection.packing => 'packing item',
   _ => section.label,
 };

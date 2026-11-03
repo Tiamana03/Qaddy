@@ -71,8 +71,8 @@ void main() {
   testWidgets('Return Home navigates to /home', (tester) async {
     await _pumpWithRouter(tester);
 
-    await tester.ensureVisible(find.text('Return Home'));
-    await tester.tap(find.text('Return Home'));
+    await tester.ensureVisible(find.text('Return home'));
+    await tester.tap(find.text('Return home'));
     await tester.pumpAndSettle();
 
     expect(find.text('Home'), findsOneWidget);
@@ -83,8 +83,8 @@ void main() {
   ) async {
     await _pumpWithRouter(tester);
 
-    await tester.ensureVisible(find.text('Archive Trip'));
-    await tester.tap(find.text('Archive Trip'));
+    await tester.ensureVisible(find.text('Archive trip'));
+    await tester.tap(find.text('Archive trip'));
     await tester.pumpAndSettle();
 
     expect(find.text('Trips'), findsOneWidget);
@@ -96,8 +96,8 @@ void main() {
       tester.element(find.byType(TripCompleteScreen)),
     );
 
-    await tester.ensureVisible(find.text('Archive Trip'));
-    await tester.tap(find.text('Archive Trip'));
+    await tester.ensureVisible(find.text('Archive trip'));
+    await tester.tap(find.text('Archive trip'));
     await tester.pumpAndSettle();
 
     expect(

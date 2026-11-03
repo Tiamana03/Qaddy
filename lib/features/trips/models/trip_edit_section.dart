@@ -19,7 +19,7 @@ enum TripEditSection {
   tasks('tasks', 'Checklist', Icons.checklist),
   notes('notes', 'Notes', Icons.sticky_note_2_outlined),
   weather('weather', 'Weather', Icons.wb_sunny_outlined),
-  packing('packing', 'Packing List', Icons.luggage_outlined),
+  packing('packing', 'Packing list', Icons.luggage_outlined),
   chat('chat', 'Chat Settings', Icons.chat_bubble_outline);
 
   const TripEditSection(this.slug, this.label, this.icon);

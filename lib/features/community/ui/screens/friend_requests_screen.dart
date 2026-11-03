@@ -1,13 +1,18 @@
 /// Qaddy's Friend Requests screen — incoming and outgoing requests.
 ///
-/// See `docs/architecture/friend-requests.md`.
+/// Qaddy has no accounts yet, so the only requests are the Sample Clubhouse's;
+/// the screen says so, and with none it says that plainly instead of showing
+/// two empty boxes. See `docs/architecture/friend-requests.md` and
+/// `docs/features/sample-clubhouse.md`.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/cards/sample_banner.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
@@ -19,13 +24,27 @@ class FriendRequestsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
+    final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
     final incoming = ref.watch(incomingRequestsProvider);
     final outgoing = ref.watch(outgoingRequestsProvider);
+
+    if (incoming.isEmpty && outgoing.isEmpty) {
+      return QaddyScaffold(
+        appBar: AppBar(title: const Text('Friend Requests')),
+        body: Center(
+          child: QaddyEmptyState(
+            icon: Icons.inbox_outlined,
+            title: 'No requests',
+            message:
+                "You're all caught up. When a mate wants to play with "
+                'you, it shows up here.',
+            actionLabel: 'Invite a mate',
+            onAction: () => context.push(AppRoutes.friendsSearch),
+          ),
+        ),
+      );
+    }
 
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Friend Requests')),
@@ -34,39 +53,30 @@ class FriendRequestsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
-            Text(
-              'Incoming',
-              style: typography.h3.copyWith(color: colours.textPrimary),
+            SampleBanner(
+              message:
+                  'These requests are pretend, so you can see how '
+                  'answering one works.',
+              onManage: () => context.push(AppRoutes.profileSettings),
             ),
-            SizedBox(height: spacing.md),
-            if (incoming.isEmpty)
-              const QaddyEmptyState(
-                icon: Icons.inbox_outlined,
-                title: 'No incoming requests',
-                message: "You're all caught up.",
-              )
-            else
+            SizedBox(height: spacing.sectionGap),
+            if (incoming.isNotEmpty) ...<Widget>[
+              QaddySectionHeading(title: 'Incoming', badge: incoming.length),
+              SizedBox(height: spacing.md),
               for (final (index, request) in incoming.indexed) ...<Widget>[
                 if (index > 0) SizedBox(height: spacing.cardGap),
                 FriendRequestRow(request: request),
               ],
-            SizedBox(height: spacing.sectionGap),
-            Text(
-              'Outgoing',
-              style: typography.h3.copyWith(color: colours.textPrimary),
-            ),
-            SizedBox(height: spacing.md),
-            if (outgoing.isEmpty)
-              const QaddyEmptyState(
-                icon: Icons.outbox_outlined,
-                title: 'No outgoing requests',
-                message: "You haven't sent any friend requests.",
-              )
-            else
+              SizedBox(height: spacing.sectionGap),
+            ],
+            if (outgoing.isNotEmpty) ...<Widget>[
+              QaddySectionHeading(title: 'Sent', badge: outgoing.length),
+              SizedBox(height: spacing.md),
               for (final (index, request) in outgoing.indexed) ...<Widget>[
                 if (index > 0) SizedBox(height: spacing.cardGap),
                 FriendRequestRow(request: request),
               ],
+            ],
             SizedBox(height: spacing.xl),
           ],
         ),

@@ -1,7 +1,7 @@
 /// Qaddy's Create Trip screen — a full-page form that starts a new trip.
 ///
 /// Saving adds the trip to the store as `planning`, so it appears under
-/// "Upcoming Trips" on the Trips overview straight away.
+/// "Upcoming trips" on the Trips overview straight away.
 library;
 
 import 'package:flutter/material.dart';
@@ -131,7 +131,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
     final earliest = DateTime(today.year, today.month, today.day);
 
     return QaddyScaffold(
-      appBar: AppBar(title: const Text('Create Trip')),
+      appBar: AppBar(title: const Text('Create trip')),
       body: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
@@ -164,7 +164,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                 children: <Widget>[
                   QaddyTextField(
                     controller: _name,
-                    label: 'Trip Name',
+                    label: 'Trip name',
                     hintText: 'Our golf weekend',
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
@@ -184,7 +184,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   ),
                   SizedBox(height: spacing.md),
                   QaddyDateField(
-                    label: 'Start Date',
+                    label: 'Start date',
                     value: _start,
                     firstDate: earliest,
                     errorText: _startError,
@@ -197,7 +197,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   ),
                   SizedBox(height: spacing.md),
                   QaddyDateField(
-                    label: 'End Date',
+                    label: 'End date',
                     value: _end,
                     firstDate: _start ?? earliest,
                     errorText: _endError,
@@ -232,7 +232,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             ),
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
-              title: 'Who Can See This Trip',
+              title: 'Who can see this trip',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -266,7 +266,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             ),
             SizedBox(height: spacing.sectionGap),
             QaddySectionCard(
-              title: 'Invite Friends',
+              title: 'Invite friends',
               child: TripFriendPicker(
                 selected: _invited,
                 onChanged: (names) => setState(() => _invited = names),
@@ -275,7 +275,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
             SizedBox(height: spacing.sectionGap),
             QaddyGoldButton(
               label: _invited.isEmpty
-                  ? 'Save Trip'
+                  ? 'Save trip'
                   : 'Save Trip & Invite ${_invited.length}',
               icon: Icons.flight_takeoff,
               onPressed: _save,

@@ -73,7 +73,7 @@ class _TripPlanningScreenState extends ConsumerState<TripPlanningScreen> {
         title: const Text('Planning'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Activity',
+            tooltip: 'Add activity',
             onPressed: () => context.push(
               AppRoutes.tripEditItem(
                 widget.tripId,

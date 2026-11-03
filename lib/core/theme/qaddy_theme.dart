@@ -12,6 +12,7 @@
 /// so this is the only place that consistency could be enforced.
 library;
 
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
@@ -114,13 +115,14 @@ abstract final class QaddyTheme {
           side: BorderSide(color: colours.border),
         ),
       ),
-      // One modern fade-and-drift transition on every platform, so moving
-      // between pages feels the same (and calm) on phone, web and desktop.
+      // A calm fade-and-drift transition everywhere except Apple platforms,
+      // which keep the native slide because it carries the edge-swipe-back
+      // gesture every iPhone golfer expects.
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: FadeForwardsPageTransitionsBuilder(),
-          TargetPlatform.macOS: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
           TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
           TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
           TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),

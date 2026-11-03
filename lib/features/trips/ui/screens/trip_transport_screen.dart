@@ -52,7 +52,7 @@ class TripTransportScreen extends ConsumerWidget {
         title: const Text('Transport'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Transport',
+            tooltip: 'Add transport',
             onPressed: () => context.push(addRoute),
             icon: const Icon(Icons.add),
           ),
@@ -70,7 +70,7 @@ class TripTransportScreen extends ConsumerWidget {
                 message:
                     'Add rental cars, airport transfers, rides and parking so '
                     'everyone knows how they are getting around.',
-                actionLabel: 'Add Transport',
+                actionLabel: 'Add transport',
                 onAction: () => context.push(addRoute),
               )
             else ...<Widget>[
@@ -96,7 +96,7 @@ class TripTransportScreen extends ConsumerWidget {
               ],
               SizedBox(height: spacing.md),
               QaddyGoldButton(
-                label: 'Add Transport',
+                label: 'Add transport',
                 onPressed: () => context.push(addRoute),
               ),
             ],

@@ -28,7 +28,7 @@ void main() {
     testWidgets('lists every editable section with a summary', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripEdit(melbourneId));
 
-      expect(find.text('Edit Trip'), findsOneWidget);
+      expect(find.text('Edit trip'), findsOneWidget);
       for (final section in TripEditSection.values) {
         expect(find.text(section.label), findsOneWidget, reason: section.label);
       }
@@ -42,7 +42,7 @@ void main() {
     ) async {
       await pumpApp(tester, location: AppRoutes.tripDetails(melbourneId));
 
-      await tester.tap(find.byTooltip('Edit Trip'));
+      await tester.tap(find.byTooltip('Edit trip'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Flights'));
       await tester.pumpAndSettle();
@@ -77,7 +77,7 @@ void main() {
       );
 
       await tester.enterText(
-        find.widgetWithText(TextField, 'Trip Name'),
+        find.widgetWithText(TextField, 'Trip name'),
         'Melbourne Boys Trip',
       );
       await tester.tap(find.text('Public'));
@@ -103,7 +103,7 @@ void main() {
         location: _section(TripEditSection.details),
       );
 
-      await tester.enterText(find.widgetWithText(TextField, 'Trip Name'), ' ');
+      await tester.enterText(find.widgetWithText(TextField, 'Trip name'), ' ');
       await _save(tester);
 
       expect(find.text('Give your trip a name'), findsOneWidget);

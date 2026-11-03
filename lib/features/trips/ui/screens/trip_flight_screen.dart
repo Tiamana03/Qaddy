@@ -64,7 +64,7 @@ class TripFlightScreen extends ConsumerWidget {
         title: const Text('Flight'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Edit Flight',
+            tooltip: 'Edit flight',
             onPressed: () => context.push(
               AppRoutes.tripEditItem(
                 tripId,

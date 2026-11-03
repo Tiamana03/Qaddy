@@ -69,7 +69,7 @@ class TripExpensesScreen extends ConsumerWidget {
         message:
             '${debt.from} has paid ${debt.to} ${formatMoney(debt.amount)}. '
             'Their shared expenses will be settled.',
-        confirmLabel: 'Mark Paid',
+        confirmLabel: 'Mark paid',
       );
       if (confirmed) {
         QaddyHaptics.success();
@@ -84,7 +84,7 @@ class TripExpensesScreen extends ConsumerWidget {
         title: const Text('Expenses'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Expense',
+            tooltip: 'Add expense',
             onPressed: () => context.push(addRoute),
             icon: const Icon(Icons.add),
           ),
@@ -102,7 +102,7 @@ class TripExpensesScreen extends ConsumerWidget {
                 message:
                     'Log the villa, green fees and dinners as they happen — '
                     'Qaddy works out who owes who.',
-                actionLabel: 'Add Expense',
+                actionLabel: 'Add expense',
                 onAction: () => context.push(addRoute),
               )
             else ...<Widget>[
@@ -131,7 +131,7 @@ class TripExpensesScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const DetailSectionTitle('Who Owes Who'),
+              const DetailSectionTitle('Who owes who'),
               if (debts.isEmpty)
                 QaddyCard(
                   child: Row(
@@ -158,14 +158,14 @@ class TripExpensesScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-              const DetailSectionTitle('Expense History'),
+              const DetailSectionTitle('Expense history'),
               for (final expense in history) ...<Widget>[
                 _ExpenseRow(tripId: tripId, expense: expense),
                 SizedBox(height: spacing.sm),
               ],
               SizedBox(height: spacing.md),
               QaddyGoldButton(
-                label: 'Add Expense',
+                label: 'Add expense',
                 onPressed: () => context.push(addRoute),
               ),
             ],
@@ -195,7 +195,7 @@ class _CostCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Trip Cost',
+            'Trip cost',
             style: typography.small.copyWith(color: colours.textSecondary),
           ),
           Row(
@@ -335,7 +335,7 @@ class _DebtRow extends StatelessWidget {
           ),
           TextButton(
             onPressed: onMarkPaid,
-            child: Text('Mark Paid', semanticsLabel: 'Mark ${debt.from} paid'),
+            child: Text('Mark paid', semanticsLabel: 'Mark ${debt.from} paid'),
           ),
         ],
       ),

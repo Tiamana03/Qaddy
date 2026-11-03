@@ -39,7 +39,7 @@ class EditTripScreen extends ConsumerWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     return QaddyScaffold(
-      appBar: AppBar(title: const Text('Edit Trip')),
+      appBar: AppBar(title: const Text('Edit trip')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

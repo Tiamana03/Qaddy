@@ -3,6 +3,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/user/sample_clubhouse.dart';
+import 'package:qaddy/features/community/ui/screens/activity_feed_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friend_requests_screen.dart';
 import 'package:qaddy/features/community/ui/screens/friends_home_screen.dart';
 import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
@@ -62,6 +64,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('No mates yet'), findsOneWidget);
+    expect(find.text('Invite a mate'), findsOneWidget);
+  });
+
+  testWidgets('Activity Feed and Friend Requests say what will come', (
+    tester,
+  ) async {
+    final off = _empty();
+    await pumpFriends(tester, const ActivityFeedScreen(), overrides: off);
+    await tester.pumpAndSettle();
+    expect(find.text('Nothing yet'), findsOneWidget);
+    expect(find.text('Invite a mate'), findsOneWidget);
+
+    await pumpFriends(tester, const FriendRequestsScreen(), overrides: off);
+    await tester.pumpAndSettle();
+    expect(find.text('No requests'), findsOneWidget);
     expect(find.text('Invite a mate'), findsOneWidget);
   });
 

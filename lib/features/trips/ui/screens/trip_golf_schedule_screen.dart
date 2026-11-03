@@ -62,7 +62,7 @@ class TripGolfScheduleScreen extends ConsumerWidget {
         title: const Text('Golf Schedule'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Course',
+            tooltip: 'Add course',
             onPressed: () => context.push(addRoute),
             icon: const Icon(Icons.add),
           ),
@@ -93,7 +93,7 @@ class TripGolfScheduleScreen extends ConsumerWidget {
                 message:
                     'Add the courses you are playing and their tee times — '
                     'each one gets its own page.',
-                actionLabel: 'Add Course',
+                actionLabel: 'Add course',
                 onAction: () => context.push(addRoute),
               )
             else
@@ -169,7 +169,7 @@ class TripGolfScheduleScreen extends ConsumerWidget {
             if (courses.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
               QaddySecondaryButton(
-                label: 'Add Course',
+                label: 'Add course',
                 icon: Icons.add,
                 onPressed: () => context.push(addRoute),
               ),

@@ -38,12 +38,12 @@ void main() {
     await tester.tap(find.text('Melbourne Golf Weekend'));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Complete Trip'));
-    await tester.tap(find.text('Complete Trip'));
+    await tester.ensureVisible(find.text('Complete trip'));
+    await tester.tap(find.text('Complete trip'));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('Return Home'));
-    await tester.tap(find.text('Return Home'));
+    await tester.ensureVisible(find.text('Return home'));
+    await tester.tap(find.text('Return home'));
     await tester.pumpAndSettle();
 
     expect(find.text('YOUR GAME'), findsOneWidget);

@@ -117,7 +117,7 @@ class TripSettingsScreen extends ConsumerWidget {
         message:
             '${trip.name} and everything in it — bookings, expenses and '
             'chat — will be permanently deleted.',
-        confirmLabel: 'Delete Trip',
+        confirmLabel: 'Delete trip',
         destructive: true,
       );
       if (!confirmed || !context.mounted) {
@@ -147,7 +147,7 @@ class TripSettingsScreen extends ConsumerWidget {
             group('Trip', <Widget>[
               QaddyNavRow(
                 icon: Icons.edit_outlined,
-                title: 'Rename Trip',
+                title: 'Rename trip',
                 subtitle: trip.name,
                 onTap: () => context.push(
                   AppRoutes.tripEditSection(
@@ -158,7 +158,7 @@ class TripSettingsScreen extends ConsumerWidget {
               ),
               QaddyNavRow(
                 icon: Icons.image_outlined,
-                title: 'Change Cover Image',
+                title: 'Change cover image',
                 onTap: () => context.push(
                   AppRoutes.tripEditSection(
                     tripId,
@@ -177,18 +177,18 @@ class TripSettingsScreen extends ConsumerWidget {
             group('Share', <Widget>[
               QaddyNavRow(
                 icon: Icons.person_add_alt_outlined,
-                title: 'Invite More Friends',
+                title: 'Invite more friends',
                 onTap: () => context.push(AppRoutes.tripInvite(tripId)),
               ),
               QaddyNavRow(
                 icon: Icons.send_outlined,
-                title: 'Share Invite',
+                title: 'Share invite',
                 subtitle: 'Send the trip details to your squad',
                 onTap: shareInvite,
               ),
               QaddyNavRow(
                 icon: Icons.ios_share,
-                title: 'Export Itinerary',
+                title: 'Export itinerary',
                 subtitle: 'Share or copy the plan as text',
                 onTap: () => context.push(AppRoutes.tripExport(tripId)),
               ),
@@ -196,25 +196,25 @@ class TripSettingsScreen extends ConsumerWidget {
             group('Manage', <Widget>[
               QaddyNavRow(
                 icon: Icons.copy_all_outlined,
-                title: 'Duplicate Trip',
+                title: 'Duplicate trip',
                 onTap: duplicate,
               ),
               QaddyNavRow(
                 icon: archived
                     ? Icons.unarchive_outlined
                     : Icons.archive_outlined,
-                title: archived ? 'Restore from Archive' : 'Archive Trip',
+                title: archived ? 'Restore from Archive' : 'Archive trip',
                 onTap: archiveToggle,
               ),
               QaddyNavRow(
                 icon: Icons.logout,
-                title: 'Leave Trip',
+                title: 'Leave trip',
                 destructive: true,
                 onTap: leave,
               ),
               QaddyNavRow(
                 icon: Icons.delete_outline,
-                title: 'Delete Trip',
+                title: 'Delete trip',
                 destructive: true,
                 onTap: delete,
               ),

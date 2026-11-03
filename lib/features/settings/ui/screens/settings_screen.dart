@@ -94,7 +94,7 @@ class SettingsScreen extends ConsumerWidget {
           context,
           title: 'Remove the Sample Clubhouse?',
           message:
-              'The sample mates, groups, trip, rivalry and season table '
+              'The sample mates, groups, trips, rivalry and season table '
               'disappear. Your own rounds, trips and bag stay. You can bring '
               'it back from here any time.',
           confirmLabel: 'Remove it',

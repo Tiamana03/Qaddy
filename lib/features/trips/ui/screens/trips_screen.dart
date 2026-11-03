@@ -126,14 +126,14 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
             ],
             if (moreUpcoming.isNotEmpty)
               _TripSection(
-                label: 'Upcoming Trips',
+                label: 'Upcoming trips',
                 trips: moreUpcoming,
                 headingKey: nextListKey(),
                 firstStep: step++,
               ),
             if (past.isNotEmpty)
               _TripSection(
-                label: 'Past Trips',
+                label: 'Past trips',
                 trips: past,
                 headingKey: nextListKey(),
                 firstStep: step++,

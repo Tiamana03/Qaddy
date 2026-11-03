@@ -54,7 +54,7 @@ class TripAccommodationScreen extends ConsumerWidget {
         title: const Text('Accommodation'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Accommodation',
+            tooltip: 'Add accommodation',
             onPressed: () => context.push(addRoute),
             icon: const Icon(Icons.add),
           ),
@@ -72,7 +72,7 @@ class TripAccommodationScreen extends ConsumerWidget {
                 message:
                     'Add where you are staying — check-in times, room '
                     'allocation and the cost per person.',
-                actionLabel: 'Add Accommodation',
+                actionLabel: 'Add accommodation',
                 onAction: () => context.push(addRoute),
               )
             else ...<Widget>[
@@ -82,7 +82,7 @@ class TripAccommodationScreen extends ConsumerWidget {
               ],
               SizedBox(height: spacing.sectionGap),
               QaddyGoldButton(
-                label: 'Add Accommodation',
+                label: 'Add accommodation',
                 onPressed: () => context.push(addRoute),
               ),
             ],
@@ -165,7 +165,7 @@ class _StayDetail extends ConsumerWidget {
             ],
           ),
         ),
-        const DetailSectionTitle('Room Allocation'),
+        const DetailSectionTitle('Room allocation'),
         if (stay.rooms.isEmpty)
           QaddyCard(
             child: Text(
@@ -199,7 +199,7 @@ class _StayDetail extends ConsumerWidget {
             SizedBox(height: spacing.sm),
           ],
         if (cost != null) ...<Widget>[
-          const DetailSectionTitle('Cost Split'),
+          const DetailSectionTitle('Cost split'),
           QaddyCard(
             child: Column(
               children: <Widget>[

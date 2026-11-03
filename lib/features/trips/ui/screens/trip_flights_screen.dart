@@ -58,7 +58,7 @@ class TripFlightsScreen extends ConsumerWidget {
         title: const Text('Flights'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Add Flight',
+            tooltip: 'Add flight',
             onPressed: () => context.push(addRoute),
             icon: const Icon(Icons.add),
           ),
@@ -76,7 +76,7 @@ class TripFlightsScreen extends ConsumerWidget {
                 message:
                     'Add your flights to keep times, gates and booking '
                     'references in one place.',
-                actionLabel: 'Add Flight',
+                actionLabel: 'Add flight',
                 onAction: () => context.push(addRoute),
               )
             else ...<Widget>[
@@ -86,7 +86,7 @@ class TripFlightsScreen extends ConsumerWidget {
               ],
               SizedBox(height: spacing.md),
               QaddyGoldButton(
-                label: 'Add Flight',
+                label: 'Add flight',
                 onPressed: () => context.push(addRoute),
               ),
             ],

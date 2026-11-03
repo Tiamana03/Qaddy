@@ -95,7 +95,7 @@ class _WeatherFormState extends ConsumerState<WeatherForm> {
     final day = widget.day;
 
     return TripFormPage(
-      title: day == null ? 'Add Forecast Day' : 'Edit Forecast Day',
+      title: day == null ? 'Add Forecast Day' : 'Edit forecast day',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _valid,
       onSave: _save,
@@ -227,7 +227,7 @@ class _PackingFormState extends ConsumerState<PackingForm> {
     final item = widget.item;
 
     return TripFormPage(
-      title: item == null ? 'Add Packing Item' : 'Edit Packing Item',
+      title: item == null ? 'Add packing item' : 'Edit packing item',
       fallbackRoute: widget.fallbackRoute,
       validate: () => _label.text.trim().isNotEmpty,
       onSave: _save,

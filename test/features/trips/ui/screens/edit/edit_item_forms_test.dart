@@ -56,7 +56,7 @@ void main() {
 
       expect(find.text('Qantas QF431'), findsOneWidget);
       expect(find.text('Qantas QF438'), findsOneWidget);
-      expect(find.text('Add Flight'), findsOneWidget);
+      expect(find.text('Add flight'), findsOneWidget);
     });
 
     testWidgets('adds a flight', (tester) async {
@@ -67,10 +67,10 @@ void main() {
       final before = _plan(c).flights.length;
 
       await _enter(tester, 'Airline', 'Virgin');
-      await _enter(tester, 'Flight Number', 'va 810');
+      await _enter(tester, 'Flight number', 'va 810');
       await _enter(tester, 'From', 'Sydney (SYD)');
       await _enter(tester, 'To', 'Melbourne (MEL)');
-      await _enter(tester, 'Booking Reference', 'abc123');
+      await _enter(tester, 'Booking reference', 'abc123');
       await _tapText(tester, 'Save');
 
       final flights = _plan(c).flights;
@@ -102,7 +102,7 @@ void main() {
         location: _item(TripEditSection.flights, 'qf431'),
       );
 
-      expect(find.text('Edit Flight'), findsOneWidget);
+      expect(find.text('Edit flight'), findsOneWidget);
       expect(find.text('QF431'), findsWidgets);
       await _enter(tester, 'Seat', '14c');
       await _enter(tester, 'Gate', '7');
@@ -145,8 +145,8 @@ void main() {
         location: _item(TripEditSection.courses, 'new'),
       );
 
-      await _enter(tester, 'Course Name', 'Barwon Heads');
-      await _enter(tester, 'Course Rating', '72.1');
+      await _enter(tester, 'Course name', 'Barwon Heads');
+      await _enter(tester, 'Course rating', '72.1');
       await _enter(tester, 'Slope', '128');
       await _enter(tester, 'Green Fee (per player)', r'$185');
       await _tapText(tester, 'Save');
@@ -166,7 +166,7 @@ void main() {
         location: _item(TripEditSection.courses, 'kingston-heath'),
       );
 
-      await _enter(tester, 'Course Rating', '7.2.1');
+      await _enter(tester, 'Course rating', '7.2.1');
       await _tapText(tester, 'Save');
 
       expect(find.text('Check this number'), findsOneWidget);
@@ -291,7 +291,7 @@ void main() {
         c,
       ).expenses.firstWhere((e) => e.id == 'exp-food').settled;
 
-      expect(find.text('Edit Expense'), findsOneWidget);
+      expect(find.text('Edit expense'), findsOneWidget);
       await _enter(tester, 'What was it for?', 'Team dinner');
       await _tapText(tester, 'Save');
 
@@ -325,8 +325,8 @@ void main() {
       );
 
       await _enter(tester, 'Name', 'Chateau Yering');
-      await _enter(tester, 'Total Cost', r'$1,200');
-      await _tapText(tester, 'Add Room');
+      await _enter(tester, 'Total cost', r'$1,200');
+      await _tapText(tester, 'Add room');
       await _enter(tester, 'Room 1', 'Twin room');
       await tester.ensureVisible(find.text('Ben').first);
       await tester.tap(find.text('Ben').first);
@@ -352,7 +352,7 @@ void main() {
 
       // Every confirmed member is already in a room, so a new room has no
       // one left to offer.
-      await _tapText(tester, 'Add Room');
+      await _tapText(tester, 'Add room');
       await tester.ensureVisible(find.text('Room 5'));
       expect(find.text('Room 5'), findsOneWidget);
     });

@@ -132,7 +132,7 @@ class TripCompleteScreen extends ConsumerWidget {
                   children: <Widget>[
                     Expanded(
                       child: QaddySecondaryButton(
-                        label: 'Archive Trip',
+                        label: 'Archive trip',
                         onPressed: () {
                           ref.read(tripsProvider.notifier).archiveTrip(tripId);
                           context.go(AppRoutes.trips);
@@ -142,7 +142,7 @@ class TripCompleteScreen extends ConsumerWidget {
                     SizedBox(width: spacing.sm),
                     Expanded(
                       child: QaddyGoldButton(
-                        label: 'Return Home',
+                        label: 'Return home',
                         onPressed: () {
                           QaddyHaptics.light();
                           context.go(AppRoutes.home);

@@ -81,7 +81,7 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
     final animate = !MediaQuery.disableAnimationsOf(context);
 
     return QaddyScaffold(
-      appBar: AppBar(title: const Text('Invite Friends')),
+      appBar: AppBar(title: const Text('Invite friends')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +157,7 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
                   ),
                   SizedBox(height: spacing.md),
                   QaddyGoldButton(
-                    label: 'Share Invite',
+                    label: 'Share invite',
                     icon: Icons.ios_share_rounded,
                     onPressed: () => shareOrCopy(
                       context,
@@ -168,7 +168,7 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
                   ),
                   SizedBox(height: spacing.sm),
                   QaddySecondaryButton(
-                    label: 'Copy Message',
+                    label: 'Copy message',
                     onPressed: () => _copyMessage(message),
                   ),
                 ],

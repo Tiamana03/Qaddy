@@ -13,7 +13,7 @@ Future<void> _pump(
     theme: QaddyTheme.dark,
     home: Scaffold(
       body: QaddyDateField(
-        label: 'End Date',
+        label: 'End date',
         value: value,
         firstDate: firstDate,
         onChanged: onChanged,
@@ -26,7 +26,7 @@ void main() {
   testWidgets('shows the label until a date is chosen', (tester) async {
     await _pump(tester, onChanged: (_) {});
 
-    expect(find.text('End Date'), findsOneWidget);
+    expect(find.text('End date'), findsOneWidget);
   });
 
   testWidgets('shows the chosen date', (tester) async {

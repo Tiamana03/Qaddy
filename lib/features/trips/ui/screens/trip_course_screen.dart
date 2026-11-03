@@ -83,7 +83,7 @@ class TripCourseScreen extends ConsumerWidget {
         title: const Text('Course'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Edit Course',
+            tooltip: 'Edit course',
             onPressed: () => context.push(
               AppRoutes.tripEditItem(
                 tripId,
@@ -107,7 +107,7 @@ class TripCourseScreen extends ConsumerWidget {
               subtitle: course.address.isEmpty ? null : course.address,
               facts: headerFacts,
             ),
-            const DetailSectionTitle('Tee Time'),
+            const DetailSectionTitle('Tee time'),
             QaddyCard(
               child: Column(
                 children: <Widget>[
@@ -155,7 +155,7 @@ class TripCourseScreen extends ConsumerWidget {
                     ),
             ),
             if (fee != null) ...<Widget>[
-              const DetailSectionTitle('Green Fees'),
+              const DetailSectionTitle('Green fees'),
               QaddyCard(
                 child: Column(
                   children: <Widget>[
@@ -240,7 +240,7 @@ class TripCourseScreen extends ConsumerWidget {
               ),
             SizedBox(height: spacing.sm),
             QaddySecondaryButton(
-              label: 'Get Directions',
+              label: 'Get directions',
               onPressed: directions,
             ),
             if (course.notes.isNotEmpty) ...<Widget>[

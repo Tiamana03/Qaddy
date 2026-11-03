@@ -7,7 +7,6 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 
 /// A banner that says the screen shows sample content. [message] says what is
 /// sample here; [onManage] opens where it can be kept, edited or removed.
@@ -58,20 +57,12 @@ class SampleBanner extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Flexible(
-                            child: Text(
-                              'Sample Clubhouse',
-                              style: typography.body.copyWith(
-                                color: colours.textPrimary,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: spacing.sm),
-                          const SampleBadge(),
-                        ],
+                      Text(
+                        'Sample Clubhouse',
+                        style: typography.body.copyWith(
+                          color: colours.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       SizedBox(height: spacing.xs),
                       Text(

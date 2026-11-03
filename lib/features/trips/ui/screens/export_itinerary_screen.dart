@@ -46,7 +46,7 @@ class ExportItineraryScreen extends ConsumerWidget {
     }
 
     return QaddyScaffold(
-      appBar: AppBar(title: const Text('Export Itinerary')),
+      appBar: AppBar(title: const Text('Export itinerary')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,7 +64,7 @@ class ExportItineraryScreen extends ConsumerWidget {
             ),
             SizedBox(height: spacing.lg),
             QaddyGoldButton(
-              label: 'Share Itinerary',
+              label: 'Share itinerary',
               onPressed: () => shareOrCopy(
                 context,
                 ref,
