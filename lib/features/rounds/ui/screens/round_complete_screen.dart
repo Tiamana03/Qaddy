@@ -29,6 +29,9 @@ import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
+import 'package:qaddy/features/achievements/logic/achievements.dart';
+import 'package:qaddy/features/achievements/models/achievement.dart';
+import 'package:qaddy/features/achievements/ui/widgets/achievement_shelf.dart';
 import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
@@ -80,6 +83,11 @@ class _Results extends ConsumerWidget {
     final recap = recapOf(round, currentUserName);
     final chase = chaseLine(standings, currentUserName);
     final played = round.holesPlayed;
+    final unlocked = newlyUnlocked(
+      ref.watch(roundHistoryProvider),
+      round,
+      you: currentUserName,
+    );
 
     // Last place gets a good-natured label, but only when there is a proper
     // field and the last player is genuinely behind the one above.
@@ -174,6 +182,10 @@ class _Results extends ConsumerWidget {
               children: staggered(<Widget>[
                 SizedBox(height: spacing.md),
                 hero,
+                if (unlocked.isNotEmpty) ...<Widget>[
+                  SizedBox(height: spacing.sectionGap),
+                  _Unlocked(achievements: unlocked),
+                ],
                 if (recap != null) ...<Widget>[
                   SizedBox(height: spacing.sectionGap),
                   _YourRound(
@@ -212,6 +224,80 @@ class _Results extends ConsumerWidget {
         ),
         const Positioned.fill(child: QaddyConfetti()),
       ],
+    );
+  }
+}
+
+/// "Achievement unlocked": the badges this round earned, lit in gold.
+class _Unlocked extends StatelessWidget {
+  const _Unlocked({required this.achievements});
+
+  final List<Achievement> achievements;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Semantics(
+      container: true,
+      label:
+          'Achievement unlocked: '
+          '${achievements.map((a) => a.title).join(', ')}.',
+      child: ExcludeSemantics(
+        child: Container(
+          padding: EdgeInsets.all(spacing.cardPadding),
+          decoration: BoxDecoration(
+            color: colours.card,
+            borderRadius: BorderRadius.circular(
+              theme.extension<QaddyRadius>()!.large,
+            ),
+            border: Border.all(color: colours.gold, width: 1.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              QaddyEyebrow(
+                achievements.length == 1
+                    ? 'ACHIEVEMENT UNLOCKED'
+                    : 'ACHIEVEMENTS UNLOCKED',
+              ),
+              SizedBox(height: spacing.md),
+              for (final (index, achievement)
+                  in achievements.indexed) ...<Widget>[
+                if (index > 0) SizedBox(height: spacing.md),
+                Row(
+                  children: <Widget>[
+                    AchievementBadge(achievement: achievement),
+                    SizedBox(width: spacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            achievement.title,
+                            style: typography.h3.copyWith(
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            achievement.blurb,
+                            style: typography.small.copyWith(
+                              color: colours.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

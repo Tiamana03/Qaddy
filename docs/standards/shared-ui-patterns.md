@@ -25,6 +25,7 @@ Trips, Friends Home and the Dashboard are the Release Candidate reference screen
 | Section heading | `QaddySectionHeading` (`core/widgets/headings`) | A section title with an optional count badge and "See all". |
 | Card, section card, statistic card | `QaddyCard`, `QaddySectionCard`, `QaddyStatisticCard` (`core/widgets/cards`) | Everyday content surfaces; `QaddyCard` has the press-down scale when tappable. |
 | Confetti | `QaddyConfetti` (`core/widgets/motion`) | One burst for a moment worth celebrating (finishing a round). Falls once, stops, off with reduce-motion. |
+| Quick actions | `QaddyQuickActions` (`core/widgets/actions`) | A row of icon-and-label shortcut tiles: the Dashboard, Profile. |
 | Entrance motion | `QaddyFadeSlideIn`, `staggered(...)`, `staggerDelay` (`core/widgets/motion`) | Sections and tiles that arrive one after another. Respects reduce-motion. |
 | Empty and error states | `QaddyEmptyState`, `QaddyErrorCard` (`core/widgets/states`) | Nothing here yet / something went wrong. |
 | Formatting | `ordinal`, `formatScore`, `formatDistance` (`core/utils/formatting.dart`) | "3rd", "+2", "254m" — never write these by hand in a feature. |

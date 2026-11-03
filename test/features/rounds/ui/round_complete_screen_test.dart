@@ -167,6 +167,39 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('celebrates the achievements the round just earned', (
+    tester,
+  ) async {
+    await _pump(tester);
+    await tester.pumpAndSettle();
+
+    // A first round ever: First Round (and a win against level partners).
+    expect(find.textContaining('UNLOCKED'), findsOneWidget);
+    expect(find.text('First Round'), findsOneWidget);
+    expect(find.text('Finish your first round'), findsOneWidget);
+  });
+
+  testWidgets('does not re-announce what was already earned', (tester) async {
+    await _pump(
+      tester,
+      play: (store) {
+        for (var i = 0; i < 2; i++) {
+          store
+            ..startRound(
+              upcomingRoundInvitees.take(3).map((i) => i.player).toList(),
+            )
+            ..nextHole()
+            ..finishRound();
+        }
+      },
+    );
+    await tester.pumpAndSettle();
+
+    // The second round earns nothing new.
+    expect(find.text('ACHIEVEMENTS UNLOCKED'), findsNothing);
+    expect(find.text('ACHIEVEMENT UNLOCKED'), findsNothing);
+  });
+
   testWidgets('last place gets a good-natured wooden spoon', (tester) async {
     await _pump(
       tester,

@@ -12,15 +12,15 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.person));
     await tester.pumpAndSettle();
-    expect(find.text('View Settings'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('View Settings'));
-    await tester.tap(find.text('View Settings'));
+    await tester.ensureVisible(find.text('Settings'));
+    await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('Privacy'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('View Settings'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
   });
 }

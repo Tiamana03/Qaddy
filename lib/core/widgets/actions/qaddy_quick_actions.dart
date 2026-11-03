@@ -1,5 +1,5 @@
-/// The Dashboard's shortcuts: the four things a golfer most often opens the
-/// app to do, each one tap from the place it leads.
+/// A row of shortcut tiles: the few things a golfer most often opens a screen
+/// to do, each one tap from the place it leads (the Dashboard, Profile).
 library;
 
 import 'package:flutter/material.dart';
@@ -13,8 +13,8 @@ import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 
 /// One shortcut: an icon, a short label and where it goes.
-class QuickAction {
-  const QuickAction({
+class QaddyQuickAction {
+  const QaddyQuickAction({
     required this.icon,
     required this.label,
     required this.colour,
@@ -35,11 +35,11 @@ class QuickAction {
 }
 
 /// A row of equal shortcut tiles that arrive one after another.
-class QuickActionsStrip extends StatelessWidget {
-  const QuickActionsStrip({required this.actions, super.key});
+class QaddyQuickActions extends StatelessWidget {
+  const QaddyQuickActions({required this.actions, super.key});
 
   /// The shortcuts, left to right.
-  final List<QuickAction> actions;
+  final List<QaddyQuickAction> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class QuickActionsStrip extends StatelessWidget {
 class _ActionTile extends StatelessWidget {
   const _ActionTile({required this.action});
 
-  final QuickAction action;
+  final QaddyQuickAction action;
 
   @override
   Widget build(BuildContext context) {

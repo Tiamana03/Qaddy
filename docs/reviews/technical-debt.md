@@ -269,3 +269,23 @@ Give `UpcomingRound` a real `DateTime` and make `roundCountdown` take it; give N
 Target
 
 Rounds and Notifications Release Candidate reviews.
+
+---
+
+## TD-016 — Trips has its own copy of the shortcut tiles
+
+Priority: Low
+
+Status: **Open** (logged during the Profile redesign, November 2026)
+
+Current State
+
+`QaddyQuickActions` (`core/widgets/actions`) is now shared by the Dashboard and Profile. Trips still builds its own `TripsQuickActions` with the same job.
+
+Action
+
+Move Trips onto `QaddyQuickActions` the next time the Trips screen is touched (it may need an optional subtitle or badge first). Also note the dependency cycle created on purpose: the results screen (Rounds) shows achievements, which are computed from Statistics, which reads Rounds' history. Every edge is read-only and no file imports its way back, but a change to `CareerStats` or `Round` should be checked against all three.
+
+Target
+
+Next Trips review.

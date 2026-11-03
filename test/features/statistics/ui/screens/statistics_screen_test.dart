@@ -3,46 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
-import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
-import 'package:qaddy/features/rounds/models/round_player.dart';
-import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/statistics/ui/widgets/form_chart.dart';
 
 import '../../../../support/app_test_harness.dart';
-
-/// The golfer and Tom: the two we always play with.
-final _pair = <String>[currentUserName, 'Tom'];
-
-class _Harness {
-  _Harness() {
-    container = friendsContainer(
-      overrides: <Override>[roundsClockProvider.overrideWithValue(() => _now)],
-    );
-  }
-
-  late final ProviderContainer container;
-  DateTime _now = DateTime(2026, 10, 1, 8);
-
-  /// Plays a round with Tom on [day] (October), the golfer scoring [golfer]
-  /// strokes on the first holes and Tom carding par. Then finishes it.
-  void play(int day, List<int> golfer) {
-    _now = DateTime(2026, 10, day, 8);
-    final store = container.read(roundsProvider.notifier)
-      ..startRound(<RoundPlayer>[
-        for (final invitee in upcomingRoundInvitees)
-          if (_pair.contains(invitee.player.name)) invitee.player,
-      ]);
-    for (final strokes in golfer) {
-      store
-        ..setScore(currentUserName, strokes)
-        ..nextHole();
-    }
-    store.finishRound();
-  }
-}
+import '../../../../support/played_rounds.dart';
 
 List<RouteBase> _routes() => <RouteBase>[
   GoRoute(
@@ -63,7 +29,7 @@ List<RouteBase> _routes() => <RouteBase>[
 
 Future<void> _pump(
   WidgetTester tester,
-  _Harness h, {
+  PlayedRounds h, {
   Size size = const Size(400, 4200),
 }) async {
   useScreen(tester, size);
@@ -87,7 +53,7 @@ const List<int> _pars = <int>[4, 5, 3, 4, 4, 5];
 void main() {
   group('before any round', () {
     testWidgets('invites the golfer to play one', (tester) async {
-      await _pump(tester, _Harness());
+      await _pump(tester, PlayedRounds());
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('Your story starts on the first tee'), findsOneWidget);
@@ -98,7 +64,7 @@ void main() {
     });
 
     testWidgets('the button starts a round', (tester) async {
-      await _pump(tester, _Harness());
+      await _pump(tester, PlayedRounds());
 
       await tester.tap(find.text('Start a round'));
       await tester.pumpAndSettle();
@@ -108,9 +74,9 @@ void main() {
   });
 
   group('after one round', () {
-    late _Harness h;
+    late PlayedRounds h;
     setUp(() {
-      h = _Harness()..play(1, <int>[3, 5, 3, 4]); // birdie then pars
+      h = PlayedRounds()..play(1, <int>[3, 5, 3, 4]); // birdie then pars
     });
 
     testWidgets('tells the story of the round just played', (tester) async {
@@ -181,7 +147,7 @@ void main() {
 
   group('after a season of rounds', () {
     testWidgets('shows form, a win rate and a rising trend', (tester) async {
-      final h = _Harness();
+      final h = PlayedRounds();
       // Three poor rounds (Tom wins), then three better ones (the golfer wins).
       for (var day = 1; day <= 3; day++) {
         h.play(day, <int>[5, 6, 4, 5, 5, 6]); // bogeys: Tom wins
@@ -199,7 +165,7 @@ void main() {
     });
 
     testWidgets('only charts the last eight rounds', (tester) async {
-      final h = _Harness();
+      final h = PlayedRounds();
       for (var day = 1; day <= 10; day++) {
         h.play(day, _pars);
       }
@@ -216,7 +182,7 @@ void main() {
         ('light', QaddyTheme.light),
       ]) {
         testWidgets('at $width px in $name mode', (tester) async {
-          final h = _Harness();
+          final h = PlayedRounds();
           for (var day = 1; day <= 9; day++) {
             h.play(day, <int>[3, 4, 2, 5, 6, 0].take(day % 5 + 2).toList());
           }
@@ -235,7 +201,7 @@ void main() {
     }
 
     testWidgets('settles without animating forever', (tester) async {
-      final h = _Harness()..play(1, <int>[3, 5]);
+      final h = PlayedRounds()..play(1, <int>[3, 5]);
       await _pump(tester, h);
 
       await tester.pumpAndSettle();

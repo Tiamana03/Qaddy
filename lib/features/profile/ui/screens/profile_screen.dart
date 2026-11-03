@@ -1,349 +1,224 @@
-/// Qaddy's Profile screen — the current user's own identity page.
+/// Qaddy's Profile screen — the golfer's own player card.
 ///
-/// See `docs/features/profile-feature-integration.md`. Release 1 is a
-/// single, aggregated screen — see
-/// `docs/architecture/profile-engineering-decisions.md`'s "Release 1 Is
-/// One Aggregated Screen" — so every section below renders directly on
-/// `/profile` rather than linking out to a sub-screen.
+/// It is about *me*: my face and handicap, what my rounds say, the
+/// achievements I have earned and the one I am chasing, the mates I play with
+/// and my recent rounds. Everything on it comes from rounds actually played;
+/// where there are none yet it says so and offers the first tee. See
+/// `docs/features/profile-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qaddy/core/responsive/responsive_extensions.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
-import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/utils/formatting.dart';
+import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
-import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_statistic_card.dart';
-import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/achievements/logic/achievements.dart';
+import 'package:qaddy/features/achievements/ui/widgets/achievement_shelf.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
+import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
-import 'package:qaddy/features/profile/models/profile.dart';
+import 'package:qaddy/features/profile/ui/widgets/player_card.dart';
+import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+import 'package:qaddy/features/statistics/logic/career_stats.dart';
+import 'package:qaddy/features/statistics/logic/stats_story.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 /// The Profile destination (route `/profile`).
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+
+    final history = ref.watch(roundHistoryProvider);
+    final stats = CareerStats.of(history, you: currentUserName);
+    final achievements = achievementsFor(stats);
+    final earned = achievements.where((a) => a.unlocked).length;
+
+    final friends = ref.watch(confirmedFriendsProvider).length;
+    final trips =
+        ref.watch(upcomingTripsProvider).length +
+        ref.watch(pastTripsProvider).length;
+
+    final shortcuts = <QaddyQuickAction>[
+      QaddyQuickAction(
+        icon: Icons.bar_chart_rounded,
+        label: 'My stats',
+        colour: colours.accentOrange,
+        onTap: () => context.push(AppRoutes.profileStatistics),
+      ),
+      QaddyQuickAction(
+        icon: Icons.sports_golf,
+        label: 'Golf bag',
+        colour: colours.accentTeal,
+        onTap: () => context.push(AppRoutes.profileGolfBag),
+      ),
+      QaddyQuickAction(
+        icon: Icons.settings_outlined,
+        label: 'Settings',
+        colour: colours.accentSky,
+        onTap: () => context.push(AppRoutes.profileSettings),
+      ),
+    ];
 
     return QaddyScaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            const _ProfileHeader(),
+            PlayerCard(
+              profile: profile,
+              stats: stats,
+              onOpenStats: () => context.push(AppRoutes.profileStatistics),
+              onStartRound: () => context.go(AppRoutes.rounds),
+              onShare: () => shareOrCopy(
+                context,
+                ref,
+                text: _cardMessage(stats),
+                subject: '${profile.displayName} on Qaddy',
+              ),
+            ),
             SizedBox(height: spacing.sectionGap),
-            const _DetailsCard(),
+            QaddyQuickActions(actions: shortcuts),
             SizedBox(height: spacing.sectionGap),
-            const _QuickActionsCard(),
+            QaddySectionHeading(title: 'Achievements', badge: earned),
+            SizedBox(height: spacing.md),
+            AchievementShelf(achievements: achievements),
             SizedBox(height: spacing.sectionGap),
-            const _ProfileSummary(),
-            SizedBox(height: spacing.sectionGap),
-            const _PlayingStatisticsCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _CurrentSeasonCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _PersonalBestsCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _AchievementShowcaseCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _FavouriteCoursesCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _FavouritePlayingPartnersCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _EquipmentCard(),
-            SizedBox(height: spacing.sectionGap),
-            const _RecentActivityCard(),
+            const QaddySectionHeading(title: 'Your world'),
+            SizedBox(height: spacing.md),
+            _World(friends: friends, groups: groups.length, trips: trips),
+            if (stats != null && stats.rivals.isNotEmpty) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              const QaddySectionHeading(title: 'Your playing partners'),
+              SizedBox(height: spacing.md),
+              _Partners(rivals: stats.rivals.take(4).toList()),
+            ],
+            if (stats != null) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              const QaddySectionHeading(title: 'Recent rounds'),
+              SizedBox(height: spacing.md),
+              _RecentRounds(
+                rounds: stats.chronological.reversed.take(3).toList(),
+              ),
+            ],
             SizedBox(height: spacing.xl),
-          ],
+          ]),
         ),
       ),
     );
   }
 }
 
-class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Center(
-      child: Column(
-        children: <Widget>[
-          QaddyAvatar(name: profile.displayName),
-          SizedBox(height: spacing.sm),
-          Text(
-            profile.displayName,
-            style: typography.h1.copyWith(color: colours.textPrimary),
-          ),
-          SizedBox(height: spacing.xs),
-          Text(
-            '${profile.homeCourse}  ·  HCP ${profile.handicap}',
-            style: typography.body.copyWith(color: colours.textSecondary),
-          ),
-          SizedBox(height: spacing.sm),
-          const QaddyStatusBadge(
-            label: 'Active',
-            tone: QaddyStatusBadgeTone.success,
-          ),
-        ],
-      ),
-    );
+/// The message shared with "Share my golf card".
+String _cardMessage(CareerStats? stats) {
+  final handicap = profile.handicap.toStringAsFixed(1);
+  if (stats == null) {
+    return '${profile.displayName}: handicap $handicap at '
+        '${profile.homeCourse}. See you on the first tee. Played with Qaddy.';
   }
+  return '${profile.displayName}: handicap $handicap · '
+      '${roundsLabel(stats.rounds)} · ${stats.wins} '
+      '${stats.wins == 1 ? 'win' : 'wins'} · '
+      '${stats.averagePoints.round()} points a round. Played with Qaddy.';
 }
 
-class _DetailsCard extends StatelessWidget {
-  const _DetailsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Details',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          QaddyInfoRow(
-            label: 'Favourite Course',
-            value: profile.favouriteCourse ?? 'Not set',
-          ),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Location', value: profile.location),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(
-            label: 'Member Since',
-            value: profile.joinedDate.toFriendlyDate(),
-          ),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(
-            label: 'Profile Visibility',
-            value: profileVisibilityLabel(profile.profileVisibility),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickActionsCard extends StatelessWidget {
-  const _QuickActionsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Quick Actions',
-      child: Column(
-        children: <Widget>[
-          _ActionTile(
-            icon: Icons.bar_chart,
-            label: 'View Statistics',
-            onTap: () => context.push(AppRoutes.profileStatistics),
-          ),
-          SizedBox(height: spacing.sm),
-          _ActionTile(
-            icon: Icons.golf_course_outlined,
-            label: 'View Golf Bag',
-            onTap: () => context.push(AppRoutes.profileGolfBag),
-          ),
-          SizedBox(height: spacing.sm),
-          _ActionTile(
-            icon: Icons.settings_outlined,
-            label: 'View Settings',
-            onTap: () => context.push(AppRoutes.profileSettings),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
+/// Friends, groups and trips as three tiles, each leading to its home.
+class _World extends StatelessWidget {
+  const _World({
+    required this.friends,
+    required this.groups,
+    required this.trips,
   });
 
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
+  final int friends;
+  final int groups;
+  final int trips;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(radius.medium),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: spacing.sm),
-          child: Row(
+    Widget tile(
+      IconData icon,
+      Color colour,
+      int count,
+      String label,
+      String to,
+    ) => Expanded(
+      child: Semantics(
+        button: true,
+        label: '$count $label',
+        excludeSemantics: true,
+        onTap: () => context.go(to),
+        child: QaddyCard(
+          onTap: () => context.go(to),
+          child: Column(
             children: <Widget>[
-              Icon(icon, color: colours.gold),
-              SizedBox(width: spacing.md),
-              Expanded(
-                child: Text(
-                  label,
-                  style: typography.body.copyWith(color: colours.textPrimary),
-                ),
+              QaddyIconBadge(icon: icon, colour: colour),
+              SizedBox(height: spacing.sm),
+              Text(
+                '$count',
+                style: typography.h2.copyWith(color: colours.textPrimary),
               ),
-              Icon(Icons.chevron_right, color: colours.textTertiary),
+              Text(
+                label,
+                style: typography.small.copyWith(color: colours.textSecondary),
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-}
 
-class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary();
-
-  @override
-  Widget build(BuildContext context) {
-    return _ResponsiveGrid(
+    return Row(
       children: <Widget>[
-        QaddyStatisticCard(label: 'Friends', value: '$profileFriendsCount'),
-        QaddyStatisticCard(label: 'Groups', value: '$profileGroupsCount'),
-        QaddyStatisticCard(label: 'Trips', value: '$profileTripsCount'),
-        const QaddyStatisticCard(
-          label: 'Courses Played',
-          value: '$profileCoursesPlayed',
+        tile(
+          Icons.people,
+          colours.accentPink,
+          friends,
+          'Friends',
+          AppRoutes.friends,
         ),
-        const QaddyStatisticCard(
-          label: 'Rounds Played',
-          value: '$profileRoundsPlayed',
+        SizedBox(width: spacing.cardGap),
+        tile(
+          Icons.groups,
+          colours.accentIndigo,
+          groups,
+          'Groups',
+          AppRoutes.friendsGroups,
         ),
-        const QaddyStatisticCard(
-          label: 'Seasons Completed',
-          value: '$profileSeasonsCompleted',
-        ),
-        const QaddyStatisticCard(
-          label: 'Achievements',
-          value: '$profileAchievementsCount',
-        ),
+        SizedBox(width: spacing.cardGap),
+        tile(Icons.luggage, colours.accentSky, trips, 'Trips', AppRoutes.trips),
       ],
     );
   }
 }
 
-class _PlayingStatisticsCard extends StatelessWidget {
-  const _PlayingStatisticsCard();
+/// The people the golfer plays with most, from their real rounds.
+class _Partners extends StatelessWidget {
+  const _Partners({required this.rivals});
 
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    final rows = <(String, String)>[
-      ('Average Score', '$profileAverageScore'),
-      ('Average Stableford', '$profileAverageStableford'),
-      ('Best Round', '$profileBestRound'),
-      ('Best Stableford', '$profileBestStableford'),
-      ('Birdies', '$profileBirdies'),
-      ('Eagles', '$profileEagles'),
-      ('Pars', '$profilePars'),
-      ('Fairways Hit', '$profileFairwaysHitPercent%'),
-      ('Greens in Regulation', '$profileGreensInRegulationPercent%'),
-      ('Average Putts', '$profileAveragePutts'),
-    ];
-
-    return QaddySectionCard(
-      title: 'Playing Statistics',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final (index, row) in rows.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            QaddyInfoRow(label: row.$1, value: row.$2),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _CurrentSeasonCard extends StatelessWidget {
-  const _CurrentSeasonCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final standing = profileCurrentSeasonStanding;
-
-    return QaddySectionCard(
-      title: 'Current Season',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          QaddyInfoRow(label: 'Season', value: profileCurrentSeasonName),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Group', value: profileCurrentSeasonGroup),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Position', value: ordinal(standing.rank)),
-          SizedBox(height: spacing.sm),
-          QaddyInfoRow(label: 'Points', value: '${standing.points}'),
-        ],
-      ),
-    );
-  }
-}
-
-class _PersonalBestsCard extends StatelessWidget {
-  const _PersonalBestsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    final rows = <(String, String)>[
-      ('Best Round', '$profileBestRound'),
-      ('Best Front Nine', '$profileBestFrontNine'),
-      ('Best Back Nine', '$profileBestBackNine'),
-      ('Most Birdies', '$profileMostBirdies'),
-      ('Longest Drive', formatDistance(profileLongestDriveMetres)),
-      ('Longest Putt', formatDistance(profileLongestPuttMetres)),
-    ];
-
-    return QaddySectionCard(
-      title: 'Personal Bests',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final (index, row) in rows.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            QaddyInfoRow(label: row.$1, value: row.$2),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _AchievementShowcaseCard extends StatelessWidget {
-  const _AchievementShowcaseCard();
+  final List<Rival> rivals;
 
   @override
   Widget build(BuildContext context) {
@@ -352,132 +227,61 @@ class _AchievementShowcaseCard extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddySectionCard(
-      title: 'Achievement Showcase',
-      child: Column(
-        children: <Widget>[
-          for (final (index, achievement)
-              in profileAchievementShowcase.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            Row(
-              children: <Widget>[
-                Icon(Icons.emoji_events, color: colours.gold),
-                SizedBox(width: spacing.md),
-                Expanded(
-                  child: Text(
-                    achievement.title,
-                    style: typography.body.copyWith(color: colours.textPrimary),
-                  ),
-                ),
-                QaddyStatusBadge(
-                  label: achievement.unlocked ? 'Unlocked' : 'Locked',
-                  tone: achievement.unlocked
-                      ? QaddyStatusBadgeTone.success
-                      : QaddyStatusBadgeTone.info,
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
+    final spoken = rivals
+        .map((r) => '${r.name}, ${roundsLabel(r.together)}')
+        .join('. ');
 
-class _FavouriteCoursesCard extends StatelessWidget {
-  const _FavouriteCoursesCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Favourite Courses',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final (index, course)
-              in profileFavouriteCourses.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.xs),
-            Text(
-              course,
-              style: typography.body.copyWith(color: colours.textPrimary),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _FavouritePlayingPartnersCard extends StatelessWidget {
-  const _FavouritePlayingPartnersCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return QaddySectionCard(
-      title: 'Favourite Playing Partners',
-      child: Wrap(
-        spacing: spacing.md,
-        runSpacing: spacing.md,
-        children: <Widget>[
-          for (final friend in profileFavouritePlayingPartners)
-            SizedBox(
-              width: spacing.hero,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  QaddyAvatar(name: friend.displayName),
-                  SizedBox(height: spacing.xs),
-                  Text(
-                    friend.displayName,
-                    textAlign: TextAlign.center,
-                    style: typography.small.copyWith(
-                      color: colours.textPrimary,
+    return Semantics(
+      button: true,
+      onTap: () => context.push(AppRoutes.profileStatistics),
+      excludeSemantics: true,
+      label: 'Your playing partners: $spoken. Opens your head to head.',
+      child: QaddyCard(
+        onTap: () => context.push(AppRoutes.profileStatistics),
+        child: Row(
+          children: <Widget>[
+            for (final rival in rivals)
+              Expanded(
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 52,
+                      height: 52,
+                      child: FittedBox(child: QaddyAvatar(name: rival.name)),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                    SizedBox(height: spacing.sm),
+                    Text(
+                      rival.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.small.copyWith(
+                        color: colours.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      roundsLabel(rival.together),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.caption.copyWith(
+                        color: colours.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EquipmentCard extends StatelessWidget {
-  const _EquipmentCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
-    return QaddySectionCard(
-      title: 'Equipment',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          for (final (index, item) in profileEquipment.indexed) ...<Widget>[
-            if (index > 0) SizedBox(height: spacing.sm),
-            QaddyInfoRow(label: item.club, value: item.value),
           ],
-        ],
+        ),
       ),
     );
   }
 }
 
-class _RecentActivityCard extends StatelessWidget {
-  const _RecentActivityCard();
+/// The last few rounds, newest first.
+class _RecentRounds extends StatelessWidget {
+  const _RecentRounds({required this.rounds});
+
+  final List<YourRound> rounds;
 
   @override
   Widget build(BuildContext context) {
@@ -486,27 +290,44 @@ class _RecentActivityCard extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddySectionCard(
-      title: 'Recent Activity',
+    return QaddyCard(
+      onTap: () => context.push(AppRoutes.profileStatistics),
       child: Column(
         children: <Widget>[
-          for (final (index, entry)
-              in profileRecentActivity.indexed) ...<Widget>[
+          for (final (index, round) in rounds.indexed) ...<Widget>[
             if (index > 0) SizedBox(height: spacing.md),
             Row(
               children: <Widget>[
-                Icon(Icons.history, color: colours.gold, size: spacing.lg),
-                SizedBox(width: spacing.sm),
-                Expanded(
-                  child: Text(
-                    entry.description,
-                    style: typography.body.copyWith(color: colours.textPrimary),
-                  ),
+                QaddyIconBadge(
+                  icon: round.won ? Icons.emoji_events : Icons.golf_course,
+                  colour: round.won ? colours.gold : colours.accentTeal,
                 ),
-                SizedBox(width: spacing.sm),
-                Text(
-                  entry.when,
-                  style: typography.small.copyWith(color: colours.textTertiary),
+                SizedBox(width: spacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        round.won
+                            ? 'Won at ${round.round.course}'
+                            : '${round.standing.position} at '
+                                  '${round.round.course}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: typography.body.copyWith(
+                          color: colours.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${round.points} pts · '
+                        '${round.date.day} ${round.date.monthAbbreviation}',
+                        style: typography.small.copyWith(
+                          color: colours.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -514,45 +335,5 @@ class _RecentActivityCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-/// Lays out [children] two-per-row on mobile and one-per-row-of-four on
-/// tablet/desktop — the same layout `DashboardScreen`'s Quick Actions and
-/// Statistics Preview already use.
-class _ResponsiveGrid extends StatelessWidget {
-  const _ResponsiveGrid({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final perRow = context.isMobile ? 2 : 4;
-
-    final rows = <Widget>[];
-    for (var i = 0; i < children.length; i += perRow) {
-      final rowItems = children.skip(i).take(perRow).toList();
-      if (rows.isNotEmpty) {
-        rows.add(SizedBox(height: spacing.cardGap));
-      }
-      rows.add(
-        Row(
-          children: <Widget>[
-            for (final (index, item) in rowItems.indexed) ...<Widget>[
-              if (index > 0) SizedBox(width: spacing.cardGap),
-              Expanded(child: item),
-            ],
-            // Pad an incomplete final row so cards keep a consistent width.
-            for (var pad = rowItems.length; pad < perRow; pad++) ...<Widget>[
-              SizedBox(width: spacing.cardGap),
-              const Expanded(child: SizedBox.shrink()),
-            ],
-          ],
-        ),
-      );
-    }
-
-    return Column(children: rows);
   }
 }

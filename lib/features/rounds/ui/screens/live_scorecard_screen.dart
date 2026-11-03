@@ -67,6 +67,8 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
 
     void finish() {
       QaddyHaptics.success();
+      // The hole banter must not linger over the results.
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       controller.finishRound();
       context.pushReplacement(AppRoutes.roundComplete);
     }

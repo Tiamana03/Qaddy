@@ -1,23 +1,9 @@
-/// The Dashboard feature's shared placeholder data.
+/// The Dashboard's "Your game" last-round model.
 ///
-/// See `docs/standards/placeholder-data.md`'s "Statistics" section.
-/// Previously these three values existed only as private literals inside
-/// `dashboard_screen.dart`'s `_StatisticsPreview`, with Profile forced to
-/// redeclare matching literals of its own because nothing public existed to
-/// import (see `docs/reviews/technical-debt.md`'s TD-005 and
-/// `profile-engineering-decisions.md`'s "Friends, Groups and Rounds-Played
-/// Counts Are Computed, Not Duplicated"). Exposing them here lets Profile
-/// read them directly instead.
+/// Despite the file's name there is no placeholder data left: the last round
+/// comes from the golfer's own finished rounds (see `lastRoundFrom` in
+/// `logic/dashboard_insights.dart`). Only the shape is kept here.
 library;
-
-/// Rounds played — see placeholder-data.md's "Statistics".
-const int dashboardRoundsPlayed = 68;
-
-/// Average score — see placeholder-data.md's "Statistics".
-const int dashboardAverageScore = 83;
-
-/// Best round score — see placeholder-data.md's "Statistics".
-const int dashboardBestRound = 74;
 
 /// The most recent finished round, as the "Your game" card shows it.
 class DashboardLastRound {
@@ -32,7 +18,7 @@ class DashboardLastRound {
   /// The course played.
   final String course;
 
-  /// When it was played, as sourced (e.g. "Last Saturday").
+  /// When it was played ("Today", "Yesterday", "3 days ago").
   final String when;
 
   /// Gross score.
@@ -41,6 +27,6 @@ class DashboardLastRound {
   /// Stableford points.
   final int stableford;
 
-  /// Finishing position, as sourced (e.g. "1st").
+  /// Finishing position ("1st", "2nd").
   final String position;
 }

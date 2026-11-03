@@ -12,14 +12,15 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.person));
     await tester.pumpAndSettle();
-    expect(find.text('View Statistics'), findsOneWidget);
+    expect(find.text('My stats'), findsOneWidget);
 
-    await tester.tap(find.text('View Statistics'));
+    await tester.ensureVisible(find.text('My stats'));
+    await tester.tap(find.text('My stats'));
     await tester.pumpAndSettle();
     expect(find.text('Your story starts on the first tee'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('View Statistics'), findsOneWidget);
+    expect(find.text('My stats'), findsOneWidget);
   });
 }

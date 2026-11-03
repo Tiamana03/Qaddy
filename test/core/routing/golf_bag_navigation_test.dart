@@ -12,15 +12,15 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.person));
     await tester.pumpAndSettle();
-    expect(find.text('View Golf Bag'), findsOneWidget);
+    expect(find.text('Golf bag'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('View Golf Bag'));
-    await tester.tap(find.text('View Golf Bag'));
+    await tester.ensureVisible(find.text('Golf bag'));
+    await tester.tap(find.text('Golf bag'));
     await tester.pumpAndSettle();
     expect(find.text('Bag Summary'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('View Golf Bag'), findsOneWidget);
+    expect(find.text('Golf bag'), findsOneWidget);
   });
 }

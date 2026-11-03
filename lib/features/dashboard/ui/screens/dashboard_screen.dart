@@ -17,6 +17,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
@@ -30,7 +31,6 @@ import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/quick_actions_strip.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
@@ -63,8 +63,8 @@ class DashboardScreen extends ConsumerWidget {
         ? null
         : lastRoundFrom(completed, currentUserName, now);
 
-    final quickActions = <QuickAction>[
-      QuickAction(
+    final quickActions = <QaddyQuickAction>[
+      QaddyQuickAction(
         icon: live == null ? Icons.sports_golf : Icons.play_arrow_rounded,
         label: live == null ? 'Start a round' : 'Continue round',
         colour: colours.accentTeal,
@@ -72,19 +72,19 @@ class DashboardScreen extends ConsumerWidget {
             ? context.go(AppRoutes.rounds)
             : context.push(AppRoutes.roundScorecard),
       ),
-      QuickAction(
+      QaddyQuickAction(
         icon: Icons.luggage_outlined,
         label: 'Plan a trip',
         colour: colours.accentSky,
         onTap: () => context.push(AppRoutes.tripCreate),
       ),
-      QuickAction(
+      QaddyQuickAction(
         icon: Icons.person_add_alt_1_outlined,
         label: 'Add a mate',
         colour: colours.accentPink,
         onTap: () => context.push(AppRoutes.friendsSearch),
       ),
-      QuickAction(
+      QaddyQuickAction(
         icon: Icons.bar_chart_rounded,
         label: 'My stats',
         colour: colours.accentOrange,
@@ -152,7 +152,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: spacing.sectionGap),
-            QuickActionsStrip(actions: quickActions),
+            QaddyQuickActions(actions: quickActions),
             SizedBox(height: spacing.sectionGap),
             YourGameCard(
               handicap: profile.handicap,

@@ -41,7 +41,7 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Trips (`trips`) | Every trip and its plan (players, courses, flights, accommodation, transport, activities, expenses, checklist, packing, weather, chat, notes). Seeds live in `placeholder_trips.dart`; the *live* trips (created, edited, archived, deleted) live in the `tripsProvider` store, the single source of truth for the app run. | `lib/features/trips/models/placeholder_trips.dart` (seeds, `currentUserName`, count constants), `lib/features/trips/state/trips_controller.dart` (live store) | Profile (Trips count, still the seed constants — see TD-011), Search (Trips and Courses categories, read from the live store) |
 | Community (`community`) | Friends list, friend profiles, Rivalry Performance; the live friends store (requests, accepted friends, cheers) | `lib/features/community/models/placeholder_friends.dart` (seeds), `lib/features/community/state/friends_controller.dart` (live store) | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
 | Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
-| Profile (`profile`) | Aggregated identity data: Playing Statistics baseline (Career Totals, Scoring Statistics, Personal Records), Personal Bests, Equipment baseline, Profile Visibility setting, Favourite Courses (`profileFavouriteCourses`) | `lib/features/profile/models/placeholder_profile.dart` | Statistics (Career Totals/Scoring Statistics/Personal Records), Golf Bag (Equipment), Settings (Profile Visibility), Search (Courses category) |
+| Profile (`profile`) | Who the golfer is: name, handicap index, home course and location, favourite courses and the equipment list. Everything about their game is derived from rounds, not stored here | `lib/features/profile/models/placeholder_profile.dart` | Statistics and Dashboard (handicap index), Golf Bag (Equipment), Search (Courses category), Trips (organiser identity) |
 | Statistics (`statistics`) | Nothing of its own: it is derived from the finished rounds in the rounds store (`logic/career_stats.dart`) and reads the handicap index from Profile | — (no placeholder file) | Dashboard ("Your game") |
 | Golf Bag (`my_bag`) | Club Distances only (Driver, Irons, Wedges — see Exception 1) | `lib/features/my_bag/models/placeholder_my_bag.dart` | None yet |
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
@@ -63,7 +63,9 @@ Community     → Profile         (Friends count)
 Groups        → Profile         (Groups count, season standing)
 Trips         → Profile         (Trips count)
 Rounds        → Statistics      (every finished round: the story is worked out from them)
-Profile       → Statistics      (handicap index only)
+Rounds        → Achievements    (earned from the finished rounds; shown on Profile and the results screen)
+Achievements  → Statistics      (CareerStats is what achievements are measured on)
+Statistics    → Profile         (handicap index only)
 Profile       → Golf Bag        (Equipment)
 Profile       → Settings        (Profile Visibility)
 Notifications → Settings        (NotificationCategory)
