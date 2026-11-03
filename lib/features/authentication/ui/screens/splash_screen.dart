@@ -1,39 +1,127 @@
-/// Qaddy's Splash screen — the first screen in the Authentication flow.
+/// Qaddy's Splash screen — the first moment: the mark draws itself, the name
+/// and promise fade in, and the golfer is taken where they belong: the
+/// introduction the first time, straight into the app after that.
 ///
-/// See `docs/features/authentication-feature-integration.md`. Reuses
-/// `QaddyFullScreenLoader` exactly as Sprint 1.3 built it. Not part of the
-/// app's boot sequence — reachable only by navigating to `/` directly, per
-/// `docs/architecture/authentication-engineering-decisions.md`'s "This Flow
-/// Is Not the App's Boot Sequence". Visual only: advances to Onboarding
-/// automatically after a fixed delay, no user interaction possible.
+/// See `docs/features/launch-experience.md`.
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
-import 'package:qaddy/core/widgets/loaders/qaddy_full_screen_loader.dart';
+import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
+import 'package:qaddy/features/authentication/state/session_controller.dart';
+import 'package:qaddy/features/authentication/ui/widgets/launch_scaffold.dart';
+
+/// How long the splash is shown.
+const Duration splashDuration = Duration(milliseconds: 1900);
+
+/// How long it is shown when the golfer has asked for reduced motion.
+const Duration splashReducedMotionDuration = Duration(milliseconds: 600);
 
 /// Splash (route `/`).
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  static const _advanceDelay = Duration(seconds: 2);
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  Timer? _timer;
 
   @override
-  void initState() {
-    super.initState();
-    Future.delayed(_advanceDelay, () {
-      if (mounted) context.go(AppRoutes.onboarding);
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _timer ??= Timer(
+      MediaQuery.disableAnimationsOf(context)
+          ? splashReducedMotionDuration
+          : splashDuration,
+      _advance,
+    );
+  }
+
+  void _advance() {
+    if (!mounted) {
+      return;
+    }
+    final seen = ref.read(sessionProvider).onboardingComplete;
+    context.go(seen ? AppRoutes.home : AppRoutes.onboarding);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const QaddyFullScreenLoader(message: 'Loading your golf world…');
+    return LaunchScaffold(
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          final colours = theme.extension<QaddyColours>()!;
+          final spacing = theme.extension<QaddySpacing>()!;
+          final typography = theme.extension<QaddyTypography>()!;
+          final animate = !MediaQuery.disableAnimationsOf(context);
+
+          Widget fadeIn(Widget child, {required int delayMs}) =>
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: animate ? 0 : 1, end: 1),
+                duration: Duration(milliseconds: animate ? 700 + delayMs : 1),
+                curve: Interval(
+                  delayMs / (700 + delayMs),
+                  1,
+                  curve: Curves.easeOut,
+                ),
+                builder: (context, t, child) => Opacity(
+                  opacity: t,
+                  child: Transform.translate(
+                    offset: Offset(0, 10 * (1 - t)),
+                    child: child,
+                  ),
+                ),
+                child: child,
+              );
+
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const QaddyMark(size: 120),
+                SizedBox(height: spacing.xl),
+                fadeIn(
+                  Text(
+                    'Qaddy',
+                    style: typography.display.copyWith(
+                      color: colours.gold,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  delayMs: 500,
+                ),
+                SizedBox(height: spacing.sm),
+                fadeIn(
+                  Text(
+                    "The golfer's ecosystem",
+                    style: typography.body.copyWith(
+                      color: colours.textSecondary,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  delayMs: 800,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }

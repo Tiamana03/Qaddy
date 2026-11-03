@@ -60,6 +60,11 @@ import 'package:qaddy/features/trips/ui/screens/trip_settings_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trip_transport_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
 
+/// Where the app opens. The app overrides it with the splash (which sends
+/// first-time golfers to the introduction and returning ones into the app);
+/// tests and previews open straight into the app.
+final launchLocationProvider = Provider<String>((ref) => AppRoutes.home);
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   // The app's outermost navigator. Screens that should cover the tab bar (a
   // round being scored) name it as their parent.
@@ -67,31 +72,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoutes.home,
+    initialLocation: ref.read(launchLocationProvider),
     routes: <RouteBase>[
       GoRoute(
         path: AppRoutes.splash,
         name: RouteNames.splash,
-        builder: (BuildContext context, GoRouterState state) =>
-            const SplashScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _fadePage(state, const SplashScreen()),
       ),
       GoRoute(
         path: AppRoutes.onboarding,
         name: RouteNames.onboarding,
-        builder: (BuildContext context, GoRouterState state) =>
-            const OnboardingScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _fadePage(state, const OnboardingScreen()),
       ),
       GoRoute(
         path: AppRoutes.login,
         name: RouteNames.login,
-        builder: (BuildContext context, GoRouterState state) =>
-            const LoginScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _fadePage(state, const LoginScreen()),
       ),
       GoRoute(
         path: AppRoutes.signUp,
         name: RouteNames.signUp,
-        builder: (BuildContext context, GoRouterState state) =>
-            const SignUpScreen(),
+        pageBuilder: (BuildContext context, GoRouterState state) =>
+            _fadePage(state, const SignUpScreen()),
       ),
       StatefulShellRoute.indexedStack(
         builder:
@@ -436,3 +441,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// The launch screens fade into one another rather than sliding, so the first
+/// seconds of the app feel like one continuous scene.
+CustomTransitionPage<void> _fadePage(GoRouterState state, Widget child) =>
+    CustomTransitionPage<void>(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 400),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+          FadeTransition(
+            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            child: child,
+          ),
+    );

@@ -1,5 +1,7 @@
 # Authentication Feature Integration
 
+> **Superseded in part (November 2026):** the launch screens are now the app's boot sequence and are no longer visual-only or ungated placeholders. See `docs/features/launch-experience.md`.
+
 ## Overview
 
 This document defines how the complete Authentication feature (Release 1 Feature 11 / Sprint 12) is integrated within Qaddy.

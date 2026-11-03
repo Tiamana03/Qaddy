@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/config/app_config.dart';
 import 'package:qaddy/core/routing/app_router.dart';
+import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/services/document_storage.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/features/authentication/state/session_controller.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 import 'package:qaddy/features/trips/repositories/trips_storage.dart';
@@ -22,7 +24,11 @@ Future<void> main() async {
 
       // Trips, rounds and the golf bag are kept on the device. If storage
       // can't be opened the app still runs; they just won't survive a restart.
-      final overrides = <Override>[];
+      // The app opens on the splash, which sends golfers to the introduction
+      // the first time and straight into the app after that.
+      final overrides = <Override>[
+        launchLocationProvider.overrideWithValue(AppRoutes.splash),
+      ];
       try {
         final preferences = await SharedPreferences.getInstance();
         overrides.addAll(<Override>[
@@ -34,6 +40,9 @@ Future<void> main() async {
           ),
           bagStorageProvider.overrideWithValue(
             SharedPreferencesDocumentStorage(preferences, 'qaddy.bag.v1'),
+          ),
+          sessionStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(preferences, sessionStorageKey),
           ),
         ]);
       } on Object catch (error) {

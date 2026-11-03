@@ -1,5 +1,7 @@
 # Authentication Engineering Decisions
 
+> **Superseded in part (November 2026):** the launch screens are now the app's boot sequence and are no longer visual-only or ungated placeholders. See `docs/features/launch-experience.md`.
+
 **Version:** 1.0
 
 **Status:** Active
