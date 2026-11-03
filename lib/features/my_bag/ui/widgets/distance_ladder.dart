@@ -180,7 +180,8 @@ class _LadderRow extends StatelessWidget {
     final gapText = gap == null ? null : '−${gap!.metres.round()}';
 
     final spoken =
-        '${club.name}, ${club.model}, carries ${carry.round()} metres. '
+        '${club.name}${club.hasModel ? ', ${club.model}' : ''}, carries '
+        '${carry.round()} metres. '
         '${club.confidence == 0 ? '' : '${confidenceLabel(club.confidence)}. '}'
         '${gap == null ? '' : '${gap!.metres.round()} metres shorter than '
                   'your ${gap!.longer.name}. '}'

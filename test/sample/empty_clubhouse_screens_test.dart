@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/community/ui/screens/friends_home_screen.dart';
+import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
@@ -51,7 +52,17 @@ void main() {
     expect(find.text('Start round'), findsOneWidget);
     expect(find.textContaining('1 playing'), findsOneWidget);
     expect(find.text('On the course (sample)'), findsNothing);
-    expect(find.textContaining('sample 18-hole layout'), findsOneWidget);
+    expect(find.textContaining('standard par-72 layout'), findsOneWidget);
+    expect(find.textContaining('sample 18-hole layout'), findsNothing);
+  });
+
+  testWidgets('Friends List invites a first mate', (tester) async {
+    final off = _empty();
+    await pumpFriends(tester, const FriendsListScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.text('No mates yet'), findsOneWidget);
+    expect(find.text('Invite a mate'), findsOneWidget);
   });
 
   testWidgets('Friends invites you to build your squad', (tester) async {

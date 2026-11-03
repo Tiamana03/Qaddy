@@ -55,8 +55,10 @@ Search Friends listed the seeded mates with an **Add Friend** button that did no
 | Groups (Saturday Boys…), members, season table, upcoming group round | Sample; labelled; gone when off |
 | Trips (Melbourne, Gold Coast, Tasmania, Queenstown) and their plans, chat, expenses, awards | Sample; labelled; removable without touching the golfer's trips |
 | Saturday round at Richmond (tee time, weather, 8 players, side games) | Sample; labelled; off = an unplanned "Ready when you are" round at the golfer's home course |
-| Rounds' 18-hole layout | Sample; the Rounds screen says so |
-| Golf bag (14 starter clubs, carries, notes) | **Still unlabelled — a known gap**, see the Release Candidate audit |
+| Rounds' 18-hole layout | The sample round has the sample course's layout. Every other round has a standard par-72 layout with **no distances** (not guessed), and the Rounds screen says so |
+| Profile "Your world" | Counts only what the golfer made; sample mates, groups and trips show as "+N sample" |
+| Friends List | Every row opens something (Tom his profile, the others a quick look); with no mates it invites one |
+| Golf bag (14 starter clubs, carries) | A **Starter bag**: only the distances are a starting point, labelled "Starter distances" until the golfer sets their own. No brands, notes or trust ratings are invented; the putter and ball say "Add your putter/ball" |
 | Dashboard highlights, notifications | Derived from real state; sample-sourced ones are labelled |
 | Hints in forms ("Melbourne Golf Weekend") | Replaced with neutral hints |
 

@@ -178,8 +178,12 @@ class _SetupHero extends ConsumerWidget {
           ),
           SizedBox(height: spacing.md),
           Text(
-            'Hole pars and distances use a sample 18-hole layout until '
-            'course search arrives.',
+            upcomingRound.planned
+                ? 'Hole pars and distances use a sample 18-hole layout until '
+                      'course search arrives.'
+                : 'Pars and stroke indexes use a standard par-72 layout until '
+                      'course search arrives. Distances are left out rather '
+                      'than guessed.',
             style: typography.small.copyWith(color: muted),
           ),
         ],

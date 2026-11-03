@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
@@ -49,6 +50,22 @@ void main() {
       expect(round.course, 'Richmond Golf Club');
       expect(round.isCompleted, isFalse);
     });
+
+    test(
+      'a round with no sample plan has par and index but no guessed length',
+      () {
+        useSampleClubhouse(on: false);
+        addTearDown(resetSampleClubhouseForTests);
+        final c = _container();
+
+        _store(c).startRound(<RoundPlayer>[_alex]);
+        final round = c.read(liveRoundProvider)!;
+
+        expect(round.holes, standardHoles);
+        expect(round.holes.fold<int>(0, (sum, h) => sum + h.par), 72);
+        expect(round.holes.every((h) => h.metres == null), isTrue);
+      },
+    );
 
     test('ignores a second start while one is being played', () {
       final c = _container();

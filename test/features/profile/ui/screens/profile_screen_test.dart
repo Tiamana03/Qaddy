@@ -180,15 +180,19 @@ void main() {
       expect(find.text('Recent rounds'), findsOneWidget);
     });
 
-    testWidgets('your world counts the real friends and trips', (tester) async {
+    testWidgets('your world counts only your own, and says what is sample', (
+      tester,
+    ) async {
       await _pump(tester, h.container);
 
       expect(find.text('Your world'), findsOneWidget);
       expect(find.text('Friends'), findsOneWidget);
       expect(find.text('Groups'), findsOneWidget);
       expect(find.text('Trips'), findsOneWidget);
-      // Five confirmed friends in the seed.
-      expect(find.text('5'), findsWidgets);
+      // Nothing here was created by the golfer, so the counts are zero and the
+      // sample mates, groups and trips are named as such.
+      expect(find.text('+5 sample'), findsOneWidget);
+      expect(find.text('+4 sample'), findsNWidgets(2));
     });
 
     for (final (label, path) in <(String, String)>[

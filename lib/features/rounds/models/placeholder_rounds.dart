@@ -100,6 +100,36 @@ const List<CourseHole> richmondHoles = <CourseHole>[
   CourseHole(number: 18, par: 4, strokeIndex: 14, metres: 401),
 ];
 
+/// The standard par-72 layout every other round is played on: par and stroke
+/// index, but no distances, because Qaddy does not know the golfer's course
+/// yet and will not guess its length. Replaced by the real course when course
+/// search arrives.
+const List<CourseHole> standardHoles = <CourseHole>[
+  CourseHole(number: 1, par: 4, strokeIndex: 11),
+  CourseHole(number: 2, par: 5, strokeIndex: 3),
+  CourseHole(number: 3, par: 3, strokeIndex: 17),
+  CourseHole(number: 4, par: 4, strokeIndex: 7),
+  CourseHole(number: 5, par: 4, strokeIndex: 1),
+  CourseHole(number: 6, par: 5, strokeIndex: 13),
+  CourseHole(number: 7, par: 4, strokeIndex: 9),
+  CourseHole(number: 8, par: 3, strokeIndex: 15),
+  CourseHole(number: 9, par: 4, strokeIndex: 5),
+  CourseHole(number: 10, par: 4, strokeIndex: 10),
+  CourseHole(number: 11, par: 5, strokeIndex: 2),
+  CourseHole(number: 12, par: 3, strokeIndex: 18),
+  CourseHole(number: 13, par: 4, strokeIndex: 6),
+  CourseHole(number: 14, par: 4, strokeIndex: 8),
+  CourseHole(number: 15, par: 5, strokeIndex: 4),
+  CourseHole(number: 16, par: 3, strokeIndex: 16),
+  CourseHole(number: 17, par: 4, strokeIndex: 12),
+  CourseHole(number: 18, par: 4, strokeIndex: 14),
+];
+
+/// The holes the next round is played on: the sample course's while the Sample
+/// Clubhouse round is planned, the standard layout otherwise.
+List<CourseHole> get upcomingRoundHoles =>
+    upcomingRound.planned ? richmondHoles : standardHoles;
+
 /// A golfer invited to the round, and whether they have said yes yet.
 class RoundInvitee {
   const RoundInvitee({required this.player, this.confirmed = true});

@@ -55,6 +55,9 @@ class BagClub {
   /// Whether the golfer has written a note.
   bool get hasNote => note.trim().isNotEmpty;
 
+  /// Whether the golfer has said which model they play.
+  bool get hasModel => model.trim().isNotEmpty;
+
   /// Returns a changed copy. The id, name and family never change.
   BagClub copyWith({
     String? model,

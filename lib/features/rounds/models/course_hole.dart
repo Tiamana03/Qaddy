@@ -7,7 +7,7 @@ class CourseHole {
     required this.number,
     required this.par,
     required this.strokeIndex,
-    required this.metres,
+    this.metres,
   });
 
   /// The hole number (1–18).
@@ -20,6 +20,7 @@ class CourseHole {
   /// on the lowest stroke indexes first.
   final int strokeIndex;
 
-  /// The length, in metres.
-  final int metres;
+  /// The length, in metres, or `null` when it is not known (a golfer's own
+  /// course has no distances until course search arrives).
+  final int? metres;
 }

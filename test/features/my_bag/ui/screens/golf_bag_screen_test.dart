@@ -5,6 +5,7 @@ import 'package:qaddy/core/services/document_storage.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/my_bag/models/bag_club.dart';
+import 'package:qaddy/features/my_bag/models/placeholder_my_bag.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/club_sheet.dart';
@@ -66,7 +67,7 @@ void main() {
       await _pump(tester);
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
-      expect(find.text('YOUR BAG'), findsOneWidget);
+      expect(find.text('STARTER BAG'), findsOneWidget);
       expect(find.text('14'), findsOneWidget);
       expect(find.text('clubs in\nthe bag'), findsOneWidget);
       expect(find.textContaining('Nicely spread.'), findsOneWidget);
@@ -76,14 +77,31 @@ void main() {
       );
     });
 
-    testWidgets('highlights the longest club, the go-to and the ball', (
+    testWidgets('highlights the longest club and does not invent a go-to', (
       tester,
     ) async {
       await _pump(tester);
 
       expect(find.text('Driver 235m'), findsOneWidget);
-      expect(find.text('Go-to: 7 iron'), findsOneWidget);
-      expect(find.text('Titleist Pro V1'), findsWidgets);
+      expect(find.textContaining('Go-to:'), findsNothing);
+      expect(find.textContaining('Titleist'), findsNothing);
+    });
+
+    testWidgets('says the distances are a starter set until they are set', (
+      tester,
+    ) async {
+      final c = await _pump(tester);
+      expect(find.textContaining('Starter distances'), findsOneWidget);
+
+      for (final club in seedBagClubs.where((club) => club.hasCarry)) {
+        c
+            .read(bagProvider.notifier)
+            .update(club.id, carryMetres: club.carryMetres! + 2);
+      }
+      await tester.pumpAndSettle();
+
+      expect(find.text('YOUR BAG'), findsOneWidget);
+      expect(find.textContaining('Starter distances'), findsNothing);
     });
 
     testWidgets('has none of the old inventory tables', (tester) async {
@@ -128,13 +146,20 @@ void main() {
       );
     });
 
-    testWidgets('marks the go-to club and the clubs with notes', (
+    testWidgets('marks the go-to club and the clubs with notes once set', (
       tester,
     ) async {
-      await _pump(tester);
+      final c = await _pump(tester);
+      expect(find.byIcon(Icons.star), findsNothing);
+      expect(find.byIcon(Icons.sticky_note_2_outlined), findsNothing);
+
+      c
+          .read(bagProvider.notifier)
+          .update('7-iron', confidence: 5, note: 'Smooth tempo');
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.byIcon(Icons.sticky_note_2_outlined), findsWidgets);
+      expect(find.byIcon(Icons.sticky_note_2_outlined), findsOneWidget);
     });
 
     testWidgets('has a legend for the gap colours', (tester) async {
@@ -171,18 +196,24 @@ void main() {
 
       expect(find.text('Putter and ball'), findsOneWidget);
       expect(find.text('Putter'), findsWidgets);
-      expect(find.text('Odyssey White Hot'), findsOneWidget);
+      expect(find.text('Add your putter'), findsOneWidget);
+      expect(find.text('Add your ball'), findsOneWidget);
       expect(find.text('Ball'), findsOneWidget);
     });
 
-    testWidgets('quotes the golfer back to themselves', (tester) async {
-      await _pump(tester);
+    testWidgets('invites a first note, then quotes the golfer back', (
+      tester,
+    ) async {
+      final c = await _pump(tester);
 
       expect(find.text('Notes to self'), findsOneWidget);
-      expect(
-        find.text('My go-to. Smooth tempo, never force it.'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Nothing here yet'), findsOneWidget);
+
+      c.read(bagProvider.notifier).update('putter', note: 'Read the low side');
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Nothing here yet'), findsNothing);
+      expect(find.text('Read the low side'), findsOneWidget);
     });
   });
 
@@ -195,7 +226,7 @@ void main() {
       expect(find.byType(ClubSheet), findsOneWidget);
       expect(find.text('Model'), findsOneWidget);
       expect(find.text('How far it carries'), findsOneWidget);
-      expect(find.text('Go-to'), findsOneWidget);
+      expect(find.text('The one you play'), findsOneWidget);
     });
 
     testWidgets('the steppers move the carry and show the gaps either side', (

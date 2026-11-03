@@ -77,14 +77,16 @@ Map<String, Object?> _round(Round round) => <String, Object?>{
   'status': round.status.name,
   'startedAt': round.startedAt.toIso8601String(),
   'completedAt': round.completedAt?.toIso8601String(),
+  // Which hole layout the round was played on: the sample course's, or the
+  // standard par-72 one used anywhere else.
+  'layout': round.holes.first.metres == null ? 'standard' : 'sample',
 };
 
 Round _decodeRound(Map<String, dynamic> json) {
+  // A round keeps the course it was played on, whatever the golfer's home
+  // course or Sample Clubhouse choice is now.
   final course = json['course'] as String;
-  // Release 1 has one course; a round on any other is not understood.
-  if (course != upcomingRound.course) {
-    throw const FormatException('Unknown course');
-  }
+  final holes = json['layout'] == 'standard' ? standardHoles : richmondHoles;
   final players = <RoundPlayer>[
     for (final p in json['players'] as List<dynamic>)
       RoundPlayer(
@@ -103,13 +105,10 @@ Round _decodeRound(Map<String, dynamic> json) {
     id: json['id'] as String,
     course: course,
     format: json['format'] as String,
-    holes: richmondHoles,
+    holes: holes,
     players: players,
     scores: scores,
-    currentHole: (json['currentHole'] as int).clamp(
-      0,
-      richmondHoles.length - 1,
-    ),
+    currentHole: (json['currentHole'] as int).clamp(0, holes.length - 1),
     status: RoundStatus.values.firstWhere(
       (s) => s.name == json['status'],
       orElse: () => RoundStatus.inProgress,

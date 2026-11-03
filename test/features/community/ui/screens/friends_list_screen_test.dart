@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
+import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 
 import '../../../../support/app_test_harness.dart';
 
@@ -62,5 +63,16 @@ void main() {
     await tester.pump();
 
     expect(find.text('Sam'), findsOneWidget);
+  });
+
+  testWidgets('every other mate opens a quick look, not nothing', (
+    tester,
+  ) async {
+    await _pumpWithRouter(tester);
+
+    await tester.tap(find.text('Ben'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(FriendPeekSheet), findsOneWidget);
   });
 }

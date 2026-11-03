@@ -66,7 +66,7 @@ void main() {
       c.read(bagProvider.notifier).update('7-iron', carryMetres: 150);
 
       expect(_club(c, '7-iron').carryMetres, 150);
-      expect(_club(c, '7-iron').model, 'TaylorMade P790');
+      expect(_club(c, '7-iron').model, isEmpty);
       expect(_club(c, '8-iron').carryMetres, 135);
     });
 

@@ -1,13 +1,14 @@
-/// The Golf Bag feature's shared placeholder data.
+/// The Golf Bag's starter set.
 ///
-/// See `docs/standards/placeholder-golf-bag-data.md` (superseded) and
-/// `docs/features/golf-bag-release-candidate.md`. Golf Bag now owns the whole
-/// bag; Profile no longer carries an equipment list. The models are the ones
-/// the golfer's placeholder kit has always had (TaylorMade Qi35 driver and
-/// P790 irons, Cleveland RTX wedges, an Odyssey White Hot putter, Titleist Pro
-/// V1 balls); the woods, the hybrid and the individual irons and wedges fill
-/// out a complete 14-club bag (the most the rules allow) plus the ball, with
-/// carries that average to the old "Driver 235 m / Irons 145 m / Wedges 95 m".
+/// A new golfer has not told Qaddy what they carry, so the bag starts as a
+/// typical 14-club set (the most the rules allow) plus the ball, with
+/// believable carries for a mid-handicap golfer: just enough for the distance
+/// ladder to show how Golf Bag works. **Only the distances are a starting
+/// point.** There are no brands, no notes and no trust ratings, because those
+/// are the golfer's own words and claiming them would be pretending; the
+/// screen says plainly that the distances are a starter set until the golfer
+/// sets their own (see [starterClubCount]).
+/// See `docs/features/golf-bag-release-candidate.md`.
 library;
 
 import 'package:qaddy/features/my_bag/models/bag_club.dart';
@@ -18,124 +19,110 @@ const List<BagClub> seedBagClubs = <BagClub>[
     id: 'driver',
     name: 'Driver',
     family: ClubFamily.wood,
-    model: 'TaylorMade Qi35',
+    model: '',
     carryMetres: 235,
-    note: 'Tee it high and commit. Fairway first, distance second.',
-    confidence: 3,
   ),
   BagClub(
     id: '3-wood',
     name: '3 wood',
     family: ClubFamily.wood,
-    model: 'TaylorMade Qi35 Fairway',
+    model: '',
     carryMetres: 217,
-    confidence: 3,
   ),
   BagClub(
     id: '5-wood',
     name: '5 wood',
     family: ClubFamily.wood,
-    model: 'TaylorMade Qi35 Fairway',
+    model: '',
     carryMetres: 202,
-    note: 'Great off the deck on a long par 5.',
-    confidence: 3,
   ),
   BagClub(
     id: 'hybrid',
     name: 'Hybrid',
     family: ClubFamily.hybrid,
-    model: 'TaylorMade Qi35 Rescue',
+    model: '',
     carryMetres: 188,
-    note: 'Out of the rough, this is my friend.',
-    confidence: 4,
   ),
   BagClub(
     id: '5-iron',
     name: '5 iron',
     family: ClubFamily.iron,
-    model: 'TaylorMade P790',
+    model: '',
     carryMetres: 165,
-    confidence: 3,
   ),
   BagClub(
     id: '6-iron',
     name: '6 iron',
     family: ClubFamily.iron,
-    model: 'TaylorMade P790',
+    model: '',
     carryMetres: 155,
-    confidence: 4,
   ),
   BagClub(
     id: '7-iron',
     name: '7 iron',
     family: ClubFamily.iron,
-    model: 'TaylorMade P790',
+    model: '',
     carryMetres: 145,
-    note: 'My go-to. Smooth tempo, never force it.',
-    confidence: 5,
   ),
   BagClub(
     id: '8-iron',
     name: '8 iron',
     family: ClubFamily.iron,
-    model: 'TaylorMade P790',
+    model: '',
     carryMetres: 135,
-    confidence: 4,
   ),
   BagClub(
     id: '9-iron',
     name: '9 iron',
     family: ClubFamily.iron,
-    model: 'TaylorMade P790',
+    model: '',
     carryMetres: 125,
-    confidence: 4,
   ),
   BagClub(
     id: 'pitching-wedge',
     name: 'Pitching wedge',
     family: ClubFamily.wedge,
-    model: 'Cleveland RTX',
+    model: '',
     carryMetres: 110,
-    confidence: 5,
   ),
   BagClub(
     id: 'gap-wedge',
     name: 'Gap wedge',
     family: ClubFamily.wedge,
-    model: 'Cleveland RTX',
+    model: '',
     carryMetres: 100,
-    confidence: 4,
   ),
   BagClub(
     id: 'sand-wedge',
     name: 'Sand wedge',
     family: ClubFamily.wedge,
-    model: 'Cleveland RTX',
+    model: '',
     carryMetres: 88,
-    note: 'Open the face, trust the bounce.',
-    confidence: 3,
   ),
   BagClub(
     id: 'lob-wedge',
     name: 'Lob wedge',
     family: ClubFamily.wedge,
-    model: 'Cleveland RTX',
+    model: '',
     carryMetres: 76,
-    note: 'Only when I am short-sided. Commit to it.',
-    confidence: 3,
   ),
-  BagClub(
-    id: 'putter',
-    name: 'Putter',
-    family: ClubFamily.putter,
-    model: 'Odyssey White Hot',
-    note: 'Read the low side. Brave on the short ones.',
-    confidence: 4,
-  ),
-  BagClub(
-    id: 'ball',
-    name: 'Ball',
-    family: ClubFamily.ball,
-    model: 'Titleist Pro V1',
-  ),
+  BagClub(id: 'putter', name: 'Putter', family: ClubFamily.putter, model: ''),
+  BagClub(id: 'ball', name: 'Ball', family: ClubFamily.ball, model: ''),
 ];
+
+/// How many clubs in [bag] still carry the starter distance, i.e. the golfer
+/// has not set their own yet.
+int starterClubCount(List<BagClub> bag) {
+  var count = 0;
+  for (final club in bag) {
+    if (!club.hasCarry) {
+      continue;
+    }
+    for (final seed in seedBagClubs) {
+      if (seed.id == club.id && seed.carryMetres == club.carryMetres) {
+        count++;
+      }
+    }
+  }
+  return count;
+}

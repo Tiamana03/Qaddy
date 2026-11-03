@@ -35,6 +35,7 @@ import 'package:qaddy/features/profile/ui/widgets/player_card.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
 import 'package:qaddy/features/statistics/logic/stats_story.dart';
+import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 /// The Profile destination (route `/profile`).
@@ -53,10 +54,14 @@ class ProfileScreen extends ConsumerWidget {
     final achievements = achievementsFor(stats);
     final earned = achievements.where((a) => a.unlocked).length;
 
-    final friends = ref.watch(confirmedFriendsProvider).length;
-    final trips =
-        ref.watch(upcomingTripsProvider).length +
-        ref.watch(pastTripsProvider).length;
+    // In Release 1 the only mates and groups are the Sample Clubhouse's, so
+    // the golfer's own count of them is honestly zero.
+    final sampleFriends = ref.watch(confirmedFriendsProvider).length;
+    final allTrips = <Trip>[
+      ...ref.watch(upcomingTripsProvider),
+      ...ref.watch(pastTripsProvider),
+    ];
+    final sampleTrips = allTrips.where(TripsController.isSample).length;
 
     final shortcuts = <QaddyQuickAction>[
       QaddyQuickAction(
@@ -106,7 +111,12 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: spacing.sectionGap),
             const QaddySectionHeading(title: 'Your world'),
             SizedBox(height: spacing.md),
-            _World(friends: friends, groups: groups.length, trips: trips),
+            _World(
+              sampleFriends: sampleFriends,
+              sampleGroups: groups.length,
+              trips: allTrips.length - sampleTrips,
+              sampleTrips: sampleTrips,
+            ),
             if (stats != null && stats.rivals.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
               const QaddySectionHeading(title: 'Your playing partners'),
@@ -152,14 +162,16 @@ String _cardMessage(GolferProfile golfer, CareerStats? stats) {
 /// Friends, groups and trips as three tiles, each leading to its home.
 class _World extends StatelessWidget {
   const _World({
-    required this.friends,
-    required this.groups,
+    required this.sampleFriends,
+    required this.sampleGroups,
     required this.trips,
+    required this.sampleTrips,
   });
 
-  final int friends;
-  final int groups;
+  final int sampleFriends;
+  final int sampleGroups;
   final int trips;
+  final int sampleTrips;
 
   @override
   Widget build(BuildContext context) {
@@ -173,11 +185,14 @@ class _World extends StatelessWidget {
       Color colour,
       int count,
       String label,
-      String to,
-    ) => Expanded(
+      String to, {
+      int sample = 0,
+    }) => Expanded(
       child: Semantics(
         button: true,
-        label: '$count $label',
+        label: sample == 0
+            ? '$count $label'
+            : '$count $label, plus $sample sample',
         excludeSemantics: true,
         onTap: () => context.go(to),
         child: QaddyCard(
@@ -194,6 +209,14 @@ class _World extends StatelessWidget {
                 label,
                 style: typography.small.copyWith(color: colours.textSecondary),
               ),
+              if (sample > 0)
+                Text(
+                  '+$sample sample',
+                  style: typography.caption.copyWith(
+                    color: colours.accent,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
             ],
           ),
         ),
@@ -205,20 +228,29 @@ class _World extends StatelessWidget {
         tile(
           Icons.people,
           colours.accentPink,
-          friends,
+          0,
           'Friends',
           AppRoutes.friends,
+          sample: sampleFriends,
         ),
         SizedBox(width: spacing.cardGap),
         tile(
           Icons.groups,
           colours.accentIndigo,
-          groups,
+          0,
           'Groups',
           AppRoutes.friendsGroups,
+          sample: sampleGroups,
         ),
         SizedBox(width: spacing.cardGap),
-        tile(Icons.luggage, colours.accentSky, trips, 'Trips', AppRoutes.trips),
+        tile(
+          Icons.luggage,
+          colours.accentSky,
+          trips,
+          'Trips',
+          AppRoutes.trips,
+          sample: sampleTrips,
+        ),
       ],
     );
   }

@@ -164,7 +164,10 @@ class _ClubSheetState extends ConsumerState<ClubSheet> {
               controller: _model,
               textCapitalization: TextCapitalization.words,
               style: typography.body.copyWith(color: colours.textPrimary),
-              decoration: const InputDecoration(labelText: 'Model'),
+              decoration: const InputDecoration(
+                labelText: 'Model',
+                hintText: 'The one you play',
+              ),
             ),
             if (hasCarry) ...<Widget>[
               SizedBox(height: spacing.xl),

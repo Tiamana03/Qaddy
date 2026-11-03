@@ -54,3 +54,9 @@ Golf Bag now owns the bag. **Profile no longer carries an equipment list** (`pro
 - No adding, removing or renaming clubs: the bag has fixed slots in Release 1. Changing the model covers a swap.
 - Carries are metres only; the app has no units setting yet.
 - `docs/standards/placeholder-golf-bag-data.md` describes the old data and is superseded.
+
+---
+
+# Update (November 2026): a starter bag, not a pretend one
+
+A new golfer used to open a bag of TaylorMade irons, an Odyssey putter and notes written "in their voice" ("My go-to"). None of that was theirs. The bag now starts as a **starter set**: a typical 14 clubs with believable carries, and nothing else. No brands, no notes, no trust ratings (so no "go-to" until the golfer rates a club). The hero reads **STARTER BAG** and the screen says the distances are a starter set until the golfer sets their own; once every carry is theirs it becomes **YOUR BAG**. The putter and ball say "Add your putter" and "Add your ball", and "Notes to self" explains itself until there is a first note. See `docs/features/sample-clubhouse.md`.

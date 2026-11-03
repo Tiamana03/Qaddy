@@ -27,6 +27,7 @@ import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/my_bag/logic/bag_insights.dart';
 import 'package:qaddy/features/my_bag/models/bag_club.dart';
+import 'package:qaddy/features/my_bag/models/placeholder_my_bag.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/club_sheet.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/distance_ladder.dart';
@@ -63,7 +64,12 @@ class GolfBagScreen extends ConsumerWidget {
             SizedBox(height: spacing.sectionGap),
             const QaddySectionHeading(title: 'Your distances'),
             SizedBox(height: spacing.xs),
-            const _Hint('Tap a club to tune its distance, trust and notes.'),
+            _Hint(
+              starterClubCount(bag) == 0
+                  ? 'Tap a club to tune its distance, trust and notes.'
+                  : 'Starter distances: typical carries so you can see how '
+                        'this works. Tap a club and set yours.',
+            ),
             SizedBox(height: spacing.md),
             DistanceLadder(clubs: bag, goTo: goTo, onTapClub: open),
             if (kit.isNotEmpty) ...<Widget>[
@@ -72,12 +78,13 @@ class GolfBagScreen extends ConsumerWidget {
               SizedBox(height: spacing.md),
               _Kit(kit: kit, onTap: open),
             ],
-            if (noted.isNotEmpty) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              const QaddySectionHeading(title: 'Notes to self'),
-              SizedBox(height: spacing.md),
-              _Notes(clubs: noted, onTap: open),
-            ],
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'Notes to self'),
+            SizedBox(height: spacing.md),
+            if (noted.isNotEmpty)
+              _Notes(clubs: noted, onTap: open)
+            else
+              const _NotesInvite(),
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -123,7 +130,8 @@ class _Hero extends StatelessWidget {
 
     final count = clubCount(bag);
     final longest = longestClub(bag);
-    final ball = bag.where((c) => c.family == ClubFamily.ball);
+    final ball = bag.where((c) => c.family == ClubFamily.ball && c.hasModel);
+    final starter = starterClubCount(bag);
 
     // Warm, like worn leather and brass.
     final gradient = LinearGradient(
@@ -140,7 +148,7 @@ class _Hero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const QaddyEyebrow('YOUR BAG'),
+          QaddyEyebrow(starter == 0 ? 'YOUR BAG' : 'STARTER BAG'),
           SizedBox(height: spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -178,7 +186,9 @@ class _Hero extends StatelessWidget {
           ),
           SizedBox(height: spacing.md),
           Text(
-            gappingStory(bag),
+            starter == 0
+                ? gappingStory(bag)
+                : 'A typical set to get you started. ${gappingStory(bag)}',
             style: typography.body.copyWith(color: muted),
           ),
           SizedBox(height: spacing.lg),
@@ -228,7 +238,7 @@ class _Kit extends StatelessWidget {
       child: Semantics(
         button: true,
         label:
-            '${club.name}, ${club.model}.'
+            '${club.name}, ${club.hasModel ? club.model : 'model not set'}.'
             '${club.hasNote ? ' ${club.note}.' : ''} Tap to tune it.',
         excludeSemantics: true,
         onTap: () => onTap(club),
@@ -253,10 +263,16 @@ class _Kit extends StatelessWidget {
               ),
               SizedBox(height: spacing.xs),
               Text(
-                club.model,
+                club.hasModel
+                    ? club.model
+                    : 'Add your ${club.name.toLowerCase()}',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: typography.small.copyWith(color: colours.textSecondary),
+                style: typography.small.copyWith(
+                  color: club.hasModel
+                      ? colours.textSecondary
+                      : colours.textTertiary,
+                ),
               ),
               if (club.family == ClubFamily.putter) ...<Widget>[
                 SizedBox(height: spacing.sm),
@@ -345,6 +361,41 @@ class _Notes extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Shown until the golfer writes a first note: what notes are for.
+class _NotesInvite extends StatelessWidget {
+  const _NotesInvite();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return QaddyCard(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          QaddyIconBadge(
+            icon: Icons.edit_note,
+            colour: colours.accentTeal,
+            size: 36,
+            iconSize: 20,
+          ),
+          SizedBox(width: spacing.md),
+          Expanded(
+            child: Text(
+              'Nothing here yet. Tap a club to leave yourself a note, like '
+              '"plays a club longer into the wind", and it shows up here.',
+              style: typography.body.copyWith(color: colours.textSecondary),
+            ),
+          ),
         ],
       ),
     );

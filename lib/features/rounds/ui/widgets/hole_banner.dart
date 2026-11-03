@@ -53,7 +53,8 @@ class HoleBanner extends StatelessWidget {
       container: true,
       label:
           'Hole ${hole.number} of $total. Par ${hole.par}. '
-          '${hole.metres} metres. Stroke index ${hole.strokeIndex}.'
+          '${hole.metres == null ? '' : '${hole.metres} metres. '}'
+          'Stroke index ${hole.strokeIndex}.'
           '$sideGame',
       child: ExcludeSemantics(
         child: QaddyHeroCard(
@@ -106,7 +107,9 @@ class HoleBanner extends StatelessWidget {
                           ),
                           SizedBox(height: spacing.xs),
                           Text(
-                            '${hole.metres} m · SI ${hole.strokeIndex}',
+                            hole.metres == null
+                                ? 'Stroke index ${hole.strokeIndex}'
+                                : '${hole.metres} m · SI ${hole.strokeIndex}',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: typography.body.copyWith(

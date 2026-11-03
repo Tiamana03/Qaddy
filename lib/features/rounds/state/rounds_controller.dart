@@ -149,7 +149,7 @@ class RoundsController extends Notifier<RoundsState> {
         id: 'round-${_now.microsecondsSinceEpoch}-${_sequence++}',
         course: upcomingRound.course,
         format: upcomingRound.format,
-        holes: richmondHoles,
+        holes: upcomingRoundHoles,
         players: players,
         now: _now,
       ),
