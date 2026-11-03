@@ -18,6 +18,7 @@ import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
@@ -162,7 +163,9 @@ class FriendProfileScreen extends ConsumerWidget {
                   Wrap(
                     spacing: spacing.sm,
                     runSpacing: spacing.sm,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: <Widget>[
+                      const SampleBadge(onGradient: true),
                       QaddyInfoChip(
                         icon: Icons.flag_outlined,
                         text: '${friend.homeClub} · ${friend.location}',

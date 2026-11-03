@@ -4,6 +4,9 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../../../support/launch_harness.dart';
 
@@ -105,5 +108,44 @@ void main() {
     await _pump(tester, size: const Size(320, 568));
 
     expect(tester.takeException(), isNull);
+  });
+
+  group('the Sample Clubhouse', () {
+    testWidgets('is offered, on, and explained', (tester) async {
+      await _pump(tester);
+
+      expect(find.text('Start with a Sample Clubhouse'), findsOneWidget);
+      expect(find.textContaining('always labelled Sample'), findsOneWidget);
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
+    });
+
+    testWidgets('kept, it is what the golfer starts with', (tester) async {
+      final h = await _pump(tester);
+      await tester.enterText(find.byType(TextField).at(0), 'Amy');
+
+      await _tapSave(tester);
+
+      final choice = h.container.read(sampleClubhouseProvider);
+      expect(choice.enabled, isTrue);
+      expect(choice.decided, isTrue);
+      expect(h.container.read(friendsProvider).friends, isNotEmpty);
+    });
+
+    testWidgets('switched off, the clubhouse starts empty', (tester) async {
+      final h = await _pump(tester);
+      await tester.enterText(find.byType(TextField).at(0), 'Amy');
+      await tester.tap(find.byType(Switch));
+      await tester.pumpAndSettle();
+
+      await _tapSave(tester);
+
+      final choice = h.container.read(sampleClubhouseProvider);
+      expect(choice.enabled, isFalse);
+      expect(choice.decided, isTrue);
+      expect(h.container.read(friendsProvider).friends, isEmpty);
+      expect(h.container.read(tripsProvider).trips, isEmpty);
+      expect(sampleClubhouseOn, isFalse);
+      expect(h.location, AppRoutes.home);
+    });
   });
 }

@@ -62,6 +62,7 @@ class NotificationItem {
     this.detail,
     this.when,
     this.icon,
+    this.sample = false,
   });
 
   /// A stable identity: the same thing happening again is the same
@@ -87,6 +88,10 @@ class NotificationItem {
 
   /// An icon of its own, instead of its category's.
   final IconData? icon;
+
+  /// Whether it comes from the Sample Clubhouse rather than the golfer's own
+  /// rounds, mates and trips.
+  final bool sample;
 }
 
 /// A notification and whether the golfer has seen it.

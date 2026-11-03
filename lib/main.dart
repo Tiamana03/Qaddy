@@ -12,6 +12,7 @@ import 'package:qaddy/core/theme/theme_mode_controller.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/authentication/state/session_controller.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
@@ -40,6 +41,13 @@ Future<void> main() async {
         // Who the golfer is must be known before any seeded data is read.
         final storedGolfer = preferences.getString(golferStorageKey);
         useGolfer(storedGolfer == null ? null : decodeGolfer(storedGolfer));
+        final storedSample = preferences.getString(sampleStorageKey);
+        useSampleClubhouse(
+          on:
+              (storedSample == null ? null : decodeSampleChoice(storedSample))
+                  ?.enabled ??
+              true,
+        );
         overrides.addAll(<Override>[
           tripsStorageProvider.overrideWithValue(
             SharedPreferencesTripsStorage(preferences),
@@ -55,6 +63,9 @@ Future<void> main() async {
           ),
           golferStorageProvider.overrideWithValue(
             SharedPreferencesDocumentStorage(preferences, golferStorageKey),
+          ),
+          sampleStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(preferences, sampleStorageKey),
           ),
           themeStorageProvider.overrideWithValue(
             SharedPreferencesDocumentStorage(preferences, themeStorageKey),

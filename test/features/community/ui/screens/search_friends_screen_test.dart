@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/ui/screens/search_friends_screen.dart';
 
+import '../../../../support/app_test_harness.dart';
+
 void main() {
-  testWidgets('shows every golfer by default and filters as you type', (
+  testWidgets(
+    'is an honest invite, not a list of strangers with dead buttons',
+    (tester) async {
+      await pumpFriends(tester, const SearchFriendsScreen());
+
+      expect(find.byType(QaddyScaffold), findsOneWidget);
+      expect(find.text('Golf is better with mates'), findsOneWidget);
+      expect(find.text('Invite a mate'), findsWidgets);
+      expect(find.text('Add Friend'), findsNothing);
+      expect(find.text('Tom'), findsNothing);
+      expect(find.byType(TextField), findsNothing);
+    },
+  );
+
+  testWidgets('shares a message about Qaddy, signed by the golfer', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(theme: QaddyTheme.dark, home: const SearchFriendsScreen()),
-    );
+    final c = await pumpFriends(tester, const SearchFriendsScreen());
 
-    expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('Tom'), findsOneWidget);
-    expect(find.text('Jack'), findsOneWidget);
-    expect(find.text('Add Friend'), findsWidgets);
-
-    await tester.enterText(find.byType(TextField), 'tom');
+    await tester.ensureVisible(find.byType(FilledButton));
+    await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
 
-    expect(find.text('Tom'), findsOneWidget);
-    expect(find.text('Jack'), findsNothing);
-  });
-
-  testWidgets('shows an empty state when nothing matches', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(theme: QaddyTheme.dark, home: const SearchFriendsScreen()),
-    );
-
-    await tester.enterText(find.byType(TextField), 'zzz');
-    await tester.pumpAndSettle();
-
-    expect(find.text('No golfers found'), findsOneWidget);
+    final sent = shareOf(c).shared.single;
+    expect(sent, contains('Qaddy'));
+    expect(sent, endsWith('Tiamana'));
   });
 }

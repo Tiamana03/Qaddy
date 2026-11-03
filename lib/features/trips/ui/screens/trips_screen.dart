@@ -214,6 +214,7 @@ class _TripSection extends StatelessWidget {
               for (final trip in trips)
                 QaddyTripCard(
                   trip: trip,
+                  isSample: TripsController.isSample(trip),
                   leading: TripCoverDateTile(trip: trip),
                   onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
                 ),

@@ -65,8 +65,7 @@ final roundHistoryProvider = Provider<List<Round>>(
 );
 
 /// Who has been picked for the next round: the golfer's own place is always
-/// kept; the others are the invited friends who have said yes (and anyone
-/// added by hand).
+/// kept; they add the mates they are playing with.
 final roundSetupProvider = NotifierProvider<RoundSetupController, Set<String>>(
   RoundSetupController.new,
 );
@@ -83,10 +82,8 @@ final selectedPlayersProvider = Provider<List<RoundPlayer>>((ref) {
 /// Chooses who plays the next round.
 class RoundSetupController extends Notifier<Set<String>> {
   @override
-  Set<String> build() => <String>{
-    for (final invitee in upcomingRoundInvitees)
-      if (invitee.confirmed) invitee.player.name,
-  };
+  // Just the golfer: they add the mates they are actually playing with.
+  Set<String> build() => <String>{currentUserName};
 
   /// Adds or removes [name]. The golfer cannot be removed from their own
   /// round.

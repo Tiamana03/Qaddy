@@ -32,6 +32,6 @@ The seeded world — the upcoming round, groups, trips — refers to the golfer 
 
 # Placeholders and limits
 
-- The mates, groups, trips and season table are still seeded for every golfer (see `docs/standards/placeholder-data.md`). Only the golfer is theirs.
+- The mates, groups, trips and season table are the Sample Clubhouse: seeded for every golfer, labelled Sample and removable (see `docs/features/sample-clubhouse.md`). Only the golfer is theirs.
 - Trips seeded before the golfer saved a handicap carry that handicap for the golfer until the app is reopened; Profile, Home and scoring update at once.
 - No photo or avatar upload; the avatar is initials.

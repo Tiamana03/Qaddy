@@ -24,12 +24,14 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/trips/logic/trip_countdown.dart';
 import 'package:qaddy/features/trips/logic/trip_snapshot.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 import 'package:qaddy/features/trips/models/trip_cover.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 import 'package:qaddy/features/trips/ui/widgets/planning/planning_ring.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_cover_tile.dart';
 
@@ -212,6 +214,10 @@ class _Header extends StatelessWidget {
         Row(
           children: <Widget>[
             Expanded(child: QaddyEyebrow(tripCountdownEyebrow(countdown))),
+            if (TripsController.isSample(trip)) ...<Widget>[
+              const SampleBadge(onGradient: true),
+              const SizedBox(width: 8),
+            ],
             QaddyStatusBadge(label: statusLabel, tone: statusTone),
           ],
         ),

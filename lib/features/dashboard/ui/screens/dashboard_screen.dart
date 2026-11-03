@@ -17,9 +17,11 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -51,6 +53,7 @@ class DashboardScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
 
     final now = ref.watch(dashboardClockProvider)();
     final squad = ref.watch(confirmedFriendsProvider);
@@ -132,12 +135,13 @@ class DashboardScreen extends ConsumerWidget {
           text: '${request.friend.displayName} wants to play with you',
           onTap: () => context.push(AppRoutes.friendRequests),
         ),
-      Highlight(
-        icon: Icons.leaderboard_outlined,
-        colour: colours.accentOrange,
-        text: '${race.headline} in the ${saturdayBoys.name} table',
-        onTap: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
-      ),
+      if (groups.isNotEmpty)
+        Highlight(
+          icon: Icons.leaderboard_outlined,
+          colour: colours.accentOrange,
+          text: '${race.headline} in the ${saturdayBoys.name} table (sample)',
+          onTap: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
+        ),
     ];
 
     return QaddyScaffold(
@@ -189,13 +193,38 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: spacing.sectionGap),
-            QaddySectionHeading(
-              title: 'From your mates',
-              actionLabel: 'See all',
-              onAction: () => context.go(AppRoutes.friends),
-            ),
-            SizedBox(height: spacing.md),
-            const _Mates(),
+            if (ref.watch(sampleOnProvider)) ...<Widget>[
+              QaddySectionHeading(
+                title: 'From your sample mates',
+                actionLabel: 'See all',
+                onAction: () => context.go(AppRoutes.friends),
+              ),
+              SizedBox(height: spacing.md),
+              const _Mates(),
+            ] else ...<Widget>[
+              const QaddySectionHeading(title: 'Your mates'),
+              SizedBox(height: spacing.md),
+              QaddyCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Invite the golfers you play with. Once they join, '
+                      "what they've been up to appears here.",
+                      style: typography.body.copyWith(
+                        color: colours.textSecondary,
+                      ),
+                    ),
+                    SizedBox(height: spacing.md),
+                    QaddyGoldButton(
+                      label: 'Invite a mate',
+                      icon: Icons.person_add_alt_1_outlined,
+                      onPressed: () => context.push(AppRoutes.friendsSearch),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             SizedBox(height: spacing.sectionGap),
             const QaddySectionHeading(title: 'Your highlights'),
             SizedBox(height: spacing.md),

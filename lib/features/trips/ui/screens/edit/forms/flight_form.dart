@@ -207,7 +207,7 @@ class _FlightFormState extends ConsumerState<FlightForm> {
           right: QaddyTextField(
             controller: _to,
             label: 'To',
-            hintText: 'Melbourne (MEL)',
+            hintText: 'Airport or city',
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             errorText: _required(_to, 'Required', submitted: submitted),

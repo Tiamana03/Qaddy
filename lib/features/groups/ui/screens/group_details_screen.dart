@@ -22,6 +22,7 @@ import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
@@ -265,6 +266,7 @@ class _Hero extends StatelessWidget {
             spacing: spacing.sm,
             runSpacing: spacing.sm,
             children: <Widget>[
+              const SampleBadge(onGradient: true),
               QaddyInfoChip(
                 icon: Icons.people_alt_outlined,
                 text: group.totalMembers == 1

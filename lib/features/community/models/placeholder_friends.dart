@@ -8,6 +8,7 @@
 /// Requests, Search Friends and Activity Feed.
 library;
 
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/community/models/activity_feed_item.dart';
 import 'package:qaddy/features/community/models/friend.dart';
 import 'package:qaddy/features/community/models/friend_request.dart';
@@ -136,7 +137,7 @@ final Friend _jack = Friend(
 
 /// Every placeholder friend — see placeholder-friend-data.md's "Friends"
 /// table (8 entries).
-final List<Friend> friends = <Friend>[
+final List<Friend> _sampleFriends = <Friend>[
   tom,
   _ben,
   _luke,
@@ -146,6 +147,11 @@ final List<Friend> friends = <Friend>[
   _liam,
   _jack,
 ];
+
+/// The golfer's friends: the sample mates while the Sample Clubhouse is on,
+/// none otherwise — a golfer's real friends arrive with accounts.
+List<Friend> get friends =>
+    sampleClubhouseOn ? _sampleFriends : const <Friend>[];
 
 /// Confirmed friends only — Friends List filters to this subset, per
 /// friends-engineering-decisions.md's "Friends List Shows Confirmed
@@ -166,7 +172,7 @@ int get pendingFriendsCount =>
 /// Friend-scoped activity — see `docs/architecture/activity-feed.md` and
 /// placeholder-friend-data.md's "Activity Feed" section (5 entries,
 /// ordered newest first).
-final List<ActivityFeedItem> friendActivityFeed = <ActivityFeedItem>[
+final List<ActivityFeedItem> _sampleActivity = <ActivityFeedItem>[
   ActivityFeedItem(
     id: 'activity-1',
     actor: tom.displayName,
@@ -208,6 +214,11 @@ final List<ActivityFeedItem> friendActivityFeed = <ActivityFeedItem>[
   ),
 ];
 
+/// What the sample mates have been up to (empty without the Sample
+/// Clubhouse).
+List<ActivityFeedItem> get friendActivityFeed =>
+    sampleClubhouseOn ? _sampleActivity : const <ActivityFeedItem>[];
+
 /// The shared placeholder rivalry: the current user (Tiamana) against Tom —
 /// see `docs/architecture/rivalries.md`.
 final RivalryRecord tomRivalry = RivalryRecord(
@@ -222,7 +233,7 @@ final RivalryRecord tomRivalry = RivalryRecord(
 /// Pending friendships split by direction — see
 /// `docs/architecture/friend-requests.md` and placeholder-friend-data.md's
 /// "Friend Requests" section.
-final List<FriendRequest> friendRequests = <FriendRequest>[
+final List<FriendRequest> _sampleRequests = <FriendRequest>[
   FriendRequest(
     friend: _sam,
     direction: FriendRequestDirection.incoming,
@@ -234,6 +245,10 @@ final List<FriendRequest> friendRequests = <FriendRequest>[
     sentDescription: '5 days ago',
   ),
 ];
+
+/// The sample friend requests (none without the Sample Clubhouse).
+List<FriendRequest> get friendRequests =>
+    sampleClubhouseOn ? _sampleRequests : const <FriendRequest>[];
 
 /// Incoming friend requests.
 List<FriendRequest> get incomingFriendRequests => friendRequests

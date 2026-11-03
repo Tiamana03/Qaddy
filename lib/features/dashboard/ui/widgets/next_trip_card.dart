@@ -51,7 +51,7 @@ class NextTripCard extends StatelessWidget {
         : tripCountdownEyebrow(countdown);
     final title = planned?.name ?? 'Plan your next golf trip';
     final detail = planned == null
-        ? 'Pick the dates and bring the Saturday Boys.'
+        ? 'Pick the dates and bring your mates.'
         : '${planned.destination} · '
               '${planned.startDate.toFriendlyRange(planned.endDate)}';
 

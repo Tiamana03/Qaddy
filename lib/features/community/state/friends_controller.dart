@@ -95,6 +95,16 @@ class FriendsController extends Notifier<FriendsState> {
     requests: List<FriendRequest>.of(friendRequests),
   );
 
+  /// Brings the sample mates back, or takes them (and their requests) away.
+  void setSample({required bool on}) {
+    state = on
+        ? FriendsState(
+            friends: List<Friend>.of(friends),
+            requests: List<FriendRequest>.of(friendRequests),
+          )
+        : const FriendsState(friends: <Friend>[], requests: <FriendRequest>[]);
+  }
+
   /// Accepts [friendId]'s request: they become a confirmed friend.
   void acceptRequest(String friendId) =>
       _answer(friendId, FriendStatus.confirmed);

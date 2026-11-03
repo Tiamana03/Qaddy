@@ -51,13 +51,13 @@ void main() {
       await _pump(tester);
 
       expect(find.text('Rounds'), findsOneWidget);
-      expect(find.text('FIRST TEE'), findsOneWidget);
+      expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
       expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
       expect(find.text('21°C Sunny'), findsOneWidget);
       expect(find.text('Stableford'), findsOneWidget);
       expect(find.text('18 holes'), findsOneWidget);
-      expect(find.textContaining('7 playing'), findsOneWidget);
+      expect(find.textContaining('1 playing'), findsOneWidget);
     });
 
     testWidgets('has no disabled or administrative buttons left', (
@@ -87,16 +87,18 @@ void main() {
       expect(find.textContaining('Waiting to reply'), findsOneWidget);
     });
 
-    testWidgets('a friend can be taken out and put back', (tester) async {
+    testWidgets('a round starts with just the golfer; mates are added', (
+      tester,
+    ) async {
       final container = await _pump(tester);
-      expect(container.read(selectedPlayersProvider), hasLength(7));
+      expect(container.read(selectedPlayersProvider), hasLength(1));
 
       await _tap(tester, find.text('Tom'));
-      expect(container.read(selectedPlayersProvider), hasLength(6));
-      expect(find.textContaining('6 playing'), findsOneWidget);
+      expect(container.read(selectedPlayersProvider), hasLength(2));
+      expect(find.textContaining('2 playing'), findsOneWidget);
 
       await _tap(tester, find.text('Tom'));
-      expect(container.read(selectedPlayersProvider), hasLength(7));
+      expect(container.read(selectedPlayersProvider), hasLength(1));
     });
 
     testWidgets('someone who has not replied can be added', (tester) async {
@@ -108,7 +110,7 @@ void main() {
         container.read(selectedPlayersProvider).map((p) => p.name),
         contains('Josh'),
       );
-      expect(find.textContaining('8 playing'), findsOneWidget);
+      expect(find.textContaining('2 playing'), findsOneWidget);
     });
 
     testWidgets('the golfer cannot take themselves out', (tester) async {
@@ -116,13 +118,13 @@ void main() {
 
       await _tap(tester, find.text('You'));
 
-      expect(container.read(selectedPlayersProvider), hasLength(7));
+      expect(container.read(selectedPlayersProvider), hasLength(1));
     });
 
     testWidgets('shows the side games and their holes', (tester) async {
       await _pump(tester);
 
-      expect(find.text('On the course'), findsOneWidget);
+      expect(find.text('On the course (sample)'), findsOneWidget);
       for (final game in upcomingRoundSideGames) {
         expect(find.text(game.name), findsOneWidget);
         expect(find.text('Hole ${game.hole}'), findsOneWidget);
@@ -137,7 +139,7 @@ void main() {
       await _tap(tester, find.text('Start round'));
 
       final round = container.read(liveRoundProvider)!;
-      expect(round.players, hasLength(7));
+      expect(round.players, hasLength(1));
       expect(round.players.first.name, upcomingRoundInvitees.first.player.name);
       expect(find.text('Go: /rounds/scorecard'), findsOneWidget);
     });
@@ -153,8 +155,8 @@ void main() {
           .read(liveRoundProvider)!
           .players
           .map((p) => p.name);
-      expect(names, isNot(contains('Tom')));
-      expect(names, contains('Josh'));
+      expect(names, containsAll(<String>['Tom', 'Josh']));
+      expect(names, isNot(contains('Ben')));
     });
   });
 

@@ -161,7 +161,7 @@ class _TransportFormState extends ConsumerState<TransportForm> {
           QaddyTextField(
             controller: _from,
             label: 'From',
-            hintText: 'Melbourne Airport',
+            hintText: 'Where from or to?',
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             errorText: placeError,

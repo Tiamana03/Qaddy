@@ -12,6 +12,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/community/models/placeholder_friends.dart';
 import 'package:qaddy/features/trips/models/placeholder_trips.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
@@ -161,9 +162,44 @@ class TripsController extends Notifier<TripsState> {
     if (restored != null) {
       return TripsState(trips: restored.trips, plans: restored.plans);
     }
-    return TripsState(
-      trips: List<Trip>.of(seedTrips),
-      plans: Map<String, TripPlan>.of(seedPlans),
+    // A golfer with nothing saved starts with the sample trips only if they
+    // chose the Sample Clubhouse.
+    return sampleClubhouseOn
+        ? TripsState(
+            trips: List<Trip>.of(seedTrips),
+            plans: Map<String, TripPlan>.of(seedPlans),
+          )
+        : const TripsState(trips: <Trip>[], plans: <String, TripPlan>{});
+  }
+
+  /// Whether [trip] is one of the sample trips rather than the golfer's own.
+  static bool isSample(Trip trip) => seedTrips.any((t) => t.id == trip.id);
+
+  /// Adds the sample trips back (any the golfer already has are left as they
+  /// are), or takes them away. The golfer's own trips are never touched.
+  void setSample({required bool on}) {
+    final sampleIds = <String>{for (final trip in seedTrips) trip.id};
+    if (!on) {
+      state = TripsState(
+        trips: <Trip>[
+          for (final trip in state.trips)
+            if (!sampleIds.contains(trip.id)) trip,
+        ],
+        plans: <String, TripPlan>{
+          for (final entry in state.plans.entries)
+            if (!sampleIds.contains(entry.key)) entry.key: entry.value,
+        },
+      );
+      return;
+    }
+    final have = state.trips.map((trip) => trip.id).toSet();
+    state = TripsState(
+      trips: <Trip>[
+        ...state.trips,
+        for (final trip in seedTrips)
+          if (!have.contains(trip.id)) trip,
+      ],
+      plans: <String, TripPlan>{...seedPlans, ...state.plans},
     );
   }
 

@@ -298,7 +298,7 @@ class _DestinationFormState extends ConsumerState<_DestinationForm> {
         QaddyTextField(
           controller: _destination,
           label: 'Destination',
-          hintText: 'Melbourne, Australia',
+          hintText: 'City or country',
           prefixIcon: const Icon(Icons.place_outlined),
           textCapitalization: TextCapitalization.words,
           errorText: submitted && _destination.text.trim().isEmpty

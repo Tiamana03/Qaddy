@@ -7,6 +7,7 @@
 library;
 
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/rounds/models/course_hole.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 
@@ -21,6 +22,7 @@ class UpcomingRound {
     required this.weather,
     required this.format,
     required this.holes,
+    this.planned = true,
   });
 
   /// The course being played.
@@ -43,10 +45,14 @@ class UpcomingRound {
 
   /// Number of holes.
   final int holes;
+
+  /// Whether this round is planned for a day and time (the sample round) or
+  /// is just a round the golfer can start now.
+  final bool planned;
 }
 
 /// Richmond Golf Club, Saturday 8:20 AM — the shared placeholder round.
-const upcomingRound = UpcomingRound(
+const UpcomingRound _sampleRound = UpcomingRound(
   course: 'Richmond Golf Club',
   date: 'Saturday',
   teeTime: '8:20 AM',
@@ -55,6 +61,22 @@ const upcomingRound = UpcomingRound(
   format: 'Stableford',
   holes: 18,
 );
+
+/// The round to play next: Saturday's sample round while the Sample Clubhouse
+/// is on; otherwise no plan at all, just a round the golfer can start, at
+/// their home course.
+UpcomingRound get upcomingRound => sampleClubhouseOn
+    ? _sampleRound
+    : UpcomingRound(
+        course: currentUserHomeCourse ?? 'Your course',
+        date: '',
+        teeTime: '',
+        players: 1,
+        weather: '',
+        format: 'Stableford',
+        holes: 18,
+        planned: false,
+      );
 
 /// Richmond Golf Club's eighteen holes: par, stroke index and metres.
 const List<CourseHole> richmondHoles = <CourseHole>[
@@ -91,7 +113,7 @@ class RoundInvitee {
 
 /// Everyone invited to Saturday's round — see placeholder-data.md's "Friends"
 /// table (8 entries, matching the round's player count). The golfer is first.
-final List<RoundInvitee> upcomingRoundInvitees = <RoundInvitee>[
+final List<RoundInvitee> _sampleInvitees = <RoundInvitee>[
   RoundInvitee(
     player: RoundPlayer(
       name: currentUserName,
@@ -110,6 +132,11 @@ final List<RoundInvitee> upcomingRoundInvitees = <RoundInvitee>[
   const RoundInvitee(player: RoundPlayer(name: 'Liam', handicap: 7)),
 ];
 
+/// Who can be asked to the next round: the golfer, and — while the Sample
+/// Clubhouse is on — the sample mates. The golfer is always first.
+List<RoundInvitee> get upcomingRoundInvitees =>
+    sampleClubhouseOn ? _sampleInvitees : <RoundInvitee>[_sampleInvitees.first];
+
 /// A side game played on one hole.
 class SideGame {
   const SideGame({required this.name, required this.hole});
@@ -122,8 +149,12 @@ class SideGame {
 }
 
 /// Saturday's side games — see placeholder-data.md's "Side Games".
-const List<SideGame> upcomingRoundSideGames = <SideGame>[
+const List<SideGame> _sampleSideGames = <SideGame>[
   SideGame(name: 'Longest Drive', hole: 5),
   SideGame(name: 'Nearest the Pin', hole: 12),
   SideGame(name: 'Drive & Chip', hole: 16),
 ];
+
+/// The sample round's side games (none without the Sample Clubhouse).
+List<SideGame> get upcomingRoundSideGames =>
+    sampleClubhouseOn ? _sampleSideGames : const <SideGame>[];

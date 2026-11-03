@@ -10,6 +10,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/features/community/models/friend.dart';
 
@@ -41,13 +42,21 @@ class FriendCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  friend.displayName,
-                  style: typography.body.copyWith(
-                    color: colours.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        friend.displayName,
+                        style: typography.body.copyWith(
+                          color: colours.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: spacing.sm),
+                    const SampleBadge(),
+                  ],
                 ),
                 SizedBox(height: spacing.xs),
                 Text(

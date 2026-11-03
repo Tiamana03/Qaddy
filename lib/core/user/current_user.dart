@@ -23,6 +23,7 @@ const double _placeholderHandicap = 8.4;
 String _id = _placeholderName;
 String _display = _placeholderName;
 double? _handicap = _placeholderHandicap;
+String? _homeCourse;
 
 /// Seeded friends whose names a golfer might share. The golfer's id is made
 /// different from theirs so the two never collide in a scorecard or a table.
@@ -50,6 +51,9 @@ String get currentUserDisplayName => _display;
 /// The golfer's handicap index, if they gave one.
 double? get currentUserHandicap => _handicap;
 
+/// The golfer's home course, if they said.
+String? get currentUserHomeCourse => _homeCourse;
+
 /// The id for a golfer called [firstName]: the name itself, unless that would
 /// collide with a seeded friend, in which case an invisible zero-width space is
 /// added so the two stay distinct and the name still reads the same.
@@ -67,11 +71,13 @@ void useGolfer(GolferProfile? golfer) {
     _id = _placeholderName;
     _display = _placeholderName;
     _handicap = _placeholderHandicap;
+    _homeCourse = null;
     return;
   }
   _id = golferIdFor(golfer.firstName);
   _display = golfer.firstName.trim();
   _handicap = golfer.handicap;
+  _homeCourse = golfer.homeCourse;
 }
 
 /// Puts the placeholder golfer back. For tests.

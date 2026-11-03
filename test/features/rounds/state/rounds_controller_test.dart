@@ -187,14 +187,12 @@ void main() {
   });
 
   group('who is playing', () {
-    test('starts with the invited friends who said yes', () {
+    test('starts with just the golfer; they add the mates they play with', () {
       final c = _container();
 
       final picked = c.read(selectedPlayersProvider).map((p) => p.name);
 
-      expect(picked, contains('Tom'));
-      expect(picked, isNot(contains('Josh')));
-      expect(picked.length, 7);
+      expect(picked, <String>[upcomingRoundInvitees.first.player.name]);
     });
 
     test('a friend can be added and removed', () {

@@ -284,7 +284,7 @@ void main() {
       await tester.tap(find.text('Tom'));
 
       expect(toggles, 1);
-      expect(find.text('HCP 8'), findsOneWidget);
+      expect(find.text('Sample mate · HCP 8'), findsOneWidget);
     });
 
     testWidgets('the golfer cannot be toggled', (tester) async {
@@ -300,7 +300,10 @@ void main() {
     testWidgets('someone yet to reply is labelled', (tester) async {
       await tester.pumpWidget(tile(included: false, confirmed: false));
 
-      expect(find.text('HCP 8 · Waiting to reply'), findsOneWidget);
+      expect(
+        find.text('Sample mate · HCP 8 · Waiting to reply'),
+        findsOneWidget,
+      );
     });
   });
 }

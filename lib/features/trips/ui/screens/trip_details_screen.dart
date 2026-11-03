@@ -18,6 +18,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
@@ -323,6 +324,10 @@ class _Overview extends StatelessWidget {
                         Expanded(
                           child: QaddyEyebrow(tripCountdownEyebrow(countdown)),
                         ),
+                        if (TripsController.isSample(trip)) ...<Widget>[
+                          const SampleBadge(onGradient: true),
+                          const SizedBox(width: 8),
+                        ],
                         QaddyStatusBadge(label: statusLabel, tone: statusTone),
                       ],
                     ),

@@ -64,7 +64,7 @@ void main() {
     testWidgets('invites the group to the next round', (tester) async {
       await _pump(tester);
 
-      expect(find.text('NEXT ROUND · SATURDAY BOYS'), findsOneWidget);
+      expect(find.text('SAMPLE ROUND · SATURDAY BOYS'), findsOneWidget);
       expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
     });
 

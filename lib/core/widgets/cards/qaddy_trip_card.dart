@@ -14,6 +14,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/features/trips/models/trip.dart';
 
@@ -35,6 +36,7 @@ class QaddyTripCard extends StatelessWidget {
   const QaddyTripCard({
     required this.trip,
     this.leading,
+    this.isSample = false,
     this.onTap,
     super.key,
   });
@@ -44,6 +46,9 @@ class QaddyTripCard extends StatelessWidget {
 
   /// Replaces the default date tile (e.g. with a cover-art tile).
   final Widget? leading;
+
+  /// Whether the trip is from the Sample Clubhouse, not the golfer's own.
+  final bool isSample;
 
   /// Called when the card is tapped. Omit for a non-interactive card.
   final VoidCallback? onTap;
@@ -91,26 +96,31 @@ class QaddyTripCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: spacing.sm),
-                Row(
+                Wrap(
+                  spacing: spacing.sm,
+                  runSpacing: spacing.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
                     QaddyStatusBadge(label: statusLabel, tone: statusTone),
-                    SizedBox(width: spacing.sm),
-                    Icon(
-                      Icons.people_outline,
-                      size: spacing.lg,
-                      color: colours.textSecondary,
-                    ),
-                    SizedBox(width: spacing.xs),
-                    Flexible(
-                      child: Text(
-                        trip.playerCount == 1
-                            ? '1 Player'
-                            : '${trip.playerCount} Players',
-                        overflow: TextOverflow.ellipsis,
-                        style: typography.small.copyWith(
+                    if (isSample) const SampleBadge(),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.people_outline,
+                          size: spacing.lg,
                           color: colours.textSecondary,
                         ),
-                      ),
+                        SizedBox(width: spacing.xs),
+                        Text(
+                          trip.playerCount == 1
+                              ? '1 Player'
+                              : '${trip.playerCount} Players',
+                          style: typography.small.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

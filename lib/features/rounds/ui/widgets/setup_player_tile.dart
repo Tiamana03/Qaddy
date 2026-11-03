@@ -7,6 +7,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
@@ -48,9 +49,13 @@ class SetupPlayerTile extends StatelessWidget {
     final borderRadius = BorderRadius.circular(radius.large);
 
     final handicap = handicapLabel(player.handicap);
-    final detail = !confirmed && !included
-        ? 'HCP $handicap · Waiting to reply'
+    final hcp = isYou && currentUserHandicap == null
+        ? 'No handicap yet'
         : 'HCP $handicap';
+    final who = isYou ? '' : 'Sample mate · ';
+    final detail = !confirmed && !included
+        ? '$who$hcp · Waiting to reply'
+        : '$who$hcp';
 
     return Semantics(
       container: true,

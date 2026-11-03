@@ -118,8 +118,8 @@ void main() {
   testWidgets('the next round opens Rounds', (tester) async {
     await _pump(tester);
 
-    await tester.ensureVisible(find.text('Next round · Saturday, 8:20 AM'));
-    await tester.tap(find.text('Next round · Saturday, 8:20 AM'));
+    await tester.ensureVisible(find.text('Sample round · Saturday, 8:20 AM'));
+    await tester.tap(find.text('Sample round · Saturday, 8:20 AM'));
     await tester.pumpAndSettle();
 
     expect(find.text('Go: rounds'), findsOneWidget);

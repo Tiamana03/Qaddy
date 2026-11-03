@@ -8,6 +8,7 @@
 library;
 
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 
@@ -84,12 +85,16 @@ final Group _familyGolfDays = Group(
 );
 
 /// Every placeholder group — see placeholder-group-data.md's "Groups" table.
-final List<Group> groups = <Group>[
+final List<Group> _sampleGroups = <Group>[
   saturdayBoys,
   _wednesdayWarriors,
   _fridaySocialClub,
   _familyGolfDays,
 ];
+
+/// The golfer's groups: the sample groups while the Sample Clubhouse is on,
+/// none otherwise.
+List<Group> get groups => sampleClubhouseOn ? _sampleGroups : const <Group>[];
 
 /// Saturday Boys' named members with handicaps — see
 /// placeholder-group-data.md's "Saturday Boys > Members" table.

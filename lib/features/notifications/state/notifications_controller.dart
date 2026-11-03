@@ -16,6 +16,7 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/services/document_storage.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
@@ -161,6 +162,9 @@ final notificationFeedProvider = Provider<List<NotificationItem>>((ref) {
       golferName: golfer.firstName,
       hasHandicap: golfer.handicap != null,
       now: now,
+      roundPlanned: upcomingRound.planned,
+      sampleOn: ref.watch(sampleOnProvider),
+      tripIsSample: nextTrip != null && TripsController.isSample(nextTrip),
       roundDay: upcomingRound.date,
       roundCourse: upcomingRound.course,
       roundTeeTime: upcomingRound.teeTime,
@@ -182,7 +186,9 @@ final notificationFeedProvider = Provider<List<NotificationItem>>((ref) {
           ? 0
           : ref.watch(tripPlanProvider(nextTrip.id)).pendingMembers.length,
       tableId: saturdayBoys.id,
-      tableHeadline: '${race.headline} in the ${saturdayBoys.name} table',
+      tableHeadline: groups.isEmpty
+          ? null
+          : '${race.headline} in the ${saturdayBoys.name} table',
       tableDetail: <String>[?race.chase, race.roundsLeft].join(' · '),
       tableLocation: AppRoutes.friendsGroup(saturdayBoys.id),
     ),

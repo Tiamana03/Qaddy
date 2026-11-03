@@ -236,6 +236,7 @@ class _PitchPage extends StatelessWidget {
       OnboardingTone.teal => colours.accentTeal,
       OnboardingTone.sky => colours.accentSky,
       OnboardingTone.orange => colours.accentOrange,
+      OnboardingTone.indigo => colours.accentIndigo,
     };
 
     return AnimatedBuilder(

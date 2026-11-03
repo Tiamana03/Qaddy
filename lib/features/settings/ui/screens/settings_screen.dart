@@ -8,6 +8,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/config/app_info.dart';
+import 'package:qaddy/core/routing/app_router.dart';
 import 'package:qaddy/core/services/local_data.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -15,9 +16,11 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/theme/theme_mode_controller.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/user/golfer_form.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
@@ -28,9 +31,11 @@ import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/rows/qaddy_nav_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/notifications/models/notification_item.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 /// Settings (route `/profile/settings`).
 class SettingsScreen extends ConsumerWidget {
@@ -44,6 +49,7 @@ class SettingsScreen extends ConsumerWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final golfer = ref.watch(golferDetailsProvider);
+    final sample = ref.watch(sampleOnProvider);
     final mode = ref.watch(themeModeProvider);
     final muted = ref.watch(notificationsProvider.select((s) => s.muted));
     final rounds = ref.watch(roundHistoryProvider).length;
@@ -81,6 +87,32 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+
+    Future<void> chooseSample({required bool on}) async {
+      if (!on) {
+        final sure = await showQaddyConfirm(
+          context,
+          title: 'Remove the Sample Clubhouse?',
+          message:
+              'The sample mates, groups, trip, rivalry and season table '
+              'disappear. Your own rounds, trips and bag stay. You can bring '
+              'it back from here any time.',
+          confirmLabel: 'Remove it',
+          destructive: true,
+        );
+        if (!sure) {
+          return;
+        }
+      }
+      // The last step starts the app afresh, so every screen shows what is now
+      // true.
+      ref
+        ..read(sampleClubhouseProvider.notifier).choose(enabled: on)
+        ..read(friendsProvider.notifier).setSample(on: on)
+        ..read(tripsProvider.notifier).setSample(on: on)
+        ..invalidate(roundSetupProvider)
+        ..invalidate(appRouterProvider);
+    }
 
     Future<void> clearRounds() async {
       final sure = await showQaddyConfirm(
@@ -284,6 +316,56 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: spacing.sectionGap),
+            const QaddySectionHeading(title: 'Sample Clubhouse'),
+            SizedBox(height: spacing.md),
+            QaddyCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text(
+                        sample ? 'On' : 'Off',
+                        style: typography.h3.copyWith(
+                          color: colours.textPrimary,
+                        ),
+                      ),
+                      SizedBox(width: spacing.sm),
+                      const SampleBadge(),
+                    ],
+                  ),
+                  SizedBox(height: spacing.sm),
+                  Text(
+                    sample
+                        ? 'Tom, Ben and the other mates, the Saturday Boys, '
+                              'the Melbourne trip and the season table are '
+                              'samples, '
+                              'here so you can see how Qaddy works. They are '
+                              'always labelled Sample and are never your own '
+                              'friends. Keep them, edit the trips (yours to '
+                              'change), or remove them.'
+                        : "You're starting with an empty clubhouse. Bring the "
+                              'Sample Clubhouse back to see what Qaddy can do '
+                              'with mates, groups and trips.',
+                    style: typography.body.copyWith(
+                      color: colours.textSecondary,
+                    ),
+                  ),
+                  SizedBox(height: spacing.sm),
+                  QaddyNavRow(
+                    icon: sample
+                        ? Icons.visibility_off_outlined
+                        : Icons.theaters_outlined,
+                    title: sample
+                        ? 'Remove the Sample Clubhouse'
+                        : 'Bring back the Sample Clubhouse',
+                    destructive: sample,
+                    onTap: () => chooseSample(on: !sample),
                   ),
                 ],
               ),

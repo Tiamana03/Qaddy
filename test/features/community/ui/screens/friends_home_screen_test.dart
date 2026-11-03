@@ -81,7 +81,7 @@ void main() {
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('Friends'), findsOneWidget);
       expect(find.text('Your squad'), findsOneWidget);
-      expect(find.text('RIVALRY'), findsOneWidget);
+      expect(find.text('SAMPLE RIVALRY'), findsOneWidget);
       expect(find.text('Latest from mates'), findsOneWidget);
       expect(find.text('Your clubs'), findsOneWidget);
     });
@@ -99,7 +99,7 @@ void main() {
     ) async {
       await _pump(tester);
 
-      expect(find.textContaining('5 friends'), findsOneWidget);
+      expect(find.textContaining('5 sample mates'), findsOneWidget);
       expect(find.textContaining('played recently'), findsOneWidget);
     });
   });
@@ -194,7 +194,7 @@ void main() {
 
       expect(find.text('Build your squad'), findsOneWidget);
       expect(find.text('Your squad'), findsNothing);
-      await _tap(tester, find.text('Find golfers'));
+      await _tap(tester, find.text('Invite a mate'));
       await tester.pumpAndSettle();
       expect(find.text('Go: search'), findsOneWidget);
     });
@@ -488,7 +488,7 @@ void main() {
     ) async {
       await _pump(tester);
 
-      await _tap(tester, find.byTooltip('Search golfers'));
+      await _tap(tester, find.byTooltip('Invite a mate'));
       await tester.pumpAndSettle();
       expect(find.text('Go: search'), findsOneWidget);
     });

@@ -10,6 +10,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
@@ -89,6 +90,8 @@ class GroupCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            const SampleBadge(onGradient: true),
+                            SizedBox(height: spacing.xs),
                             Text(
                               group.name,
                               maxLines: 2,

@@ -62,7 +62,10 @@ class RoundsScreen extends ConsumerWidget {
             SizedBox(height: spacing.xs),
             Text(
               live == null
-                  ? '${upcomingRound.date} at ${upcomingRound.course}'
+                  ? (upcomingRound.planned
+                        ? 'Sample round · ${upcomingRound.date} at '
+                              '${upcomingRound.course}'
+                        : upcomingRound.course)
                   : 'Round in progress',
               style: typography.body.copyWith(color: colours.textSecondary),
             ),
@@ -85,10 +88,12 @@ class RoundsScreen extends ConsumerWidget {
               SizedBox(height: spacing.md),
               const _Players(),
             ],
-            SizedBox(height: spacing.sectionGap),
-            const QaddySectionHeading(title: 'On the course'),
-            SizedBox(height: spacing.md),
-            const _SideGames(),
+            if (upcomingRoundSideGames.isNotEmpty) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              const QaddySectionHeading(title: 'On the course (sample)'),
+              SizedBox(height: spacing.md),
+              const _SideGames(),
+            ],
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -126,13 +131,17 @@ class _SetupHero extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const QaddyEyebrow('FIRST TEE'),
+          QaddyEyebrow(
+            upcomingRound.planned ? 'SAMPLE ROUND · FIRST TEE' : 'YOUR ROUND',
+          ),
           SizedBox(height: spacing.sm),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(
-              '${upcomingRound.date}, ${upcomingRound.teeTime}',
+              upcomingRound.planned
+                  ? '${upcomingRound.date}, ${upcomingRound.teeTime}'
+                  : 'Ready when you are',
               style: typography.display.copyWith(color: onGradient),
             ),
           ),
@@ -146,10 +155,11 @@ class _SetupHero extends ConsumerWidget {
             spacing: spacing.sm,
             runSpacing: spacing.sm,
             children: <Widget>[
-              QaddyInfoChip(
-                icon: Icons.wb_sunny_outlined,
-                text: upcomingRound.weather,
-              ),
+              if (upcomingRound.planned)
+                QaddyInfoChip(
+                  icon: Icons.wb_sunny_outlined,
+                  text: upcomingRound.weather,
+                ),
               QaddyInfoChip(
                 icon: Icons.emoji_events_outlined,
                 text: upcomingRound.format,
@@ -165,6 +175,12 @@ class _SetupHero extends ConsumerWidget {
             names: <String>[for (final p in players) p.name],
             total: players.length,
             textColour: muted,
+          ),
+          SizedBox(height: spacing.md),
+          Text(
+            'Hole pars and distances use a sample 18-hole layout until '
+            'course search arrives.',
+            style: typography.small.copyWith(color: muted),
           ),
         ],
       ),

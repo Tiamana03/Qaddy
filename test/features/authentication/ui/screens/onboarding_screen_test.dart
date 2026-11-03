@@ -25,6 +25,9 @@ void main() {
     expect(find.text('Play with your mates'), findsOneWidget);
 
     await _next(tester);
+    expect(find.text('Meet your Sample Clubhouse'), findsOneWidget);
+
+    await _next(tester);
     expect(find.text('Tee it up'), findsOneWidget);
     expect(find.text('Continue as guest'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);

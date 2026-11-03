@@ -94,10 +94,10 @@ void main() {
     testWidgets('has every section a golfer comes for', (tester) async {
       await _pump(tester);
 
-      expect(find.text('NEXT ROUND'), findsOneWidget);
+      expect(find.text('SAMPLE ROUND · NEXT ROUND'), findsOneWidget);
       expect(find.text('Start a round'), findsOneWidget);
       expect(find.text('YOUR GAME'), findsOneWidget);
-      expect(find.text('From your mates'), findsOneWidget);
+      expect(find.text('From your sample mates'), findsOneWidget);
       expect(find.text('Your highlights'), findsOneWidget);
       // The old placeholder furniture is gone.
       expect(find.text('Create Round'), findsNothing);
@@ -124,7 +124,7 @@ void main() {
     testWidgets('changes its tune as the day gets closer', (tester) async {
       await _pump(tester, now: DateTime(2026, 11, 7, 7));
 
-      expect(find.text("IT'S ROUND DAY"), findsOneWidget);
+      expect(find.text("SAMPLE ROUND · IT'S ROUND DAY"), findsOneWidget);
       expect(find.text('Today'), findsOneWidget);
     });
 
@@ -364,7 +364,7 @@ void main() {
   group('highlights', () {
     for (final (text, path) in <(String, String)>[
       (
-        "You're 5th in the Saturday Boys table",
+        "You're 5th in the Saturday Boys table (sample)",
         '/friends/groups/saturday-boys',
       ),
       ('Sam wants to play with you', '/friends/requests'),

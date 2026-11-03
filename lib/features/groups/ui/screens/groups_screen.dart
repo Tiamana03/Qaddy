@@ -10,8 +10,10 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/widgets/cards/sample_banner.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
 import 'package:qaddy/features/groups/ui/widgets/group_card.dart';
@@ -31,7 +33,9 @@ class GroupsScreen extends StatelessWidget {
     final playingNext = groups
         .where((group) => upcomingRoundOf(group) != null)
         .toList();
-    final pulse = playingNext.isEmpty
+    final pulse = groups.isEmpty
+        ? 'No groups yet'
+        : playingNext.isEmpty
         ? 'The crews you play with'
         : '${playingNext.first.name} play next';
 
@@ -48,10 +52,28 @@ class GroupsScreen extends StatelessWidget {
             ),
             SizedBox(height: spacing.xs),
             Text(
-              '${groups.length} groups · $pulse',
+              groups.isEmpty ? pulse : '${groups.length} groups · $pulse',
               style: typography.body.copyWith(color: colours.textSecondary),
             ),
             SizedBox(height: spacing.xl),
+            if (groups.isEmpty)
+              QaddyEmptyState(
+                icon: Icons.groups_outlined,
+                title: 'No groups yet',
+                message:
+                    'Groups are where your regular mates, tables and tee '
+                    'times live. See how one works in the Sample Clubhouse.',
+                actionLabel: 'Open Settings',
+                onAction: () => context.push(AppRoutes.profileSettings),
+              )
+            else ...<Widget>[
+              SampleBanner(
+                message:
+                    'These groups are pretend, so you can see how they work.',
+                onManage: () => context.push(AppRoutes.profileSettings),
+              ),
+              SizedBox(height: spacing.sectionGap),
+            ],
             for (final (index, group) in groups.indexed) ...<Widget>[
               if (index > 0) SizedBox(height: spacing.cardGap),
               GroupCard(

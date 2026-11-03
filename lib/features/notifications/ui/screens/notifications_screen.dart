@@ -16,6 +16,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -192,6 +193,10 @@ class _NotificationTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    if (item.sample) ...<Widget>[
+                      const SampleBadge(),
+                      SizedBox(height: spacing.xs),
+                    ],
                     Text(
                       item.message,
                       style: typography.body.copyWith(

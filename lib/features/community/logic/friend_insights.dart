@@ -124,3 +124,8 @@ class RivalrySummary {
 String inviteMessage(Friend friend, String yourName) =>
     'Fancy a round, ${friend.displayName}? '
     "Say the day and I'll sort the tee time. – $yourName";
+
+/// A message inviting someone to Qaddy itself, ready for the share sheet.
+String qaddyInviteMessage(String yourName) =>
+    'Come and play golf with me on Qaddy: score your rounds, plan the trip '
+    'and run a season with your mates. – $yourName';

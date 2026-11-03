@@ -22,7 +22,7 @@ void main() {
       size: const Size(400, 2000),
     );
 
-    expect(find.text('FIRST TEE'), findsOneWidget);
+    expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
     await _tap(tester, find.text('Start round'));
 
     // On the first tee, full screen.
@@ -76,7 +76,7 @@ void main() {
     await pumpApp(tester, location: '/home', size: const Size(400, 3400));
 
     await _tap(tester, find.text('Get ready'));
-    expect(find.text('FIRST TEE'), findsOneWidget);
+    expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
 
     await _tap(tester, find.text('Start round'));
     expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);

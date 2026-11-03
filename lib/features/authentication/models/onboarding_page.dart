@@ -11,7 +11,7 @@ library;
 import 'package:flutter/material.dart';
 
 /// The accent a page wears.
-enum OnboardingTone { teal, sky, orange }
+enum OnboardingTone { teal, sky, orange, indigo }
 
 /// One page of the introduction.
 class OnboardingPage {
@@ -77,6 +77,20 @@ const onboardingPages = <OnboardingPage>[
       Icons.campaign_outlined,
       Icons.military_tech_outlined,
       Icons.chat_bubble_outline,
+    ],
+  ),
+  OnboardingPage(
+    icon: Icons.theaters_outlined,
+    title: 'Meet your Sample Clubhouse',
+    description:
+        'Qaddy starts with pretend mates, a group and a trip so you can see '
+        "how it all works. It's always labelled Sample, and you can keep it, "
+        'edit it or remove it later.',
+    tone: OnboardingTone.indigo,
+    satellites: <IconData>[
+      Icons.people_alt_outlined,
+      Icons.luggage_outlined,
+      Icons.emoji_events_outlined,
     ],
   ),
 ];

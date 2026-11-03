@@ -18,8 +18,10 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
+import 'package:qaddy/core/widgets/cards/sample_banner.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -57,6 +59,7 @@ class FriendsHomeScreen extends ConsumerWidget {
     final incoming = ref.watch(incomingRequestsProvider);
     final outgoing = ref.watch(outgoingRequestsProvider);
     final active = recentlyActive(squad, now);
+    final sample = ref.watch(sampleOnProvider);
 
     final clubs = <ClubPreview>[
       // The next round has its own card above; a club here is its crest and
@@ -79,20 +82,29 @@ class FriendsHomeScreen extends ConsumerWidget {
             ),
             SizedBox(height: spacing.xs),
             Text(
-              _summaryLine(squad, active),
+              _summaryLine(squad, active, sample: sample),
               style: typography.body.copyWith(color: colours.textSecondary),
             ),
             SizedBox(height: spacing.xl),
-            const _NextRound(),
-            SizedBox(height: spacing.sectionGap),
+            if (sample) ...<Widget>[
+              SampleBanner(
+                message:
+                    'Your mates, clubs, rivalry and season table here are '
+                    'pretend, so you can see how Qaddy works.',
+                onManage: () => context.push(AppRoutes.profileSettings),
+              ),
+              SizedBox(height: spacing.sectionGap),
+              const _NextRound(),
+              SizedBox(height: spacing.sectionGap),
+            ],
             if (squad.isEmpty)
               QaddyEmptyState(
                 icon: Icons.groups_outlined,
                 title: 'Build your squad',
                 message:
-                    'Add the golfers you play with and their rounds, '
-                    'handicaps and rivalries land right here.',
-                actionLabel: 'Find golfers',
+                    'Invite the golfers you play with. Once they join, their '
+                    'rounds, handicaps and rivalries land right here.',
+                actionLabel: 'Invite a mate',
                 onAction: () => context.push(AppRoutes.friendsSearch),
               )
             else ...<Widget>[
@@ -121,26 +133,28 @@ class FriendsHomeScreen extends ConsumerWidget {
               SizedBox(height: spacing.md),
               _Requests(incoming: incoming, outgoing: outgoing),
             ],
-            SizedBox(height: spacing.sectionGap),
-            const _Rivalry(),
-            SizedBox(height: spacing.sectionGap),
-            const _SeasonRace(),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionHeading(
-              title: 'Latest from mates',
-              actionLabel: 'See all',
-              onAction: () => context.push(AppRoutes.friendsActivity),
-            ),
-            SizedBox(height: spacing.md),
-            const _Activity(),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionHeading(
-              title: 'Your clubs',
-              actionLabel: 'See all',
-              onAction: () => context.push(AppRoutes.friendsGroups),
-            ),
-            SizedBox(height: spacing.md),
-            ClubsStrip(clubs: clubs, onOpen: openClub),
+            if (sample) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              const _Rivalry(),
+              SizedBox(height: spacing.sectionGap),
+              const _SeasonRace(),
+              SizedBox(height: spacing.sectionGap),
+              QaddySectionHeading(
+                title: 'Latest from mates',
+                actionLabel: 'See all',
+                onAction: () => context.push(AppRoutes.friendsActivity),
+              ),
+              SizedBox(height: spacing.md),
+              const _Activity(),
+              SizedBox(height: spacing.sectionGap),
+              QaddySectionHeading(
+                title: 'Your clubs',
+                actionLabel: 'See all',
+                onAction: () => context.push(AppRoutes.friendsGroups),
+              ),
+              SizedBox(height: spacing.md),
+              ClubsStrip(clubs: clubs, onOpen: openClub),
+            ],
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -150,11 +164,17 @@ class FriendsHomeScreen extends ConsumerWidget {
 }
 
 /// "5 friends · Tom and Ben played recently".
-String _summaryLine(List<Friend> squad, List<Friend> active) {
+String _summaryLine(
+  List<Friend> squad,
+  List<Friend> active, {
+  required bool sample,
+}) {
   if (squad.isEmpty) {
     return 'Your golf crew, all in one place';
   }
-  final count = squad.length == 1 ? '1 friend' : '${squad.length} friends';
+  // The sample mates are never called the golfer's friends.
+  final noun = sample ? 'sample mate' : 'friend';
+  final count = squad.length == 1 ? '1 $noun' : '${squad.length} ${noun}s';
   if (active.isEmpty) {
     return count;
   }
@@ -200,7 +220,7 @@ class _Header extends StatelessWidget {
             style: typography.h1.copyWith(color: colours.textPrimary),
           ),
         ),
-        action(Icons.search, 'Search golfers', onSearch),
+        action(Icons.person_add_alt_1_outlined, 'Invite a mate', onSearch),
         action(Icons.people_outline, 'All friends', onAll),
       ],
     );

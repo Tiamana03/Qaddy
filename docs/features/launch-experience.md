@@ -52,3 +52,9 @@ The app follows the phone's light/dark setting, but the launch screens always us
 - **Every guest is the placeholder golfer** (Tiamana, handicap 8.4, and the seeded mates, groups and trips). Making the golfer's own name and handicap real is the next step towards the product feeling like the user's own; it touches the shared placeholder data and is not part of this milestone.
 - Settings does not yet show "Guest" (Settings is still to be polished).
 - A golfer who deep-links to a page on the web bypasses the splash; that is fine, since there is nothing to protect.
+
+---
+
+# Update (November 2026): the Sample Clubhouse
+
+The introduction now has a fifth page, "Meet your Sample Clubhouse", and the setup screen offers it as a switch (on by default). See `docs/features/sample-clubhouse.md`.

@@ -31,7 +31,7 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('RIVALRY'), findsOneWidget);
+    expect(find.text('SAMPLE RIVALRY'), findsOneWidget);
     expect(find.text('6 – 5'), findsOneWidget);
     expect(find.text('You lead by 1'), findsOneWidget);
     expect(find.text('The scoreboard'), findsOneWidget);

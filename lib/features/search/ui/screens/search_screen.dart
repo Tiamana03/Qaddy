@@ -164,7 +164,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           category: SearchCategory.friends,
           title: friend.displayName,
           subtitle:
-              'HCP ${handicapLabel(friend.handicap)} · ${friend.homeClub}',
+              'Sample mate · HCP ${handicapLabel(friend.handicap)} · '
+              '${friend.homeClub}',
           onTap: () => showFriendPeek(
             context,
             ref,
@@ -175,13 +176,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    if (matches(upcomingRound.course)) {
+    if (upcomingRound.planned && matches(upcomingRound.course)) {
       results.add(
         SearchResult(
           category: SearchCategory.rounds,
           title: upcomingRound.course,
           subtitle:
-              'Next round · ${upcomingRound.date}, ${upcomingRound.teeTime}',
+              'Sample round · ${upcomingRound.date}, ${upcomingRound.teeTime}',
           icon: Icons.sports_golf,
           accent: colours.accentTeal,
           onTap: () => context.go(AppRoutes.rounds),
@@ -196,7 +197,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchResult(
           category: SearchCategory.trips,
           title: trip.name,
-          subtitle: trip.destination,
+          subtitle: TripsController.isSample(trip)
+              ? 'Sample trip · ${trip.destination}'
+              : trip.destination,
           icon: Icons.flight_takeoff,
           accent: colours.accentSky,
           onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
@@ -210,7 +213,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchResult(
           category: SearchCategory.groups,
           title: group.name,
-          subtitle: groupLine(group),
+          subtitle: 'Sample group · ${groupLine(group)}',
           icon: Icons.groups_outlined,
           accent: accentForGroup(colours, group),
           onTap: () => context.push(AppRoutes.friendsGroup(group.id)),

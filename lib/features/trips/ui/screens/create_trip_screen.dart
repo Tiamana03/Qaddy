@@ -165,7 +165,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   QaddyTextField(
                     controller: _name,
                     label: 'Trip Name',
-                    hintText: 'Melbourne Golf Weekend',
+                    hintText: 'Our golf weekend',
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     errorText: _nameError,
@@ -175,7 +175,7 @@ class _CreateTripScreenState extends ConsumerState<CreateTripScreen> {
                   QaddyTextField(
                     controller: _destination,
                     label: 'Destination',
-                    hintText: 'Melbourne, Australia',
+                    hintText: 'City or country',
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     prefixIcon: const Icon(Icons.place_outlined),

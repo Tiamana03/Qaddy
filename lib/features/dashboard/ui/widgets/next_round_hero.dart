@@ -57,7 +57,7 @@ class NextRoundHero extends StatelessWidget {
     final onGradient = theme.colorScheme.onPrimary;
     final muted = onGradient.withValues(alpha: 0.85);
     final animate = !MediaQuery.disableAnimationsOf(context);
-    final count = inProgressHole == null ? countdown : null;
+    final count = inProgressHole == null && round.planned ? countdown : null;
     final live = inProgressHole;
     final figure = int.tryParse(count?.value ?? '');
 
@@ -71,7 +71,17 @@ class NextRoundHero extends StatelessWidget {
       ],
     );
 
-    final headline = count == null
+    final planned = round.planned;
+    final headline = !planned && live == null
+        ? FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Ready when you are',
+              style: typography.display.copyWith(color: onGradient),
+            ),
+          )
+        : count == null
         ? FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
@@ -139,48 +149,58 @@ class NextRoundHero extends StatelessWidget {
       semanticLabel:
           '$spokenEyebrow. '
           '${count == null ? '' : '${count.value} ${count.label}. '}'
-          '${round.date} at ${round.teeTime}, ${round.course}. '
-          '${round.weather}. ${round.format}. ${round.players} playing.',
+          '${round.planned ? 'Sample round. ${round.date} at '
+                    '${round.teeTime}, ' : ''}'
+          '${round.course}. ${round.format}. '
+          '${round.planned ? '${round.players} playing.' : ''}',
       footer: Row(
         children: <Widget>[
           Expanded(
             child: QaddyGoldButton(
-              label: live == null ? 'Get ready' : 'Continue round',
+              label: live == null
+                  ? (planned ? 'Get ready' : 'Start a round')
+                  : 'Continue round',
               icon: live == null
                   ? Icons.flag_rounded
                   : Icons.play_arrow_rounded,
               onPressed: onOpen,
             ),
           ),
-          SizedBox(width: spacing.sm),
-          IconButton.filled(
-            tooltip: 'Tell the group',
-            onPressed: onShare,
-            style: IconButton.styleFrom(
-              backgroundColor: onGradient.withValues(alpha: 0.16),
-              foregroundColor: onGradient,
-              minimumSize: Size(spacing.display, spacing.display),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(radius.medium),
+          if (planned) SizedBox(width: spacing.sm),
+          if (planned)
+            IconButton.filled(
+              tooltip: 'Tell the group',
+              onPressed: onShare,
+              style: IconButton.styleFrom(
+                backgroundColor: onGradient.withValues(alpha: 0.16),
+                foregroundColor: onGradient,
+                minimumSize: Size(spacing.display, spacing.display),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius.medium),
+                ),
               ),
+              icon: const Icon(Icons.ios_share_rounded),
             ),
-            icon: const Icon(Icons.ios_share_rounded),
-          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           QaddyEyebrow(
-            live == null
-                ? (count?.eyebrow ?? 'NEXT ROUND')
-                : 'ROUND IN PROGRESS',
+            live != null
+                ? 'ROUND IN PROGRESS'
+                : !planned
+                ? 'YOUR NEXT ROUND'
+                : 'SAMPLE ROUND · ${count?.eyebrow ?? 'NEXT ROUND'}',
+            maxLines: 1,
           ),
           SizedBox(height: spacing.sm),
           headline,
           SizedBox(height: spacing.xs),
           Text(
-            '${round.course} · ${round.date}, ${round.teeTime}',
+            planned
+                ? '${round.course} · ${round.date}, ${round.teeTime}'
+                : round.course,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: typography.body.copyWith(color: muted),
@@ -190,7 +210,11 @@ class NextRoundHero extends StatelessWidget {
             spacing: spacing.sm,
             runSpacing: spacing.sm,
             children: <Widget>[
-              QaddyInfoChip(icon: Icons.wb_sunny_outlined, text: round.weather),
+              if (planned)
+                QaddyInfoChip(
+                  icon: Icons.wb_sunny_outlined,
+                  text: round.weather,
+                ),
               QaddyInfoChip(
                 icon: Icons.emoji_events_outlined,
                 text: round.format,
@@ -201,12 +225,14 @@ class NextRoundHero extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: spacing.lg),
-          QaddyAvatarHuddle(
-            names: players,
-            total: round.players,
-            textColour: muted,
-          ),
+          if (planned) ...<Widget>[
+            SizedBox(height: spacing.lg),
+            QaddyAvatarHuddle(
+              names: players,
+              total: round.players,
+              textColour: muted,
+            ),
+          ],
         ],
       ),
     );

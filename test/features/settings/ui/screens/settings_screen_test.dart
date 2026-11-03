@@ -8,11 +8,14 @@ import 'package:qaddy/core/theme/theme_mode_controller.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/notifications/models/notification_item.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/settings/ui/screens/settings_screen.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../../../support/app_test_harness.dart';
 import '../../../../support/memory_document_storage.dart';
@@ -282,6 +285,69 @@ void main() {
         expect(find.textContaining('Close Qaddy completely'), findsOneWidget);
       },
     );
+  });
+
+  group('the Sample Clubhouse', () {
+    testWidgets('says what is sample, and never calls it your own', (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      expect(find.text('Sample Clubhouse'), findsOneWidget);
+      expect(find.textContaining('always labelled Sample'), findsOneWidget);
+      expect(find.text('Remove the Sample Clubhouse'), findsOneWidget);
+    });
+
+    testWidgets('removing it asks first, then takes the samples away', (
+      tester,
+    ) async {
+      final c = await _pump(tester);
+      addTearDown(resetSampleClubhouseForTests);
+
+      await _tap(tester, find.text('Remove the Sample Clubhouse'));
+      expect(find.text('Remove the Sample Clubhouse?'), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(c.read(sampleClubhouseProvider).enabled, isTrue);
+
+      await _tap(tester, find.text('Remove the Sample Clubhouse'));
+      await tester.tap(find.text('Remove it'));
+      await tester.pumpAndSettle();
+
+      expect(c.read(sampleClubhouseProvider).enabled, isFalse);
+      expect(c.read(friendsProvider).friends, isEmpty);
+      expect(c.read(tripsProvider).trips, isEmpty);
+    });
+
+    testWidgets('it can be brought back', (tester) async {
+      final c = await _pump(
+        tester,
+        overrides: <Override>[
+          sampleStorageProvider.overrideWithValue(
+            MemoryDocumentStorage(
+              encodeSampleChoice(
+                const SampleChoice(enabled: false, decided: true),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(resetSampleClubhouseForTests);
+      expect(
+        find.text(
+          "You're starting with an empty clubhouse. Bring the Sample "
+          'Clubhouse back to see what Qaddy can do with mates, groups and '
+          'trips.',
+        ),
+        findsOneWidget,
+      );
+
+      await _tap(tester, find.text('Bring back the Sample Clubhouse'));
+
+      expect(c.read(sampleClubhouseProvider).enabled, isTrue);
+      expect(c.read(friendsProvider).friends, isNotEmpty);
+      expect(c.read(tripsProvider).trips, isNotEmpty);
+    });
   });
 
   group('about', () {

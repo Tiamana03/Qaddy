@@ -1,0 +1,102 @@
+// What a golfer who starts with an empty clubhouse sees: honest, inviting
+// screens rather than pretend people.
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/user/sample_clubhouse.dart';
+import 'package:qaddy/features/community/ui/screens/friends_home_screen.dart';
+import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
+import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
+
+import '../support/app_test_harness.dart';
+import '../support/memory_document_storage.dart';
+
+/// The golfer chose an empty clubhouse: the flag, and the stored choice the
+/// provider reads back.
+List<Override> _empty() {
+  useSampleClubhouse(on: false);
+  addTearDown(resetSampleClubhouseForTests);
+  return <Override>[
+    sampleStorageProvider.overrideWithValue(
+      MemoryDocumentStorage(
+        encodeSampleChoice(const SampleChoice(enabled: false, decided: true)),
+      ),
+    ),
+  ];
+}
+
+void main() {
+  testWidgets('Home invites a first round and a first mate', (tester) async {
+    final off = _empty();
+    await pumpFriends(tester, const DashboardScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ready when you are'), findsOneWidget);
+    expect(find.text('YOUR NEXT ROUND'), findsOneWidget);
+    expect(find.text('Start a round'), findsWidgets);
+    expect(find.text('Your mates'), findsOneWidget);
+    expect(find.text('Invite a mate'), findsWidgets);
+    expect(find.text('From your sample mates'), findsNothing);
+    expect(find.textContaining('Saturday'), findsNothing);
+  });
+
+  testWidgets('Rounds is just you, ready when you are', (tester) async {
+    final off = _empty();
+    await pumpFriends(tester, const RoundsScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.text('YOUR ROUND'), findsOneWidget);
+    expect(find.text('Ready when you are'), findsOneWidget);
+    expect(find.text('Start round'), findsOneWidget);
+    expect(find.textContaining('1 playing'), findsOneWidget);
+    expect(find.text('On the course (sample)'), findsNothing);
+    expect(find.textContaining('sample 18-hole layout'), findsOneWidget);
+  });
+
+  testWidgets('Friends invites you to build your squad', (tester) async {
+    final off = _empty();
+    await pumpFriends(tester, const FriendsHomeScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Build your squad'), findsOneWidget);
+    expect(find.text('Sample Clubhouse'), findsNothing);
+    expect(find.text('Your clubs'), findsNothing);
+    expect(find.text('Latest from mates'), findsNothing);
+  });
+
+  testWidgets('Groups says there are none, and where to see how one works', (
+    tester,
+  ) async {
+    final off = _empty();
+    await pumpFriends(tester, const GroupsScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.text('No groups yet'), findsWidgets);
+    expect(find.text('Saturday Boys'), findsNothing);
+    expect(find.text('Open Settings'), findsOneWidget);
+  });
+
+  testWidgets('Trips starts empty', (tester) async {
+    final off = _empty();
+    await pumpFriends(tester, const TripsScreen(), overrides: off);
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Melbourne'), findsNothing);
+    expect(find.textContaining('Sample'), findsNothing);
+  });
+
+  testWidgets(
+    'with it on, Friends explains what is sample and where to remove it',
+    (tester) async {
+      await pumpFriends(tester, const FriendsHomeScreen());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sample Clubhouse'), findsOneWidget);
+      expect(
+        find.text('Keep it, edit it or remove it in Settings'),
+        findsOneWidget,
+      );
+    },
+  );
+}

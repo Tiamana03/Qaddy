@@ -26,6 +26,9 @@ class NotificationInputs {
     this.liveCourse,
     this.nextTrip,
     this.tripStillToReply = 0,
+    this.tripIsSample = false,
+    this.roundPlanned = true,
+    this.sampleOn = false,
     this.tableHeadline,
     this.tableDetail,
     this.tableLocation,
@@ -59,6 +62,16 @@ class NotificationInputs {
 
   /// How many mates have not answered the next trip's invitation.
   final int tripStillToReply;
+
+  /// Whether the next trip is a sample trip.
+  final bool tripIsSample;
+
+  /// Whether the next round is planned for a day (the sample round); an
+  /// unplanned round has no reminder.
+  final bool roundPlanned;
+
+  /// Whether the Sample Clubhouse is on.
+  final bool sampleOn;
 
   /// Where the golfer stands in their group's season, when there is one.
   final String? tableHeadline;
@@ -101,12 +114,13 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
         when: request.sentDescription,
         location: AppRoutes.friendRequests,
         icon: Icons.person_add_alt_1_outlined,
+        sample: true,
       ),
     );
   }
 
   final countdown = roundCountdown(inputs.now, inputs.roundDay);
-  if (countdown != null && inputs.liveHole == null) {
+  if (countdown != null && inputs.liveHole == null && inputs.roundPlanned) {
     final days = daysUntilWeekday(inputs.now, inputs.roundDay) ?? 0;
     items.add(
       NotificationItem(
@@ -126,6 +140,7 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
           _ => 'In $days days',
         },
         location: AppRoutes.rounds,
+        sample: true,
       ),
     );
   }
@@ -145,6 +160,7 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
         detail: trip.destination,
         when: days <= 0 ? 'Now' : 'In $days days',
         location: AppRoutes.tripDetails(trip.id),
+        sample: inputs.tripIsSample,
       ),
     );
     if (inputs.tripStillToReply > 0) {
@@ -159,6 +175,7 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
           detail: 'Nudge them, or invite someone else',
           location: AppRoutes.tripInvite(trip.id),
           icon: Icons.mark_email_unread_outlined,
+          sample: inputs.tripIsSample,
         ),
       );
     }
@@ -174,6 +191,7 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
         detail: inputs.tableDetail,
         location: inputs.tableLocation!,
         icon: Icons.leaderboard_outlined,
+        sample: true,
       ),
     );
   }
@@ -212,9 +230,12 @@ List<NotificationItem> buildNotificationFeed(NotificationInputs inputs) {
       id: 'welcome',
       category: NotificationCategory.systemUpdate,
       message: 'Welcome to Qaddy, ${inputs.golferName}',
-      detail: 'Score a round, plan a trip, rally your mates',
+      detail: inputs.sampleOn
+          ? 'Your Sample Clubhouse is ready: pretend mates, a group and a '
+                'trip to explore. Remove it any time in Settings.'
+          : 'Score a round, plan a trip, invite your mates',
       when: 'Welcome',
-      location: AppRoutes.rounds,
+      location: inputs.sampleOn ? AppRoutes.profileSettings : AppRoutes.rounds,
       icon: Icons.waving_hand_outlined,
     ),
   );

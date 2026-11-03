@@ -95,7 +95,7 @@ void main() {
       '/trips/melbourne-golf-weekend/invite',
     ),
     ("You're 5th in the Saturday Boys table", '/friends/groups/saturday-boys'),
-    ('Welcome to Qaddy, Tiamana', '/rounds'),
+    ('Welcome to Qaddy, Tiamana', '/profile/settings'),
   ]) {
     testWidgets('"$message" opens $path', (tester) async {
       await _pump(tester);
