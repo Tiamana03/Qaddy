@@ -17,7 +17,7 @@ void main() {
     await tester.ensureVisible(find.text('Golf bag'));
     await tester.tap(find.text('Golf bag'));
     await tester.pumpAndSettle();
-    expect(find.text('Bag Summary'), findsOneWidget);
+    expect(find.text('YOUR BAG'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

@@ -1,36 +1,123 @@
 /// The Golf Bag feature's shared placeholder data.
 ///
-/// See `docs/standards/placeholder-golf-bag-data.md`. Per
-/// `docs/architecture/golf-bag-engineering-decisions.md`'s "Golf Bag Reuses
-/// Profile's Equipment List" and "Source of Truth" section, Equipment is
-/// read directly from Profile's own placeholder data. The three
-/// `ClubDistance` entries are the only genuinely new placeholder data this
-/// feature introduces.
+/// See `docs/standards/placeholder-golf-bag-data.md` (superseded) and
+/// `docs/features/golf-bag-release-candidate.md`. Golf Bag now owns the whole
+/// bag; Profile no longer carries an equipment list. The models are the ones
+/// the golfer's placeholder kit has always had (TaylorMade Qi35 driver and
+/// P790 irons, Cleveland RTX wedges, an Odyssey White Hot putter, Titleist Pro
+/// V1 balls); the woods, the hybrid and the individual irons and wedges fill
+/// out a realistic bag, with carries whose averages match the old
+/// "Driver 235 m / Irons 145 m / Wedges 95 m".
 library;
 
-import 'package:qaddy/features/my_bag/models/club_distance.dart';
-import 'package:qaddy/features/profile/models/placeholder_profile.dart'
-    as profile_data;
+import 'package:qaddy/features/my_bag/models/bag_club.dart';
 
-/// Equipment — reused in full from Profile, not duplicated.
-List<profile_data.ProfileEquipmentItem> get golfBagEquipment =>
-    profile_data.profileEquipment;
-
-/// Club Distances — see placeholder-golf-bag-data.md's "New Placeholder
-/// Data". Applies only to clubs where a carry distance is a meaningful
-/// golfing concept (Driver, Irons, Wedges) — Putter and Ball are
-/// deliberately excluded.
-const List<ClubDistance> golfBagClubDistances = <ClubDistance>[
-  ClubDistance(clubName: 'Driver', averageDistanceMetres: 235),
-  ClubDistance(clubName: 'Irons', averageDistanceMetres: 145),
-  ClubDistance(clubName: 'Wedges', averageDistanceMetres: 95),
+/// The bag as it starts, before the golfer changes anything.
+const List<BagClub> seedBagClubs = <BagClub>[
+  BagClub(
+    id: 'driver',
+    name: 'Driver',
+    family: ClubFamily.wood,
+    model: 'TaylorMade Qi35',
+    carryMetres: 235,
+    note: 'Tee it high and commit. Fairway first, distance second.',
+    confidence: 3,
+  ),
+  BagClub(
+    id: '3-wood',
+    name: '3 wood',
+    family: ClubFamily.wood,
+    model: 'TaylorMade Qi35 Fairway',
+    carryMetres: 215,
+    confidence: 3,
+  ),
+  BagClub(
+    id: 'hybrid',
+    name: 'Hybrid',
+    family: ClubFamily.hybrid,
+    model: 'TaylorMade Qi35 Rescue',
+    carryMetres: 190,
+    note: 'Out of the rough, this is my friend.',
+    confidence: 4,
+  ),
+  BagClub(
+    id: '5-iron',
+    name: '5 iron',
+    family: ClubFamily.iron,
+    model: 'TaylorMade P790',
+    carryMetres: 165,
+    confidence: 3,
+  ),
+  BagClub(
+    id: '6-iron',
+    name: '6 iron',
+    family: ClubFamily.iron,
+    model: 'TaylorMade P790',
+    carryMetres: 155,
+    confidence: 4,
+  ),
+  BagClub(
+    id: '7-iron',
+    name: '7 iron',
+    family: ClubFamily.iron,
+    model: 'TaylorMade P790',
+    carryMetres: 145,
+    note: 'My go-to. Smooth tempo, never force it.',
+    confidence: 5,
+  ),
+  BagClub(
+    id: '8-iron',
+    name: '8 iron',
+    family: ClubFamily.iron,
+    model: 'TaylorMade P790',
+    carryMetres: 135,
+    confidence: 4,
+  ),
+  BagClub(
+    id: '9-iron',
+    name: '9 iron',
+    family: ClubFamily.iron,
+    model: 'TaylorMade P790',
+    carryMetres: 125,
+    confidence: 4,
+  ),
+  BagClub(
+    id: 'pitching-wedge',
+    name: 'Pitching wedge',
+    family: ClubFamily.wedge,
+    model: 'Cleveland RTX',
+    carryMetres: 110,
+    confidence: 5,
+  ),
+  BagClub(
+    id: 'gap-wedge',
+    name: 'Gap wedge',
+    family: ClubFamily.wedge,
+    model: 'Cleveland RTX',
+    carryMetres: 95,
+    confidence: 4,
+  ),
+  BagClub(
+    id: 'sand-wedge',
+    name: 'Sand wedge',
+    family: ClubFamily.wedge,
+    model: 'Cleveland RTX',
+    carryMetres: 80,
+    note: 'Open the face, trust the bounce.',
+    confidence: 3,
+  ),
+  BagClub(
+    id: 'putter',
+    name: 'Putter',
+    family: ClubFamily.putter,
+    model: 'Odyssey White Hot',
+    note: 'Read the low side. Brave on the short ones.',
+    confidence: 4,
+  ),
+  BagClub(
+    id: 'ball',
+    name: 'Ball',
+    family: ClubFamily.ball,
+    model: 'Titleist Pro V1',
+  ),
 ];
-
-/// Total clubs in the bag — computed from Equipment, not a new literal.
-int get golfBagTotalClubs => golfBagEquipment.length;
-
-/// The club with the longest average distance — computed from Club
-/// Distances, not a new literal.
-ClubDistance get golfBagLongestAverageDistance => golfBagClubDistances.reduce(
-  (a, b) => a.averageDistanceMetres >= b.averageDistanceMetres ? a : b,
-);

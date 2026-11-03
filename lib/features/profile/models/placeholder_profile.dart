@@ -6,7 +6,7 @@
 /// favourite partners — is now worked out from the rounds the golfer has
 /// actually played (see `docs/features/profile-release-candidate.md`), so only
 /// what no round can say remains: who the golfer is, their handicap index,
-/// their favourite courses and their kit.
+/// and their favourite courses (the bag is Golf Bag's).
 library;
 
 import 'package:qaddy/features/profile/models/profile.dart';
@@ -32,24 +32,4 @@ const List<String> profileFavouriteCourses = <String>[
   'Brookwater Golf Club',
   'Virginia Golf Club',
   'Wantima Country Club',
-];
-
-/// One entry in Profile's Equipment list.
-class ProfileEquipmentItem {
-  const ProfileEquipmentItem({required this.club, required this.value});
-
-  /// The equipment category (e.g. "Driver").
-  final String club;
-
-  /// The specific product (e.g. "TaylorMade Qi35").
-  final String value;
-}
-
-/// Equipment — see placeholder-profile-data.md's "Equipment".
-const List<ProfileEquipmentItem> profileEquipment = <ProfileEquipmentItem>[
-  ProfileEquipmentItem(club: 'Driver', value: 'TaylorMade Qi35'),
-  ProfileEquipmentItem(club: 'Irons', value: 'TaylorMade P790'),
-  ProfileEquipmentItem(club: 'Wedges', value: 'Cleveland RTX'),
-  ProfileEquipmentItem(club: 'Putter', value: 'Odyssey White Hot'),
-  ProfileEquipmentItem(club: 'Ball', value: 'Titleist Pro V1'),
 ];

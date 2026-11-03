@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/config/app_config.dart';
 import 'package:qaddy/core/routing/app_router.dart';
+import 'package:qaddy/core/services/document_storage.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 import 'package:qaddy/features/trips/repositories/trips_storage.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -18,8 +20,8 @@ Future<void> main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // Trips and rounds are kept on the device. If storage can't be opened the
-      // app still runs; they just won't survive a restart.
+      // Trips, rounds and the golf bag are kept on the device. If storage
+      // can't be opened the app still runs; they just won't survive a restart.
       final overrides = <Override>[];
       try {
         final preferences = await SharedPreferences.getInstance();
@@ -29,6 +31,9 @@ Future<void> main() async {
           ),
           roundsStorageProvider.overrideWithValue(
             SharedPreferencesRoundsStorage(preferences),
+          ),
+          bagStorageProvider.overrideWithValue(
+            SharedPreferencesDocumentStorage(preferences, 'qaddy.bag.v1'),
           ),
         ]);
       } on Object catch (error) {

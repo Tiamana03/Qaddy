@@ -41,9 +41,9 @@ This has been applied correctly in every Release 1 feature built so far (confirm
 | Trips (`trips`) | Every trip and its plan (players, courses, flights, accommodation, transport, activities, expenses, checklist, packing, weather, chat, notes). Seeds live in `placeholder_trips.dart`; the *live* trips (created, edited, archived, deleted) live in the `tripsProvider` store, the single source of truth for the app run. | `lib/features/trips/models/placeholder_trips.dart` (seeds, `currentUserName`, count constants), `lib/features/trips/state/trips_controller.dart` (live store) | Profile (Trips count, still the seed constants — see TD-011), Search (Trips and Courses categories, read from the live store) |
 | Community (`community`) | Friends list, friend profiles, Rivalry Performance; the live friends store (requests, accepted friends, cheers) | `lib/features/community/models/placeholder_friends.dart` (seeds), `lib/features/community/state/friends_controller.dart` (live store) | Profile (Friends count), Statistics (Rivalry Performance), Search (Friends category) |
 | Groups (`groups`) | Group data, Season Summary, full leaderboard, season standing | `lib/features/groups/models/placeholder_groups.dart` | Profile (Groups count, season standing), Statistics (Season Performance, full leaderboard), Search (Groups category) |
-| Profile (`profile`) | Who the golfer is: name, handicap index, home course and location, favourite courses and the equipment list. Everything about their game is derived from rounds, not stored here | `lib/features/profile/models/placeholder_profile.dart` | Statistics and Dashboard (handicap index), Golf Bag (Equipment), Search (Courses category), Trips (organiser identity) |
+| Profile (`profile`) | Who the golfer is: name, handicap index, home course and location, favourite courses. Everything about their game is derived from rounds, not stored here; the bag is Golf Bag's | `lib/features/profile/models/placeholder_profile.dart` | Statistics and Dashboard (handicap index), Search (Courses category), Trips (organiser identity) |
 | Statistics (`statistics`) | Nothing of its own: it is derived from the finished rounds in the rounds store (`logic/career_stats.dart`) and reads the handicap index from Profile | — (no placeholder file) | Dashboard ("Your game") |
-| Golf Bag (`my_bag`) | Club Distances only (Driver, Irons, Wedges — see Exception 1) | `lib/features/my_bag/models/placeholder_my_bag.dart` | None yet |
+| Golf Bag (`my_bag`) | The whole bag: every club and the ball with model, carry, note and confidence, saved on the device | `lib/features/my_bag/models/placeholder_my_bag.dart` (the starting bag), `lib/features/my_bag/state/bag_controller.dart` (live store) | None yet |
 | Notifications (`notifications`) | `NotificationItem` entries, `NotificationCategory` classification | `lib/features/notifications/models/placeholder_notifications.dart` | Settings (`NotificationCategory`) |
 | Settings (`settings`) | User-facing preference toggles (no new data of its own — reads Profile and Notifications) | — (consumer only) | — |
 | Search (`search`) | `SearchResult`/`SearchCategory` (presentation-only; no placeholder data of its own) | — (consumer only) | — |
@@ -66,7 +66,6 @@ Rounds        → Statistics      (every finished round: the story is worked out
 Rounds        → Achievements    (earned from the finished rounds; shown on Profile and the results screen)
 Achievements  → Statistics      (CareerStats is what achievements are measured on)
 Statistics    → Profile         (handicap index only)
-Profile       → Golf Bag        (Equipment)
 Profile       → Settings        (Profile Visibility)
 Notifications → Settings        (NotificationCategory)
 Dashboard     → Profile         (Rounds Played, Average Score, Best Round)
@@ -85,7 +84,6 @@ This was a clean DAG until the Trips completion (Release Candidate), which added
 
 ```
 Rounds → Groups → Profile → Statistics
-                → Golf Bag
                 → Settings → Notifications (reversed: Settings reads Notifications, not the other way — shown separately above)
 ```
 

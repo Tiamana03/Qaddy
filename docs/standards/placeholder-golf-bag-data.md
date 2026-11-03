@@ -1,3 +1,5 @@
+> **Superseded (November 2026).** Golf Bag now owns a real, editable bag (`docs/features/golf-bag-release-candidate.md`). The data described below no longer exists; this document is kept for history.
+
 # Placeholder Golf Bag Data
 
 **Version:** 1.0

@@ -289,3 +289,23 @@ Move Trips onto `QaddyQuickActions` the next time the Trips screen is touched (i
 Target
 
 Next Trips review.
+
+---
+
+## TD-017 — Trips and Rounds each have their own on-device storage class
+
+Priority: Low
+
+Status: **Open** (logged during the Golf Bag redesign, November 2026)
+
+Current State
+
+`core/services/document_storage.dart` is the shared seam for keeping one JSON document on the device (`DocumentStorage`, `NoDocumentStorage`, `SharedPreferencesDocumentStorage`). Golf Bag uses it. `TripsStorage` and `RoundsStorage` are near-identical copies that predate it.
+
+Action
+
+Make `TripsStorage` and `RoundsStorage` use `DocumentStorage` (keeping their provider names and keys, `qaddy.trips.v1` and `qaddy.rounds.v1`) the next time Trips or Rounds is touched. A pure move: no behaviour changes.
+
+Target
+
+Next Trips or Rounds review.
