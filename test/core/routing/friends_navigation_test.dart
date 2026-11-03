@@ -24,10 +24,10 @@ void main() {
 
     await tester.tap(find.text('Tom'));
     await tester.pumpAndSettle();
-    expect(find.text('Shared History'), findsOneWidget);
+    expect(find.text('Head to head'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('View Activity'));
-    await tester.tap(find.text('View Activity'));
+    await tester.ensureVisible(find.text('Activity'));
+    await tester.tap(find.text('Activity'));
     await tester.pumpAndSettle();
     expect(
       find.text(
@@ -39,7 +39,7 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('Shared History'), findsOneWidget);
+    expect(find.text('Head to head'), findsOneWidget);
   });
 
   testWidgets('Friends -> Groups -> Group Details -> back', (tester) async {
