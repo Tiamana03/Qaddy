@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
@@ -113,7 +114,7 @@ class _SearchResultRow extends StatelessWidget {
                 ),
                 SizedBox(height: spacing.xs),
                 Text(
-                  'HCP ${friend.handicap}',
+                  'HCP ${handicapLabel(friend.handicap)}',
                   style: typography.small.copyWith(
                     color: colours.textSecondary,
                   ),

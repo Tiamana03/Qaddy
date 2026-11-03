@@ -11,7 +11,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -95,7 +95,7 @@ class TripTransportScreen extends ConsumerWidget {
                 SizedBox(height: spacing.cardGap),
               ],
               SizedBox(height: spacing.md),
-              QaddyPrimaryButton(
+              QaddyGoldButton(
                 label: 'Add Transport',
                 onPressed: () => context.push(addRoute),
               ),

@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 
@@ -116,7 +116,7 @@ class _TripFormPageState extends State<TripFormPage> {
             SizedBox(height: spacing.lg),
             ...widget.builder(context, submitted: _submitted),
             SizedBox(height: spacing.sectionGap),
-            QaddyPrimaryButton(label: widget.saveLabel, onPressed: _save),
+            QaddyGoldButton(label: widget.saveLabel, onPressed: _save),
             if (widget.onDelete != null) ...<Widget>[
               SizedBox(height: spacing.sm),
               TextButton.icon(

@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -63,7 +63,7 @@ class ExportItineraryScreen extends ConsumerWidget {
               ),
             ),
             SizedBox(height: spacing.lg),
-            QaddyPrimaryButton(
+            QaddyGoldButton(
               label: 'Share Itinerary',
               onPressed: () => shareOrCopy(
                 context,

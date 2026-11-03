@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 
 /// A generic, configurable empty-state placeholder.
 ///
@@ -69,7 +69,7 @@ class QaddyEmptyState extends StatelessWidget {
           ),
           if (actionLabel != null && onAction != null) ...<Widget>[
             SizedBox(height: spacing.lg),
-            QaddyPrimaryButton(label: actionLabel!, onPressed: onAction),
+            QaddyGoldButton(label: actionLabel!, onPressed: onAction),
           ],
         ],
       ),

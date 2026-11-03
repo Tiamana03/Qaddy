@@ -11,7 +11,8 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/utils/formatting.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_date_time_fields.dart';
@@ -484,8 +485,8 @@ class _PlayersEditorState extends ConsumerState<_PlayersEditor> {
                                   ),
                                 ),
                                 Text(
-                                  '${_roleLabel(member)} · Handicap '
-                                  '${member.handicap.toStringAsFixed(1)}',
+                                  '${_roleLabel(member)} · '
+                                  '${handicapPhrase(member.handicap)}',
                                   style: typography.small.copyWith(
                                     color: colours.textSecondary,
                                   ),
@@ -522,7 +523,7 @@ class _PlayersEditorState extends ConsumerState<_PlayersEditor> {
               ),
             ),
             SizedBox(height: spacing.md),
-            QaddyPrimaryButton(
+            QaddyGoldButton(
               label: _invite.isEmpty
                   ? 'Invite'
                   : 'Invite ${_invite.length} '
@@ -607,7 +608,7 @@ class TripItemList extends ConsumerWidget {
                 ),
               ),
             SizedBox(height: spacing.lg),
-            QaddyPrimaryButton(
+            QaddyGoldButton(
               label: 'Add ${_singular(section)}',
               onPressed: () => context.push(
                 AppRoutes.tripEditItem(tripId, section.slug, 'new'),

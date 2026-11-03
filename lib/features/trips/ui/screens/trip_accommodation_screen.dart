@@ -14,7 +14,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -81,7 +81,7 @@ class TripAccommodationScreen extends ConsumerWidget {
                 _StayDetail(tripId: tripId, stay: stay),
               ],
               SizedBox(height: spacing.sectionGap),
-              QaddyPrimaryButton(
+              QaddyGoldButton(
                 label: 'Add Accommodation',
                 onPressed: () => context.push(addRoute),
               ),

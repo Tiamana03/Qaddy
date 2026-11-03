@@ -7,7 +7,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_tertiary_button.dart';
 
 /// Asks the user to confirm. Resolves to `true` only if they choose
@@ -70,7 +70,7 @@ Future<bool> showQaddyConfirm(
               child: Text(confirmLabel, style: typography.button),
             )
           else
-            QaddyPrimaryButton(
+            QaddyGoldButton(
               label: confirmLabel,
               onPressed: () => Navigator.of(dialogContext).pop(true),
             ),

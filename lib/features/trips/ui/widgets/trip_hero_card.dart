@@ -21,6 +21,7 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_status_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_trip_card.dart';
@@ -360,7 +361,7 @@ class _Countdown extends StatelessWidget {
         // The count lands in the first quarter second; the glow then pulses
         // three times and fades — finite, so nothing animates forever.
         final eased = _countCurve.transform((t / 0.25).clamp(0, 1));
-        final counted = target == null ? value : '${(target * eased).round()}';
+        final counted = target == null ? value : '${countedUp(target, eased)}';
         final pulse = glow ? 0.5 - 0.5 * math.cos(t * 2 * math.pi * 3) : 0.0;
         final fade = glow ? 1 - t : 0.0;
         return Text(

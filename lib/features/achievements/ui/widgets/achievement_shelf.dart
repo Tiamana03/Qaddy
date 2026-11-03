@@ -142,7 +142,7 @@ class AchievementShelf extends StatelessWidget {
           if (next == null)
             Text(
               'You have earned every achievement. Legend.',
-              style: typography.body.copyWith(color: colours.gold),
+              style: typography.body.copyWith(color: colours.accent),
             )
           else ...<Widget>[
             Row(
@@ -244,7 +244,10 @@ class _AchievementSheet extends StatelessWidget {
             ),
             SizedBox(height: spacing.lg),
             if (achievement.unlocked)
-              Text('Earned', style: typography.h3.copyWith(color: colours.gold))
+              Text(
+                'Earned',
+                style: typography.h3.copyWith(color: colours.accent),
+              )
             else ...<Widget>[
               Text(
                 achievement.progressLabel,

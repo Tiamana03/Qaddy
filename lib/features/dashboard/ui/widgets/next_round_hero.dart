@@ -7,6 +7,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
@@ -100,7 +101,7 @@ class NextRoundHero extends StatelessWidget {
                     duration: const Duration(milliseconds: 800),
                     curve: Curves.easeOutCubic,
                     builder: (context, t, _) => Text(
-                      figure == null ? count.value : '${(figure * t).round()}',
+                      figure == null ? count.value : '${countedUp(figure, t)}',
                       style: typography.display.copyWith(
                         color: onGradient,
                         fontSize: 64,

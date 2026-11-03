@@ -14,7 +14,7 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -164,7 +164,7 @@ class TripExpensesScreen extends ConsumerWidget {
                 SizedBox(height: spacing.sm),
               ],
               SizedBox(height: spacing.md),
-              QaddyPrimaryButton(
+              QaddyGoldButton(
                 label: 'Add Expense',
                 onPressed: () => context.push(addRoute),
               ),

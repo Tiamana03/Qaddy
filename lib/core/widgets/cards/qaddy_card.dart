@@ -31,26 +31,37 @@ class QaddyCard extends StatelessWidget {
     final shadows = theme.extension<QaddyShadows>()!;
 
     final borderRadius = BorderRadius.circular(radius.large);
-    final content = Container(
-      padding: EdgeInsets.all(spacing.cardPadding),
-      decoration: BoxDecoration(
-        color: colours.card,
-        borderRadius: borderRadius,
-        boxShadow: shadows.medium,
-      ),
-      child: child,
-    );
+    final padding = EdgeInsets.all(spacing.cardPadding);
 
     if (onTap == null) {
-      return content;
+      return Container(
+        padding: padding,
+        decoration: BoxDecoration(
+          color: colours.card,
+          borderRadius: borderRadius,
+          boxShadow: shadows.medium,
+        ),
+        child: child,
+      );
     }
 
+    // The shadow sits outside the clipped, tappable surface so a card you can
+    // press looks exactly like one you cannot.
     return _PressScale(
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: borderRadius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(onTap: onTap, child: content),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: shadows.medium,
+        ),
+        child: Material(
+          color: colours.card,
+          borderRadius: borderRadius,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(padding: padding, child: child),
+          ),
+        ),
       ),
     );
   }

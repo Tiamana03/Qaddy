@@ -9,7 +9,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 
 /// Create Trip and Browse Trips actions.
@@ -34,10 +34,7 @@ class TripsQuickActions extends StatelessWidget {
       children: <Widget>[
         Expanded(
           flex: 3,
-          child: QaddyPrimaryButton(
-            label: 'Create Trip',
-            onPressed: onCreateTrip,
-          ),
+          child: QaddyGoldButton(label: 'Create Trip', onPressed: onCreateTrip),
         ),
         SizedBox(width: spacing.sm),
         Expanded(
