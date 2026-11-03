@@ -15,6 +15,7 @@ class QaddyAvatarHuddle extends StatelessWidget {
     required this.total,
     required this.textColour,
     this.limit = 5,
+    this.label,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class QaddyAvatarHuddle extends StatelessWidget {
 
   /// How many faces to show before "+N more".
   final int limit;
+
+  /// What to say beside the faces instead of the count ("+3 more · 8
+  /// playing").
+  final String? label;
 
   static const double _size = 36;
   static const double _step = 26;
@@ -72,7 +77,8 @@ class QaddyAvatarHuddle extends StatelessWidget {
         SizedBox(width: spacing.md),
         Expanded(
           child: Text(
-            more > 0 ? '+$more more · $total playing' : '$total playing',
+            label ??
+                (more > 0 ? '+$more more · $total playing' : '$total playing'),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: typography.small.copyWith(color: textColour),

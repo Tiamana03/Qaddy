@@ -167,7 +167,6 @@ class GroupDetailsScreen extends ConsumerWidget {
                 race: race,
                 groupName: group.name,
                 yourName: currentUserName,
-                onOpen: () => share(banter, group.name),
                 roundsPlayed: summary.roundsCompleted,
                 roundsTotal: summary.roundsCompleted + summary.roundsRemaining,
               ),
@@ -189,16 +188,24 @@ class GroupDetailsScreen extends ConsumerWidget {
             if (race.standings.length > 3) ...<Widget>[
               const QaddySectionHeading(title: 'The rest of the field'),
               SizedBox(height: spacing.md),
-              for (final entry in race.standings.skip(3)) ...<Widget>[
-                GroupLeaderboardRow(
-                  rank: entry.rank,
-                  player: entry.player,
-                  points: entry.points,
-                  isYou: entry.player == currentUserName,
+              QaddyCard(
+                child: Column(
+                  children: <Widget>[
+                    for (final (index, entry)
+                        in race.standings.skip(3).indexed) ...<Widget>[
+                      if (index > 0) SizedBox(height: spacing.xs),
+                      GroupLeaderboardRow(
+                        rank: entry.rank,
+                        player: entry.player,
+                        points: entry.points,
+                        leaderPoints: race.standings.first.points,
+                        isYou: entry.player == currentUserName,
+                      ),
+                    ],
+                  ],
                 ),
-                SizedBox(height: spacing.cardGap),
-              ],
-              SizedBox(height: spacing.sectionGap - spacing.cardGap),
+              ),
+              SizedBox(height: spacing.sectionGap),
             ],
             if (members.isNotEmpty) _HeadToHead(group: group, members: members),
             SizedBox(height: spacing.xl),
@@ -225,14 +232,7 @@ class _Hero extends StatelessWidget {
     final description = group.description;
 
     return QaddyHeroCard(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: <Color>[
-          Color.lerp(accent, colours.backgroundBase, 0.45)!,
-          Color.lerp(accent, colours.backgroundBase, 0.8)!,
-        ],
-      ),
+      gradient: groupGradient(colours, accent),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -371,13 +371,17 @@ class _Squad extends ConsumerWidget {
       spacing: spacing.md,
       runSpacing: spacing.lg,
       children: <Widget>[
-        for (final member in members)
-          _MemberTile(
-            member: member,
-            isYou: member.name == currentUserName,
-            isCaptain: member.name == group.ownerId,
-            isLeader: member.name == leader,
-            onTap: () => open(member),
+        for (final (index, member) in members.indexed)
+          QaddyFadeSlideIn(
+            offset: 8,
+            delay: staggerDelay(index, stepMs: 45),
+            child: _MemberTile(
+              member: member,
+              isYou: member.name == currentUserName,
+              isCaptain: member.name == group.ownerId,
+              isLeader: member.name == leader,
+              onTap: () => open(member),
+            ),
           ),
       ],
     );
@@ -448,10 +452,17 @@ class _MemberTile extends StatelessWidget {
                     Positioned(
                       right: -4,
                       top: -6,
-                      child: Icon(
-                        Icons.workspace_premium,
-                        size: 20,
-                        color: colours.gold,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: colours.backgroundBase,
+                        ),
+                        child: Icon(
+                          Icons.workspace_premium,
+                          size: 18,
+                          color: colours.gold,
+                        ),
                       ),
                     ),
                 ],

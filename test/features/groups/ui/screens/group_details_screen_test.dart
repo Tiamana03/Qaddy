@@ -255,6 +255,29 @@ void main() {
     });
   });
 
+  testWidgets('lays out in the light theme too', (tester) async {
+    final container = friendsContainer();
+    useScreen(tester, const Size(360, 4000));
+    final router = GoRouter(
+      initialLocation: '/group',
+      routes: _routes('saturday-boys'),
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          theme: QaddyTheme.light,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('The squad'), findsOneWidget);
+  });
+
   testWidgets('an unknown group is a kind dead end, not a crash', (
     tester,
   ) async {

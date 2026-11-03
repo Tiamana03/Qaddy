@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 
@@ -48,7 +49,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Three generations, one fairway.'), findsOneWidget);
-    expect(find.text('8 members · 2026 Season'), findsOneWidget);
+    expect(find.text('8 members'), findsOneWidget);
   });
 
   testWidgets('only the group with a round coming up says so', (tester) async {
@@ -73,9 +74,21 @@ void main() {
     }
   });
 
-  testWidgets('lays out on a small phone', (tester) async {
-    await _pump(tester, size: const Size(320, 2400));
+  testWidgets('shows the faces of a group whose people are known', (
+    tester,
+  ) async {
+    await _pump(tester);
 
-    expect(tester.takeException(), isNull);
+    // Saturday Boys: four faces and how many are in, the others the line.
+    expect(find.byType(QaddyAvatar), findsNWidgets(4));
+    expect(find.text('8 members'), findsOneWidget);
   });
+
+  for (final size in <Size>[const Size(320, 2400), const Size(1280, 2400)]) {
+    testWidgets('lays out at ${size.width}', (tester) async {
+      await _pump(tester, size: size);
+
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

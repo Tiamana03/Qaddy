@@ -9,6 +9,7 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
 import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group.dart';
 import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
@@ -21,6 +22,7 @@ class GroupCard extends StatelessWidget {
     required this.accent,
     required this.onTap,
     this.nextRound,
+    this.members = const <String>[],
     super.key,
   });
 
@@ -35,6 +37,9 @@ class GroupCard extends StatelessWidget {
 
   /// What is coming up, if anything.
   final String? nextRound;
+
+  /// Names to show faces for, when the group's people are known.
+  final List<String> members;
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +71,7 @@ class GroupCard extends StatelessWidget {
             color: Colors.transparent,
             child: Ink(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Color.lerp(accent, colours.backgroundBase, 0.55)!,
-                    Color.lerp(accent, colours.backgroundBase, 0.82)!,
-                  ],
-                ),
+                gradient: groupGradient(colours, accent),
               ),
               child: InkWell(
                 onTap: () {
@@ -110,12 +108,21 @@ class GroupCard extends StatelessWidget {
                               ),
                             ],
                             SizedBox(height: spacing.sm),
-                            Text(
-                              line,
-                              style: typography.small.copyWith(
-                                color: onGradient.withValues(alpha: 0.85),
+                            if (members.isEmpty)
+                              Text(
+                                line,
+                                style: typography.small.copyWith(
+                                  color: onGradient.withValues(alpha: 0.85),
+                                ),
+                              )
+                            else
+                              QaddyAvatarHuddle(
+                                names: members,
+                                total: group.totalMembers,
+                                limit: 4,
+                                label: '${group.totalMembers} members',
+                                textColour: onGradient.withValues(alpha: 0.85),
                               ),
-                            ),
                             if (nextRound != null) ...<Widget>[
                               SizedBox(height: spacing.xs),
                               Row(

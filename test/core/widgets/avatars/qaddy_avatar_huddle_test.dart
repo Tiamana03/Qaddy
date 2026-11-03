@@ -32,4 +32,23 @@ void main() {
     expect(find.byType(QaddyAvatar), findsNWidgets(3));
     expect(find.text('3 playing'), findsOneWidget);
   });
+
+  testWidgets('can say something else beside the faces', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: QaddyTheme.dark,
+        home: const Scaffold(
+          body: QaddyAvatarHuddle(
+            names: <String>['A', 'B'],
+            total: 8,
+            textColour: Colors.white,
+            label: '8 members · 2026 Season',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('8 members · 2026 Season'), findsOneWidget);
+    expect(find.textContaining('playing'), findsNothing);
+  });
 }

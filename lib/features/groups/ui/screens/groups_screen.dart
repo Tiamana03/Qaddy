@@ -58,6 +58,9 @@ class GroupsScreen extends StatelessWidget {
                 group: group,
                 accent: groupAccent(colours, index),
                 nextRound: _nextRoundLine(group),
+                members: <String>[
+                  for (final member in membersOf(group)) member.name,
+                ],
                 onTap: () => context.push(AppRoutes.friendsGroup(group.id)),
               ),
             ],

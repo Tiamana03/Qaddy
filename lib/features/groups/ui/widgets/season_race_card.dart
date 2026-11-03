@@ -13,13 +13,14 @@ import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/group_detail.dart';
 
-/// A card showing the season's podium. Tapping it opens the group.
+/// A card showing the season's podium. Tapping it (when [onOpen] is given)
+/// opens the group.
 class SeasonRaceCard extends StatelessWidget {
   const SeasonRaceCard({
     required this.race,
     required this.groupName,
     required this.yourName,
-    required this.onOpen,
+    this.onOpen,
     this.roundsPlayed,
     this.roundsTotal,
     super.key,
@@ -34,8 +35,9 @@ class SeasonRaceCard extends StatelessWidget {
   /// The golfer's own name, to pick them out on the podium.
   final String yourName;
 
-  /// Opens the group's full leaderboard.
-  final VoidCallback onOpen;
+  /// Opens the group's full leaderboard. Omit on the group's own page, where
+  /// the card is already the table.
+  final VoidCallback? onOpen;
 
   /// How many rounds of the season are done, for the progress line.
   final int? roundsPlayed;
@@ -61,7 +63,7 @@ class SeasonRaceCard extends StatelessWidget {
         '${race.roundsLeft}.';
 
     return Semantics(
-      button: true,
+      button: onOpen != null,
       onTap: onOpen,
       excludeSemantics: true,
       label:

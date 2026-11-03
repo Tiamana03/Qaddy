@@ -20,7 +20,7 @@ The group page is a **clubhouse**: who we are, what we are playing next, who is 
 
 # The list — "Your crews"
 
-Each group is a card in **its own colour** (teal, indigo, orange, pink — by position, the same colours as the crests on Friends), with a crest, its one-line motto ("Saturday mornings at Richmond. The banter is compulsory."), size and season, and — when a round is planned — a gold "Next round Saturday, 8:20 AM". **Every** card opens its own page. The header line says who plays next.
+Each group is a card in **its own colour** (teal, indigo, orange, pink — by position, the same colours as the crests on Friends), with a crest, its one-line motto ("Saturday mornings at Richmond. The banter is compulsory."), and — when the group's people are known — **their faces** beside the member count (otherwise size and season), then a gold "Next round Saturday, 8:20 AM" when a round is planned. **Every** card opens its own page. The header line says who plays next.
 
 # The page
 
@@ -31,9 +31,9 @@ Each group is a card in **its own colour** (teal, indigo, orange, pink — by po
    - **Invite a mate** — shares a ready-written invitation to join the group.
    - **Banter** — shares a line about the table: "Luke leads the Saturday Boys table by 7 points. Time someone did something about it. – Tiamana" (or, when the golfer leads, "I'm top of the … table by N points. Come and get me.").
 3. **Next round** (when there is one) — the invitation banner: when, where, the faces playing, and **"Who's in? Rally the group"**. Tapping the story plans the round.
-4. **The 2026 Season** — the podium, "You're 5th, 4 points behind Ben", a progress bar ("8 of 18 rounds played") and rounds to go. Tapping it shares the banter.
-5. **The squad** — every member as a face with their handicap; the **captain** (the owner) is labelled, the **table leader** wears a crown. Tapping a mate opens their card (the Friends peek sheet); tapping yourself opens Profile.
-6. **The rest of the field** — ranks 4 and below, the golfer's own row marked **You** with a gold edge.
+4. **The 2026 Season** — the podium, "You're 5th, 4 points behind Ben", a progress bar ("8 of 18 rounds played") and rounds to go. On the group's own page the card is not a button (the Banter action above sends the line); on Friends Home, where the card is the way in, it opens the group.
+5. **The squad** — every member as a face with their handicap; the **captain** (the owner) is labelled, the **table leader** wears a crown. Tapping a mate opens their card (the Friends peek sheet); tapping yourself opens Profile. The faces arrive one after another.
+6. **The rest of the field** — ranks 4 and below in **one compact card**: rank, face, name, points and a bar that grows in to show how close each golfer is to the leader. The golfer's own row is **You** on a gold tint.
 7. **Head to head** — the golfer's *real* finished rounds against this group's mates, using the Statistics `Rival` record. Before any round is played together it says so kindly instead of showing zeros.
 
 A group **without a season yet** (every group but Saturday Boys in Release 1) shows the hero and the four actions, then "The table starts with a round" with a gold **Plan a round** — no invented table. An unknown group id shows "This group has gone quiet" with a way back to the list.

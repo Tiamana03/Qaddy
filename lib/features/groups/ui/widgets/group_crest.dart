@@ -62,3 +62,15 @@ class GroupCrest extends StatelessWidget {
     );
   }
 }
+
+/// The soft diagonal wash a group wears on its card and page: its accent
+/// settling into the page colour.
+LinearGradient groupGradient(QaddyColours colours, Color accent) =>
+    LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: <Color>[
+        Color.lerp(accent, colours.backgroundBase, 0.5)!,
+        Color.lerp(accent, colours.backgroundBase, 0.8)!,
+      ],
+    );
