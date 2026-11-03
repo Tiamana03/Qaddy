@@ -14,11 +14,11 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_primary_button.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_section_card.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
-import 'package:qaddy/core/widgets/rows/qaddy_info_row.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/trips/logic/expense_ledger.dart';
@@ -27,6 +27,7 @@ import 'package:qaddy/features/trips/models/trip_edit_section.dart';
 import 'package:qaddy/features/trips/models/trip_golf.dart';
 import 'package:qaddy/features/trips/models/trip_weather.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
+import 'package:qaddy/features/trips/ui/widgets/detail/trip_detail_widgets.dart';
 import 'package:qaddy/features/trips/ui/widgets/trip_not_found.dart';
 
 /// Golf Schedule (route `/trips/:tripId/golf`).
@@ -38,7 +39,8 @@ class TripGolfScheduleScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (ref.watch(tripProvider(tripId)) == null) {
+    final trip = ref.watch(tripProvider(tripId));
+    if (trip == null) {
       return const TripNotFound();
     }
     final plan = ref.watch(tripPlanProvider(tripId));
@@ -71,6 +73,19 @@ class TripGolfScheduleScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
+            if (courses.isNotEmpty) ...<Widget>[
+              DetailHeader(
+                icon: Icons.golf_course_outlined,
+                title: 'The golf',
+                subtitle: trip.name,
+                facts: <String>[
+                  _rounds(courses.length),
+                  '${trip.playerCount} players',
+                  'First tee ${courses.first.teeTime.toFriendlyTime()}',
+                ],
+              ),
+              SizedBox(height: spacing.sectionGap),
+            ],
             if (courses.isEmpty)
               QaddyEmptyState(
                 icon: Icons.golf_course_outlined,
@@ -109,16 +124,29 @@ class TripGolfScheduleScreen extends ConsumerWidget {
               ],
             if (plan.playingGroups.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
-              QaddySectionCard(
-                title: 'Playing Groups',
+              const QaddySectionHeading(title: 'Playing groups'),
+              SizedBox(height: spacing.md),
+              QaddyCard(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     for (final (index, group)
                         in plan.playingGroups.indexed) ...<Widget>[
-                      if (index > 0) SizedBox(height: spacing.sm),
-                      QaddyInfoRow(
-                        label: group.name,
-                        value: group.players.join(', '),
+                      if (index > 0) SizedBox(height: spacing.lg),
+                      Text(
+                        group.name,
+                        style: typography.h4.copyWith(
+                          color: colours.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: spacing.sm),
+                      Wrap(
+                        spacing: spacing.md,
+                        runSpacing: spacing.sm,
+                        children: <Widget>[
+                          for (final player in group.players)
+                            _PlayerPill(name: player),
+                        ],
                       ),
                     ],
                   ],
@@ -127,26 +155,22 @@ class TripGolfScheduleScreen extends ConsumerWidget {
             ],
             if (plan.sideGames.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
-              QaddySectionCard(
-                title: 'Side Games',
-                child: Column(
-                  children: <Widget>[
-                    for (final (index, game)
-                        in plan.sideGames.indexed) ...<Widget>[
-                      if (index > 0) SizedBox(height: spacing.sm),
-                      QaddyInfoRow(
-                        label: game.name,
-                        value: 'Hole ${game.hole}',
-                      ),
-                    ],
-                  ],
-                ),
+              const QaddySectionHeading(title: 'Side games'),
+              SizedBox(height: spacing.md),
+              Wrap(
+                spacing: spacing.sm,
+                runSpacing: spacing.sm,
+                children: <Widget>[
+                  for (final game in plan.sideGames)
+                    _SideGamePill(name: game.name, hole: game.hole),
+                ],
               ),
             ],
             if (courses.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
-              QaddyPrimaryButton(
+              QaddySecondaryButton(
                 label: 'Add Course',
+                icon: Icons.add,
                 onPressed: () => context.push(addRoute),
               ),
             ],
@@ -248,3 +272,84 @@ class _CourseCard extends StatelessWidget {
     );
   }
 }
+
+/// One player in a playing group: a face and a name.
+class _PlayerPill extends StatelessWidget {
+  const _PlayerPill({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(
+          width: 28,
+          height: 28,
+          child: FittedBox(child: QaddyAvatar(name: name)),
+        ),
+        SizedBox(width: spacing.xs),
+        Flexible(
+          child: Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: typography.small.copyWith(color: colours.textPrimary),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// A side game and the hole it is played on.
+class _SideGamePill extends StatelessWidget {
+  const _SideGamePill({required this.name, required this.hole});
+
+  final String name;
+  final int hole;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.md,
+        vertical: spacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: colours.surface1,
+        borderRadius: BorderRadius.circular(radius.large),
+        border: Border.all(color: colours.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(Icons.flag_outlined, size: 16, color: colours.gold),
+          SizedBox(width: spacing.xs),
+          Flexible(
+            child: Text(
+              '$name · Hole $hole',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: typography.small.copyWith(color: colours.textPrimary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _rounds(int count) => '$count ${count == 1 ? 'round' : 'rounds'}';

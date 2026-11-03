@@ -109,12 +109,23 @@ void main() {
       expect(find.byIcon(Icons.wb_cloudy_outlined), findsOneWidget);
     });
 
+    testWidgets('opens with the shape of the golf', (tester) async {
+      await pumpApp(tester, location: AppRoutes.tripGolf(melbourneId));
+
+      expect(find.text('The golf'), findsOneWidget);
+      expect(find.text('3 rounds'), findsOneWidget);
+      expect(find.text('8 players'), findsOneWidget);
+      expect(find.text('First tee 8:10 AM'), findsOneWidget);
+    });
+
     testWidgets('keeps the playing groups and side games', (tester) async {
       await pumpApp(tester, location: AppRoutes.tripGolf(melbourneId));
 
-      expect(find.text('Playing Groups'), findsOneWidget);
-      expect(find.text('Side Games'), findsOneWidget);
-      expect(find.text('Longest Drive'), findsOneWidget);
+      expect(find.text('Playing groups'), findsOneWidget);
+      expect(find.text('Side games'), findsOneWidget);
+      expect(find.text('Longest Drive · Hole 5'), findsOneWidget);
+      expect(find.text('Group 1'), findsOneWidget);
+      expect(find.text('Luke'), findsWidgets);
     });
 
     testWidgets('a course card opens that course', (tester) async {

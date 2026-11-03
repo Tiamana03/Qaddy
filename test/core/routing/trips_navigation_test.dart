@@ -20,7 +20,7 @@ void main() {
     await tester.ensureVisible(find.text('Golf'));
     await tester.tap(find.text('Golf'));
     await tester.pumpAndSettle();
-    expect(find.text('Playing Groups'), findsOneWidget);
+    expect(find.text('Playing groups'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
