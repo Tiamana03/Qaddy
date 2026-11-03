@@ -18,6 +18,7 @@ class SearchResult {
     required this.title,
     this.subtitle,
     this.icon,
+    this.accent,
     this.onTap,
   });
 
@@ -33,6 +34,9 @@ class SearchResult {
   /// Icon shown when no avatar applies. Friends results show a
   /// `QaddyAvatar` instead and leave this null.
   final IconData? icon;
+
+  /// The colour of the result's icon badge, when it has an icon.
+  final Color? accent;
 
   /// Opens this result's existing screen. Null when no detail screen
   /// exists for this specific item — see `search-feature-integration.md`'s

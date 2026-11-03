@@ -1,11 +1,11 @@
-/// Qaddy's Search screen — global search across Friends, Rounds, Trips,
-/// Groups and Courses.
+/// Qaddy's Search screen — one box for everything in the golfer's world:
+/// mates, the next round, trips, groups and courses.
 ///
-/// See `docs/features/search-feature-integration.md`. Not the same feature
-/// as Search Friends (`docs/architecture/search.md`), a narrower,
-/// already-implemented Friends-feature sub-screen. Matches
-/// case-insensitively against any part of each result's name, against the
-/// placeholder data each category already owns — see
+/// See `docs/features/search-feature-integration.md` and
+/// `docs/features/search-release-candidate.md`. Not the same feature as Search
+/// Friends (`docs/architecture/search.md`), a narrower Friends sub-screen.
+/// Matches case-insensitively against any part of each result's name, against
+/// the data each category already owns — see
 /// `docs/architecture/search-data-model.md`. No backend search exists yet.
 library;
 
@@ -16,13 +16,20 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/forms/qaddy_search_field.dart';
+import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
+import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
-import 'package:qaddy/features/community/models/placeholder_friends.dart';
+import 'package:qaddy/features/community/state/friends_controller.dart';
+import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
+import 'package:qaddy/features/groups/logic/group_insights.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
+import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
 import 'package:qaddy/features/profile/models/placeholder_profile.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/search/models/search_result.dart';
@@ -48,9 +55,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-    final query = _query.trim().toLowerCase();
-    final results = _buildResults(context, query);
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+    final query = _query.trim();
+    final results = _buildResults(context, query.toLowerCase(), colours);
 
     final byCategory = <SearchCategory, List<SearchResult>>{};
     for (final result in results) {
@@ -59,35 +69,74 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           .add(result);
     }
 
+    final summary = query.isEmpty
+        ? 'Mates, rounds, trips, groups and courses'
+        : results.isEmpty
+        ? 'Nothing for “$query”'
+        : results.length == 1
+        ? '1 result for “$query”'
+        : '${results.length} results for “$query”';
+
     return QaddyScaffold(
       appBar: AppBar(title: const Text('Search')),
       body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
+            Text(
+              'Find anything',
+              style: typography.h1.copyWith(color: colours.textPrimary),
+            ),
+            SizedBox(height: spacing.xs),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: Text(
+                summary,
+                key: ValueKey<String>(summary),
+                style: typography.body.copyWith(color: colours.textSecondary),
+              ),
+            ),
+            SizedBox(height: spacing.lg),
             QaddySearchField(
               controller: _controller,
-              hintText: 'Search friends, rounds, trips, groups, courses…',
+              hintText: 'Try a mate, a course, a trip…',
               onChanged: (value) => setState(() => _query = value),
             ),
             SizedBox(height: spacing.sectionGap),
             if (results.isEmpty)
-              const QaddyEmptyState(
+              QaddyEmptyState(
                 icon: Icons.search_off,
                 title: 'No results found',
-                message: 'Try a different search.',
+                message:
+                    'Nothing on the fairway for “$query”. Try a mate’s name, '
+                    'a course, a trip or a group.',
+                actionLabel: 'Clear search',
+                onAction: () {
+                  _controller.clear();
+                  setState(() => _query = '');
+                },
               )
             else
               for (final category in SearchCategory.values)
-                if (byCategory[category] case final categoryResults?
-                    when categoryResults.isNotEmpty) ...<Widget>[
-                  _CategoryHeader(label: _categoryLabel(category)),
-                  SizedBox(height: spacing.sm),
-                  for (final (index, result)
-                      in categoryResults.indexed) ...<Widget>[
+                if (byCategory[category] case final found?
+                    when found.isNotEmpty) ...<Widget>[
+                  QaddySectionHeading(
+                    title: _categoryLabel(category),
+                    badge: found.length,
+                  ),
+                  SizedBox(height: spacing.md),
+                  for (final (index, result) in found.indexed) ...<Widget>[
                     if (index > 0) SizedBox(height: spacing.cardGap),
-                    _SearchResultRow(result: result),
+                    QaddyFadeSlideIn(
+                      key: ValueKey<String>(
+                        '${category.name}|${result.title}|${result.subtitle}',
+                      ),
+                      offset: 8,
+                      delay: staggerDelay(index, stepMs: 35),
+                      child: _SearchResultRow(result: result, query: query),
+                    ),
                   ],
                   SizedBox(height: spacing.sectionGap),
                 ],
@@ -98,23 +147,30 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  List<SearchResult> _buildResults(BuildContext context, String query) {
+  List<SearchResult> _buildResults(
+    BuildContext context,
+    String query,
+    QaddyColours colours,
+  ) {
     bool matches(String value) =>
         query.isEmpty || value.toLowerCase().contains(query);
 
     final results = <SearchResult>[];
 
-    for (final friend in friends) {
+    for (final friend in ref.watch(confirmedFriendsProvider)) {
       if (!matches(friend.displayName)) continue;
-      final isDetailed = friend.id == tom.id;
       results.add(
         SearchResult(
           category: SearchCategory.friends,
           title: friend.displayName,
-          subtitle: 'HCP ${friend.handicap}',
-          onTap: isDetailed
-              ? () => context.push(AppRoutes.friendProfile)
-              : null,
+          subtitle:
+              'HCP ${handicapLabel(friend.handicap)} · ${friend.homeClub}',
+          onTap: () => showFriendPeek(
+            context,
+            ref,
+            friend,
+            now: ref.read(friendsClockProvider)(),
+          ),
         ),
       );
     }
@@ -124,9 +180,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchResult(
           category: SearchCategory.rounds,
           title: upcomingRound.course,
-          subtitle: '${upcomingRound.date} • ${upcomingRound.teeTime}',
+          subtitle:
+              'Next round · ${upcomingRound.date}, ${upcomingRound.teeTime}',
           icon: Icons.sports_golf,
-          onTap: () => context.push(AppRoutes.rounds),
+          accent: colours.accentTeal,
+          onTap: () => context.go(AppRoutes.rounds),
         ),
       );
     }
@@ -140,6 +198,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           title: trip.name,
           subtitle: trip.destination,
           icon: Icons.flight_takeoff,
+          accent: colours.accentSky,
           onTap: () => context.push(AppRoutes.tripDetails(trip.id)),
         ),
       );
@@ -151,8 +210,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchResult(
           category: SearchCategory.groups,
           title: group.name,
-          subtitle: '${group.totalMembers} members',
+          subtitle: groupLine(group),
           icon: Icons.groups_outlined,
+          accent: accentForGroup(colours, group),
           onTap: () => context.push(AppRoutes.friendsGroup(group.id)),
         ),
       );
@@ -164,9 +224,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchResult(
           category: SearchCategory.courses,
           title: course,
-          subtitle: 'Favourite Course',
+          subtitle: 'Favourite course',
           icon: Icons.golf_course_outlined,
-          onTap: () => context.push(AppRoutes.profile),
+          accent: colours.accentOrange,
+          onTap: () => context.go(AppRoutes.profile),
         ),
       );
     }
@@ -178,8 +239,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           SearchResult(
             category: SearchCategory.courses,
             title: course.name,
-            subtitle: trip.name,
+            subtitle: 'On ${trip.name}',
             icon: Icons.golf_course_outlined,
+            accent: colours.accentOrange,
             onTap: () => context.push(AppRoutes.tripCourse(trip.id, course.id)),
           ),
         );
@@ -198,28 +260,11 @@ String _categoryLabel(SearchCategory category) => switch (category) {
   SearchCategory.courses => 'Courses',
 };
 
-class _CategoryHeader extends StatelessWidget {
-  const _CategoryHeader({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-
-    return Text(
-      label,
-      style: typography.h3.copyWith(color: colours.textPrimary),
-    );
-  }
-}
-
 class _SearchResultRow extends StatelessWidget {
-  const _SearchResultRow({required this.result});
+  const _SearchResultRow({required this.result, required this.query});
 
   final SearchResult result;
+  final String query;
 
   @override
   Widget build(BuildContext context) {
@@ -227,47 +272,105 @@ class _SearchResultRow extends StatelessWidget {
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
+    final icon = result.icon;
 
-    return QaddyCard(
+    return Semantics(
+      button: true,
+      excludeSemantics: true,
+      label:
+          '${result.title}. ${result.subtitle ?? ''} '
+          '${result.category.name}. Opens it.',
       onTap: result.onTap,
-      child: Row(
-        children: <Widget>[
-          if (result.icon != null)
-            Icon(result.icon, color: colours.textSecondary)
-          else
-            QaddyAvatar(name: result.title),
-          SizedBox(width: spacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  result.title,
-                  style: typography.body.copyWith(
-                    color: colours.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (result.subtitle != null) ...<Widget>[
-                  SizedBox(height: spacing.xs),
-                  Text(
-                    result.subtitle!,
-                    style: typography.small.copyWith(
-                      color: colours.textSecondary,
+      child: QaddyCard(
+        onTap: result.onTap,
+        child: Row(
+          children: <Widget>[
+            if (icon != null)
+              QaddyIconBadge(
+                icon: icon,
+                colour: result.accent ?? colours.textSecondary,
+              )
+            else
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: FittedBox(child: QaddyAvatar(name: result.title)),
+              ),
+            SizedBox(width: spacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _Highlighted(
+                    text: result.title,
+                    query: query,
+                    style: typography.body.copyWith(
+                      color: colours.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
+                    highlight: colours.gold,
                   ),
+                  if (result.subtitle != null) ...<Widget>[
+                    SizedBox(height: spacing.xs),
+                    Text(
+                      result.subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: typography.small.copyWith(
+                        color: colours.textSecondary,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          if (result.onTap != null) ...<Widget>[
             SizedBox(width: spacing.sm),
             Icon(Icons.chevron_right, color: colours.textTertiary),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// [text] with the part that matches [query] in gold, so the golfer sees why
+/// it was found.
+class _Highlighted extends StatelessWidget {
+  const _Highlighted({
+    required this.text,
+    required this.query,
+    required this.style,
+    required this.highlight,
+  });
+
+  final String text;
+  final String query;
+  final TextStyle style;
+  final Color highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    final start = query.isEmpty
+        ? -1
+        : text.toLowerCase().indexOf(query.toLowerCase());
+    if (start < 0) {
+      return Text(text, style: style, overflow: TextOverflow.ellipsis);
+    }
+    final end = start + query.length;
+    return Text.rich(
+      TextSpan(
+        style: style,
+        children: <InlineSpan>[
+          TextSpan(text: text.substring(0, start)),
+          TextSpan(
+            text: text.substring(start, end),
+            style: TextStyle(color: highlight),
+          ),
+          TextSpan(text: text.substring(end)),
         ],
       ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
