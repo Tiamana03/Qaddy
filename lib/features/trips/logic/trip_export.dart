@@ -87,7 +87,7 @@ String itineraryText(Trip trip, TripPlan plan) {
     final summary = summariseExpenses(plan.expenses);
     out
       ..writeln()
-      ..writeln('Money')
+      ..writeln('MONEY')
       ..writeln(
         '  Total ${formatMoney(summary.total)} · '
         'paid ${formatMoney(summary.paid)} · '
