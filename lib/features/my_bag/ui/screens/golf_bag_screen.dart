@@ -149,7 +149,7 @@ class _Hero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          QaddyEyebrow(starter == 0 ? 'YOUR BAG' : 'STARTER BAG'),
+          QaddyEyebrow(starter == 0 ? 'Your bag' : 'Starter bag'),
           SizedBox(height: spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,

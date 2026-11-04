@@ -40,17 +40,17 @@ void main() {
 
       expect(countdown.value, '6');
       expect(countdown.label, 'days to tee-off');
-      expect(countdown.eyebrow, 'NEXT ROUND');
+      expect(countdown.eyebrow, 'Next round');
     });
 
     test('says "get ready" in the last three days', () {
       expect(
         roundCountdown(DateTime(2026, 11, 4), 'Saturday')!.eyebrow,
-        'GET READY',
+        'Get ready',
       );
       expect(
         roundCountdown(DateTime(2026, 11, 3), 'Saturday')!.eyebrow,
-        'NEXT ROUND',
+        'Next round',
       );
     });
 
@@ -65,7 +65,7 @@ void main() {
       final countdown = roundCountdown(DateTime(2026, 11, 7), 'Saturday')!;
 
       expect(countdown.value, 'Today');
-      expect(countdown.eyebrow, "IT'S ROUND DAY");
+      expect(countdown.eyebrow, "It's round day");
     });
 
     test('has nothing to say about a day it cannot place', () {

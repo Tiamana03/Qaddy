@@ -160,7 +160,7 @@ class _Hero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const QaddyEyebrow('YOUR GAME'),
+          const QaddyEyebrow('Your game'),
           SizedBox(height: spacing.sm),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -376,14 +376,14 @@ class _HolesCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               spotlight(
-                'YOUR FAVOURITE',
+                'Your favourite',
                 favourite,
                 colours.gold,
                 Icons.favorite_border,
               ),
               SizedBox(width: spacing.cardGap),
               spotlight(
-                'YOUR NEMESIS',
+                'Your nemesis',
                 toughest,
                 colours.accentOrange,
                 Icons.sentiment_dissatisfied_outlined,

@@ -1,4 +1,4 @@
-/// The small "SAMPLE" label that marks anything from the Sample Clubhouse: a
+/// The small "Sample" label that marks anything from the Sample Clubhouse: a
 /// pretend mate, group, trip or round that is not the golfer's own.
 library;
 
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
-/// A quiet pill reading "SAMPLE". [onGradient] makes it readable on a coloured
+/// A quiet pill reading "Sample". [onGradient] makes it readable on a coloured
 /// hero rather than on a card.
 class SampleBadge extends StatelessWidget {
   const SampleBadge({this.onGradient = false, super.key});
@@ -31,11 +31,10 @@ class SampleBadge extends StatelessWidget {
             border: Border.all(color: colour.withValues(alpha: 0.7)),
           ),
           child: Text(
-            'SAMPLE',
+            'Sample',
             style: typography.caption.copyWith(
               color: colour,
               fontWeight: FontWeight.w700,
-              letterSpacing: 1,
             ),
           ),
         ),

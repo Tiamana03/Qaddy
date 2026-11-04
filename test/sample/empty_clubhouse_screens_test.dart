@@ -36,7 +36,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Ready when you are'), findsOneWidget);
-    expect(find.text('YOUR NEXT ROUND'), findsOneWidget);
+    expect(find.text('Your next round'), findsOneWidget);
     expect(find.text('Start a round'), findsWidgets);
     expect(find.text('Your mates'), findsOneWidget);
     expect(find.text('Invite a mate'), findsWidgets);
@@ -49,7 +49,7 @@ void main() {
     await pumpFriends(tester, const RoundsScreen(), overrides: off);
     await tester.pumpAndSettle();
 
-    expect(find.text('YOUR ROUND'), findsOneWidget);
+    expect(find.text('Your round'), findsOneWidget);
     expect(find.text('Ready when you are'), findsOneWidget);
     expect(find.text('Start round'), findsOneWidget);
     expect(find.textContaining('1 playing'), findsOneWidget);

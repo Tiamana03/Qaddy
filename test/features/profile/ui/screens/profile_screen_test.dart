@@ -73,7 +73,7 @@ void main() {
       await _pump(tester, PlayedRounds().container);
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
-      expect(find.text('PLAYER CARD'), findsOneWidget);
+      expect(find.text('Player card'), findsOneWidget);
       expect(find.text('Tiamana'), findsOneWidget);
       expect(find.text('Handicap 8.4'), findsOneWidget);
       expect(find.text('Since 2024'), findsOneWidget);
@@ -100,7 +100,7 @@ void main() {
       await _pump(tester, PlayedRounds().container);
 
       expect(find.text('Achievements'), findsOneWidget);
-      expect(find.text('NEXT UP'), findsOneWidget);
+      expect(find.text('Next up'), findsOneWidget);
       expect(find.text('0 of 8 earned'), findsOneWidget);
       // The shelf scrolls, so only the badges in view are built.
       expect(find.byIcon(Icons.lock_outline), findsWidgets);

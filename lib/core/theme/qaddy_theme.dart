@@ -80,8 +80,78 @@ abstract final class QaddyTheme {
       // there, see dashboard_screen.dart).
       appBarTheme: AppBarTheme(
         backgroundColor: colours.background,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         foregroundColor: colours.textPrimary,
+        centerTitle: false,
+        titleSpacing: QaddySpacing.standard.xs,
+        titleTextStyle: QaddyTypography.standard.h4.copyWith(
+          color: colours.textPrimary,
+          fontWeight: FontWeight.w600,
+        ),
+        iconTheme: IconThemeData(color: colours.textPrimary),
+      ),
+      // Calm press feedback: a soft, short ripple instead of Material's bold
+      // one, so a tap reads as a touch rather than an animation.
+      splashFactory: InkRipple.splashFactory,
+      splashColor: colours.textPrimary.withValues(alpha: 0.06),
+      highlightColor: colours.textPrimary.withValues(alpha: 0.04),
+      hoverColor: colours.textPrimary.withValues(alpha: 0.04),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: colours.accent,
+        selectionColor: colours.accent.withValues(alpha: 0.28),
+        selectionHandleColor: colours.accent,
+      ),
+      dividerTheme: DividerThemeData(
+        color: colours.divider,
+        thickness: 1,
+        space: 1,
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: colours.accent,
+        linearTrackColor: colours.surface2,
+        circularTrackColor: Colors.transparent,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: colours.surface1,
+        surfaceTintColor: Colors.transparent,
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.4),
+        textStyle: QaddyTypography.standard.body.copyWith(
+          color: colours.textPrimary,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(QaddyRadius.standard.medium),
+          side: BorderSide(color: colours.border),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: colours.surface1,
+        modalBackgroundColor: colours.surface1,
+        surfaceTintColor: Colors.transparent,
+        dragHandleColor: colours.divider,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(QaddyRadius.standard.extraLarge),
+          ),
+        ),
+      ),
+      tooltipTheme: TooltipThemeData(
+        decoration: BoxDecoration(
+          color: colours.surface2,
+          borderRadius: BorderRadius.circular(QaddyRadius.standard.small),
+          border: Border.all(color: colours.border),
+        ),
+        textStyle: QaddyTypography.standard.small.copyWith(
+          color: colours.textPrimary,
+        ),
+      ),
+      sliderTheme: SliderThemeData(
+        activeTrackColor: colours.accent,
+        inactiveTrackColor: colours.surface2,
+        thumbColor: colours.accent,
+        overlayColor: colours.accent.withValues(alpha: 0.12),
       ),
       // Material's default switch uses `primary` for its "on" track — dark
       // green, invisible on Dark Mode surfaces. Use the readable accent.
@@ -185,7 +255,16 @@ abstract final class QaddyTheme {
       bodyLarge: type.bodyLarge.copyWith(color: colours.textPrimary),
       bodyMedium: type.body.copyWith(color: colours.textSecondary),
       bodySmall: type.small.copyWith(color: colours.textSecondary),
+      titleMedium: type.bodyLarge.copyWith(
+        color: colours.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      titleSmall: type.body.copyWith(
+        color: colours.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
       labelLarge: type.button.copyWith(color: colours.textPrimary),
+      labelMedium: type.small.copyWith(color: colours.textSecondary),
       labelSmall: type.caption.copyWith(color: colours.textTertiary),
     );
   }

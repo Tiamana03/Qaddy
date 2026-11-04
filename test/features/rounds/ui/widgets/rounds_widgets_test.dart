@@ -196,7 +196,7 @@ void main() {
         _app(HoleBanner(hole: richmondHoles[6], total: 18)),
       );
 
-      expect(find.text('FRONT NINE · HOLE 7 OF 18'), findsOneWidget);
+      expect(find.text('Front nine · Hole 7 of 18'), findsOneWidget);
       expect(find.text('Par 4'), findsOneWidget);
       expect(find.text('364 m · SI 9'), findsOneWidget);
     });
@@ -208,7 +208,7 @@ void main() {
         _app(HoleBanner(hole: richmondHoles[11], total: 18)),
       );
 
-      expect(find.text('BACK NINE · HOLE 12 OF 18'), findsOneWidget);
+      expect(find.text('Back nine · Hole 12 of 18'), findsOneWidget);
       expect(find.text('Nearest the Pin on this hole'), findsOneWidget);
     });
   });

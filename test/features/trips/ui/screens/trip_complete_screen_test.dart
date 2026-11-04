@@ -28,7 +28,7 @@ void main() {
     await _pumpWithRouter(tester);
 
     expect(find.text("That's a wrap"), findsOneWidget);
-    expect(find.text('TRIP CHAMPION'), findsOneWidget);
+    expect(find.text('Trip Champion'), findsOneWidget);
     expect(find.text('Tiamana'), findsOneWidget);
     expect(find.text('Ben'), findsOneWidget);
     expect(find.text('Runner Up'), findsOneWidget);
@@ -64,7 +64,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("That's a wrap"), findsOneWidget);
-    expect(find.text('TRIP CHAMPION'), findsNothing);
+    expect(find.text('Trip Champion'), findsNothing);
     expect(find.text('The bill'), findsOneWidget);
   });
 

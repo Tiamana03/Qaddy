@@ -102,11 +102,11 @@ void main() {
     TripCountdown c(String value) => TripCountdown(value: value, label: '');
 
     test('builds anticipation as the trip nears', () {
-      expect(tripCountdownEyebrow(c('33')), 'NEXT TRIP');
-      expect(tripCountdownEyebrow(c('7')), 'GET READY');
-      expect(tripCountdownEyebrow(c('1')), 'GET READY');
-      expect(tripCountdownEyebrow(c('Today')), "IT'S TRIP DAY");
-      expect(tripCountdownEyebrow(c('Now')), 'LIVE NOW');
+      expect(tripCountdownEyebrow(c('33')), 'Next trip');
+      expect(tripCountdownEyebrow(c('7')), 'Get ready');
+      expect(tripCountdownEyebrow(c('1')), 'Get ready');
+      expect(tripCountdownEyebrow(c('Today')), "It's trip day");
+      expect(tripCountdownEyebrow(c('Now')), 'Live now');
     });
 
     test('only a close trip glows', () {

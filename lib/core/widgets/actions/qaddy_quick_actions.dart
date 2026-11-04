@@ -89,6 +89,10 @@ class _ActionTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: colours.card,
           borderRadius: borderRadius,
+          border: Border.all(
+            color: colours.border,
+            width: radius.borderWidthDefault,
+          ),
           boxShadow: shadows.medium,
         ),
         child: Material(
@@ -121,7 +125,7 @@ class _ActionTile extends StatelessWidget {
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
-                      style: typography.small.copyWith(
+                      style: typography.navigation.copyWith(
                         color: colours.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),

@@ -22,11 +22,11 @@ void main() {
       size: const Size(400, 2000),
     );
 
-    expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
+    expect(find.text('Sample round · First tee'), findsOneWidget);
     await _tap(tester, find.text('Start round'));
 
     // On the first tee, full screen.
-    expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+    expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
     expect(container.read(liveRoundProvider), isNotNull);
 
     // Birdie for the golfer, then play the rest of the course at par.
@@ -35,19 +35,19 @@ void main() {
     for (var hole = 1; hole < 18; hole++) {
       await _tap(tester, find.text('Next hole'));
     }
-    expect(find.text('BACK NINE · HOLE 18 OF 18'), findsOneWidget);
+    expect(find.text('Back nine · Hole 18 of 18'), findsOneWidget);
 
     await _tap(tester, find.text('Finish round'));
 
     // The celebration.
-    expect(find.textContaining('ROUND COMPLETE'), findsOneWidget);
-    expect(find.text('YOUR ROUND'), findsOneWidget);
+    expect(find.textContaining('Round complete'), findsOneWidget);
+    expect(find.text('Your round'), findsOneWidget);
     expect(container.read(liveRoundProvider), isNull);
     expect(container.read(completedRoundProvider)!.holesPlayed, 18);
 
     await _tap(tester, find.text('Back to Home'));
 
-    expect(find.text('YOUR GAME'), findsOneWidget);
+    expect(find.text('Your game'), findsOneWidget);
   });
 
   testWidgets('a round in progress can be left and returned to', (
@@ -64,11 +64,11 @@ void main() {
     // Back to the Rounds tab: it now offers to continue.
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('ROUND IN PROGRESS'), findsOneWidget);
+    expect(find.text('Round in progress'), findsWidgets);
     expect(find.text('Hole 2 of 18'), findsOneWidget);
 
     await _tap(tester, find.text('Continue round'));
-    expect(find.text('FRONT NINE · HOLE 2 OF 18'), findsOneWidget);
+    expect(find.text('Front nine · Hole 2 of 18'), findsOneWidget);
     expect(container.read(liveRoundProvider)!.currentHole, 1);
   });
 
@@ -76,9 +76,9 @@ void main() {
     await pumpApp(tester, location: '/home', size: const Size(400, 3400));
 
     await _tap(tester, find.text('Get ready'));
-    expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
+    expect(find.text('Sample round · First tee'), findsOneWidget);
 
     await _tap(tester, find.text('Start round'));
-    expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+    expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
   });
 }

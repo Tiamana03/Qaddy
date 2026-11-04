@@ -50,7 +50,7 @@ void main() {
     await _pump(tester);
 
     expect(find.text('All square'), findsOneWidget);
-    expect(find.textContaining('WAITING FOR THE FIRST HOLE'), findsOneWidget);
+    expect(find.textContaining('Waiting for the first hole'), findsOneWidget);
     expect(find.text('Not started'), findsNWidgets(3));
   });
 
@@ -67,7 +67,7 @@ void main() {
     );
 
     expect(find.text('Tom leads'), findsOneWidget);
-    expect(find.textContaining('AFTER 1 HOLE'), findsOneWidget);
+    expect(find.textContaining('After 1 hole'), findsOneWidget);
     expect(find.text('1 pt behind Ben'), findsOneWidget);
     // Tom first, then the others.
     expect(
@@ -102,7 +102,7 @@ void main() {
       },
     );
 
-    expect(find.textContaining('FINAL · 1 HOLES'), findsOneWidget);
+    expect(find.textContaining('Final · 1 holes'), findsOneWidget);
     expect(find.textContaining('leads'), findsNothing);
     expect(find.textContaining('win'), findsOneWidget);
   });

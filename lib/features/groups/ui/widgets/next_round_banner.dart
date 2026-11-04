@@ -63,10 +63,7 @@ class NextRoundBanner extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          QaddyEyebrow(
-            'SAMPLE ROUND · ${groupName.toUpperCase()}',
-            maxLines: 1,
-          ),
+          QaddyEyebrow('Sample round · $groupName', maxLines: 1),
           SizedBox(height: spacing.sm),
           FittedBox(
             fit: BoxFit.scaleDown,

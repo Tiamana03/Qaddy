@@ -43,15 +43,15 @@ TripCountdown tripCountdown(Trip trip, {DateTime? now}) {
 String tripCountdownEyebrow(TripCountdown countdown) {
   switch (countdown.value) {
     case 'Today':
-      return "IT'S TRIP DAY";
+      return "It's trip day";
     case 'Now':
-      return 'LIVE NOW';
+      return 'Live now';
   }
   final days = int.tryParse(countdown.value);
   if (days != null && days <= 7) {
-    return 'GET READY';
+    return 'Get ready';
   }
-  return 'NEXT TRIP';
+  return 'Next trip';
 }
 
 /// Whether the countdown is close enough to deserve a little glow (a week or

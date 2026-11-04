@@ -375,7 +375,7 @@ class _TripPreview extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const QaddyEyebrow('YOUR NEXT TRIP'),
+                      const QaddyEyebrow('Your next trip'),
                       SizedBox(height: spacing.sm),
                       line(
                         name.isEmpty ? 'Name your trip' : name,

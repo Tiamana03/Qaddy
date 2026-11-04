@@ -67,7 +67,7 @@ void main() {
       await _pump(tester);
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
-      expect(find.text('STARTER BAG'), findsOneWidget);
+      expect(find.text('Starter bag'), findsOneWidget);
       expect(find.text('14'), findsOneWidget);
       expect(find.text('clubs in\nthe bag'), findsOneWidget);
       expect(find.textContaining('Nicely spread.'), findsOneWidget);
@@ -100,7 +100,7 @@ void main() {
       }
       await tester.pumpAndSettle();
 
-      expect(find.text('YOUR BAG'), findsOneWidget);
+      expect(find.text('Your bag'), findsOneWidget);
       expect(find.textContaining('Starter distances'), findsNothing);
     });
 

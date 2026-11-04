@@ -95,9 +95,9 @@ void main() {
     testWidgets('has every section a golfer comes for', (tester) async {
       await _pump(tester);
 
-      expect(find.text('SAMPLE ROUND · NEXT ROUND'), findsOneWidget);
+      expect(find.text('Sample round · Next round'), findsOneWidget);
       expect(find.text('Start a round'), findsOneWidget);
-      expect(find.text('YOUR GAME'), findsOneWidget);
+      expect(find.text('Your game'), findsOneWidget);
       expect(find.text('From your sample mates'), findsOneWidget);
       expect(find.text('Your highlights'), findsOneWidget);
       // The old placeholder furniture is gone.
@@ -125,14 +125,14 @@ void main() {
       expect(find.text('Saturday, 8:20 AM'), findsOne);
       expect(find.text('21°C Sunny'), findsOneWidget);
       expect(find.text('Stableford'), findsOneWidget);
-      expect(find.text('18 holes'), findsOneWidget);
+      expect(find.text('18 holes'), findsNothing);
       expect(find.text('+3 more · 8 playing'), findsOneWidget);
     });
 
     testWidgets('changes its tune as the day gets closer', (tester) async {
       await _pump(tester, now: DateTime(2026, 11, 7, 7));
 
-      expect(find.text("SAMPLE ROUND · IT'S ROUND DAY"), findsOneWidget);
+      expect(find.text("Sample round · It's round day"), findsOneWidget);
       expect(find.text('Today'), findsOneWidget);
     });
 
@@ -232,7 +232,7 @@ void main() {
     testWidgets('the hero says so and offers to continue', (tester) async {
       await pumpLive(tester);
 
-      expect(find.text('ROUND IN PROGRESS'), findsOneWidget);
+      expect(find.text('Round in progress'), findsWidgets);
       expect(find.text('Hole 2 of 18'), findsOneWidget);
       expect(find.text('Continue round'), findsWidgets);
       expect(find.text('Get ready'), findsNothing);

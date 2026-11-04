@@ -121,10 +121,7 @@ class _Results extends ConsumerWidget {
       ),
       child: Column(
         children: <Widget>[
-          QaddyEyebrow(
-            'ROUND COMPLETE · ${round.course.toUpperCase()}',
-            maxLines: 1,
-          ),
+          QaddyEyebrow('Round complete · ${round.course}', maxLines: 1),
           SizedBox(height: spacing.lg),
           Icon(Icons.emoji_events, color: colours.gold, size: 56),
           SizedBox(height: spacing.md),
@@ -262,8 +259,8 @@ class _Unlocked extends StatelessWidget {
             children: <Widget>[
               QaddyEyebrow(
                 achievements.length == 1
-                    ? 'ACHIEVEMENT UNLOCKED'
-                    : 'ACHIEVEMENTS UNLOCKED',
+                    ? 'Achievement unlocked'
+                    : 'Achievements unlocked',
               ),
               SizedBox(height: spacing.md),
               for (final (index, achievement)
@@ -359,7 +356,7 @@ class _YourRound extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const QaddyEyebrow('YOUR ROUND'),
+          const QaddyEyebrow('Your round'),
           SizedBox(height: spacing.md),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,

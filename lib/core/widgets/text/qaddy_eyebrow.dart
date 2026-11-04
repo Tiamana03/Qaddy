@@ -1,17 +1,20 @@
-/// Qaddy's eyebrow: the small, spaced-out capitals above a headline
-/// ("NEXT ROUND", "YOUR GAME", "RIVALRY"). Every hero and card that opens with
-/// one uses this, so they read as the same family.
+/// Qaddy's eyebrow: the short label above a headline ("Next round",
+/// "Your game", "Season race"). Every hero and card that opens with one uses
+/// this, so they read as the same family.
+///
+/// It is written in natural sentence case at the `small` size: calm and
+/// confident rather than shouting in spaced capitals.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
-/// A short, spaced capital label in the premium gold (or [colour]).
+/// A short label in the premium gold (or [colour]).
 class QaddyEyebrow extends StatelessWidget {
   const QaddyEyebrow(this.text, {this.colour, this.maxLines, super.key});
 
-  /// The label. Write it in capitals.
+  /// The label, in sentence case ("Next round").
   final String text;
 
   /// The text colour. Defaults to the theme's gold.
@@ -30,10 +33,9 @@ class QaddyEyebrow extends StatelessWidget {
       text,
       maxLines: maxLines,
       overflow: maxLines == null ? null : TextOverflow.ellipsis,
-      style: typography.caption.copyWith(
-        color: colour ?? colours.gold,
+      style: typography.small.copyWith(
+        color: colour ?? colours.accent,
         fontWeight: FontWeight.w600,
-        letterSpacing: 1.5,
       ),
     );
   }

@@ -40,7 +40,7 @@ class HoleBanner extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
     final onGradient = theme.colorScheme.onPrimary;
 
-    final nine = hole.number <= total ~/ 2 ? 'FRONT NINE' : 'BACK NINE';
+    final nine = hole.number <= total ~/ 2 ? 'Front nine' : 'Back nine';
     final sideGames = <SideGame>[
       for (final game in upcomingRoundSideGames)
         if (game.hole == hole.number) game,
@@ -63,7 +63,7 @@ class HoleBanner extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              QaddyEyebrow('$nine · HOLE ${hole.number} OF $total'),
+              QaddyEyebrow('$nine · Hole ${hole.number} of $total'),
               SizedBox(height: spacing.sm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,

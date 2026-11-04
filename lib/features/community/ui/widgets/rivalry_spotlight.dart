@@ -149,7 +149,7 @@ class RivalrySpotlight extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              const Expanded(child: QaddyEyebrow('SAMPLE RIVALRY')),
+              const Expanded(child: QaddyEyebrow('Sample rivalry')),
               Text(
                 '${summary.rounds} rounds',
                 style: typography.small.copyWith(color: muted),

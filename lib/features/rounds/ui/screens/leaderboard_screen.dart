@@ -66,9 +66,7 @@ class LeaderboardScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            QaddyEyebrow(
-              '${round.format.toUpperCase()} · ${status.toUpperCase()}',
-            ),
+            QaddyEyebrow('${round.format} · $status'),
             SizedBox(height: spacing.sm),
             Text(
               played == 0

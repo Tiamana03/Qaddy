@@ -98,7 +98,7 @@ class PlayerCard extends StatelessWidget {
             ),
       child: Column(
         children: <Widget>[
-          const QaddyEyebrow('PLAYER CARD'),
+          const QaddyEyebrow('Player card'),
           SizedBox(height: spacing.lg),
           Container(
             width: 104,

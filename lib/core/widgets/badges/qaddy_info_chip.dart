@@ -38,8 +38,8 @@ class QaddyInfoChip extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: spacing.md,
-            vertical: spacing.xs + 2,
+            horizontal: spacing.sm + spacing.xs / 2,
+            vertical: spacing.xs,
           ),
           decoration: BoxDecoration(
             color: onGradient.withValues(alpha: 0.14),
@@ -49,14 +49,18 @@ class QaddyInfoChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(icon, size: 16, color: colours.gold),
+              Icon(icon, size: 14, color: colours.gold),
               SizedBox(width: spacing.xs),
               Flexible(
                 child: Text(
                   text,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: typography.small.copyWith(color: onGradient),
+                  style: typography.caption.copyWith(
+                    color: onGradient,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0,
+                  ),
                 ),
               ),
             ],

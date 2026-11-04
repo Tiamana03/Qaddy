@@ -51,12 +51,12 @@ void main() {
       await _pump(tester);
 
       expect(find.text('Rounds'), findsOneWidget);
-      expect(find.text('SAMPLE ROUND · FIRST TEE'), findsOneWidget);
+      expect(find.text('Sample round · First tee'), findsOneWidget);
       expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
       expect(find.text('21°C Sunny'), findsOneWidget);
       expect(find.text('Stableford'), findsOneWidget);
-      expect(find.text('18 holes'), findsOneWidget);
+      expect(find.text('18 holes'), findsNothing);
       expect(find.textContaining('1 playing'), findsOneWidget);
     });
 
@@ -174,7 +174,7 @@ void main() {
     ) async {
       await _pump(tester, before: startRound);
 
-      expect(find.text('ROUND IN PROGRESS'), findsOneWidget);
+      expect(find.text('Round in progress'), findsWidgets);
       expect(find.text('Hole 1 of 18'), findsOneWidget);
       expect(find.text('Continue round'), findsOneWidget);
       expect(find.text('Start round'), findsNothing);
@@ -200,8 +200,8 @@ void main() {
         },
       );
 
-      expect(find.textContaining('LEADERBOARD · AFTER 1 HOLE'), findsOneWidget);
-      await _tap(tester, find.textContaining('LEADERBOARD'));
+      expect(find.textContaining('Leaderboard · after 1 hole'), findsOneWidget);
+      await _tap(tester, find.textContaining('Leaderboard'));
       expect(find.text('Go: /rounds/leaderboard'), findsOneWidget);
     });
   });
@@ -222,10 +222,10 @@ void main() {
         },
       );
 
-      expect(find.text('LAST ROUND'), findsOneWidget);
+      expect(find.text('Last round'), findsOneWidget);
       expect(find.text('Start round'), findsOneWidget);
 
-      await _tap(tester, find.text('LAST ROUND'));
+      await _tap(tester, find.text('Last round'));
 
       expect(find.text('Go: /rounds/complete'), findsOneWidget);
     });

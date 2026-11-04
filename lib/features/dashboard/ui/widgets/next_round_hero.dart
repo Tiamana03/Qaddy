@@ -187,10 +187,10 @@ class NextRoundHero extends StatelessWidget {
         children: <Widget>[
           QaddyEyebrow(
             live != null
-                ? 'ROUND IN PROGRESS'
+                ? 'Round in progress'
                 : !planned
-                ? 'YOUR NEXT ROUND'
-                : 'SAMPLE ROUND · ${count?.eyebrow ?? 'NEXT ROUND'}',
+                ? 'Your next round'
+                : 'Sample round · ${count?.eyebrow ?? 'Next round'}',
             maxLines: 1,
           ),
           SizedBox(height: spacing.sm),
@@ -223,10 +223,11 @@ class NextRoundHero extends StatelessWidget {
                 icon: Icons.emoji_events_outlined,
                 text: round.format,
               ),
-              QaddyInfoChip(
-                icon: Icons.golf_course,
-                text: '${round.holes} holes',
-              ),
+              if (round.holes != 18)
+                QaddyInfoChip(
+                  icon: Icons.golf_course,
+                  text: '${round.holes} holes',
+                ),
             ],
           ),
           if (planned) ...<Widget>[

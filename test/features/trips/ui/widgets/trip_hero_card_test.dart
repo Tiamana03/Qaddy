@@ -53,7 +53,7 @@ void main() {
   testWidgets('shows the countdown and the trip facts', (tester) async {
     await _pump(tester, width: 400, onTap: () {});
 
-    expect(find.text('NEXT TRIP'), findsOneWidget);
+    expect(find.text('Next trip'), findsOneWidget);
     expect(find.text('33'), findsOneWidget);
     expect(find.text('days to go'), findsOneWidget);
     expect(find.text('Melbourne Golf Weekend'), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
   testWidgets('leads with what happens next', (tester) async {
     await _pump(tester, width: 400);
 
-    expect(find.text('UP NEXT'), findsOneWidget);
+    expect(find.text('Up next'), findsOneWidget);
     expect(find.text('Qantas QF431'), findsOneWidget);
     expect(find.text('Sat 28 Nov · 8:30 AM'), findsOneWidget);
   });
@@ -74,7 +74,7 @@ void main() {
   testWidgets('keeps the facts to four tiles', (tester) async {
     await _pump(tester, width: 400);
 
-    expect(find.text('FIRST TEE'), findsOneWidget);
+    expect(find.text('First tee'), findsOneWidget);
     expect(find.text('Kingston Heath'), findsOneWidget);
     expect(find.text('Sun 29 Nov · 8:10 AM'), findsOneWidget);
     // A flag stands in for the course's logo; the weather has its own icon.
@@ -82,17 +82,17 @@ void main() {
     expect(find.text('Partly Cloudy, 22°C'), findsOneWidget);
     expect(find.byIcon(Icons.wb_cloudy_outlined), findsOneWidget);
 
-    expect(find.text('NEXT TASK'), findsOneWidget);
+    expect(find.text('Next task'), findsOneWidget);
     expect(find.text('Reserve Sunday dinner'), findsOneWidget);
     expect(find.text('3 of 6 done'), findsOneWidget);
 
-    expect(find.text('MONEY'), findsOneWidget);
+    expect(find.text('Money'), findsOneWidget);
     expect(find.text(r'You owe Ben $730'), findsOneWidget);
     expect(find.text('Green fees — 3 rounds'), findsOneWidget);
     expect(find.text(r'52% paid · $5,540 to go'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsOneWidget);
 
-    expect(find.text('SQUAD'), findsOneWidget);
+    expect(find.text('Squad'), findsOneWidget);
     expect(find.text('8 going'), findsOneWidget);
     expect(find.text('1 invited'), findsOneWidget);
   });
@@ -150,8 +150,8 @@ void main() {
   testWidgets('builds anticipation as the trip gets close', (tester) async {
     await _pump(tester, width: 400, now: DateTime(2026, 11, 24));
 
-    expect(find.text('GET READY'), findsOneWidget);
-    expect(find.text('NEXT TRIP'), findsNothing);
+    expect(find.text('Get ready'), findsOneWidget);
+    expect(find.text('Next trip'), findsNothing);
     expect(find.text('4'), findsOneWidget);
   });
 
@@ -159,11 +159,11 @@ void main() {
     tester,
   ) async {
     await _pump(tester, width: 400, now: DateTime(2026, 11, 28, 6));
-    expect(find.text("IT'S TRIP DAY"), findsOneWidget);
+    expect(find.text("It's trip day"), findsOneWidget);
     expect(find.text('Today'), findsOneWidget);
 
     await _pump(tester, width: 400, now: DateTime(2026, 11, 29, 9));
-    expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
     expect(find.text('Now'), findsOneWidget);
   });
 
@@ -173,8 +173,8 @@ void main() {
     await _pump(tester, width: 400, withSnapshot: false);
 
     expect(find.text('Melbourne Golf Weekend'), findsOneWidget);
-    expect(find.text('FIRST TEE'), findsNothing);
-    expect(find.text('UP NEXT'), findsNothing);
+    expect(find.text('First tee'), findsNothing);
+    expect(find.text('Up next'), findsNothing);
     expect(find.byType(PlanningRing), findsNothing);
     expect(find.textContaining('going'), findsNothing);
     expect(find.text('View trip'), findsNothing);
@@ -193,12 +193,12 @@ void main() {
   ) async {
     await _pump(tester, width: 400);
     final mobileName = tester.getTopLeft(find.text('Melbourne Golf Weekend'));
-    final mobileFirstTee = tester.getTopLeft(find.text('FIRST TEE'));
+    final mobileFirstTee = tester.getTopLeft(find.text('First tee'));
     expect(mobileFirstTee.dy, greaterThan(mobileName.dy));
 
     await _pump(tester, width: 1200);
     final wideName = tester.getTopLeft(find.text('Melbourne Golf Weekend'));
-    final wideFirstTee = tester.getTopLeft(find.text('FIRST TEE'));
+    final wideFirstTee = tester.getTopLeft(find.text('First tee'));
     expect(wideFirstTee.dx, greaterThan(wideName.dx));
   });
 }

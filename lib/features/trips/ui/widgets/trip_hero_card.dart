@@ -305,11 +305,8 @@ class _Header extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'UP NEXT',
-                        style: typography.caption.copyWith(
-                          color: muted,
-                          letterSpacing: 1.2,
-                        ),
+                        'Up next',
+                        style: typography.caption.copyWith(color: muted),
                       ),
                       Text(
                         next.title,
@@ -484,7 +481,6 @@ class _Tile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: typography.caption.copyWith(
                     color: onGradient.withValues(alpha: 0.78),
-                    letterSpacing: 1,
                   ),
                 ),
               ),
@@ -515,7 +511,7 @@ class _FirstTeeTile extends StatelessWidget {
 
     return _Tile(
       icon: Icons.flag_outlined,
-      caption: 'FIRST TEE',
+      caption: 'First tee',
       onGradient: onGradient,
       children: <Widget>[
         Text(
@@ -571,7 +567,7 @@ class _TaskTile extends StatelessWidget {
 
     return _Tile(
       icon: Icons.checklist,
-      caption: next == null ? 'PLANNING' : 'NEXT TASK',
+      caption: next == null ? 'Planning' : 'Next task',
       onGradient: onGradient,
       children: <Widget>[
         Text(
@@ -611,7 +607,7 @@ class _MoneyTile extends StatelessWidget {
 
     return _Tile(
       icon: Icons.payments_outlined,
-      caption: 'MONEY',
+      caption: 'Money',
       onGradient: onGradient,
       children: <Widget>[
         Text(
@@ -676,7 +672,7 @@ class _SquadTile extends StatelessWidget {
 
     return _Tile(
       icon: Icons.groups_outlined,
-      caption: 'SQUAD',
+      caption: 'Squad',
       onGradient: onGradient,
       children: <Widget>[
         if (going > 0) ...<Widget>[

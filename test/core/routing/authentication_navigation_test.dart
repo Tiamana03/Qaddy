@@ -72,7 +72,7 @@ void main() {
 
     await _firstRun(tester, phone);
 
-    expect(find.text('YOUR GAME'), findsOneWidget);
+    expect(find.text('Your game'), findsOneWidget);
     expect(find.text('Amy'), findsWidgets);
     expect(find.text('Tiamana'), findsNothing);
     expect(phone.session.document, contains('"guest":true'));
@@ -91,7 +91,7 @@ void main() {
 
     expect(find.text('Score every round'), findsNothing);
     expect(find.text("Who's teeing off?"), findsNothing);
-    expect(find.text('YOUR GAME'), findsOneWidget);
+    expect(find.text('Your game'), findsOneWidget);
     expect(find.text('Amy'), findsWidgets);
   });
 

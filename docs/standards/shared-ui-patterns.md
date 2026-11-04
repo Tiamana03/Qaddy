@@ -15,7 +15,7 @@ Trips, Friends Home and the Dashboard are the Release Candidate reference screen
 | Pattern | Widget | Use it for |
 |---|---|---|
 | Hero card shell | `QaddyHeroCard` (`core/widgets/cards`) | The big gradient card at the top of a screen: rounded, shadowed, a tappable story and an optional footer for the main action. Friends' next round and rivalry, the Dashboard's next round. |
-| Eyebrow | `QaddyEyebrow` (`core/widgets/text`) | The small spaced capitals above a headline ("NEXT ROUND", "YOUR GAME"). |
+| Eyebrow | `QaddyEyebrow` (`core/widgets/text`) | The short label above a headline, in natural sentence case ("Next round", "Your game"): `small`, semibold, accent colour, no letter-spacing. |
 | Gold call to action | `QaddyGoldButton` (`core/widgets/buttons`) | The one bright "do this next" button on a hero, sheet or card. Once per surface. |
 | Everyday primary / secondary / tertiary | `QaddyPrimaryButton`, `QaddySecondaryButton`, `QaddyTertiaryButton` | Plain screens and forms. |
 | Icon badge | `QaddyIconBadge` (`core/widgets/badges`) | The tinted circle that says what a tile or row is about. |
@@ -77,3 +77,13 @@ When two sources disagree, the order is: **1.** the approved design system (toke
 - **Heroes:** facts under a headline are `QaddyInfoChip`s, which are frosted (blurred translucent wash with a hairline highlight).
 - **Motion:** use `QaddyMotion.standard` (`instant` 100, `fast` 150, `normal` 250, `slow` 400, `pageTransition` 300, `loading` 800) and its curves. No elastic or overshoot curves. Ambient loops longer than a second are the only literals allowed.
 - **Numerals:** use the statistics tokens (`statHoleNumber` for the hole number, `display` / `statLarge` for hero numbers); do not set `fontSize` by hand.
+
+# Feel rules (November 2026)
+
+The bar is "would this pass a design review at Apple?". If not, fix the shared component so every screen benefits.
+
+- **No artificial capitals.** Labels, eyebrows and captions are sentence case. Capitals are kept only for calendar abbreviations ("NOV") and short feature-label badges.
+- **Quiet labels.** The Sample badge is a small sentence-case pill; the Sample banner is a neutral card with a chevron, not a gold alert.
+- **One row of facts.** Hero chips are small and frosted; a value that is the default (18 holes) is not shown at all.
+- **Nothing looks like a Flutter default.** The theme styles the app bar (title, back, no tint), popup menus, bottom sheets, tooltips, progress, sliders, the text cursor and selection, dividers, and a soft ink ripple.
+- **Placeholders** for missing photography, logo and icons are listed in `docs/design/asset-register.md`; replace them there, not screen by screen.

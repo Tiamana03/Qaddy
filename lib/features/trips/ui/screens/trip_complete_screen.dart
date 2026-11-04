@@ -206,7 +206,7 @@ class _Champion extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     QaddyEyebrow(
-                      award.award.toUpperCase(),
+                      award.award,
                       colour: onGold.withValues(alpha: 0.8),
                     ),
                     SizedBox(height: spacing.xs),

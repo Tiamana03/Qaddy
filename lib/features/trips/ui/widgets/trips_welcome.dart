@@ -96,7 +96,7 @@ class TripsWelcome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const QaddyEyebrow('YOUR FIRST TRIP'),
+                    const QaddyEyebrow('Your first trip'),
                     SizedBox(height: spacing.sm),
                     Text(
                       'Plan your next golf trip',

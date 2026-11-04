@@ -45,7 +45,7 @@ class PlanningTimeline extends StatelessWidget {
   /// The days to draw, in order.
   final List<TimelineDay> days;
 
-  /// The next event still to come, which is highlighted as "NEXT".
+  /// The next event still to come, which is highlighted as "Next".
   final TimelineEvent? next;
 
   @override
@@ -276,11 +276,10 @@ class _EventRow extends StatelessWidget {
                                       bottom: spacing.xs,
                                     ),
                                     child: Text(
-                                      'NEXT',
+                                      'Next',
                                       style: typography.caption.copyWith(
                                         color: colours.accent,
                                         fontWeight: FontWeight.w700,
-                                        letterSpacing: 1.5,
                                       ),
                                     ),
                                   ),

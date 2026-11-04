@@ -129,7 +129,7 @@ class YourGameCard extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                const Expanded(child: QaddyEyebrow('YOUR GAME')),
+                const Expanded(child: QaddyEyebrow('Your game')),
                 Text(
                   'All stats',
                   style: typography.small.copyWith(color: colours.accent),

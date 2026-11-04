@@ -64,7 +64,7 @@ void main() {
     testWidgets('invites the group to the next round', (tester) async {
       await _pump(tester);
 
-      expect(find.text('SAMPLE ROUND · SATURDAY BOYS'), findsOneWidget);
+      expect(find.text('Sample round · Saturday Boys'), findsOneWidget);
       expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
     });
 
@@ -231,7 +231,7 @@ void main() {
       expect(find.text('6 mates'), findsOneWidget);
       expect(find.text('The table starts with a round'), findsOneWidget);
       expect(find.text('The squad'), findsNothing);
-      expect(find.text('NEXT ROUND · WEDNESDAY WARRIORS'), findsNothing);
+      expect(find.text('Next round · Wednesday Warriors'), findsNothing);
     });
 
     testWidgets('still lets the golfer start something', (tester) async {

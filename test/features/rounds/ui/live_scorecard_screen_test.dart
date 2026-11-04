@@ -77,7 +77,7 @@ void main() {
       await _pump(tester);
 
       expect(find.text('Richmond Golf Club'), findsOneWidget);
-      expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+      expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
       expect(find.text('Par 4'), findsOneWidget);
       expect(find.text('352 m · SI 11'), findsOneWidget);
       expect(find.bySemanticsLabel('Hole 5, not played yet'), findsOneWidget);
@@ -98,7 +98,7 @@ void main() {
       await _tap(tester, find.bySemanticsLabel('Hole 6, not played yet'));
 
       expect(container.read(liveRoundProvider)!.currentHole, 5);
-      expect(find.text('FRONT NINE · HOLE 6 OF 18'), findsOneWidget);
+      expect(find.text('Front nine · Hole 6 of 18'), findsOneWidget);
     });
   });
 
@@ -174,7 +174,7 @@ void main() {
       expect(round.grossAt('Tom', 0), 3);
       expect(round.grossAt('Ben', 0), 4);
       expect(find.text('Par 5'), findsOneWidget);
-      expect(find.textContaining('LEADERBOARD · AFTER 1 HOLE'), findsOneWidget);
+      expect(find.textContaining('Leaderboard · after 1 hole'), findsOneWidget);
     });
 
     testWidgets('the arrow goes back a hole, and not before the first', (
@@ -190,7 +190,7 @@ void main() {
       await _tap(tester, find.text('Next hole'));
       await _tap(tester, find.byTooltip('Previous hole'));
 
-      expect(find.text('FRONT NINE · HOLE 1 OF 18'), findsOneWidget);
+      expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
     });
 
     testWidgets('the last hole offers to finish instead', (tester) async {
@@ -200,7 +200,7 @@ void main() {
 
       expect(find.text('Next hole'), findsNothing);
       expect(find.text('Finish round'), findsOneWidget);
-      expect(find.text('BACK NINE · HOLE 18 OF 18'), findsOneWidget);
+      expect(find.text('Back nine · Hole 18 of 18'), findsOneWidget);
     });
 
     testWidgets('Finish round files the round and opens the results', (

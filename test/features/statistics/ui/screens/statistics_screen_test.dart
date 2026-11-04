@@ -82,7 +82,7 @@ void main() {
     testWidgets('tells the story of the round just played', (tester) async {
       await _pump(tester, h);
 
-      expect(find.text('YOUR GAME'), findsOneWidget);
+      expect(find.text('Your game'), findsOneWidget);
       expect(find.text('Stableford points\na round'), findsOneWidget);
       expect(find.text('1 round'), findsWidgets);
       expect(find.text('Handicap 8.4'), findsOneWidget);
@@ -111,8 +111,8 @@ void main() {
     ) async {
       await _pump(tester, h);
 
-      expect(find.text('YOUR FAVOURITE'), findsOneWidget);
-      expect(find.text('YOUR NEMESIS'), findsOneWidget);
+      expect(find.text('Your favourite'), findsOneWidget);
+      expect(find.text('Your nemesis'), findsOneWidget);
       expect(find.text('Hole 1'), findsOneWidget);
     });
 

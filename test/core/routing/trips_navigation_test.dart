@@ -56,6 +56,6 @@ void main() {
     await tester.tap(find.text('Return home'));
     await tester.pumpAndSettle();
 
-    expect(find.text('YOUR GAME'), findsOneWidget);
+    expect(find.text('Your game'), findsOneWidget);
   });
 }

@@ -56,7 +56,7 @@ void main() {
     tester,
   ) async {
     await _pump(tester, current: 2);
-    final colours = QaddyColours.dark;
+    const colours = QaddyColours.dark;
 
     Color? colourOf(String label) =>
         tester.widget<Text>(find.text(label)).style?.color;
@@ -67,7 +67,7 @@ void main() {
   });
 
   testWidgets('only the active item has the indicator', (tester) async {
-    await _pump(tester, current: 0);
+    await _pump(tester);
     await tester.pumpAndSettle();
 
     final indicators = tester.widgetList<AnimatedContainer>(

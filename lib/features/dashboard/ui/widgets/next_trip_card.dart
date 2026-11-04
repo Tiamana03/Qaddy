@@ -47,7 +47,7 @@ class NextTripCard extends StatelessWidget {
 
     final countdown = planned == null ? null : tripCountdown(planned, now: now);
     final eyebrow = countdown == null
-        ? 'NEXT TRIP'
+        ? 'Next trip'
         : tripCountdownEyebrow(countdown);
     final title = planned?.name ?? 'Plan your next golf trip';
     final detail = planned == null

@@ -675,10 +675,10 @@ void main() {
         ],
       );
 
-      expect(find.text('NEXT'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
       // At 7:30 on the Sunday the next thing is the first tee, not the flight.
       final next = find.ancestor(
-        of: find.text('NEXT'),
+        of: find.text('Next'),
         matching: find.byType(Material),
       );
       expect(
@@ -698,7 +698,7 @@ void main() {
         overrides: [tripsClockProvider.overrideWithValue(() => DateTime(2027))],
       );
 
-      expect(find.text('NEXT'), findsNothing);
+      expect(find.text('Next'), findsNothing);
     });
 
     testWidgets('the timeline lists each day with weather and events', (

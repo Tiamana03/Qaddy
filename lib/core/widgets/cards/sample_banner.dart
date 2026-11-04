@@ -37,7 +37,7 @@ class SampleBanner extends StatelessWidget {
       excludeSemantics: true,
       label: 'Sample Clubhouse. $message Opens its settings.',
       child: Material(
-        color: colours.accent.withValues(alpha: 0.10),
+        color: colours.surface1,
         borderRadius: BorderRadius.circular(radius.large),
         child: InkWell(
           borderRadius: BorderRadius.circular(radius.large),
@@ -46,12 +46,15 @@ class SampleBanner extends StatelessWidget {
             padding: EdgeInsets.all(spacing.md),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(radius.large),
-              border: Border.all(color: colours.accent.withValues(alpha: 0.35)),
+              border: Border.all(
+                color: colours.border,
+                width: radius.borderWidthDefault,
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Icon(Icons.theaters_outlined, size: 20, color: colours.accent),
+                Icon(Icons.theaters_outlined, size: 18, color: colours.accent),
                 SizedBox(width: spacing.md),
                 Expanded(
                   child: Column(
@@ -59,9 +62,9 @@ class SampleBanner extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         'Sample Clubhouse',
-                        style: typography.body.copyWith(
+                        style: typography.small.copyWith(
                           color: colours.textPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       SizedBox(height: spacing.xs),
@@ -74,13 +77,18 @@ class SampleBanner extends StatelessWidget {
                       SizedBox(height: spacing.xs),
                       Text(
                         'Keep it, edit it or remove it in Settings',
-                        style: typography.small.copyWith(
-                          color: colours.accent,
-                          fontWeight: FontWeight.w600,
+                        style: typography.caption.copyWith(
+                          color: colours.textTertiary,
                         ),
                       ),
                     ],
                   ),
+                ),
+                SizedBox(width: spacing.sm),
+                Icon(
+                  Icons.chevron_right,
+                  size: 20,
+                  color: colours.textTertiary,
                 ),
               ],
             ),

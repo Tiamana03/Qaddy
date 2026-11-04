@@ -54,7 +54,7 @@ class RoundCountdown {
   /// What it counts: "days to tee-off".
   final String label;
 
-  /// The line above: "NEXT ROUND", "GET READY" or "IT'S ROUND DAY".
+  /// The line above: "Next round", "Get ready" or "It's round day".
   final String eyebrow;
 }
 
@@ -69,20 +69,20 @@ RoundCountdown? roundCountdown(DateTime now, String weekdayName) {
     return const RoundCountdown(
       value: 'Today',
       label: 'you tee off',
-      eyebrow: "IT'S ROUND DAY",
+      eyebrow: "It's round day",
     );
   }
   if (days == 1) {
     return const RoundCountdown(
       value: '1',
       label: 'day to tee-off',
-      eyebrow: 'GET READY',
+      eyebrow: 'Get ready',
     );
   }
   return RoundCountdown(
     value: '$days',
     label: 'days to tee-off',
-    eyebrow: days <= 3 ? 'GET READY' : 'NEXT ROUND',
+    eyebrow: days <= 3 ? 'Get ready' : 'Next round',
   );
 }
 

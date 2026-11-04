@@ -17,6 +17,6 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('YOUR GAME'), findsOneWidget);
+    expect(find.text('Your game'), findsOneWidget);
   });
 }

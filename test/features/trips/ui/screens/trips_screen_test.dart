@@ -58,7 +58,7 @@ void main() {
     expect(find.byType(QaddyScaffold), findsOneWidget);
 
     // Hero: the next trip, with its countdown.
-    expect(find.text('NEXT TRIP'), findsOneWidget);
+    expect(find.text('Next trip'), findsOneWidget);
     expect(find.text('33'), findsOneWidget);
     expect(find.text('days to go'), findsOneWidget);
     expect(find.text('Melbourne Golf Weekend'), findsOneWidget);
@@ -160,7 +160,7 @@ void main() {
     expect(find.text('Plan every day'), findsOneWidget);
     expect(find.text('Split costs fairly'), findsOneWidget);
     expect(find.text('Create your first trip'), findsOneWidget);
-    expect(find.text('NEXT TRIP'), findsNothing);
+    expect(find.text('Next trip'), findsNothing);
     expect(find.text('Upcoming trips'), findsNothing);
     expect(find.text('Past trips'), findsNothing);
   });

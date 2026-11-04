@@ -60,7 +60,7 @@ class StandingsPreview extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: QaddyEyebrow(
-                    'LEADERBOARD · AFTER $played ${unit.toUpperCase()}',
+                    'Leaderboard · after $played $unit',
                     maxLines: 1,
                   ),
                 ),

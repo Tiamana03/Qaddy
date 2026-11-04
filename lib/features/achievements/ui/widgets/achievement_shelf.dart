@@ -148,7 +148,7 @@ class AchievementShelf extends StatelessWidget {
           else ...<Widget>[
             Row(
               children: <Widget>[
-                const Expanded(child: QaddyEyebrow('NEXT UP')),
+                const Expanded(child: QaddyEyebrow('Next up')),
                 Text(
                   '$earned of ${achievements.length} earned',
                   style: typography.small.copyWith(

@@ -72,7 +72,7 @@ void main() {
     await _pump(tester);
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('ROUND COMPLETE'), findsOneWidget);
+    expect(find.textContaining('Round complete'), findsOneWidget);
     expect(find.byIcon(Icons.emoji_events), findsWidgets);
     // Birdie, par, bogey = 3 + 2 + 1 points; Tom and Ben get 2 each hole
     // (Ben has a shot on SI 11 hole 1, so 3).
@@ -85,7 +85,7 @@ void main() {
     await _pump(tester);
     await tester.pumpAndSettle();
 
-    expect(find.text('YOUR ROUND'), findsOneWidget);
+    expect(find.text('Your round'), findsOneWidget);
     expect(find.text('Birdies or better'), findsOneWidget);
     expect(find.text('Pars'), findsOneWidget);
     expect(find.text('Bogeys or worse'), findsOneWidget);
@@ -174,7 +174,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // A first round ever: First Round (and a win against level partners).
-    expect(find.textContaining('UNLOCKED'), findsOneWidget);
+    expect(find.textContaining('unlocked'), findsOneWidget);
     expect(find.text('First Round'), findsOneWidget);
     expect(find.text('Finish your first round'), findsOneWidget);
   });
@@ -196,8 +196,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // The second round earns nothing new.
-    expect(find.text('ACHIEVEMENTS UNLOCKED'), findsNothing);
-    expect(find.text('ACHIEVEMENT UNLOCKED'), findsNothing);
+    expect(find.text('Achievements unlocked'), findsNothing);
+    expect(find.text('Achievement unlocked'), findsNothing);
   });
 
   testWidgets('last place gets a good-natured wooden spoon', (tester) async {

@@ -78,7 +78,7 @@ class SeasonRaceCard extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                const Expanded(child: QaddyEyebrow('SEASON RACE')),
+                const Expanded(child: QaddyEyebrow('Season race')),
                 Text(
                   race.roundsLeft,
                   style: typography.small.copyWith(

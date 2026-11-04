@@ -81,7 +81,7 @@ void main() {
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('Friends'), findsOneWidget);
       expect(find.text('Your squad'), findsOneWidget);
-      expect(find.text('SAMPLE RIVALRY'), findsOneWidget);
+      expect(find.text('Sample rivalry'), findsOneWidget);
       expect(find.text('Latest from mates'), findsOneWidget);
       expect(find.text('Your clubs'), findsOneWidget);
     });
@@ -435,7 +435,7 @@ void main() {
       await _pump(tester);
       await tester.pumpAndSettle();
 
-      expect(find.text('SEASON RACE'), findsOneWidget);
+      expect(find.text('Season race'), findsOneWidget);
       for (final name in <String>['Luke', 'Tom', 'Nick']) {
         expect(find.text(name), findsWidgets, reason: name);
       }

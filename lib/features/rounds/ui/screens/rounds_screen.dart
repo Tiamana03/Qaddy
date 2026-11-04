@@ -132,7 +132,7 @@ class _SetupHero extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           QaddyEyebrow(
-            upcomingRound.planned ? 'SAMPLE ROUND · FIRST TEE' : 'YOUR ROUND',
+            upcomingRound.planned ? 'Sample round · First tee' : 'Your round',
           ),
           SizedBox(height: spacing.sm),
           FittedBox(
@@ -164,10 +164,11 @@ class _SetupHero extends ConsumerWidget {
                 icon: Icons.emoji_events_outlined,
                 text: upcomingRound.format,
               ),
-              QaddyInfoChip(
-                icon: Icons.golf_course,
-                text: '${upcomingRound.holes} holes',
-              ),
+              if (upcomingRound.holes != 18)
+                QaddyInfoChip(
+                  icon: Icons.golf_course,
+                  text: '${upcomingRound.holes} holes',
+                ),
             ],
           ),
           SizedBox(height: spacing.lg),
@@ -229,7 +230,7 @@ class _LiveHero extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const QaddyEyebrow('ROUND IN PROGRESS'),
+          const QaddyEyebrow('Round in progress'),
           SizedBox(height: spacing.sm),
           Text(
             'Hole ${round.currentHole + 1} of ${round.holes.length}',
@@ -297,7 +298,7 @@ class _LastRound extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const QaddyEyebrow('LAST ROUND'),
+                  const QaddyEyebrow('Last round'),
                   SizedBox(height: spacing.xs),
                   Text(
                     '$headline · ${top.points} pts',
