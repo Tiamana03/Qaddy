@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -89,7 +90,7 @@ class NotificationsScreen extends ConsumerWidget {
             ),
             SizedBox(height: spacing.xs),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
+              duration: QaddyMotion.standard.fast,
               child: Text(
                 pulse,
                 key: ValueKey<String>(pulse),
@@ -178,7 +179,7 @@ class _NotificationTile extends StatelessWidget {
           '${unread ? 'New. ' : ''}${item.message}. ${item.detail ?? ''} '
           '${item.when ?? ''}. Opens it.',
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
+        duration: QaddyMotion.standard.pageTransition,
         opacity: unread ? 1 : 0.72,
         child: QaddyCard(
           onTap: onTap,
@@ -229,7 +230,7 @@ class _NotificationTile extends StatelessWidget {
                     ),
                   SizedBox(height: spacing.xs),
                   AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
+                    duration: QaddyMotion.standard.normal,
                     width: 10,
                     height: 10,
                     decoration: BoxDecoration(

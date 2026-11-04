@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -58,8 +59,8 @@ class ScoreMixBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius.large),
               child: TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: animate ? 0 : 1, end: 1),
-                duration: const Duration(milliseconds: 900),
-                curve: Curves.easeOutCubic,
+                duration: QaddyMotion.standard.loading,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, t, _) => Align(
                   alignment: Alignment.centerLeft,
                   child: FractionallySizedBox(

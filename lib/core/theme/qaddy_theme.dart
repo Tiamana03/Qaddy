@@ -64,6 +64,7 @@ abstract final class QaddyTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: QaddyTypography.fontFamily,
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: colours.background,

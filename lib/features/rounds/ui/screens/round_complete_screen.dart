@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -369,7 +370,7 @@ class _YourRound extends StatelessWidget {
                   end: 1,
                 ),
                 duration: const Duration(milliseconds: 1200),
-                curve: Curves.easeOutCubic,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, t, _) => Text(
                   '${(standing.points * t).round()}',
                   style: typography.display.copyWith(

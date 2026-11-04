@@ -130,7 +130,9 @@ class _QaddyChip extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
-    final foreground = selected ? colours.accent : colours.textSecondary;
+    // The Buttons Library's Filter Chip: a green outline and a check, with
+    // primary-weight text, when selected.
+    final foreground = selected ? colours.textPrimary : colours.textSecondary;
     void tap() {
       QaddyHaptics.selection();
       onTap();
@@ -143,7 +145,9 @@ class _QaddyChip extends StatelessWidget {
       excludeSemantics: true,
       onTap: tap,
       child: Material(
-        color: selected ? colours.surface2 : Colors.transparent,
+        color: selected
+            ? colours.secondary.withValues(alpha: 0.24)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(radius.large),
         child: InkWell(
           borderRadius: BorderRadius.circular(radius.large),
@@ -155,7 +159,10 @@ class _QaddyChip extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(radius.large),
               border: Border.all(
-                color: selected ? colours.accent : colours.border,
+                color: selected ? colours.secondary : colours.border,
+                width: selected
+                    ? radius.borderWidthFocused
+                    : radius.borderWidthDefault,
               ),
             ),
             child: Row(

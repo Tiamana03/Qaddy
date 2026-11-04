@@ -1,9 +1,9 @@
 // Verifies the real app router wires the full Trips feature together:
 // Trips -> Trip Details -> a sub-screen -> back to Trip Details, using the
 // actual GoRouter configuration (not a test-only stub).
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/widgets/navigation/qaddy_bottom_nav.dart';
 import 'package:qaddy/main.dart';
 
 void main() {
@@ -11,7 +11,12 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.card_travel));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(QaddyBottomNav),
+        matching: find.text('Trips'),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Melbourne Golf Weekend'));
     await tester.pumpAndSettle();
@@ -33,7 +38,12 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.card_travel));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(QaddyBottomNav),
+        matching: find.text('Trips'),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Melbourne Golf Weekend'));
     await tester.pumpAndSettle();

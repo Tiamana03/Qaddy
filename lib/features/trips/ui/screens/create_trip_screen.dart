@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
@@ -352,8 +353,8 @@ class _TripPreview extends StatelessWidget {
           child: AnimatedContainer(
             duration: MediaQuery.disableAnimationsOf(context)
                 ? Duration.zero
-                : const Duration(milliseconds: 350),
-            curve: Curves.easeOut,
+                : QaddyMotion.standard.pageTransition,
+            curve: QaddyMotion.standard.enter,
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: tripCoverGradient(colours, cover),

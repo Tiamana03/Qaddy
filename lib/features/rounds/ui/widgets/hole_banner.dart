@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -70,7 +71,7 @@ class HoleBanner extends StatelessWidget {
                   AnimatedSwitcher(
                     duration: MediaQuery.disableAnimationsOf(context)
                         ? Duration.zero
-                        : const Duration(milliseconds: 250),
+                        : QaddyMotion.standard.normal,
                     transitionBuilder: (child, animation) => FadeTransition(
                       opacity: animation,
                       child: ScaleTransition(
@@ -84,9 +85,8 @@ class HoleBanner extends StatelessWidget {
                     child: Text(
                       '${hole.number}',
                       key: ValueKey<int>(hole.number),
-                      style: typography.display.copyWith(
+                      style: typography.statHoleNumber.copyWith(
                         color: colours.gold,
-                        fontSize: 72,
                         height: 1,
                         fontFeatures: const <FontFeature>[
                           FontFeature.tabularFigures(),

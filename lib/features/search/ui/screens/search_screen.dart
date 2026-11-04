@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -91,7 +92,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             SizedBox(height: spacing.xs),
             AnimatedSwitcher(
-              duration: const Duration(milliseconds: 150),
+              duration: QaddyMotion.standard.fast,
               child: Text(
                 summary,
                 key: ValueKey<String>(summary),

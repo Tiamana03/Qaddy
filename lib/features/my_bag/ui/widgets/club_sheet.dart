@@ -4,6 +4,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -247,7 +248,7 @@ class _ClubSheetState extends ConsumerState<ClubSheet> {
                         child: Padding(
                           padding: EdgeInsets.all(spacing.xs),
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 150),
+                            duration: QaddyMotion.standard.fast,
                             height: 44,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(

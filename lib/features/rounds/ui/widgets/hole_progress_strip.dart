@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -68,8 +69,8 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
     if (animate && !MediaQuery.disableAnimationsOf(context)) {
       _controller.animateTo(
         offset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+        duration: QaddyMotion.standard.pageTransition,
+        curve: QaddyMotion.standard.enter,
       );
     } else {
       _controller.jumpTo(offset);
@@ -126,7 +127,7 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
               child: AnimatedContainer(
                 duration: MediaQuery.disableAnimationsOf(context)
                     ? Duration.zero
-                    : const Duration(milliseconds: 200),
+                    : QaddyMotion.standard.fast,
                 width: _size,
                 height: _size,
                 alignment: Alignment.center,

@@ -7,6 +7,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -109,10 +110,8 @@ class _InviteFriendsScreenState extends ConsumerState<InviteFriendsScreen> {
             // The button arrives only once there is someone to invite, so the
             // screen never shows a dead, greyed-out action.
             AnimatedSize(
-              duration: animate
-                  ? const Duration(milliseconds: 250)
-                  : Duration.zero,
-              curve: Curves.easeOut,
+              duration: animate ? QaddyMotion.standard.normal : Duration.zero,
+              curve: QaddyMotion.standard.enter,
               alignment: Alignment.topCenter,
               child: _selected.isEmpty
                   ? const SizedBox(width: double.infinity)

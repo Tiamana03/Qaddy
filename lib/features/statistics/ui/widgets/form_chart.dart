@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -54,7 +55,7 @@ class FormChart extends StatelessWidget {
                   child: TweenAnimationBuilder<double>(
                     tween: Tween<double>(begin: animate ? 0 : 1, end: 1),
                     duration: Duration(milliseconds: 600 + index * 70),
-                    curve: Curves.easeOutCubic,
+                    curve: QaddyMotion.standard.enter,
                     builder: (context, t, _) {
                       final latest = index == rounds.length - 1;
                       final height = (round.pointsPer18 / top) * _barArea * t;

@@ -7,6 +7,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
@@ -31,6 +32,12 @@ class QaddyCard extends StatelessWidget {
     final shadows = theme.extension<QaddyShadows>()!;
 
     final borderRadius = BorderRadius.circular(radius.large);
+    // The Cards Library's hairline outline: what separates a card from the
+    // page on a dark surface, where a shadow alone barely reads.
+    final hairline = Border.all(
+      color: colours.border,
+      width: radius.borderWidthDefault,
+    );
     final padding = EdgeInsets.all(spacing.cardPadding);
 
     if (onTap == null) {
@@ -39,6 +46,7 @@ class QaddyCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colours.card,
           borderRadius: borderRadius,
+          border: hairline,
           boxShadow: shadows.medium,
         ),
         child: child,
@@ -55,7 +63,13 @@ class QaddyCard extends StatelessWidget {
         ),
         child: Material(
           color: colours.card,
-          borderRadius: borderRadius,
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius,
+            side: BorderSide(
+              color: colours.border,
+              width: radius.borderWidthDefault,
+            ),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
@@ -98,8 +112,8 @@ class _PressScaleState extends State<_PressScale> {
       onPointerCancel: (_) => _set(pressed: false),
       child: AnimatedScale(
         scale: _pressed ? 0.98 : 1,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
+        duration: QaddyMotion.standard.instant,
+        curve: QaddyMotion.standard.enter,
         child: widget.child,
       ),
     );

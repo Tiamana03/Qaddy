@@ -40,7 +40,9 @@ class QaddyTypography extends ThemeExtension<QaddyTypography> {
     required this.statDistanceLong,
   });
 
-  static const String _fontFamily = 'Inter';
+  /// The typeface every style uses (bundled; see pubspec.yaml).
+  static const String fontFamily = 'Inter';
+  static const String _fontFamily = fontFamily;
 
   /// The single instance used by both `QaddyTheme.light` and
   /// `QaddyTheme.dark` — typography does not vary by theme.

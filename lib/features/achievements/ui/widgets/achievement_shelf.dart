@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -175,8 +176,8 @@ class AchievementShelf extends StatelessWidget {
                       : 0,
                   end: next.fraction,
                 ),
-                duration: const Duration(milliseconds: 700),
-                curve: Curves.easeOutCubic,
+                duration: QaddyMotion.standard.loading,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, value, _) => LinearProgressIndicator(
                   value: value,
                   minHeight: 8,

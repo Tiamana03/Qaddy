@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -102,8 +103,8 @@ class RivalryStrip extends StatelessWidget {
                   begin: animate ? 0.5 : summary.youShare,
                   end: summary.youShare,
                 ),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeOutCubic,
+                duration: QaddyMotion.standard.loading,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, share, _) => SizedBox(
                   height: 8,
                   child: Row(

@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/routing/navigation_shell.dart';
 import 'package:qaddy/core/routing/route_names.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/features/authentication/ui/screens/golfer_setup_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/login_screen.dart';
 import 'package:qaddy/features/authentication/ui/screens/onboarding_screen.dart';
@@ -455,10 +456,13 @@ CustomTransitionPage<void> _fadePage(GoRouterState state, Widget child) =>
     CustomTransitionPage<void>(
       key: state.pageKey,
       child: child,
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: QaddyMotion.standard.slow,
       transitionsBuilder: (context, animation, secondaryAnimation, child) =>
           FadeTransition(
-            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: QaddyMotion.standard.enter,
+            ),
             child: child,
           ),
     );

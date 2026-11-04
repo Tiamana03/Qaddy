@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -242,8 +243,8 @@ class _Requests extends StatelessWidget {
     return AnimatedSize(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
-          : const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
+          : QaddyMotion.standard.pageTransition,
+      curve: QaddyMotion.standard.enter,
       alignment: Alignment.topCenter,
       child: Column(
         children: <Widget>[

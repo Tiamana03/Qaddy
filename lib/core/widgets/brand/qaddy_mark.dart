@@ -5,6 +5,7 @@ library;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 
 /// The Qaddy mark, [size] across. When [animate] is true (and the platform has
@@ -25,7 +26,7 @@ class QaddyMark extends StatelessWidget {
     final animated = animate && !MediaQuery.disableAnimationsOf(context);
 
     Widget mark(double t) {
-      final settle = Curves.easeOutBack.transform(
+      final settle = QaddyMotion.standard.enter.transform(
         ((t - 0.35) / 0.65).clamp(0.0, 1.0),
       );
       return Semantics(
@@ -46,7 +47,9 @@ class QaddyMark extends StatelessWidget {
             ),
             child: CustomPaint(
               painter: _RingPainter(
-                progress: Curves.easeOutCubic.transform(t.clamp(0.0, 1.0)),
+                progress: QaddyMotion.standard.enter.transform(
+                  t.clamp(0.0, 1.0),
+                ),
                 colour: colours.gold,
                 width: size * 0.05,
               ),

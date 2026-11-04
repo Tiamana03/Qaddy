@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -98,8 +99,8 @@ class NextRoundHero extends StatelessWidget {
               // The figure counts up from nothing, so the card greets the
               // golfer with a little movement. A word ("Today") shrinks to
               // fit rather than crowding out its caption.
-              Flexible(
-                flex: 2,
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: spacing.hero * 2),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
@@ -108,13 +109,12 @@ class NextRoundHero extends StatelessWidget {
                       begin: animate && figure != null ? 0 : 1,
                       end: 1,
                     ),
-                    duration: const Duration(milliseconds: 800),
-                    curve: Curves.easeOutCubic,
+                    duration: QaddyMotion.standard.loading,
+                    curve: QaddyMotion.standard.enter,
                     builder: (context, t, _) => Text(
                       figure == null ? count.value : '${countedUp(figure, t)}',
                       style: typography.display.copyWith(
                         color: onGradient,
-                        fontSize: 64,
                         fontFeatures: const <FontFeature>[
                           FontFeature.tabularFigures(),
                         ],
@@ -125,7 +125,6 @@ class NextRoundHero extends StatelessWidget {
               ),
               SizedBox(width: spacing.sm),
               Expanded(
-                flex: 3,
                 child: Padding(
                   padding: EdgeInsets.only(bottom: spacing.sm),
                   child: Text(
@@ -198,13 +197,18 @@ class NextRoundHero extends StatelessWidget {
           headline,
           SizedBox(height: spacing.xs),
           Text(
-            planned
-                ? '${round.course} · ${round.date}, ${round.teeTime}'
-                : round.course,
+            round.course,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: typography.body.copyWith(color: muted),
           ),
+          if (planned)
+            Text(
+              '${round.date}, ${round.teeTime}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: typography.body.copyWith(color: muted),
+            ),
           SizedBox(height: spacing.lg),
           Wrap(
             spacing: spacing.sm,

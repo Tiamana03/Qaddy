@@ -4,6 +4,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -55,8 +56,8 @@ class TripSetupCard extends StatelessWidget {
               tween: Tween<double>(begin: 0, end: done / steps.length),
               duration: MediaQuery.disableAnimationsOf(context)
                   ? Duration.zero
-                  : const Duration(milliseconds: 700),
-              curve: Curves.easeOutCubic,
+                  : QaddyMotion.standard.loading,
+              curve: QaddyMotion.standard.enter,
               builder: (context, value, _) => LinearProgressIndicator(
                 value: value,
                 minHeight: 6,

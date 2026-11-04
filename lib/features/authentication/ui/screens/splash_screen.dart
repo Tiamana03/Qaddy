@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -23,7 +24,7 @@ import 'package:qaddy/features/authentication/ui/widgets/launch_scaffold.dart';
 const Duration splashDuration = Duration(milliseconds: 1900);
 
 /// How long it is shown when the golfer has asked for reduced motion.
-const Duration splashReducedMotionDuration = Duration(milliseconds: 600);
+final Duration splashReducedMotionDuration = QaddyMotion.standard.loading;
 
 /// Splash (route `/`).
 class SplashScreen extends ConsumerStatefulWidget {
@@ -86,7 +87,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 curve: Interval(
                   delayMs / (700 + delayMs),
                   1,
-                  curve: Curves.easeOut,
+                  curve: QaddyMotion.standard.enter,
                 ),
                 builder: (context, t, child) => Opacity(
                   opacity: t,

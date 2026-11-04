@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/ui/screens/search_friends_screen.dart';
 
@@ -25,8 +26,8 @@ void main() {
   ) async {
     final c = await pumpFriends(tester, const SearchFriendsScreen());
 
-    await tester.ensureVisible(find.byType(FilledButton));
-    await tester.tap(find.byType(FilledButton));
+    await tester.ensureVisible(find.byType(QaddyGoldButton));
+    await tester.tap(find.byType(QaddyGoldButton));
     await tester.pumpAndSettle();
 
     final sent = shareOf(c).shared.single;

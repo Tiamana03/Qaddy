@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -183,8 +184,8 @@ class StandingRow extends StatelessWidget {
                         begin: animate ? 0 : share,
                         end: share,
                       ),
-                      duration: const Duration(milliseconds: 700),
-                      curve: Curves.easeOutCubic,
+                      duration: QaddyMotion.standard.loading,
+                      curve: QaddyMotion.standard.enter,
                       builder: (context, value, _) => FractionallySizedBox(
                         widthFactor: value,
                         child: Container(

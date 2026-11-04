@@ -32,13 +32,10 @@ Future<void> _enter(WidgetTester tester, String label, String text) async {
 
 Future<void> _confirmDelete(WidgetTester tester) async {
   await _tapText(tester, 'Delete');
-  expect(find.byType(AlertDialog), findsOneWidget);
+  expect(find.byType(Dialog), findsOneWidget);
   // The dialog's own destructive button, not the page's.
   await tester.tap(
-    find.descendant(
-      of: find.byType(AlertDialog),
-      matching: find.text('Delete'),
-    ),
+    find.descendant(of: find.byType(Dialog), matching: find.text('Delete')),
   );
   await tester.pumpAndSettle();
 }

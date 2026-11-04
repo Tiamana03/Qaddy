@@ -12,6 +12,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -158,13 +159,12 @@ class _Hero extends StatelessWidget {
                   begin: animate ? 0 : count.toDouble(),
                   end: count.toDouble(),
                 ),
-                duration: const Duration(milliseconds: 800),
-                curve: Curves.easeOutCubic,
+                duration: QaddyMotion.standard.loading,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, value, _) => Text(
                   '${value.round()}',
                   style: typography.display.copyWith(
                     color: onGradient,
-                    fontSize: 72,
                     height: 1,
                     fontFeatures: const <FontFeature>[
                       FontFeature.tabularFigures(),

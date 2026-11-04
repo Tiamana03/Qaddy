@@ -5,12 +5,13 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
-import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/sample_badge.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/features/community/logic/friend_insights.dart';
 import 'package:qaddy/features/community/models/friend_request.dart';
@@ -41,7 +42,6 @@ class FriendRequestRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
 
@@ -153,15 +153,8 @@ class FriendRequestRow extends ConsumerWidget {
               children: <Widget>[
                 Expanded(
                   flex: 3,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colours.accent,
-                      foregroundColor: colours.background,
-                      minimumSize: Size.fromHeight(spacing.display),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(radius.medium),
-                      ),
-                    ),
+                  child: QaddyGoldButton(
+                    label: 'Accept',
                     onPressed: () {
                       QaddyHaptics.success();
                       controller.acceptRequest(friend.id);
@@ -170,25 +163,13 @@ class FriendRequestRow extends ConsumerWidget {
                         'You and ${friend.displayName} are now friends',
                       );
                     },
-                    child: Text(
-                      'Accept',
-                      semanticsLabel: 'Accept ${friend.displayName}',
-                      style: typography.button,
-                    ),
                   ),
                 ),
                 SizedBox(width: spacing.sm),
                 Expanded(
                   flex: 2,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: colours.textSecondary,
-                      side: BorderSide(color: colours.border),
-                      minimumSize: Size.fromHeight(spacing.display),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(radius.medium),
-                      ),
-                    ),
+                  child: QaddySecondaryButton(
+                    label: 'Decline',
                     onPressed: () {
                       QaddyHaptics.selection();
                       controller.declineRequest(friend.id);
@@ -197,11 +178,6 @@ class FriendRequestRow extends ConsumerWidget {
                         'Request from ${friend.displayName} declined',
                       );
                     },
-                    child: Text(
-                      'Decline',
-                      semanticsLabel: 'Decline ${friend.displayName}',
-                      style: typography.button,
-                    ),
                   ),
                 ),
               ],

@@ -8,6 +8,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -183,7 +184,7 @@ class _CheerButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(radius.large),
         child: AnimatedContainer(
-          duration: animate ? const Duration(milliseconds: 200) : Duration.zero,
+          duration: animate ? QaddyMotion.standard.fast : Duration.zero,
           // 44px tall keeps it comfortably tappable.
           constraints: const BoxConstraints(minHeight: 36),
           padding: EdgeInsets.symmetric(horizontal: spacing.md),
@@ -197,10 +198,8 @@ class _CheerButton extends StatelessWidget {
             children: <Widget>[
               AnimatedScale(
                 scale: cheered ? 1.25 : 1,
-                duration: animate
-                    ? const Duration(milliseconds: 260)
-                    : Duration.zero,
-                curve: Curves.elasticOut,
+                duration: animate ? QaddyMotion.standard.normal : Duration.zero,
+                curve: QaddyMotion.standard.enter,
                 child: Icon(
                   cheered ? Icons.celebration : Icons.celebration_outlined,
                   size: 16,

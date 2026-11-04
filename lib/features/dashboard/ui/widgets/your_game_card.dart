@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -88,8 +89,8 @@ class YourGameCard extends StatelessWidget {
         begin: animate ? 0 : handicapValue ?? 0,
         end: handicapValue ?? 0,
       ),
-      duration: const Duration(milliseconds: 900),
-      curve: Curves.easeOutCubic,
+      duration: QaddyMotion.standard.loading,
+      curve: QaddyMotion.standard.enter,
       builder: (context, value, _) => Text(
         handicapValue == null
             ? '–'
@@ -178,7 +179,7 @@ class YourGameCard extends StatelessWidget {
                               Flexible(
                                 child: Text(
                                   chipText,
-                                  maxLines: 1,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: typography.small.copyWith(
                                     color: colours.accent,

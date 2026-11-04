@@ -54,7 +54,7 @@ class _TripsScreenState extends ConsumerState<TripsScreen> {
       Scrollable.ensureVisible(
         target,
         duration: Theme.of(context).extension<QaddyMotion>()!.slow,
-        curve: Curves.easeInOut,
+        curve: QaddyMotion.standard.transition,
       );
     }
   }

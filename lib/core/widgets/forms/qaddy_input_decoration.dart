@@ -39,7 +39,12 @@ InputDecoration buildQaddyInputDecoration({
 
   return InputDecoration(
     filled: true,
-    fillColor: enabled ? colours.surface1 : colours.disabledBackground,
+    // The Forms Library's error state also tints the field.
+    fillColor: !enabled
+        ? colours.disabledBackground
+        : errorText != null
+        ? colours.error.withValues(alpha: 0.10)
+        : colours.surface1,
     contentPadding: EdgeInsets.symmetric(
       horizontal: spacing.cardPadding,
       vertical: spacing.md,

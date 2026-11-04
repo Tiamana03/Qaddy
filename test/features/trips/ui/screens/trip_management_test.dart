@@ -23,7 +23,7 @@ Future<void> _tapText(WidgetTester tester, String text) async {
 /// name in its title, so find the button by type).
 Future<void> _confirm(WidgetTester tester, String label) async {
   await tester.tap(
-    find.descendant(of: find.byType(AlertDialog), matching: find.text(label)),
+    find.descendant(of: find.byType(Dialog), matching: find.text(label)),
   );
   await tester.pumpAndSettle();
 }

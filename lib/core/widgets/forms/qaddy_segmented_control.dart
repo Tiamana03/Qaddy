@@ -75,7 +75,7 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                 },
                 child: Material(
                   color: segment.value == selected
-                      ? colours.surface2
+                      ? colours.secondary
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(radius.small),
                   child: InkWell(
@@ -86,12 +86,6 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: spacing.md),
-                      decoration: segment.value == selected
-                          ? BoxDecoration(
-                              borderRadius: BorderRadius.circular(radius.small),
-                              border: Border.all(color: colours.accent),
-                            )
-                          : null,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -100,7 +94,7 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                               segment.icon,
                               size: spacing.lg,
                               color: segment.value == selected
-                                  ? colours.accent
+                                  ? theme.colorScheme.onPrimary
                                   : colours.textSecondary,
                             ),
                             SizedBox(width: spacing.xs),
@@ -111,7 +105,7 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: typography.button.copyWith(
                                 color: segment.value == selected
-                                    ? colours.accent
+                                    ? theme.colorScheme.onPrimary
                                     : colours.textSecondary,
                               ),
                             ),

@@ -70,7 +70,7 @@ void main() {
   ) async {
     await _pump(tester);
 
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(Dialog), findsNothing);
     expect(find.text('Create trip'), findsOneWidget);
     expect(find.text('Trip name'), findsOneWidget);
     expect(find.text('Destination'), findsOneWidget);

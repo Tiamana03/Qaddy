@@ -2,9 +2,9 @@
 // Friends -> Friends List -> Friend Profile -> Activity Feed -> back, and
 // Friends -> Groups -> Group Details -> back, using the actual GoRouter
 // configuration (not a test-only stub).
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/widgets/navigation/qaddy_bottom_nav.dart';
 import 'package:qaddy/main.dart';
 
 void main() {
@@ -14,7 +14,12 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.people));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(QaddyBottomNav),
+        matching: find.text('Friends'),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Your squad'), findsOneWidget);
 
@@ -46,7 +51,12 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.people));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(QaddyBottomNav),
+        matching: find.text('Friends'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Your clubs is the last section on Friends Home.

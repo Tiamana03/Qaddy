@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
@@ -60,8 +61,8 @@ class PlanningRing extends StatelessWidget {
               tween: Tween<double>(begin: 0, end: progress.clamp(0, 1)),
               duration: MediaQuery.disableAnimationsOf(context)
                   ? Duration.zero
-                  : const Duration(milliseconds: 700),
-              curve: Curves.easeOutCubic,
+                  : QaddyMotion.standard.loading,
+              curve: QaddyMotion.standard.enter,
               builder: (context, value, _) => CircularProgressIndicator(
                 value: value,
                 strokeWidth: size / 9,

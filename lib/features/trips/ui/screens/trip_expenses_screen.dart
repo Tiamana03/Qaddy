@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -237,8 +238,8 @@ class _CostCard extends StatelessWidget {
                 tween: Tween<double>(begin: 0, end: summary.paidFraction),
                 duration: MediaQuery.disableAnimationsOf(context)
                     ? Duration.zero
-                    : const Duration(milliseconds: 900),
-                curve: Curves.easeOutCubic,
+                    : QaddyMotion.standard.loading,
+                curve: QaddyMotion.standard.enter,
                 builder: (context, value, _) => LinearProgressIndicator(
                   value: value,
                   minHeight: 8,

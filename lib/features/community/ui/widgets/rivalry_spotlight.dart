@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -89,8 +90,8 @@ class RivalrySpotlight extends StatelessWidget {
 
     final score = TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: animate ? 0 : 1, end: 1),
-      duration: const Duration(milliseconds: 900),
-      curve: Curves.easeOutCubic,
+      duration: QaddyMotion.standard.loading,
+      curve: QaddyMotion.standard.enter,
       builder: (context, t, _) => Text(
         '${(summary.youWins * t).round()} – ${(summary.theirWins * t).round()}',
         style: typography.display.copyWith(
@@ -107,8 +108,8 @@ class RivalrySpotlight extends StatelessWidget {
           begin: animate ? 0.5 : summary.youShare,
           end: summary.youShare,
         ),
-        duration: const Duration(milliseconds: 900),
-        curve: Curves.easeOutCubic,
+        duration: QaddyMotion.standard.loading,
+        curve: QaddyMotion.standard.enter,
         builder: (context, share, _) => SizedBox(
           height: 10,
           child: Row(

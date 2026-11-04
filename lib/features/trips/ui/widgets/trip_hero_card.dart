@@ -15,6 +15,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/responsive/responsive_extensions.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
@@ -335,7 +336,7 @@ class _Header extends StatelessWidget {
   }
 }
 
-const Curve _countCurve = Curves.easeOutCubic;
+final Curve _countCurve = QaddyMotion.standard.enter;
 
 /// The countdown value. A number counts up once when it first appears; when
 /// the trip is close (`glow`) it also glows for a few pulses, then settles.
@@ -637,8 +638,8 @@ class _MoneyTile extends StatelessWidget {
               tween: Tween<double>(begin: 0, end: progress),
               duration: MediaQuery.disableAnimationsOf(context)
                   ? Duration.zero
-                  : const Duration(milliseconds: 900),
-              curve: Curves.easeOutCubic,
+                  : QaddyMotion.standard.loading,
+              curve: QaddyMotion.standard.enter,
               builder: (context, value, _) => LinearProgressIndicator(
                 value: value,
                 minHeight: 6,
@@ -785,7 +786,7 @@ class _NewsTickerState extends State<_NewsTicker> {
               ],
             )
           : AnimatedSwitcher(
-              duration: const Duration(milliseconds: 450),
+              duration: QaddyMotion.standard.slow,
               transitionBuilder: (child, animation) => FadeTransition(
                 opacity: animation,
                 child: SlideTransition(

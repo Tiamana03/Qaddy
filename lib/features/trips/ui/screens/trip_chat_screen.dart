@@ -10,6 +10,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -132,8 +133,8 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       unawaited(
         _scroll.animateTo(
           0,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
+          duration: QaddyMotion.standard.normal,
+          curve: QaddyMotion.standard.enter,
         ),
       );
     });

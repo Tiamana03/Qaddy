@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -74,16 +75,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   void _next() {
     QaddyHaptics.selection();
     _pageController.nextPage(
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOutCubic,
+      duration: QaddyMotion.standard.pageTransition,
+      curve: QaddyMotion.standard.enter,
     );
   }
 
   void _skip() {
     _pageController.animateToPage(
       _pageCount - 1,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeOutCubic,
+      duration: QaddyMotion.standard.slow,
+      curve: QaddyMotion.standard.enter,
     );
   }
 
@@ -121,7 +122,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     // Skip goes to the last page and fades once there, so the
                     // header never jumps.
                     AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
+                      duration: QaddyMotion.standard.fast,
                       opacity: _onLastPage ? 0 : 1,
                       child: IgnorePointer(
                         ignoring: _onLastPage,
@@ -155,11 +156,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: spacing.lg),
                 child: AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOut,
+                  duration: QaddyMotion.standard.normal,
+                  curve: QaddyMotion.standard.enter,
                   alignment: Alignment.topCenter,
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
+                    duration: QaddyMotion.standard.normal,
                     child: _onLastPage
                         ? const _Entrances(key: ValueKey<String>('entrances'))
                         : QaddyGoldButton(
@@ -471,8 +472,8 @@ class _PageDots extends StatelessWidget {
           children: <Widget>[
             for (var index = 0; index < count; index++)
               AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
+                duration: QaddyMotion.standard.normal,
+                curve: QaddyMotion.standard.enter,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 width: index == current ? 26 : 8,
                 height: 8,

@@ -277,7 +277,12 @@ void main() {
         expect(data.cleared, 0);
 
         await _tap(tester, find.text('Start over'));
-        await tester.tap(find.widgetWithText(FilledButton, 'Start over'));
+        await tester.tap(
+          find.descendant(
+            of: find.byType(Dialog),
+            matching: find.text('Start over'),
+          ),
+        );
         await tester.pumpAndSettle();
 
         expect(data.cleared, 1);

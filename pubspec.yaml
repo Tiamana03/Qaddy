@@ -49,3 +49,19 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Inter (SIL Open Font License, see assets/fonts/Inter-LICENSE.txt) is the
+  # typeface named by design/design-tokens/typography.md. Weights match the
+  # type scale: 400 body, 500 headings 4 / navigation, 600 headings 2-3 / button,
+  # 700 display and headings 1.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700

@@ -1,8 +1,8 @@
 // Verifies Sprint 1.2's navigation shell: all five bottom-navigation
 // destinations are reachable and each shows its placeholder content.
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/widgets/navigation/qaddy_bottom_nav.dart';
 import 'package:qaddy/main.dart';
 
 void main() {
@@ -17,13 +17,18 @@ void main() {
     // label.
     expect(find.text('Home'), findsWidgets);
 
-    for (final (String label, IconData icon) in const <(String, IconData)>[
-      ('Rounds', Icons.flag),
-      ('Trips', Icons.card_travel),
-      ('Friends', Icons.people),
-      ('Profile', Icons.person),
+    for (final label in const <String>[
+      'Rounds',
+      'Trips',
+      'Friends',
+      'Profile',
     ]) {
-      await tester.tap(find.byIcon(icon));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(QaddyBottomNav),
+          matching: find.text(label),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text(label), findsWidgets);
     }

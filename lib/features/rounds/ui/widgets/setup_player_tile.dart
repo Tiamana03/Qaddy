@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -82,7 +83,7 @@ class SetupPlayerTile extends StatelessWidget {
           child: AnimatedOpacity(
             duration: MediaQuery.disableAnimationsOf(context)
                 ? Duration.zero
-                : const Duration(milliseconds: 150),
+                : QaddyMotion.standard.fast,
             opacity: included ? 1 : 0.55,
             child: Padding(
               padding: EdgeInsets.symmetric(

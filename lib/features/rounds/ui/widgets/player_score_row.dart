@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
@@ -151,7 +152,7 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
     return AnimatedBuilder(
       animation: _burst,
       builder: (context, child) {
-        final glow = 1 - Curves.easeOut.transform(_burst.value);
+        final glow = 1 - QaddyMotion.standard.enter.transform(_burst.value);
         final pop = 1 + 0.18 * (glow * glow);
         return DecoratedBox(
           decoration: BoxDecoration(

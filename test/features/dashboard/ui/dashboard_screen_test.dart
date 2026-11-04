@@ -114,7 +114,8 @@ void main() {
 
       expect(find.text('6'), findsOneWidget);
       expect(find.text('days to tee-off'), findsOneWidget);
-      expect(find.text('Richmond Golf Club · Saturday, 8:20 AM'), findsOne);
+      expect(find.text('Richmond Golf Club'), findsOne);
+      expect(find.text('Saturday, 8:20 AM'), findsOne);
       expect(find.text('21°C Sunny'), findsOneWidget);
       expect(find.text('Stableford'), findsOneWidget);
       expect(find.text('18 holes'), findsOneWidget);

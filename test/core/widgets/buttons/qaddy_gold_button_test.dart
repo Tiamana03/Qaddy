@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 
@@ -11,6 +12,8 @@ Future<void> _pump(WidgetTester tester, Widget button) => tester.pumpWidget(
     ),
   ),
 );
+
+Size _size(WidgetTester tester) => tester.getSize(find.byType(QaddyGoldButton));
 
 void main() {
   testWidgets('shows its label and fires when tapped', (tester) async {
@@ -34,23 +37,56 @@ void main() {
     expect(find.byIcon(Icons.send), findsOneWidget);
   });
 
-  testWidgets('is disabled without a handler', (tester) async {
+  testWidgets('is disabled without a handler, in the disabled colours', (
+    tester,
+  ) async {
     await _pump(tester, const QaddyGoldButton(label: 'Wait', onPressed: null));
+    const colours = QaddyColours.dark;
 
-    final button = tester.widget<FilledButton>(find.byType(FilledButton));
-    expect(button.onPressed, isNull);
+    final box = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(QaddyGoldButton),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    final decoration = box.decoration as BoxDecoration;
+    expect(decoration.gradient, isNull);
+    expect(decoration.color, colours.disabledBackground);
   });
 
-  testWidgets('tall is a little taller than standard', (tester) async {
+  testWidgets('is the Gold Gradient token when enabled', (tester) async {
+    await _pump(tester, QaddyGoldButton(label: 'Go', onPressed: () {}));
+
+    final box = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(QaddyGoldButton),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(
+      (box.decoration as BoxDecoration).gradient,
+      QaddyColours.dark.gradientGold,
+    );
+  });
+
+  testWidgets('has the Buttons Library heights: 48, 56 and 40', (tester) async {
     await _pump(tester, QaddyGoldButton(label: 'A', onPressed: () {}));
-    final standard = tester.getSize(find.byType(FilledButton)).height;
+    expect(_size(tester).height, QaddyButtonHeight.medium);
 
     await _pump(
       tester,
       QaddyGoldButton(label: 'A', tall: true, onPressed: () {}),
     );
-    final tall = tester.getSize(find.byType(FilledButton)).height;
+    expect(_size(tester).height, QaddyButtonHeight.large);
 
-    expect(tall, standard + 4);
+    await _pump(
+      tester,
+      QaddyGoldButton(label: 'A', compact: true, onPressed: () {}),
+    );
+    expect(_size(tester).height, QaddyButtonHeight.small);
   });
 }

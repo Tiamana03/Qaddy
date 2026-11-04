@@ -4,6 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
@@ -104,7 +105,7 @@ class _GolferFormState extends State<GolferForm> {
         // The avatar fills in as the name is typed: a small "that's me".
         Center(
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: QaddyMotion.standard.fast,
             child: Row(
               key: ValueKey<String>(name),
               mainAxisSize: MainAxisSize.min,
