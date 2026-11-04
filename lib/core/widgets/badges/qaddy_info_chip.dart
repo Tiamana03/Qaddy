@@ -1,6 +1,8 @@
-/// A small translucent chip with an icon and a short fact ("21°C Sunny",
+/// A small frosted chip with an icon and a short fact ("21°C Sunny",
 /// "Stableford", "18 holes"), for the details under a hero's headline.
 library;
+
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
@@ -9,7 +11,8 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
 /// A pill that sits on a gradient: white text on a faint white wash, with a
-/// gold icon.
+/// gold icon. Frosted like the mockups' weather card: the wash is blurred and
+/// has a hairline highlight.
 class QaddyInfoChip extends StatelessWidget {
   const QaddyInfoChip({required this.icon, required this.text, super.key});
 
@@ -27,30 +30,38 @@ class QaddyInfoChip extends StatelessWidget {
     final spacing = theme.extension<QaddySpacing>()!;
     final typography = theme.extension<QaddyTypography>()!;
     final onGradient = theme.colorScheme.onPrimary;
+    final shape = BorderRadius.circular(radius.large);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: spacing.md,
-        vertical: spacing.xs + 2,
-      ),
-      decoration: BoxDecoration(
-        color: onGradient.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(radius.large),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, size: 16, color: colours.gold),
-          SizedBox(width: spacing.xs),
-          Flexible(
-            child: Text(
-              text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: typography.small.copyWith(color: onGradient),
-            ),
+    return ClipRRect(
+      borderRadius: shape,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: spacing.md,
+            vertical: spacing.xs + 2,
           ),
-        ],
+          decoration: BoxDecoration(
+            color: onGradient.withValues(alpha: 0.14),
+            borderRadius: shape,
+            border: Border.all(color: onGradient.withValues(alpha: 0.18)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(icon, size: 16, color: colours.gold),
+              SizedBox(width: spacing.xs),
+              Flexible(
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: typography.small.copyWith(color: onGradient),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

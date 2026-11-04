@@ -305,16 +305,30 @@ class _Header extends ConsumerWidget {
             children: <Widget>[
               const Icon(Icons.notifications_outlined),
               if (unread > 0)
+                // The unread count, as in the mockups: a small gold badge.
                 Positioned(
-                  right: -1,
-                  top: -1,
+                  right: -spacing.sm,
+                  top: -spacing.sm,
                   child: Container(
-                    width: 9,
-                    height: 9,
+                    constraints: BoxConstraints(
+                      minWidth: spacing.lg,
+                      minHeight: spacing.lg,
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: spacing.xs),
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: colours.gold,
-                      shape: BoxShape.circle,
+                      borderRadius: BorderRadius.circular(999),
                       border: Border.all(color: colours.surface1, width: 1.5),
+                    ),
+                    child: Text(
+                      unread > 9 ? '9+' : '$unread',
+                      style: typography.caption.copyWith(
+                        color: colours.backgroundBase,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
+                        letterSpacing: 0,
+                      ),
                     ),
                   ),
                 ),

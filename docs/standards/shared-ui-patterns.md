@@ -59,3 +59,21 @@ These still appear in more than one feature and should be extracted the next tim
 - **Confirmations** all go through `showQaddyConfirm`: a question title ("Delete this trip?"), one sentence on what happens, and a verb that matches the action ("Delete trip", not "OK"). Anything that cannot be undone is `destructive` and says so.
 - **Empty states** all use `QaddyEmptyState`: say why it is empty, then offer the one next step. A screen whose only content is sample content labels it (`SampleBanner`).
 - **Never a pretend person.** See `docs/features/sample-clubhouse.md`.
+
+---
+
+# Design priority (November 2026)
+
+When two sources disagree, the order is: **1.** the approved design system (token docs, Colour / Typography / component libraries), **2.** the approved mockups, **3.** the existing implementation. A mockup that contradicts the design system is an earlier concept unless the difference is clearly intentional across several mockups. Never sample colours from the PNGs; use the tokens. See `docs/reviews/mockup-conformance-audit-rc1.md`.
+
+# Component rules (from the component libraries)
+
+- **Typeface:** Inter, bundled in `assets/fonts` (400 / 500 / 600 / 700) and set as the theme default. Do not set another `fontFamily`.
+- **Primary action:** `QaddyGoldButton`, the Gold Gradient token. Heights are the Buttons Library's: Large 56 (`tall`), Medium 48 (default), Small 40 (`compact`). Radius `medium`, shadow `small`.
+- **Selected state:** a green (`secondary`) fill for segmented tabs; a green outline and a check for filter chips. Gold (`accent`) is for selected bottom-navigation items, focused borders and links.
+- **Bottom navigation:** `QaddyBottomNav`, the floating rounded bar; outlined icons that fill when active and an active indicator.
+- **Dialogs:** `showQaddyConfirm`: icon medallion, centred title and message, Cancel on the left and the confirm action on the right; `destructive` uses the error colour.
+- **Cards:** `QaddyCard`: `large` radius, hairline `border`, `medium` shadow.
+- **Heroes:** facts under a headline are `QaddyInfoChip`s, which are frosted (blurred translucent wash with a hairline highlight).
+- **Motion:** use `QaddyMotion.standard` (`instant` 100, `fast` 150, `normal` 250, `slow` 400, `pageTransition` 300, `loading` 800) and its curves. No elastic or overshoot curves. Ambient loops longer than a second are the only literals allowed.
+- **Numerals:** use the statistics tokens (`statHoleNumber` for the hole number, `display` / `statLarge` for hero numbers); do not set `fontSize` by hand.

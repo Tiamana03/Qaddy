@@ -6,6 +6,7 @@ import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
@@ -112,7 +113,13 @@ void main() {
     ) async {
       await _pump(tester);
 
-      expect(find.text('6'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(NextRoundHero),
+          matching: find.text('6'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('days to tee-off'), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsOne);
       expect(find.text('Saturday, 8:20 AM'), findsOne);
