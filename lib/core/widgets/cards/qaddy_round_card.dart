@@ -1,6 +1,7 @@
-/// "Upcoming Round": the next round as a card, as the approved mockup draws
-/// it. A thumbnail slot, the course, the day, the tee time and who is playing,
-/// then two actions: the quiet one (View details) and the gold one.
+/// A round as a card, as the approved mockup draws it (Home's "Upcoming Round"
+/// and the My Rounds list). A thumbnail slot, the course, the day, the tee
+/// time and who is playing, then two actions: the quiet one (View details)
+/// and the gold one.
 ///
 /// The thumbnail is a `QaddyMediaPlaceholder` until the course photograph
 /// arrives. While a round is under way the card is the way back into it.
@@ -18,12 +19,14 @@ import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
 
-/// The next-round card.
-class UpcomingRoundCard extends StatelessWidget {
-  const UpcomingRoundCard({
+/// A round card: upcoming, under way or finished.
+class QaddyRoundCard extends StatelessWidget {
+  const QaddyRoundCard({
     required this.course,
-    required this.primaryLabel,
-    required this.onPrimary,
+    this.primaryLabel,
+    this.onPrimary,
+    this.note,
+    this.noteIcon = Icons.emoji_events_outlined,
     this.day,
     this.when,
     this.teeTime,
@@ -55,11 +58,19 @@ class UpcomingRoundCard extends StatelessWidget {
   /// Whether the round is the Sample Clubhouse's.
   final bool sample;
 
-  /// The gold action ("Get ready", "Start round", "Continue round").
-  final String primaryLabel;
+  /// One more line about the round: how a finished one went ("You won ·
+  /// 38 pts"), or the forecast and format of one to come.
+  final String? note;
+
+  /// The icon beside [note].
+  final IconData noteIcon;
+
+  /// The gold action ("Get ready", "Start round", "Continue round"). Omit for
+  /// a round with nothing to do.
+  final String? primaryLabel;
 
   /// Runs the gold action.
-  final VoidCallback onPrimary;
+  final VoidCallback? onPrimary;
 
   /// The quiet action, "View details". Omit for none.
   final VoidCallback? onDetails;
@@ -129,6 +140,27 @@ class UpcomingRoundCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                    if (note != null)
+                      Padding(
+                        padding: EdgeInsets.only(top: spacing.xs),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(noteIcon, size: 14, color: colours.gold),
+                            SizedBox(width: spacing.xs),
+                            Flexible(
+                              child: Text(
+                                note!,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: typography.small.copyWith(
+                                  color: colours.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -169,29 +201,32 @@ class UpcomingRoundCard extends StatelessWidget {
               textColour: colours.textSecondary,
             ),
           ],
-          SizedBox(height: spacing.md),
-          Row(
-            children: <Widget>[
-              if (onDetails != null) ...<Widget>[
-                Expanded(
-                  child: QaddySecondaryButton(
-                    label: 'View details',
-                    compact: true,
-                    onPressed: onDetails,
+          if (onPrimary != null || onDetails != null) ...<Widget>[
+            SizedBox(height: spacing.md),
+            Row(
+              children: <Widget>[
+                if (onDetails != null) ...<Widget>[
+                  Expanded(
+                    child: QaddySecondaryButton(
+                      label: 'View details',
+                      compact: true,
+                      onPressed: onDetails,
+                    ),
                   ),
-                ),
-                SizedBox(width: spacing.sm),
+                  SizedBox(width: spacing.sm),
+                ],
+                if (onPrimary != null)
+                  Expanded(
+                    child: QaddyGoldButton(
+                      label: primaryLabel ?? 'Open round',
+                      compact: true,
+                      icon: Icons.flag_rounded,
+                      onPressed: onPrimary,
+                    ),
+                  ),
               ],
-              Expanded(
-                child: QaddyGoldButton(
-                  label: primaryLabel,
-                  compact: true,
-                  icon: Icons.flag_rounded,
-                  onPressed: onPrimary,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ],
       ),
     );

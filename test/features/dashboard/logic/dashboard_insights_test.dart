@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
+import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
 // 2026-11-01 is a Sunday.

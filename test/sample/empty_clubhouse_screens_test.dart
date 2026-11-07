@@ -56,8 +56,8 @@ void main() {
     await pumpFriends(tester, const RoundsScreen(), overrides: off);
     await tester.pumpAndSettle();
 
-    expect(find.text('Your round'), findsOneWidget);
-    expect(find.text('Ready when you are'), findsOneWidget);
+    expect(find.text('My rounds'), findsOneWidget);
+    expect(find.text('Stableford'), findsOneWidget);
     expect(find.text('Start round'), findsOneWidget);
     expect(find.textContaining('1 playing'), findsNothing);
     expect(find.text('On the course (sample)'), findsNothing);

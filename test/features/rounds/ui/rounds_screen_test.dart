@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
@@ -50,13 +51,19 @@ void main() {
     testWidgets('is an invitation to the first tee', (tester) async {
       await _pump(tester);
 
-      expect(find.text('Rounds'), findsOneWidget);
-      expect(find.text('Sample round · First tee'), findsOneWidget);
-      expect(find.text('Saturday, 8:20 AM'), findsOneWidget);
+      expect(find.text('My rounds'), findsOneWidget);
+      expect(
+        find.text('Play more. Keep track. Make it count.'),
+        findsOneWidget,
+      );
+      expect(find.text('Upcoming'), findsOneWidget);
+      expect(find.text('Completed'), findsOneWidget);
+      expect(find.byType(QaddyRoundCard), findsOneWidget);
+      expect(find.text('Saturday'), findsOneWidget);
+      expect(find.text('8:20 AM'), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
-      expect(find.text('21°C Sunny'), findsOneWidget);
-      expect(find.text('Stableford'), findsOneWidget);
-      expect(find.text('18 holes'), findsNothing);
+      expect(find.text('21°C Sunny · Stableford'), findsOneWidget);
+      expect(find.text('Sample'), findsOneWidget);
       expect(find.textContaining('1 playing'), findsNothing);
     });
 
@@ -174,7 +181,6 @@ void main() {
     ) async {
       await _pump(tester, before: startRound);
 
-      expect(find.text('Round in progress'), findsWidgets);
       expect(find.text('Hole 1 of 18'), findsOneWidget);
       expect(find.text('Continue round'), findsOneWidget);
       expect(find.text('Start round'), findsNothing);
@@ -206,6 +212,50 @@ void main() {
     });
   });
 
+  group('the Completed tab', () {
+    testWidgets('says so, kindly, before a first round', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text('Completed'));
+
+      expect(find.text('No finished rounds yet'), findsOneWidget);
+      expect(find.text('Start round'), findsNothing);
+    });
+
+    testWidgets('See upcoming goes back to the next round', (tester) async {
+      await _pump(tester);
+      await _tap(tester, find.text('Completed'));
+
+      await _tap(tester, find.text('See upcoming'));
+
+      expect(find.text('Start round'), findsOneWidget);
+    });
+
+    testWidgets('keeps how the round went, and the older ones too', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        before: (c) {
+          for (var i = 0; i < 2; i++) {
+            c.read(roundsProvider.notifier)
+              ..startRound(
+                upcomingRoundInvitees.take(2).map((i) => i.player).toList(),
+              )
+              ..nextHole()
+              ..finishRound();
+          }
+        },
+      );
+
+      await _tap(tester, find.text('Completed (2)'));
+
+      expect(find.byType(QaddyRoundCard), findsNWidgets(2));
+      // Only the latest has a results page to open.
+      expect(find.text('View results'), findsOneWidget);
+    });
+  });
+
   group('after the round', () {
     testWidgets('keeps the result one tap from the celebration', (
       tester,
@@ -222,10 +272,15 @@ void main() {
         },
       );
 
-      expect(find.text('Last round'), findsOneWidget);
+      // The finished round is kept under Completed, one tap from the results.
+      expect(find.text('Completed (1)'), findsOneWidget);
       expect(find.text('Start round'), findsOneWidget);
 
-      await _tap(tester, find.text('Last round'));
+      await _tap(tester, find.text('Completed (1)'));
+      expect(find.text('Start round'), findsNothing);
+      expect(find.text('Richmond Golf Club'), findsOneWidget);
+
+      await _tap(tester, find.text('View results'));
 
       expect(find.text('Go: /rounds/complete'), findsOneWidget);
     });

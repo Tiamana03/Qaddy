@@ -18,12 +18,17 @@ A golfer should prefer this to a paper card: **excitement before** the round, **
 
 # The journey
 
-## Before — the Rounds tab
+## The Rounds tab — "My rounds"
 
-- A hero for the first tee: "Saturday, 8:20 AM", the course, the weather, the format, the faces of who is playing and one gold **Start round** button.
+Composed as the approved My Rounds mockup (`design/mockups/rounds/rounds-home-v1.png`): the title "My rounds" with "Play more. Keep track. Make it count.", then two tabs, **Upcoming** and **Completed (n)**, and rounds as cards (`QaddyRoundCard`, shared with Home).
+
+- **Upcoming, before a round:** the next round as a card — a thumbnail slot, the course, the day and tee time ("Saturday", "8:20 AM"), the forecast and format, the faces of who is playing, **View details** (shares when, where and "Who's in?") and the gold **Start round**.
 - **Who's playing:** every invited friend with a switch. Friends who have said yes are in; someone who has not replied (Josh) can be added by hand; the golfer is always in. The count updates as you choose.
 - **On the course:** the side games, each on its hole.
-- After a round the tab also shows **Last round** — the winner and the points — one tap from the results.
+- **Upcoming, during a round:** the same card says "Hole N of M" and where the golfer stands, with **Continue round**; the standings follow once a hole is played.
+- **Completed:** every finished round, newest first, as a card with the day and how it went ("You win · 38 pts"). The latest has **View results**; older rounds have no results page of their own yet. Before a first round it says so and offers the way back.
+
+Not drawn, because nothing is behind them yet: the mockup's search and filter, the Invitations tab, Create Round and Get Directions.
 
 ## During — the scorecard
 

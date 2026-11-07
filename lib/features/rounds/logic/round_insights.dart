@@ -5,6 +5,7 @@ library;
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/features/rounds/logic/stableford.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
+import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 
@@ -215,3 +216,9 @@ String? holeResultLine(Round round, int holeIndex, {required String you}) {
   final verb = winner.name == you ? 'win' : 'wins';
   return '${name(winner)} $verb the hole with $article $lower';
 }
+
+/// A message telling the group about [round], ready for the share sheet.
+String roundShareMessage(UpcomingRound round, String yourName) =>
+    '${round.date} at ${round.teeTime}, ${round.course} '
+    "(${round.format}, ${round.holes} holes, ${round.weather}). Who's in? "
+    '– $yourName';

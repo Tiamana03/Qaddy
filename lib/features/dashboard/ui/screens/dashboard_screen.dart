@@ -23,6 +23,7 @@ import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -31,9 +32,9 @@ import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/home_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/upcoming_round_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_tiles.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
+import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
@@ -130,14 +131,14 @@ class DashboardScreen extends ConsumerWidget {
             ),
             SizedBox(height: spacing.md),
             if (live != null)
-              UpcomingRoundCard(
+              QaddyRoundCard(
                 course: live.course,
                 when: 'Hole ${live.currentHole + 1} of ${live.holes.length}',
                 primaryLabel: 'Continue round',
                 onPrimary: () => context.push(AppRoutes.roundScorecard),
               )
             else
-              UpcomingRoundCard(
+              QaddyRoundCard(
                 course: upcomingRound.course,
                 day: planned ? upcomingRound.date : null,
                 when: countdown == null ? null : whenPhrase(countdown),

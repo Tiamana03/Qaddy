@@ -22,7 +22,7 @@ void main() {
       size: const Size(400, 2000),
     );
 
-    expect(find.text('Sample round · First tee'), findsOneWidget);
+    expect(find.text('My rounds'), findsOneWidget);
     await _tap(tester, find.text('Start round'));
 
     // On the first tee, full screen.
@@ -64,7 +64,6 @@ void main() {
     // Back to the Rounds tab: it now offers to continue.
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('Round in progress'), findsWidgets);
     expect(find.text('Hole 2 of 18'), findsOneWidget);
 
     await _tap(tester, find.text('Continue round'));
@@ -76,7 +75,7 @@ void main() {
     await pumpApp(tester, location: '/home', size: const Size(400, 3400));
 
     await _tap(tester, find.text('Get ready'));
-    expect(find.text('Sample round · First tee'), findsOneWidget);
+    expect(find.text('My rounds'), findsOneWidget);
 
     await _tap(tester, find.text('Start round'));
     expect(find.text('Hole 1'), findsOneWidget);

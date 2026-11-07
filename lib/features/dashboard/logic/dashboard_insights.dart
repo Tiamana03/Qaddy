@@ -6,7 +6,6 @@ import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/features/dashboard/models/placeholder_dashboard.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
-import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 
 /// "Good morning", "Good afternoon" or "Good evening" for [now].
@@ -88,12 +87,6 @@ RoundCountdown? roundCountdown(DateTime now, String weekdayName) {
 
 /// The date line under the golfer's name: "Sunday 1 November".
 String dateLine(DateTime now) => now.toWeekdayAndDate();
-
-/// A message telling the group about [round], ready for the share sheet.
-String roundShareMessage(UpcomingRound round, String yourName) =>
-    '${round.date} at ${round.teeTime}, ${round.course} '
-    "(${round.format}, ${round.holes} holes, ${round.weather}). Who's in? "
-    '– $yourName';
 
 /// The golfer's most recent finished round, as the "Your game" card shows it.
 ///

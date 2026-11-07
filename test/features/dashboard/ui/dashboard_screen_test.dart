@@ -4,11 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/home_hero.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/upcoming_round_card.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/your_game_tiles.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -127,7 +127,7 @@ void main() {
     testWidgets('says where, when and who', (tester) async {
       await _pump(tester);
 
-      expect(find.byType(UpcomingRoundCard), findsOneWidget);
+      expect(find.byType(QaddyRoundCard), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
       expect(find.text('Saturday'), findsOneWidget);
       expect(find.text('In 6 days'), findsOneWidget);
