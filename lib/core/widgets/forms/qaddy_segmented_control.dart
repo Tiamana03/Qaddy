@@ -75,7 +75,7 @@ class QaddySegmentedControl<T> extends StatelessWidget {
                 },
                 child: Material(
                   color: segment.value == selected
-                      ? colours.secondary
+                      ? colours.selected
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(radius.small),
                   child: InkWell(

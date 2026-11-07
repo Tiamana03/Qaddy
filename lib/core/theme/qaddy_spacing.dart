@@ -44,11 +44,11 @@ class QaddySpacing extends ThemeExtension<QaddySpacing> {
     xxxl: 40,
     display: 48,
     hero: 64,
-    pagePadding: 24,
+    pagePadding: 12,
     cardPadding: 16,
     buttonPadding: 12,
-    sectionGap: 32,
-    cardGap: 16,
+    sectionGap: 24,
+    cardGap: 12,
     iconButtonSize: 48,
   );
 

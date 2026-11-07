@@ -69,7 +69,7 @@ void main() {
   ) async {
     await _open(tester);
 
-    expect(_medallion(tester).color, QaddyColours.dark.secondary);
+    expect(_medallion(tester).color, QaddyColours.dark.selected);
   });
 
   testWidgets('a destructive one is the error colour with a bin', (

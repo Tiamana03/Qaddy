@@ -132,9 +132,15 @@ class YourGameCard extends StatelessWidget {
                 const Expanded(child: QaddyEyebrow('Your game')),
                 Text(
                   'All stats',
-                  style: typography.small.copyWith(color: colours.accent),
+                  style: typography.small.copyWith(
+                    color: colours.textSecondary,
+                  ),
                 ),
-                Icon(Icons.chevron_right, color: colours.accent, size: 18),
+                Icon(
+                  Icons.chevron_right,
+                  color: colours.textSecondary,
+                  size: 18,
+                ),
               ],
             ),
             SizedBox(height: spacing.md),

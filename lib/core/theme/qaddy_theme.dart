@@ -164,12 +164,12 @@ abstract final class QaddyTheme {
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.secondary
+              ? colours.selected
               : colours.surface2,
         ),
         trackOutlineColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.secondary
+              ? colours.selected
               : colours.border,
         ),
       ),
@@ -210,7 +210,7 @@ abstract final class QaddyTheme {
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.secondary
+              ? colours.selected
               : Colors.transparent,
         ),
         checkColor: WidgetStatePropertyAll<Color>(colorScheme.onPrimary),

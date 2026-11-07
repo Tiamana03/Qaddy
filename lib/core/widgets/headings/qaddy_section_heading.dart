@@ -50,7 +50,11 @@ class QaddySectionHeading extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: typography.h3.copyWith(color: colours.textPrimary),
+                    // White, semibold: the approved mockups' section title.
+                    style: typography.h4.copyWith(
+                      color: colours.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 if (count != null && count > 0) ...<Widget>[
@@ -81,12 +85,24 @@ class QaddySectionHeading extends StatelessWidget {
         ),
         if (actionLabel != null && onAction != null)
           TextButton(
+            // A quiet grey "See all ›", as in the mockups, not a gold link.
             style: TextButton.styleFrom(
+              foregroundColor: colours.textSecondary,
               minimumSize: const Size(48, 44),
               padding: EdgeInsets.symmetric(horizontal: spacing.sm),
             ),
             onPressed: onAction,
-            child: Text(actionLabel!),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(actionLabel!, style: typography.small),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: colours.textSecondary,
+                ),
+              ],
+            ),
           ),
       ],
     );

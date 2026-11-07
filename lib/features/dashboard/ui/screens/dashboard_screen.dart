@@ -68,6 +68,7 @@ class DashboardScreen extends ConsumerWidget {
     final quickActions = <QaddyQuickAction>[
       QaddyQuickAction(
         icon: live == null ? Icons.sports_golf : Icons.play_arrow_rounded,
+        featured: true,
         label: live == null ? 'Start a round' : 'Continue round',
         colour: colours.accentTeal,
         onTap: () => live == null

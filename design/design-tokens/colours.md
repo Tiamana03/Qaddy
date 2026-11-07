@@ -43,7 +43,7 @@ Our core brand colours. Use these to represent Qaddy across all touchpoints.
 | Token | HEX | RGB | Usage | Flutter Token Name |
 |---|---|---|---|---|
 | Primary Green | `#0F3D2E` | `rgb(15, 61, 46)` | Main brand colour. Buttons, highlights and key elements. | `primary` |
-| Primary Gold | `#D4AF37` | `rgb(212, 175, 55)` | Premium accents. Icons, highlights and special elements. | `gold` |
+| Primary Gold | `#F8B64D` | `rgb(248, 182, 77)` | The primary call to action, premium accents, active navigation, icons and highlights. **Updated to the approved mockups** (the Colour Library's `#D4AF37` is an earlier concept). | `gold` |
 | Secondary Green | `#1E6B4B` | `rgb(30, 107, 75)` | Supporting colour. Secondary buttons and accents. | `secondary` |
 | Dark Green | `#081B14` | `rgb(8, 27, 20)` | Background base. App background and deep surfaces. | `backgroundBase` |
 
@@ -116,7 +116,7 @@ Subtle gradients for premium elements. The colour stops below are taken directly
 | Token | Stops | Usage | Flutter Token Name |
 |---|---|---|---|
 | Green Gradient | `#0F3D2E` → `#1E6B4B` | Buttons, headers. | `gradientGreen` |
-| Gold Gradient | `#D4AF37` → `#F4D676` | Premium elements. | `gradientGold` |
+| Gold Gradient | `#FBBD55` → `#F5B547` | The primary call to action: lighter at the top, deeper at the bottom (**from the approved mockups**; was `#D4AF37` → `#F4D676`). | `gradientGold` |
 | Premium Gradient | `#8B5CF6` → `#EC4899` | Special/exclusive features. | `gradientPremium` |
 
 **Engineering Decision — Gradient Direction.** The Colour Library's gradient swatches show a colour blend but do not encode a direction. **135° (top-left to bottom-right) is the official Qaddy implementation standard for all three gradients above**, not a value read from the asset. Reason: a single consistent angle across every gradient token is what makes them read as one system rather than three unrelated effects, and top-left-to-bottom-right is the conventional direction for this style of diagonal brand gradient. This applies unless and until a future design asset explicitly specifies a different direction for a given gradient — treat that as a design decision to update this document, not a reason for an engineer to pick their own angle in the meantime.
@@ -136,7 +136,7 @@ Dark Mode is Qaddy's **primary** theme — it is what the app ships with by defa
 | Divider | `divider` | `#3F5E52` |
 | Primary Text | `textPrimary` | `#FFFFFF` |
 | Secondary Text | `textSecondary` | `#9FB3AA` |
-| Brand accents | `primary` / `gold` / `secondary` | `#0F3D2E` / `#D4AF37` / `#1E6B4B` (unchanged from Brand Colours) |
+| Brand accents | `primary` / `gold` / `secondary` | `#0F3D2E` / `#F8B64D` / `#1E6B4B` (see Brand Colours) |
 
 Semantic, accent and gradient tokens do not change between themes — only neutral surfaces and text invert.
 
@@ -164,6 +164,18 @@ Light Mode is the optional/secondary theme. Brand, semantic, accent and gradient
 
 ---
 
+# Selected State
+
+Added from the approved mockups. Every selected thing in them is one vivid green: the active segment, tab and filter, a switch that is on, a checked box and a "Confirmed" pill.
+
+| Token | HEX | RGB | Usage | Flutter Token Name |
+|---|---|---|---|---|
+| Selected | `#01813D` | `rgb(1, 129, 61)` | Active segment or tab fill, selected filter chip, switch on, checked box, dialog medallion. Measured as the median of the mockups' selected controls. | `selected` |
+
+`secondary` (`#1E6B4B`) remains the deeper green used inside gradients and heroes.
+
+---
+
 # Disabled State
 
 Used for disabled buttons, inputs, toggles, checkboxes and other controls.
@@ -185,7 +197,7 @@ Contrast examples from the Colour Library, measured against the Dark Mode backgr
 | Text token | Contrast ratio | WCAG AA (4.5:1 normal text) |
 |---|---|---|
 | `textPrimary` (`#FFFFFF`) | 4.8:1 | Pass |
-| `gold` (`#D4AF37`) | 4.6:1 | Pass |
+| `gold` (`#F8B64D`) | ≈ 9:1 | Pass |
 | `textSecondary` (`#9FB3AA`) | 4.5:1 | Pass (at the minimum — do not darken further) |
 | `textTertiary` (`#6B867B`) | 4.6:1 | Pass |
 
@@ -219,7 +231,7 @@ Never reference `Color(0xFF...)` literals outside of the file where `QaddyColour
 | Flutter Token Name | Dark value | Light value (where defined) |
 |---|---|---|
 | `primary` | `Color(0xFF0F3D2E)` | — (unchanged) |
-| `gold` | `Color(0xFFD4AF37)` | — (unchanged) |
+| `gold` | `Color(0xFFF8B64D)` | — (unchanged) |
 | `secondary` | `Color(0xFF1E6B4B)` | — (unchanged) |
 | `backgroundBase` | `Color(0xFF081B14)` | — (unchanged) |
 | `background` | `Color(0xFF081B14)` | `Color(0xFFF8FAF9)` |

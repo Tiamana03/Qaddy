@@ -53,7 +53,7 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// Dark Mode — Qaddy's primary theme.
   static const QaddyColours dark = QaddyColours(
     primary: Color(0xFF0F3D2E),
-    gold: Color(0xFFD4AF37),
+    gold: Color(0xFFF8B64D),
     secondary: Color(0xFF1E6B4B),
     backgroundBase: Color(0xFF081B14),
     background: Color(0xFF081B14),
@@ -90,7 +90,7 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// (not asset-sourced); see colours.md's "Light Theme" section.
   static const QaddyColours light = QaddyColours(
     primary: Color(0xFF0F3D2E),
-    gold: Color(0xFFD4AF37),
+    gold: Color(0xFFF8B64D),
     secondary: Color(0xFF1E6B4B),
     backgroundBase: Color(0xFF081B14),
     background: Color(0xFFF8FAF9),
@@ -132,7 +132,8 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   static const LinearGradient _goldGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: <Color>[Color(0xFFD4AF37), Color(0xFFF4D676)],
+    // Lighter at the top, deeper at the bottom: the approved mockups' CTA.
+    colors: <Color>[Color(0xFFFBBD55), Color(0xFFF5B547)],
   );
   static const LinearGradient _premiumGradient = LinearGradient(
     begin: Alignment.topLeft,
@@ -248,6 +249,12 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// any theme built from these tokens. [primary] remains the right choice
   /// for *filled* surfaces such as the primary button.
   Color get accent => background.computeLuminance() < 0.5 ? gold : primary;
+
+  /// The vivid green of a selected state in the approved mockups: the active
+  /// segment, tab and filter, a switch that is on, a checked box, a
+  /// "Confirmed" pill. [secondary] stays the deeper green used in gradients.
+  /// Measured across the mockups at about #01813D; the same in both themes.
+  Color get selected => const Color(0xFF01813D);
 
   @override
   QaddyColours copyWith({

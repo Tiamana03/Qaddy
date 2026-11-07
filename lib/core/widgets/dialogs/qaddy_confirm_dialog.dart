@@ -39,7 +39,7 @@ Future<bool> showQaddyConfirm(
       final colours = theme.extension<QaddyColours>()!;
       final spacing = theme.extension<QaddySpacing>()!;
 
-      final tone = destructive ? colours.error : colours.secondary;
+      final tone = destructive ? colours.error : colours.selected;
       final onTone = destructive
           ? theme.colorScheme.onError
           : theme.colorScheme.onPrimary;
@@ -163,7 +163,7 @@ Future<void> showQaddyNotice(
       return PopScope(
         canPop: dismissible,
         child: _DialogSurface(
-          tone: colours.secondary,
+          tone: colours.selected,
           onTone: theme.colorScheme.onPrimary,
           icon: icon,
           title: title,

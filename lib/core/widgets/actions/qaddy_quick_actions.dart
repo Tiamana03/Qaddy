@@ -9,7 +9,6 @@ import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 
 /// One shortcut: an icon, a short label and where it goes.
@@ -19,6 +18,7 @@ class QaddyQuickAction {
     required this.label,
     required this.colour,
     required this.onTap,
+    this.featured = false,
   });
 
   /// The shortcut's icon.
@@ -32,6 +32,10 @@ class QaddyQuickAction {
 
   /// Opens the destination.
   final VoidCallback onTap;
+
+  /// The one tile that is filled green, as "Book a Round" is in the mockups:
+  /// the shortcut to the thing a golfer most often wants.
+  final bool featured;
 }
 
 /// A row of equal shortcut tiles that arrive one after another.
@@ -87,10 +91,12 @@ class _ActionTile extends StatelessWidget {
       onTap: action.onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colours.card,
+          color: action.featured ? colours.secondary : colours.card,
           borderRadius: borderRadius,
           border: Border.all(
-            color: colours.border,
+            color: action.featured
+                ? colours.selected.withValues(alpha: 0.55)
+                : colours.border,
             width: radius.borderWidthDefault,
           ),
           boxShadow: shadows.medium,
@@ -114,10 +120,12 @@ class _ActionTile extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    QaddyIconBadge(
-                      icon: action.icon,
-                      colour: action.colour,
-                      size: 44,
+                    Icon(
+                      action.icon,
+                      size: 28,
+                      color: action.featured
+                          ? theme.colorScheme.onPrimary
+                          : colours.textPrimary,
                     ),
                     SizedBox(height: spacing.sm),
                     Text(
@@ -126,8 +134,9 @@ class _ActionTile extends StatelessWidget {
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
                       style: typography.navigation.copyWith(
-                        color: colours.textPrimary,
-                        fontWeight: FontWeight.w600,
+                        color: action.featured
+                            ? theme.colorScheme.onPrimary
+                            : colours.textPrimary,
                       ),
                     ),
                   ],

@@ -64,11 +64,11 @@ These are named for their *role*, not their value, so a future re-tuning of "how
 
 | Alias | Resolves to | Usage | Flutter Token Name |
 |---|---|---|---|
-| Page Padding | XL (24px) | Default horizontal padding for a screen's content area. | `pagePadding` |
+| Page Padding | MD (12px) | Default horizontal padding for a screen's content area. **From the approved mockups** (their side margin measures about 10 pt; was 24). | `pagePadding` |
 | Card Padding | LG (16px) | Default internal padding for a card or elevated surface. | `cardPadding` |
 | Button Padding | MD (12px) | Default internal padding for a button's content. | `buttonPadding` |
-| Section Gap | XXL (32px) | Default vertical gap between distinct sections on a screen. | `sectionGap` |
-| Card Gap | LG (16px) | Default gap between adjacent cards in a list or grid. | `cardGap` |
+| Section Gap | XL (24px) | Default vertical gap between distinct sections on a screen. **From the approved mockups** (was 32). | `sectionGap` |
+| Card Gap | MD (12px) | Default gap between adjacent cards in a list or grid. **From the approved mockups** (tiles sit about 11 pt apart; was 16). | `cardGap` |
 | Icon Button Size | Display (48px) | Diameter / tap-target size for icon buttons. | `iconButtonSize` |
 
 Reason: these six aliases cover the layout decisions every feature screen makes repeatedly (screen padding, card padding, button padding, section-to-section spacing, card-to-card spacing, icon button sizing). Aliasing them to the base scale — rather than letting each feature pick its own combination of raw tokens — is what makes "every screen breathes the same way" (per the Design Bible) an enforceable property instead of a hope.
@@ -108,11 +108,11 @@ Never write a literal `EdgeInsets.all(16)` or `SizedBox(height: 24)` for a gap t
 | `xxxl` | 40 |
 | `display` | 48 |
 | `hero` | 64 |
-| `pagePadding` | 24 (alias of `xl`) |
+| `pagePadding` | 12 (alias of `md`) |
 | `cardPadding` | 16 (alias of `lg`) |
 | `buttonPadding` | 12 (alias of `md`) |
-| `sectionGap` | 32 (alias of `xxl`) |
-| `cardGap` | 16 (alias of `lg`) |
+| `sectionGap` | 24 (alias of `xl`) |
+| `cardGap` | 12 (alias of `md`) |
 | `iconButtonSize` | 48 (alias of `display`) |
 
 ## Example

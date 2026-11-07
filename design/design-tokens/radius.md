@@ -46,8 +46,8 @@ No radius asset exists to source values from (see [Note on Source](#note-on-sour
 |---|---|---|---|---|
 | Small | 8px | Matches the `sm` spacing step (`spacing.md`) — the smallest radius that still reads as "rounded" rather than sharp at small control sizes. | Compact controls: input fields, badges, tags, small chips-as-filters. | `small` |
 | Medium | 16px | Matches the `lg` spacing step — enough rounding to feel premium on a control the size of a button without looking like a pill. | Buttons. | `medium` |
-| Large | 24px | Matches the `xl` spacing step — the scale's default for the app's most common elevated surface. | Cards, dialogs. | `large` |
-| Extra Large | 32px | Matches the `xxl` spacing step — visibly rounder than `large`, reserved for full-width surfaces that need to feel soft against the whole screen edge. | Bottom sheets. | `extraLarge` |
+| Large | 18px | **From the approved mockups** (tiles, cards and hero cards measure about 18 pt; was 24). | Cards, tiles, dialogs. | `large` |
+| Extra Large | 24px | Rounder than `large`, for full-width surfaces. Reduced in step with `large` (was 32). | Bottom sheets, hero cards. | `extraLarge` |
 | Pill | 999px | A value larger than any realistic component height forces `BorderRadius.circular` to cap at a true stadium/pill shape, regardless of the component's actual size — this is a standard trick for "fully rounded," not a literal 999px radius ever being reached. | Chips, fully-rounded status pills. | `pill` |
 
 Reason for the scale as a whole: reusing the exact numeric values already defined in `spacing.md` (8/16/24/32) means a Flutter engineer who already knows the spacing scale already knows the radius scale — there is nothing new to memorise, and the two token systems visibly agree with each other instead of coincidentally almost matching.
@@ -88,8 +88,8 @@ Never write a literal `BorderRadius.circular(24)` for a shape that has a token a
 |---|---|
 | `small` | 8 |
 | `medium` | 16 |
-| `large` | 24 |
-| `extraLarge` | 32 |
+| `large` | 18 |
+| `extraLarge` | 24 |
 | `pill` | 999 |
 | `borderWidthDefault` | 1 |
 | `borderWidthFocused` | 2 |

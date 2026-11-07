@@ -64,7 +64,11 @@ class StandingsPreview extends StatelessWidget {
                     maxLines: 1,
                   ),
                 ),
-                Icon(Icons.chevron_right, color: colours.accent, size: 18),
+                Icon(
+                  Icons.chevron_right,
+                  color: colours.textSecondary,
+                  size: 18,
+                ),
               ],
             ),
             SizedBox(height: spacing.md),

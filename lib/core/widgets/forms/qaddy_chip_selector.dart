@@ -146,7 +146,7 @@ class _QaddyChip extends StatelessWidget {
       onTap: tap,
       child: Material(
         color: selected
-            ? colours.secondary.withValues(alpha: 0.24)
+            ? colours.selected.withValues(alpha: 0.24)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(radius.large),
         child: InkWell(
@@ -159,7 +159,7 @@ class _QaddyChip extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(radius.large),
               border: Border.all(
-                color: selected ? colours.secondary : colours.border,
+                color: selected ? colours.selected : colours.border,
                 width: selected
                     ? radius.borderWidthFocused
                     : radius.borderWidthDefault,

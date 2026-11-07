@@ -29,8 +29,8 @@ class QaddyRadius extends ThemeExtension<QaddyRadius> {
   static const QaddyRadius standard = QaddyRadius(
     small: 8,
     medium: 16,
-    large: 24,
-    extraLarge: 32,
+    large: 18,
+    extraLarge: 24,
     pill: 999,
     borderWidthDefault: 1,
     borderWidthFocused: 2,
