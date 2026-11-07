@@ -31,7 +31,7 @@ void main() {
 
     // Birdie for the golfer, then play the rest of the course at par.
     await _tap(tester, find.byTooltip('Take a stroke off Tiamana'));
-    expect(find.text('Birdie'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^You: 3, Birdie')), findsOneWidget);
     for (var hole = 1; hole < 18; hole++) {
       await _tap(tester, find.text('Next hole'));
     }

@@ -79,8 +79,10 @@ void main() {
       expect(find.text('Richmond Golf Club'), findsOneWidget);
       expect(find.text('Live scoring'), findsOneWidget);
       expect(find.text('Hole 1'), findsOneWidget);
-      expect(find.text('Par 4  |  352 m  |  SI 11'), findsOneWidget);
-      expect(find.text('Front nine'), findsOneWidget);
+      expect(find.text('Par 4'), findsOneWidget);
+      expect(find.text('352 m'), findsWidgets);
+      expect(find.text('SI 11'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Front nine')), findsOneWidget);
       expect(find.text('Enter scores'), findsOneWidget);
       expect(find.bySemanticsLabel('Hole 5, not played yet'), findsOneWidget);
       expect(find.bySemanticsLabel('Hole 1, current hole'), findsOneWidget);
@@ -111,7 +113,7 @@ void main() {
       expect(find.text('You'), findsOneWidget);
       expect(find.text('Tom'), findsOneWidget);
       expect(find.text('Ben'), findsOneWidget);
-      expect(find.text('Par'), findsNWidgets(3));
+      expect(find.bySemanticsLabel(RegExp(', Par, ')), findsNWidgets(3));
       expect(
         tester.getTopLeft(find.text('You')).dy,
         lessThan(tester.getTopLeft(find.text('Tom')).dy),
@@ -122,12 +124,15 @@ void main() {
       final container = await _pump(tester);
 
       await _tap(tester, find.byTooltip('Take a stroke off Tom'));
-      expect(find.text('Birdie'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('^Tom: 3, Birdie')), findsOneWidget);
       expect(container.read(liveRoundProvider)!.grossAt('Tom', 0), 3);
 
       await _tap(tester, find.byTooltip('Add a stroke for Ben'));
       await _tap(tester, find.byTooltip('Add a stroke for Ben'));
-      expect(find.text('Double bogey'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('^Ben: 6, Double bogey')),
+        findsOneWidget,
+      );
       expect(container.read(liveRoundProvider)!.grossAt('Ben', 0), 6);
     });
 
@@ -137,12 +142,13 @@ void main() {
       await _pump(tester);
 
       // Stroke index 11: Ben (off 12) gets a shot here, the others do not.
-      expect(find.text('2 pts · '), findsNothing);
-      expect(find.text('2 pts'), findsNWidgets(2));
-      expect(find.text('3 pts · +1 shot'), findsOneWidget);
+      expect(find.bySemanticsLabel('Tom: 4, Par, 2 points'), findsOneWidget);
+      expect(find.bySemanticsLabel('Ben: 4, Par, 3 points'), findsOneWidget);
+      expect(find.text('+1'), findsOneWidget);
+      expect(find.bySemanticsLabel('1 shot given'), findsOneWidget);
 
       await _tap(tester, find.byTooltip('Take a stroke off Tom'));
-      expect(find.text('3 pts'), findsOneWidget);
+      expect(find.bySemanticsLabel('Tom: 3, Birdie, 3 points'), findsOneWidget);
     });
 
     testWidgets('a hole can be picked up', (tester) async {
@@ -153,7 +159,10 @@ void main() {
       }
 
       expect(container.read(liveRoundProvider)!.grossAt('Ben', 0), 0);
-      expect(find.text('Picked up'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('^Ben: picked up, Picked up')),
+        findsOneWidget,
+      );
       expect(find.text('–'), findsOneWidget);
       // Nothing further to take off, but a stroke can be put back.
       final minus = find.ancestor(
@@ -241,7 +250,7 @@ void main() {
       expect(find.text('Finish the round?'), findsOneWidget);
       expect(find.textContaining('Only the 1 hole everyone'), findsOneWidget);
 
-      await _tap(tester, find.text('Finish round'));
+      await _tap(tester, find.text('Finish round').last);
 
       expect(container.read(completedRoundProvider)!.holesPlayed, 1);
       expect(find.text('Go: /rounds/complete'), findsOneWidget);

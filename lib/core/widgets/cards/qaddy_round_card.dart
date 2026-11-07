@@ -14,7 +14,7 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_text.dart';
-import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_face_stack.dart';
 import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
@@ -188,7 +188,7 @@ class QaddyRoundCard extends StatelessWidget {
                                 : const SizedBox.shrink(),
                           ),
                           if (players.length > 1)
-                            _MiniHuddle(names: players, total: total),
+                            QaddyFaceStack(names: players, total: total),
                         ],
                       ),
                     if (note != null) metaRow(noteIcon, note!),
@@ -224,72 +224,6 @@ class QaddyRoundCard extends StatelessWidget {
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-/// Up to three overlapping faces and a "+N" circle: who else is in, small.
-class _MiniHuddle extends StatelessWidget {
-  const _MiniHuddle({required this.names, required this.total});
-
-  final List<String> names;
-  final int total;
-
-  static const double _size = 26;
-  static const double _step = 17;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
-    final shown = names.take(3).toList();
-    final more = total - shown.length;
-    final slots = shown.length + (more > 0 ? 1 : 0);
-
-    Widget face(Widget child, int index) => Positioned(
-      left: _step * index,
-      child: Container(
-        width: _size,
-        height: _size,
-        padding: const EdgeInsets.all(1.5),
-        decoration: BoxDecoration(shape: BoxShape.circle, color: colours.card),
-        child: child,
-      ),
-    );
-
-    return Semantics(
-      label: '$total playing',
-      excludeSemantics: true,
-      child: SizedBox(
-        width: _size + _step * (slots - 1),
-        height: _size,
-        child: Stack(
-          children: <Widget>[
-            for (final (index, name) in shown.indexed)
-              face(FittedBox(child: QaddyAvatar(name: name)), index),
-            if (more > 0)
-              face(
-                Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: colours.backgroundBase,
-                  ),
-                  child: Text(
-                    '+$more',
-                    style: TextStyle(
-                      color: colours.textPrimary,
-                      fontSize: 9,
-                      fontWeight: FontWeight.w600,
-                      height: 1,
-                    ),
-                  ),
-                ),
-                shown.length,
-              ),
-          ],
-        ),
       ),
     );
   }

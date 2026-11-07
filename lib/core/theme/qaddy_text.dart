@@ -94,6 +94,37 @@ abstract final class QaddyText {
   /// The place on a weather card.
   static final TextStyle weatherPlace = _style(12, FontWeight.w400, line: 16);
 
+  /// The title in a screen's top bar ("Live scoring").
+  static final TextStyle screenTitle = _style(
+    16,
+    FontWeight.w600,
+    line: 22,
+    spacing: -0.1,
+  );
+
+  /// The line under it (the course, the group).
+  static final TextStyle screenSubtitle = _style(12, FontWeight.w400, line: 16);
+
+  /// The big title of a hole or a subject: "Hole 4".
+  static final TextStyle holeTitle = _style(
+    22,
+    FontWeight.w700,
+    line: 28,
+    spacing: -0.3,
+  );
+
+  /// The facts under it: "Par 4 | 380 m | SI 10".
+  static final TextStyle holeMeta = _style(14, FontWeight.w400, line: 20);
+
+  /// A player's name in a list panel.
+  static final TextStyle panelName = _style(14, FontWeight.w600, line: 20);
+
+  /// The score in a stepper.
+  static final TextStyle stepperFigure = _style(16, FontWeight.w700, line: 20);
+
+  /// A running total beside a stepper ("E", "+1").
+  static final TextStyle runningTotal = _style(14, FontWeight.w500, line: 20);
+
   /// A promo card's title.
   static final TextStyle promoTitle = _style(
     19,

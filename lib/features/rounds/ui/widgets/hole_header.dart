@@ -1,15 +1,15 @@
 /// The hole you are standing on, as the approved Live Scoring mockup draws it:
-/// "Hole 4" large, "Par 4 | 380 m | SI 10" beneath it, and which nine it is on
-/// the right. No card: it reads at arm's length because it is the biggest
-/// thing on the screen.
+/// "Hole 4" large, "Par 4 | 380 m | SI 10" beneath it and, at the right, the
+/// pill that takes you to the next hole. No card: it reads at arm's length
+/// because it is the biggest thing on the screen.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
-import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/features/rounds/models/course_hole.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
@@ -18,7 +18,7 @@ class HoleHeader extends StatelessWidget {
   const HoleHeader({
     required this.hole,
     required this.total,
-    this.greeting,
+    this.onNext,
     super.key,
   });
 
@@ -28,24 +28,21 @@ class HoleHeader extends StatelessWidget {
   /// How many holes the round has.
   final int total;
 
-  /// A friendly line under the details — on the first tee, "Enjoy it out
-  /// there."
-  final String? greeting;
+  /// Goes to the next hole. Omit on the last hole: the pill is not drawn.
+  final VoidCallback? onNext;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
     final nine = hole.number <= total ~/ 2 ? 'Front nine' : 'Back nine';
-    final details = <String>[
+    final facts = <String>[
       'Par ${hole.par}',
       if (hole.metres != null) '${hole.metres} m',
       'SI ${hole.strokeIndex}',
-    ].join('  |  ');
+    ];
     final sideGames = <SideGame>[
       for (final game in upcomingRoundSideGames)
         if (game.hole == hole.number) game,
@@ -53,6 +50,11 @@ class HoleHeader extends StatelessWidget {
     final sideGame = sideGames.isEmpty
         ? ''
         : ' ${sideGames.first.name} is played here.';
+
+    Widget divider() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 9),
+      child: Container(width: 1, height: 14, color: colours.border),
+    );
 
     return Semantics(
       container: true,
@@ -66,7 +68,6 @@ class HoleHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Expanded(
                   child: Column(
@@ -85,55 +86,50 @@ class HoleHeader extends StatelessWidget {
                         child: Text(
                           'Hole ${hole.number}',
                           key: ValueKey<int>(hole.number),
-                          style: typography.h1.copyWith(
+                          style: QaddyText.holeTitle.copyWith(
                             color: colours.textPrimary,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
                       SizedBox(height: spacing.xs),
-                      Text(
-                        details,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: typography.bodyLarge.copyWith(
-                          color: colours.textSecondary,
-                        ),
+                      Row(
+                        children: <Widget>[
+                          for (final (index, fact)
+                              in facts.indexed) ...<Widget>[
+                            if (index > 0) divider(),
+                            Flexible(
+                              child: Text(
+                                fact,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: QaddyText.holeMeta.copyWith(
+                                  color: colours.textPrimary.withValues(
+                                    alpha: 0.9,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ],
                   ),
                 ),
-                SizedBox(width: spacing.md),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: spacing.md,
-                    vertical: spacing.sm,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colours.card,
-                    borderRadius: BorderRadius.circular(radius.large),
-                    border: Border.all(color: colours.border),
-                  ),
-                  child: Text(
-                    nine,
-                    style: typography.small.copyWith(
-                      color: colours.textSecondary,
-                      fontWeight: FontWeight.w600,
+                if (onNext != null) ...<Widget>[
+                  SizedBox(width: spacing.md),
+                  SizedBox(
+                    width: 118,
+                    child: QaddySecondaryButton(
+                      label: 'Next hole',
+                      icon: Icons.chevron_right_rounded,
+                      compact: true,
+                      height: 40,
+                      onPressed: onNext,
                     ),
                   ),
-                ),
+                ],
               ],
             ),
-            if (greeting != null) ...<Widget>[
-              SizedBox(height: spacing.md),
-              Text(
-                greeting!,
-                style: typography.body.copyWith(
-                  color: colours.textSecondary,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
           ],
         ),
       ),

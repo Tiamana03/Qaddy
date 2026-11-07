@@ -18,7 +18,9 @@ class QaddySecondaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.iconBefore = false,
     this.compact = false,
+    this.height,
     super.key,
   });
 
@@ -28,11 +30,17 @@ class QaddySecondaryButton extends StatelessWidget {
   /// Called when tapped. Pass `null` to render the disabled state.
   final VoidCallback? onPressed;
 
-  /// Optional trailing icon.
+  /// Optional icon, after the label unless [iconBefore].
   final IconData? icon;
+
+  /// Puts the [icon] before the label (a pencil before "Hole notes").
+  final bool iconBefore;
 
   /// The Small (40) size, to sit beside a compact gold button.
   final bool compact;
+
+  /// Overrides the height (the mockup's Next Hole pill is 40).
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -43,56 +51,55 @@ class QaddySecondaryButton extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final enabled = onPressed != null;
-    // The compact button is the mockups' quiet pill ("View Details"): a dark
-    // fill, a hairline and white text, not the green-outlined button.
-    final foreground = !enabled
-        ? colours.disabledForeground
-        : compact
-        ? colours.textPrimary
-        : colours.accent;
-    final borderColour = !enabled
-        ? colours.disabledBorder
-        : compact
-        ? colours.border
-        : colours.accent;
+    // The mockups' quiet button ("View Details", "Hole Notes", "Edit Round"):
+    // a dark fill, a hairline and white text, in a pill when compact.
+    final foreground = colours.textPrimary;
+    final borderColour = colours.border;
     final borderRadius = BorderRadius.circular(compact ? 999 : radius.medium);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: borderRadius,
-        child: Container(
-          height: compact ? 36 : spacing.display,
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? spacing.md : spacing.buttonPadding,
-          ),
-          decoration: BoxDecoration(
-            color: compact && enabled ? colours.surface1 : null,
-            borderRadius: borderRadius,
-            border: Border.all(
-              color: borderColour,
-              width: radius.borderWidthDefault,
+    return Opacity(
+      opacity: enabled ? 1 : 0.45,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: borderRadius,
+          child: Container(
+            height: height ?? (compact ? 36 : spacing.display),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? spacing.md : spacing.buttonPadding,
             ),
-          ),
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: (compact ? QaddyText.pillLabel : typography.button)
-                      .copyWith(color: foreground),
-                ),
+            decoration: BoxDecoration(
+              color: colours.surface1,
+              borderRadius: borderRadius,
+              border: Border.all(
+                color: borderColour,
+                width: radius.borderWidthDefault,
               ),
-              if (icon != null) ...<Widget>[
-                SizedBox(width: spacing.sm),
-                Icon(icon, color: foreground, size: spacing.md * 2),
+            ),
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (icon != null && iconBefore) ...<Widget>[
+                  Icon(icon, color: foreground, size: compact ? 18 : 22),
+                  SizedBox(width: spacing.sm),
+                ],
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: (compact ? QaddyText.pillLabel : typography.button)
+                        .copyWith(color: foreground),
+                  ),
+                ),
+                if (icon != null && !iconBefore) ...<Widget>[
+                  SizedBox(width: spacing.sm),
+                  Icon(icon, color: foreground, size: compact ? 18 : 22),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

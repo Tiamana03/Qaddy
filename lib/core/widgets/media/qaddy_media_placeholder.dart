@@ -19,6 +19,7 @@ class QaddyMediaPlaceholder extends StatelessWidget {
     this.scrim = false,
     this.child,
     this.tone = 0,
+    this.aerial = false,
     super.key,
   });
 
@@ -38,6 +39,10 @@ class QaddyMediaPlaceholder extends StatelessWidget {
   /// so neighbouring slots are not identical.
   final int tone;
 
+  /// Draws the course as seen from above (a hole view): trees, a fairway
+  /// ribbon, a green with its flag and a bunker.
+  final bool aerial;
+
   @override
   Widget build(BuildContext context) {
     final colours = Theme.of(context).extension<QaddyColours>()!;
@@ -51,7 +56,9 @@ class QaddyMediaPlaceholder extends StatelessWidget {
             Image(image: image!, fit: BoxFit.cover)
           else
             CustomPaint(
-              painter: _CoursePainter(colours: colours, tone: tone),
+              painter: aerial
+                  ? _AerialPainter(colours: colours)
+                  : _CoursePainter(colours: colours, tone: tone),
             ),
           if (scrim)
             const DecoratedBox(
@@ -148,4 +155,119 @@ class _CoursePainter extends CustomPainter {
   @override
   bool shouldRepaint(_CoursePainter old) =>
       old.colours != colours || old.tone != tone;
+}
+
+/// A hole from above: dark trees, a fairway ribbon bending up to a green with
+/// a flag, and a bunker beside it.
+class _AerialPainter extends CustomPainter {
+  const _AerialPainter({required this.colours});
+
+  final QaddyColours colours;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final bounds = Offset.zero & size;
+
+    // The rough: a deep green with a lighter middle.
+    canvas.drawRect(
+      bounds,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(0.1, 0.1),
+          radius: 1.1,
+          colors: <Color>[
+            Color.lerp(colours.selected, colours.backgroundBase, 0.55)!,
+            Color.lerp(colours.primary, colours.backgroundBase, 0.6)!,
+          ],
+        ).createShader(bounds),
+    );
+
+    // Trees: soft dark blobs down both sides.
+    final tree = Paint()..color = const Color(0x33000000);
+    for (var i = 0; i < 26; i++) {
+      final t = i / 25;
+      final y = h * (0.04 + 0.92 * t);
+      canvas
+        ..drawCircle(
+          Offset(w * (0.06 + 0.05 * ((i * 7) % 5) / 4), y),
+          h * 0.06,
+          tree,
+        )
+        ..drawCircle(
+          Offset(w * (0.86 + 0.07 * ((i * 3) % 5) / 4), y),
+          h * 0.065,
+          tree,
+        );
+    }
+
+    // The fairway: a ribbon from the tee at the bottom to the green.
+    final fairway = Path()
+      ..moveTo(w * 0.42, h)
+      ..cubicTo(w * 0.36, h * 0.7, w * 0.5, h * 0.5, w * 0.46, h * 0.22)
+      ..lineTo(w * 0.62, h * 0.22)
+      ..cubicTo(w * 0.66, h * 0.5, w * 0.58, h * 0.7, w * 0.64, h)
+      ..close();
+    canvas.drawPath(
+      fairway,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Color.lerp(colours.accentTeal, colours.selected, 0.6)!,
+            colours.selected,
+          ],
+        ).createShader(bounds),
+    );
+    // The mown line down the middle, then the green and its flag.
+    final green = Offset(w * 0.54, h * 0.2);
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(w * 0.53, h)
+          ..cubicTo(w * 0.47, h * 0.7, w * 0.58, h * 0.5, w * 0.54, h * 0.22),
+        Paint()
+          ..color = colours.gold.withValues(alpha: 0.6)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.6,
+      )
+      ..drawCircle(green, h * 0.1, Paint()..color = colours.selected)
+      ..drawCircle(
+        green,
+        h * 0.1,
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0.7)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.4,
+      )
+      ..drawLine(
+        green,
+        green.translate(0, -h * 0.09),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.5,
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(green.dx, green.dy - h * 0.09)
+          ..lineTo(green.dx + h * 0.05, green.dy - h * 0.07)
+          ..lineTo(green.dx, green.dy - h * 0.05)
+          ..close(),
+        Paint()..color = colours.gold,
+      )
+      // A bunker beside the green.
+      ..drawOval(
+        Rect.fromCenter(
+          center: Offset(w * 0.42, h * 0.3),
+          width: w * 0.07,
+          height: h * 0.1,
+        ),
+        Paint()..color = const Color(0xFFD9C9A0).withValues(alpha: 0.85),
+      );
+  }
+
+  @override
+  bool shouldRepaint(_AerialPainter old) => old.colours != colours;
 }

@@ -56,16 +56,16 @@ void main() {
       await tester.pumpWidget(row());
 
       expect(find.text('4'), findsOneWidget);
-      expect(find.text('Par'), findsOneWidget);
-      expect(find.text('2 pts'), findsOneWidget);
+      expect(find.bySemanticsLabel('Tom: 4, Par, 2 points'), findsOneWidget);
+      expect(find.text('E'), findsOneWidget);
     });
 
     testWidgets('names the score and the shots received', (tester) async {
       await tester.pumpWidget(row(gross: 3, shots: 1, points: 4));
 
       expect(find.text('3'), findsOneWidget);
-      expect(find.text('Birdie'), findsOneWidget);
-      expect(find.text('4 pts · +1 shot'), findsOneWidget);
+      expect(find.bySemanticsLabel('Tom: 3, Birdie, 4 points'), findsOneWidget);
+      expect(find.text('+1'), findsOneWidget);
     });
 
     testWidgets('calls onNudge with +1 and -1', (tester) async {
@@ -91,7 +91,10 @@ void main() {
       await tester.pumpWidget(row(gross: 0, points: 0));
 
       expect(find.text('–'), findsOneWidget);
-      expect(find.text('Picked up'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel('Tom: picked up, Picked up, 0 points'),
+        findsOneWidget,
+      );
       final minus = find.ancestor(
         of: find.byTooltip('Take a stroke off Tom'),
         matching: find.byType(IconButton),
@@ -198,8 +201,10 @@ void main() {
       );
 
       expect(find.text('Hole 7'), findsOneWidget);
-      expect(find.text('Par 4  |  364 m  |  SI 9'), findsOneWidget);
-      expect(find.text('Front nine'), findsOneWidget);
+      expect(find.text('Par 4'), findsOneWidget);
+      expect(find.text('364 m'), findsOneWidget);
+      expect(find.text('SI 9'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Front nine')), findsOneWidget);
     });
 
     testWidgets('says back nine from the tenth', (tester) async {
@@ -208,7 +213,7 @@ void main() {
       );
 
       expect(find.text('Hole 12'), findsOneWidget);
-      expect(find.text('Back nine'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Back nine')), findsOneWidget);
     });
   });
 

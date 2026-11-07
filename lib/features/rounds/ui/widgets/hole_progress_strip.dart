@@ -1,5 +1,6 @@
-/// The round at a glance: eighteen numbered dots, the ones played filled in,
-/// the current hole in gold. Tap one to jump there.
+/// The round at a glance, as the mockup draws it: a strip of numbered circles,
+/// the current hole ringed in gold, the ones played tinted green, the rest
+/// plain. Tap one to jump there.
 library;
 
 import 'package:flutter/material.dart';
@@ -29,8 +30,8 @@ class HoleProgressStrip extends StatefulWidget {
 }
 
 class _HoleProgressStripState extends State<HoleProgressStrip> {
-  static const double _size = 40;
-  static const double _gap = 8;
+  static const double _size = 36;
+  static const double _gap = 5;
 
   final ScrollController _controller = ScrollController();
 
@@ -101,15 +102,20 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
               ? 'scored'
               : 'not played yet';
 
+          // The current hole is ringed in gold on the page colour; a hole that
+          // has been played is tinted green; the rest are plain.
           final background = current
+              ? Colors.transparent
+              : played
+              ? colours.selected.withValues(alpha: 0.28)
+              : colours.surface1;
+          final borderColour = current
               ? colours.gold
               : played
-              ? colours.accent.withValues(alpha: 0.22)
-              : colours.surface1;
-          final foreground = current
-              ? colours.backgroundBase
-              : played
-              ? colours.accent
+              ? colours.selected.withValues(alpha: 0.6)
+              : colours.border;
+          final foreground = current || played
+              ? colours.textPrimary
               : colours.textSecondary;
 
           return Semantics(
@@ -135,7 +141,8 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
                   color: background,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: current || played ? background : colours.border,
+                    color: borderColour,
+                    width: current ? 1.5 : 1,
                   ),
                 ),
                 child: Text(
