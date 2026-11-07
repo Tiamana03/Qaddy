@@ -138,6 +138,7 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
               : Icons.emoji_events_outlined,
           players: <String>[for (final p in players) p.name],
           total: players.length,
+          showCount: players.length > 1,
           sample: planned,
           primaryLabel: 'Start round',
           onPrimary: () {

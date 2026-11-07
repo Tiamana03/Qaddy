@@ -73,7 +73,9 @@ void main() {
     );
   });
 
-  testWidgets('has the Buttons Library heights: 48, 56 and 40', (tester) async {
+  testWidgets('has the Buttons Library heights: 48, 56, and a 36 pill', (
+    tester,
+  ) async {
     await _pump(tester, QaddyGoldButton(label: 'A', onPressed: () {}));
     expect(_size(tester).height, QaddyButtonHeight.medium);
 
@@ -87,6 +89,7 @@ void main() {
       tester,
       QaddyGoldButton(label: 'A', compact: true, onPressed: () {}),
     );
-    expect(_size(tester).height, QaddyButtonHeight.small);
+    // The compact button is the mockups' 36-tall pill.
+    expect(_size(tester).height, 36);
   });
 }

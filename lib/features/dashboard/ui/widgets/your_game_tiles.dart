@@ -1,9 +1,10 @@
 /// "Your Game": four small stat tiles, as the approved Home mockup draws them.
-/// Handicap, rounds, best score and wins; the shared `QaddyStatTiles` draws
-/// them.
+/// Handicap, rounds, best score and wins, each with its icon at the foot; the
+/// shared `QaddyStatTiles` draws them.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_stat_tiles.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
@@ -28,6 +29,7 @@ class YourGameTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colours = Theme.of(context).extension<QaddyColours>()!;
     final career = stats;
 
     return QaddyStatTiles(
@@ -36,15 +38,28 @@ class YourGameTiles extends StatelessWidget {
         QaddyStat(
           figure: handicap == null ? '–' : handicapLabel(handicap!),
           label: 'Handicap',
+          icon: Icons.trending_up_rounded,
+          iconColour: colours.success,
         ),
-        QaddyStat(figure: '${career?.rounds ?? 0}', label: 'Rounds'),
+        QaddyStat(
+          figure: '${career?.rounds ?? 0}',
+          label: 'Rounds',
+          icon: Icons.flag_rounded,
+          iconColour: colours.textPrimary,
+        ),
         QaddyStat(
           figure: career == null
               ? '–'
               : '${career.bestRound.pointsPer18.round()}',
           label: 'Best score',
+          icon: Icons.emoji_events_rounded,
         ),
-        QaddyStat(figure: '${career?.wins ?? 0}', label: 'Wins'),
+        QaddyStat(
+          figure: '${career?.wins ?? 0}',
+          label: 'Wins',
+          icon: Icons.bar_chart_rounded,
+          iconColour: colours.success,
+        ),
       ],
     );
   }

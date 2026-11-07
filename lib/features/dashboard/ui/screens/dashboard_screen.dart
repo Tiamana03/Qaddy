@@ -15,14 +15,14 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_promo_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -110,26 +110,26 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
-            SizedBox(height: spacing.md),
+            const SizedBox(height: 8),
             const _Header(),
-            SizedBox(height: spacing.lg),
+            const SizedBox(height: 9),
             HomeHero(
               greeting: '${greetingFor(now)},',
               name: currentUserDisplayName,
-              line: dateLine(now),
+              line: 'More golf. Better days.',
               weather: planned ? upcomingRound.weather : null,
               course: planned ? upcomingRound.course : null,
               sample: planned,
             ),
-            SizedBox(height: spacing.cardGap),
+            const SizedBox(height: 18),
             QaddyQuickActions(actions: quickActions),
-            SizedBox(height: spacing.sectionGap),
+            const SizedBox(height: 22),
             QaddySectionHeading(
               title: 'Upcoming round',
               actionLabel: 'See all',
               onAction: () => context.go(AppRoutes.rounds),
             ),
-            SizedBox(height: spacing.md),
+            const SizedBox(height: 10),
             if (live != null)
               QaddyRoundCard(
                 course: live.course,
@@ -158,27 +158,36 @@ class DashboardScreen extends ConsumerWidget {
                     : null,
               ),
             if (stats != null || golfer.handicap != null) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
+              const SizedBox(height: 21),
               QaddySectionHeading(
                 title: 'Your game',
                 actionLabel: 'See all',
                 onAction: () => context.push(AppRoutes.profileStatistics),
               ),
-              SizedBox(height: spacing.md),
+              const SizedBox(height: 4),
               YourGameTiles(
                 handicap: golfer.handicap,
                 stats: stats,
                 onOpen: () => context.push(AppRoutes.profileStatistics),
               ),
             ],
-            if (nextTrip != null) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
+            const SizedBox(height: 26),
+            if (nextTrip != null)
               NextTripCard(
                 trip: nextTrip,
                 now: now,
                 onOpen: () => context.push(AppRoutes.tripDetails(nextTrip.id)),
+              )
+            else
+              QaddyPromoCard(
+                title: 'Plan your next\ngolf trip',
+                body:
+                    'Discover amazing courses, create itineraries and play '
+                    'with your crew.',
+                actionLabel: 'Explore trips',
+                badgeIcon: Icons.flight,
+                onAction: () => context.push(AppRoutes.tripCreate),
               ),
-            ],
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -189,8 +198,9 @@ class DashboardScreen extends ConsumerWidget {
 
 /// The brand, and the way to Search, Notifications and Profile.
 ///
-/// The mark and wordmark are a placeholder for the crown lockup (see
-/// `docs/design/asset-register.md`).
+/// The mark, wordmark and tagline are a placeholder for the crown lockup (see
+/// `docs/design/asset-register.md`). As in the mockup, the icons have no
+/// circle behind them and the face wears a thin white ring.
 class _Header extends ConsumerWidget {
   const _Header();
 
@@ -199,88 +209,118 @@ class _Header extends ConsumerWidget {
     final unread = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
-    Widget action(Widget icon, String tooltip, VoidCallback onTap) => Padding(
-      padding: EdgeInsets.only(left: spacing.sm),
-      child: QaddyIconButton.custom(
-        tooltip: tooltip,
-        semanticLabel: tooltip,
-        onPressed: onTap,
-        child: icon,
+    Widget action({
+      required Widget icon,
+      required String tooltip,
+      required VoidCallback onTap,
+    }) => Tooltip(
+      message: tooltip,
+      child: Semantics(
+        button: true,
+        label: tooltip,
+        excludeSemantics: true,
+        onTap: onTap,
+        child: InkResponse(
+          onTap: onTap,
+          radius: 24,
+          child: SizedBox(width: 44, height: 48, child: Center(child: icon)),
+        ),
       ),
     );
 
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Row(
-            children: <Widget>[
-              const QaddyMark(size: 32, animate: false),
-              SizedBox(width: spacing.sm),
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Qaddy',
-                    style: typography.h3.copyWith(
-                      color: colours.textPrimary,
-                      fontWeight: FontWeight.w700,
+    return SizedBox(
+      height: 52,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    const QaddyMark(size: 30, animate: false),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Qaddy',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: QaddyText.heroName.copyWith(
+                          color: colours.textPrimary,
+                          fontSize: 30,
+                        ),
+                      ),
                     ),
+                  ],
+                ),
+                Text(
+                  'MORE GOLF. BETTER DAYS.',
+                  maxLines: 1,
+                  overflow: TextOverflow.clip,
+                  style: QaddyText.tagline.copyWith(
+                    color: colours.textPrimary.withValues(alpha: 0.9),
+                    fontSize: 7.5,
+                    height: 10 / 7.5,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.9,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        action(
-          const Icon(Icons.search),
-          'Search',
-          () => context.push(AppRoutes.homeSearch),
-        ),
-        action(
-          Stack(
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              const Icon(Icons.notifications_outlined),
-              if (unread > 0)
-                // The unread count, as in the mockups: a small gold badge.
-                Positioned(
-                  right: -spacing.sm,
-                  top: -spacing.sm,
-                  child: Container(
-                    constraints: BoxConstraints(
-                      minWidth: spacing.lg,
-                      minHeight: spacing.lg,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: spacing.xs),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colours.gold,
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(color: colours.surface1, width: 1.5),
-                    ),
-                    child: Text(
-                      unread > 9 ? '9+' : '$unread',
-                      style: typography.caption.copyWith(
-                        color: colours.backgroundBase,
-                        fontWeight: FontWeight.w700,
-                        height: 1,
-                        letterSpacing: 0,
+          action(
+            icon: Icon(Icons.search, size: 24, color: colours.textPrimary),
+            tooltip: 'Search',
+            onTap: () => context.push(AppRoutes.homeSearch),
+          ),
+          action(
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: <Widget>[
+                Icon(
+                  Icons.notifications_outlined,
+                  size: 26,
+                  color: colours.textPrimary,
+                ),
+                if (unread > 0)
+                  // The unread count, as in the mockups: a small gold badge.
+                  Positioned(
+                    right: -5,
+                    top: -5,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: colours.gold,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        unread > 9 ? '9+' : '$unread',
+                        style: TextStyle(
+                          fontFamily: QaddyText.heroName.fontFamily,
+                          color: colours.backgroundBase,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
+            tooltip: unread > 0
+                ? 'Notifications, $unread new'
+                : 'Notifications',
+            onTap: () => context.push(AppRoutes.homeNotifications),
           ),
-          unread > 0 ? 'Notifications, $unread new' : 'Notifications',
-          () => context.push(AppRoutes.homeNotifications),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: spacing.sm),
-          child: Semantics(
+          const SizedBox(width: 6),
+          Semantics(
             button: true,
             label: 'Your profile',
             excludeSemantics: true,
@@ -288,15 +328,23 @@ class _Header extends ConsumerWidget {
             child: InkResponse(
               onTap: () => context.go(AppRoutes.profile),
               radius: 28,
-              child: SizedBox(
-                width: 48,
-                height: 48,
-                child: QaddyAvatar(name: currentUserName),
+              child: Container(
+                width: 43,
+                height: 43,
+                padding: const EdgeInsets.all(1.5),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    width: 1.5,
+                  ),
+                ),
+                child: FittedBox(child: QaddyAvatar(name: currentUserName)),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

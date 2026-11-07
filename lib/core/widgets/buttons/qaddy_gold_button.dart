@@ -14,6 +14,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
 /// The Buttons Library's standard heights, in logical pixels.
@@ -35,6 +36,7 @@ class QaddyGoldButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.iconAfter = false,
     this.tall = false,
     this.compact = false,
     super.key,
@@ -46,8 +48,11 @@ class QaddyGoldButton extends StatelessWidget {
   /// Called when tapped. `null` disables the button.
   final VoidCallback? onPressed;
 
-  /// An optional leading icon.
+  /// An optional icon, before the label unless [iconAfter].
   final IconData? icon;
+
+  /// Puts the [icon] after the label ("Explore trips ›").
+  final bool iconAfter;
 
   /// The Large (56) size, for a hero's single main action.
   final bool tall;
@@ -65,15 +70,17 @@ class QaddyGoldButton extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final enabled = onPressed != null;
+    // The compact button is the mockups' pill: 36 tall, fully rounded, set in
+    // the small pill label.
     final height = tall
         ? QaddyButtonHeight.large
         : compact
-        ? QaddyButtonHeight.small
+        ? 36.0
         : QaddyButtonHeight.medium;
     final foreground = enabled
         ? colours.backgroundBase
         : colours.disabledForeground;
-    final shape = BorderRadius.circular(radius.medium);
+    final shape = BorderRadius.circular(compact ? 999 : radius.medium);
 
     return Semantics(
       button: true,
@@ -99,23 +106,31 @@ class QaddyGoldButton extends StatelessWidget {
                 minHeight: height,
               ),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: spacing.lg),
+                padding: EdgeInsets.symmetric(
+                  horizontal: compact ? spacing.md : spacing.lg,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    if (icon != null) ...<Widget>[
-                      Icon(icon, size: 18, color: foreground),
-                      SizedBox(width: spacing.sm),
+                    if (icon != null && !iconAfter) ...<Widget>[
+                      Icon(icon, size: compact ? 16 : 18, color: foreground),
+                      SizedBox(width: compact ? spacing.xs + 2 : spacing.sm),
                     ],
                     Flexible(
                       child: Text(
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: typography.button.copyWith(color: foreground),
+                        style:
+                            (compact ? QaddyText.pillLabel : typography.button)
+                                .copyWith(color: foreground),
                       ),
                     ),
+                    if (icon != null && iconAfter) ...<Widget>[
+                      SizedBox(width: compact ? spacing.xs + 2 : spacing.sm),
+                      Icon(icon, size: compact ? 16 : 18, color: foreground),
+                    ],
                   ],
                 ),
               ),

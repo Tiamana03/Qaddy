@@ -6,6 +6,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
 /// A heading with an optional trailing action.
@@ -51,9 +52,8 @@ class QaddySectionHeading extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     // White, semibold: the approved mockups' section title.
-                    style: typography.h4.copyWith(
+                    style: QaddyText.sectionTitle.copyWith(
                       color: colours.textPrimary,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -88,14 +88,15 @@ class QaddySectionHeading extends StatelessWidget {
             // A quiet grey "See all ›", as in the mockups, not a gold link.
             style: TextButton.styleFrom(
               foregroundColor: colours.textSecondary,
-              minimumSize: const Size(48, 44),
+              minimumSize: const Size(48, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               padding: EdgeInsets.symmetric(horizontal: spacing.sm),
             ),
             onPressed: onAction,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(actionLabel!, style: typography.small),
+                Text(actionLabel!, style: QaddyText.sectionLink),
                 Icon(
                   Icons.chevron_right,
                   size: 18,

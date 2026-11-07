@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 
 /// Qaddy's secondary button — for supporting actions (e.g. Cancel, Back).
@@ -42,9 +43,19 @@ class QaddySecondaryButton extends StatelessWidget {
     final typography = theme.extension<QaddyTypography>()!;
 
     final enabled = onPressed != null;
-    final foreground = enabled ? colours.accent : colours.disabledForeground;
-    final borderColour = enabled ? colours.accent : colours.disabledBorder;
-    final borderRadius = BorderRadius.circular(radius.medium);
+    // The compact button is the mockups' quiet pill ("View Details"): a dark
+    // fill, a hairline and white text, not the green-outlined button.
+    final foreground = !enabled
+        ? colours.disabledForeground
+        : compact
+        ? colours.textPrimary
+        : colours.accent;
+    final borderColour = !enabled
+        ? colours.disabledBorder
+        : compact
+        ? colours.border
+        : colours.accent;
+    final borderRadius = BorderRadius.circular(compact ? 999 : radius.medium);
 
     return Material(
       color: Colors.transparent,
@@ -52,9 +63,12 @@ class QaddySecondaryButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: borderRadius,
         child: Container(
-          height: compact ? 40 : spacing.display,
-          padding: EdgeInsets.symmetric(horizontal: spacing.buttonPadding),
+          height: compact ? 36 : spacing.display,
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? spacing.md : spacing.buttonPadding,
+          ),
           decoration: BoxDecoration(
+            color: compact && enabled ? colours.surface1 : null,
             borderRadius: borderRadius,
             border: Border.all(
               color: borderColour,
@@ -70,7 +84,8 @@ class QaddySecondaryButton extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: typography.button.copyWith(color: foreground),
+                  style: (compact ? QaddyText.pillLabel : typography.button)
+                      .copyWith(color: foreground),
                 ),
               ),
               if (icon != null) ...<Widget>[

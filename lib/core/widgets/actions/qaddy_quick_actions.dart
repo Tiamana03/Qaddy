@@ -7,7 +7,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 
@@ -49,7 +49,9 @@ class QaddyQuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
 
-    return IntrinsicHeight(
+    // The mockup's tiles are 80 tall, whatever their labels do.
+    return SizedBox(
+      height: 80,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -81,8 +83,7 @@ class _ActionTile extends StatelessWidget {
     final radius = theme.extension<QaddyRadius>()!;
     final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-    final borderRadius = BorderRadius.circular(radius.large);
+    final borderRadius = BorderRadius.circular(radius.medium);
 
     return Semantics(
       button: true,
@@ -111,36 +112,30 @@ class _ActionTile extends StatelessWidget {
               action.onTap();
             },
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: spacing.md,
-                horizontal: spacing.xs,
-              ),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(
-                      action.icon,
-                      size: 28,
+              padding: EdgeInsets.symmetric(horizontal: spacing.xs),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    action.icon,
+                    size: 26,
+                    color: action.featured
+                        ? theme.colorScheme.onPrimary
+                        : colours.textPrimary,
+                  ),
+                  SizedBox(height: spacing.sm - 1),
+                  Text(
+                    action.label,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: QaddyText.doorLabel.copyWith(
                       color: action.featured
                           ? theme.colorScheme.onPrimary
                           : colours.textPrimary,
                     ),
-                    SizedBox(height: spacing.sm),
-                    Text(
-                      action.label,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: typography.navigation.copyWith(
-                        color: action.featured
-                            ? theme.colorScheme.onPrimary
-                            : colours.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

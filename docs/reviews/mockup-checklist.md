@@ -38,7 +38,7 @@ The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in 
 | Screen | Mockup | Done | Remaining |
 |---|---|---|---|
 | Splash, Onboarding | Splash Library | ✅ stage, gold, Inter | 🟡 crown logo lockup, topographic pattern |
-| Home | `dashboard-home-v1` | ✅ header, photo-slot hero with greeting and weather card, door tiles, upcoming-round card, four Your Game tiles, bottom bar | 🟡 photo hero, course thumbnail, avatar photo, crown logo · 🔲 Latest News, Quick Tools, trip promo |
+| Home | `dashboard-home-v1` | ✅ measured against the mockup at 393 wide (`fidelity/home-1.png`): header, 205 hero with weather card, 80 door tiles, 136 round card with pill buttons, 90 stat tiles with foot icons, promo card | 🟡 hero photo, course thumbnail, avatar photo, serif crown logo · 🔲 Latest News, Quick Tools · ⚠️ door labels differ (see Fidelity Pass) |
 | Rounds | `rounds-home-v1` | ✅ "My rounds" title and line, Upcoming / Completed tabs, round cards (thumbnail slot, day, time, forecast, faces, View details, gold action) | 🔲 search and filter, Invitations tab, Create Round, Get Directions, round-details screen · 🟡 course photos |
 | Live scorecard | `live-scoring-v1` (left) | ✅ app bar with the players, hole strip, "Hole N" title with "Par | m | SI" beneath, hole-view slot with length and side game, one "Enter scores" panel with boxed steppers, Previous and gold Next hole | 🔲 GPS, wind and course-map tiles, back/middle/front distances, Hole Notes · 🟡 hole imagery, player photos |
 | Leaderboard | `live-scoring-v1` (right) | ✅ "Live leaderboard" card with Pos / Player / Thru / Pts, side-game tiles, Round summary | 🔲 Leaderboard / Scorecard / Stats / Side Games tabs, Stroke Play dropdown, teams, side-game entries and winners · 🟡 player photos |
@@ -100,3 +100,9 @@ Measured as the median of several samples per value, then written back into `des
 - The live scorecard has one "Next hole" (gold, bottom right) rather than the mockup's two (a pill by the title and "Save Scores"): scores save as they are entered, so there is nothing to save, and a second Next would be a duplicate. The pill's place shows Front or Back nine. 🟡 decision
 - Rounds, Profile, Groups and Bag are different screens in the mockup (see section 2).
 - The bottom bar is now the mockup's: a rounded bar nearly the width of the screen, with a green pill behind the active icon and a filled glyph, and no underline. The tab set stays Home / Rounds / Trips / Friends / Profile; the mockups disagree with each other on it (Home / Bag / Round / Community or Groups / More or Profile), so the set is a product decision, not a styling one. 🟡 decision
+
+## Fidelity Pass — type and size scale measured from the mockups
+
+The mockups set most of the interface smaller than the Typography Library's names suggest. `lib/core/theme/qaddy_text.dart` holds the sizes measured by rendering a screen at 393 wide and laying it beside its mockup: hero name 26 bold, greeting 14, section title 16 semibold, card title 14, meta 12, time 15 bold, door label 12, pill label 12 semibold, tile figure 18 bold, tile label 11. Compact buttons are 36-tall pills; door tiles 80; stat tiles 90; hero 205; round card about 136. Home was the first screen measured this way; the other screens still use the earlier scale and are brought across as they are measured.
+
+Side-by-side images are kept in `docs/reviews/fidelity/`.

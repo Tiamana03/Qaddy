@@ -181,6 +181,7 @@ class ProfileScreen extends ConsumerWidget {
             if (stats != null || golfer.handicap != null) ...<Widget>[
               SizedBox(height: spacing.lg),
               QaddyStatTiles(
+                layout: QaddyStatLayout.profile,
                 onOpen: () => context.push(AppRoutes.profileStatistics),
                 stats: <QaddyStat>[
                   QaddyStat(

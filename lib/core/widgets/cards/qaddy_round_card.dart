@@ -1,22 +1,23 @@
 /// A round as a card, as the approved mockup draws it (Home's "Upcoming Round"
-/// and the My Rounds list). A thumbnail slot, the course, the day, the tee
-/// time and who is playing, then two actions: the quiet one (View details)
-/// and the gold one.
+/// and the My Rounds list): a landscape thumbnail, the course, the day and
+/// how close it is, the tee time and a few faces at the right, then two pill
+/// buttons, the quiet one (View details) and the gold one.
 ///
 /// The thumbnail is a `QaddyMediaPlaceholder` until the course photograph
-/// arrives. While a round is under way the card is the way back into it.
+/// arrives, at the size and in the place the photograph will have. While a
+/// round is under way the card is the way back into it.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
+import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
-import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
 
 /// A round card: upcoming, under way or finished.
@@ -33,6 +34,7 @@ class QaddyRoundCard extends StatelessWidget {
     this.players = const <String>[],
     this.total = 0,
     this.sample = false,
+    this.showCount = false,
     this.onDetails,
     super.key,
   });
@@ -58,6 +60,9 @@ class QaddyRoundCard extends StatelessWidget {
   /// Whether the round is the Sample Clubhouse's.
   final bool sample;
 
+  /// Says how many are playing in words ("4 playing"), for a list of rounds.
+  final bool showCount;
+
   /// One more line about the round: how a finished one went ("You won ·
   /// 38 pts"), or the forecast and format of one to come.
   final String? note;
@@ -80,10 +85,32 @@ class QaddyRoundCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
+    final shadows = theme.extension<QaddyShadows>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddyCard(
+    Widget metaRow(IconData icon, String text) => Row(
+      children: <Widget>[
+        Icon(icon, size: 14, color: colours.textSecondary),
+        SizedBox(width: spacing.xs),
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: QaddyText.meta.copyWith(color: colours.textSecondary),
+          ),
+        ),
+      ],
+    );
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colours.card,
+        borderRadius: BorderRadius.circular(radius.medium),
+        border: Border.all(color: colours.border),
+        boxShadow: shadows.medium,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -91,121 +118,90 @@ class QaddyRoundCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
-                width: 76,
-                height: 76,
-                child: QaddyMediaPlaceholder(
-                  borderRadius: BorderRadius.circular(radius.medium),
-                  tone: 1,
-                ),
-              ),
-              SizedBox(width: spacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                width: 73,
+                height: 65,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: <Widget>[
-                    Text(
-                      course,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: typography.bodyLarge.copyWith(
-                        color: colours.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    QaddyMediaPlaceholder(
+                      borderRadius: BorderRadius.circular(10),
+                      tone: 1,
                     ),
-                    if (day != null)
-                      Text(
-                        day!,
-                        style: typography.small.copyWith(
-                          color: colours.textSecondary,
-                        ),
-                      ),
-                    if (when != null)
-                      Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.schedule,
-                            size: 14,
-                            color: colours.textSecondary,
-                          ),
-                          SizedBox(width: spacing.xs),
-                          Flexible(
-                            child: Text(
-                              when!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: typography.small.copyWith(
-                                color: colours.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    if (note != null)
-                      Padding(
-                        padding: EdgeInsets.only(top: spacing.xs),
-                        child: Row(
-                          children: <Widget>[
-                            Icon(noteIcon, size: 14, color: colours.gold),
-                            SizedBox(width: spacing.xs),
-                            Flexible(
-                              child: Text(
-                                note!,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: typography.small.copyWith(
-                                  color: colours.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    if (sample)
+                      const Positioned(
+                        left: 4,
+                        bottom: 4,
+                        child: SampleBadge(onGradient: true, dense: true),
                       ),
                   ],
                 ),
               ),
-              if (teeTime != null || sample) ...<Widget>[
-                SizedBox(width: spacing.sm),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 96),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      if (teeTime != null)
-                        FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerRight,
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
                           child: Text(
-                            teeTime!,
-                            style: typography.h4.copyWith(
+                            course,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: QaddyText.cardTitle.copyWith(
                               color: colours.textPrimary,
-                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
-                      if (sample) ...<Widget>[
-                        SizedBox(height: spacing.xs),
-                        const SampleBadge(),
+                        if (teeTime != null) ...<Widget>[
+                          SizedBox(width: spacing.sm),
+                          Text(
+                            teeTime!,
+                            style: QaddyText.timeFigure.copyWith(
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
+                    if (day != null)
+                      Text(
+                        day!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: QaddyText.meta.copyWith(
+                          color: colours.textSecondary,
+                        ),
+                      ),
+                    if (when != null || players.length > 1)
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: when != null
+                                ? metaRow(Icons.schedule, when!)
+                                : showCount
+                                ? metaRow(
+                                    Icons.groups_outlined,
+                                    '$total playing',
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                          if (players.length > 1)
+                            _MiniHuddle(names: players, total: total),
+                        ],
+                      ),
+                    if (note != null) metaRow(noteIcon, note!),
+                  ],
                 ),
-              ],
+              ),
             ],
           ),
-          if (players.length > 1) ...<Widget>[
-            SizedBox(height: spacing.md),
-            QaddyAvatarHuddle(
-              names: players,
-              total: total,
-              textColour: colours.textSecondary,
-            ),
-          ],
           if (onPrimary != null || onDetails != null) ...<Widget>[
-            SizedBox(height: spacing.md),
+            const SizedBox(height: 10),
             Row(
               children: <Widget>[
-                if (onDetails != null) ...<Widget>[
+                if (onDetails != null)
                   Expanded(
                     child: QaddySecondaryButton(
                       label: 'View details',
@@ -213,8 +209,8 @@ class QaddyRoundCard extends StatelessWidget {
                       onPressed: onDetails,
                     ),
                   ),
+                if (onDetails != null && onPrimary != null)
                   SizedBox(width: spacing.sm),
-                ],
                 if (onPrimary != null)
                   Expanded(
                     child: QaddyGoldButton(
@@ -228,6 +224,72 @@ class QaddyRoundCard extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Up to three overlapping faces and a "+N" circle: who else is in, small.
+class _MiniHuddle extends StatelessWidget {
+  const _MiniHuddle({required this.names, required this.total});
+
+  final List<String> names;
+  final int total;
+
+  static const double _size = 26;
+  static const double _step = 17;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final shown = names.take(3).toList();
+    final more = total - shown.length;
+    final slots = shown.length + (more > 0 ? 1 : 0);
+
+    Widget face(Widget child, int index) => Positioned(
+      left: _step * index,
+      child: Container(
+        width: _size,
+        height: _size,
+        padding: const EdgeInsets.all(1.5),
+        decoration: BoxDecoration(shape: BoxShape.circle, color: colours.card),
+        child: child,
+      ),
+    );
+
+    return Semantics(
+      label: '$total playing',
+      excludeSemantics: true,
+      child: SizedBox(
+        width: _size + _step * (slots - 1),
+        height: _size,
+        child: Stack(
+          children: <Widget>[
+            for (final (index, name) in shown.indexed)
+              face(FittedBox(child: QaddyAvatar(name: name)), index),
+            if (more > 0)
+              face(
+                Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colours.backgroundBase,
+                  ),
+                  child: Text(
+                    '+$more',
+                    style: TextStyle(
+                      color: colours.textPrimary,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      height: 1,
+                    ),
+                  ),
+                ),
+                shown.length,
+              ),
+          ],
+        ),
       ),
     );
   }

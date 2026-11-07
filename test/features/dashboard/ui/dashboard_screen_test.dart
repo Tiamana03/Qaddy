@@ -85,7 +85,7 @@ void main() {
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('Good morning,'), findsOneWidget);
       expect(find.text('Tiamana'), findsWidgets);
-      expect(find.text('Sunday 1 November'), findsOneWidget);
+      expect(find.text('More golf. Better days.'), findsOneWidget);
     });
 
     testWidgets('says good evening in the evening', (tester) async {
@@ -132,7 +132,7 @@ void main() {
       expect(find.text('Saturday'), findsOneWidget);
       expect(find.text('In 6 days'), findsOneWidget);
       expect(find.text('8:20 AM'), findsOneWidget);
-      expect(find.textContaining('8 playing'), findsOneWidget);
+      expect(find.bySemanticsLabel('8 playing'), findsOneWidget);
     });
 
     testWidgets('changes its tune as the day gets closer', (tester) async {
