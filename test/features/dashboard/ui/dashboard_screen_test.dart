@@ -92,14 +92,18 @@ void main() {
       expect(find.text('Good evening,'), findsOneWidget);
     });
 
-    testWidgets('has every section a golfer comes for', (tester) async {
+    testWidgets('has the hero, the doors and sections with something to say', (
+      tester,
+    ) async {
       await _pump(tester);
 
       expect(find.text('Sample round · Next round'), findsOneWidget);
       expect(find.text('Start a round'), findsOneWidget);
       expect(find.text('Your game'), findsOneWidget);
-      expect(find.text('From your sample mates'), findsOneWidget);
-      expect(find.text('Your highlights'), findsOneWidget);
+      expect(find.text('Highlights'), findsOneWidget);
+      // The mates' feed lives on Friends, not here.
+      expect(find.text('From your sample mates'), findsNothing);
+      expect(find.text('Nice round'), findsNothing);
       // The old placeholder furniture is gone.
       expect(find.text('Create Round'), findsNothing);
       expect(find.text('Continue Round'), findsNothing);
@@ -338,34 +342,19 @@ void main() {
       expect(find.text('Go: /trips/melbourne-golf-weekend'), findsOneWidget);
     });
 
-    testWidgets('invites a golfer with no trips to plan one', (tester) async {
+    testWidgets('is absent with no trips; the Plan a trip door is the way in', (
+      tester,
+    ) async {
       await _pump(
         tester,
         overrides: <Override>[tripsProvider.overrideWith(_NoTrips.new)],
       );
 
-      expect(find.text('Plan your next golf trip'), findsOneWidget);
-      await _tap(tester, find.text('Plan your next golf trip'));
+      expect(find.text('Next trip'), findsNothing);
+      expect(find.text('Plan your next golf trip'), findsNothing);
+      await _tap(tester, find.text('Plan a trip'));
 
       expect(find.text('Go: /trips/create'), findsOneWidget);
-    });
-  });
-
-  group('from your mates', () {
-    testWidgets('shows the latest moments and lets you cheer', (tester) async {
-      await _pump(tester);
-
-      expect(find.text('Nice round'), findsOneWidget);
-
-      await _tap(tester, find.text('Nice round'));
-    });
-
-    testWidgets('See all goes to Friends', (tester) async {
-      await _pump(tester);
-
-      await _tap(tester, find.text('See all'));
-
-      expect(find.text('Go: /friends'), findsOneWidget);
     });
   });
 

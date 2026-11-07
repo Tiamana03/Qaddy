@@ -57,7 +57,7 @@ void main() {
       expect(find.text('21°C Sunny'), findsOneWidget);
       expect(find.text('Stableford'), findsOneWidget);
       expect(find.text('18 holes'), findsNothing);
-      expect(find.textContaining('1 playing'), findsOneWidget);
+      expect(find.textContaining('1 playing'), findsNothing);
     });
 
     testWidgets('has no disabled or administrative buttons left', (

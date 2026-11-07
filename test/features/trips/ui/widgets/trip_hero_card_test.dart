@@ -71,30 +71,15 @@ void main() {
     expect(find.text('Sat 28 Nov · 8:30 AM'), findsOneWidget);
   });
 
-  testWidgets('keeps the facts to four tiles', (tester) async {
+  testWidgets('keeps to the headline: no tiles, no ticker', (tester) async {
     await _pump(tester, width: 400);
 
-    expect(find.text('First tee'), findsOneWidget);
-    expect(find.text('Kingston Heath'), findsOneWidget);
-    expect(find.text('Sun 29 Nov · 8:10 AM'), findsOneWidget);
-    // A flag stands in for the course's logo; the weather has its own icon.
-    expect(find.byIcon(Icons.flag_outlined), findsOneWidget);
-    expect(find.text('Partly Cloudy, 22°C'), findsOneWidget);
-    expect(find.byIcon(Icons.wb_cloudy_outlined), findsOneWidget);
-
-    expect(find.text('Next task'), findsOneWidget);
-    expect(find.text('Reserve Sunday dinner'), findsOneWidget);
-    expect(find.text('3 of 6 done'), findsOneWidget);
-
-    expect(find.text('Money'), findsOneWidget);
-    expect(find.text(r'You owe Ben $730'), findsOneWidget);
-    expect(find.text('Green fees — 3 rounds'), findsOneWidget);
-    expect(find.text(r'52% paid · $5,540 to go'), findsOneWidget);
-    expect(find.byType(LinearProgressIndicator), findsOneWidget);
-
-    expect(find.text('Squad'), findsOneWidget);
-    expect(find.text('8 going'), findsOneWidget);
-    expect(find.text('1 invited'), findsOneWidget);
+    // The trip's own page holds these.
+    for (final label in <String>['First tee', 'Next task', 'Money', 'Squad']) {
+      expect(find.text(label), findsNothing, reason: label);
+    }
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.textContaining('Luke:'), findsNothing);
   });
 
   testWidgets('shows planning progress as a ring', (tester) async {
@@ -102,39 +87,6 @@ void main() {
 
     expect(find.byType(PlanningRing), findsOneWidget);
     expect(find.text('50%'), findsOneWidget);
-  });
-
-  testWidgets('the news ticker takes turns between update and chat', (
-    tester,
-  ) async {
-    await _pump(tester, width: 400, settle: false);
-    await tester.pump(const Duration(seconds: 1));
-    expect(
-      find.text('Royal Melbourne tee time moved to 8:00 AM'),
-      findsOneWidget,
-    );
-    expect(find.text('Luke: See everyone Saturday morning.'), findsNothing);
-
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Luke: See everyone Saturday morning.'), findsOneWidget);
-  });
-
-  testWidgets('shows both news lines when the user prefers reduced motion', (
-    tester,
-  ) async {
-    tester.platformDispatcher.accessibilityFeaturesTestValue =
-        const FakeAccessibilityFeatures(disableAnimations: true);
-    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
-
-    await _pump(tester, width: 400, settle: false);
-
-    expect(find.text('33'), findsOneWidget);
-    expect(
-      find.text('Royal Melbourne tee time moved to 8:00 AM'),
-      findsOneWidget,
-    );
-    expect(find.text('Luke: See everyone Saturday morning.'), findsOneWidget);
   });
 
   testWidgets('counts up to the number of days', (tester) async {
@@ -186,19 +138,5 @@ void main() {
 
     await tester.tap(find.text('Melbourne Golf Weekend'));
     expect(taps, 1);
-  });
-
-  testWidgets('puts the facts beside the headline on wide screens', (
-    tester,
-  ) async {
-    await _pump(tester, width: 400);
-    final mobileName = tester.getTopLeft(find.text('Melbourne Golf Weekend'));
-    final mobileFirstTee = tester.getTopLeft(find.text('First tee'));
-    expect(mobileFirstTee.dy, greaterThan(mobileName.dy));
-
-    await _pump(tester, width: 1200);
-    final wideName = tester.getTopLeft(find.text('Melbourne Golf Weekend'));
-    final wideFirstTee = tester.getTopLeft(find.text('First tee'));
-    expect(wideFirstTee.dx, greaterThan(wideName.dx));
   });
 }

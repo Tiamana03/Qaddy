@@ -59,17 +59,7 @@ class RoundsScreen extends ConsumerWidget {
               'Rounds',
               style: typography.h1.copyWith(color: colours.textPrimary),
             ),
-            SizedBox(height: spacing.xs),
-            Text(
-              live == null
-                  ? (upcomingRound.planned
-                        ? 'Sample round · ${upcomingRound.date} at '
-                              '${upcomingRound.course}'
-                        : upcomingRound.course)
-                  : 'Round in progress',
-              style: typography.body.copyWith(color: colours.textSecondary),
-            ),
-            SizedBox(height: spacing.xl),
+            SizedBox(height: spacing.lg),
             if (live != null) _LiveHero(round: live) else const _SetupHero(),
             if (live != null && live.holesPlayed > 0) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
@@ -93,6 +83,20 @@ class RoundsScreen extends ConsumerWidget {
               const QaddySectionHeading(title: 'On the course (sample)'),
               SizedBox(height: spacing.md),
               const _SideGames(),
+            ],
+            // The honest caveat, kept quiet and out of the way of the one
+            // action on this screen.
+            if (live == null) ...<Widget>[
+              SizedBox(height: spacing.lg),
+              Text(
+                upcomingRound.planned
+                    ? 'Hole pars and distances use a sample 18-hole layout '
+                          'until course search arrives.'
+                    : 'Pars and stroke indexes use a standard par-72 layout '
+                          'until course search arrives. Distances are left '
+                          'out rather than guessed.',
+                style: typography.caption.copyWith(color: colours.textTertiary),
+              ),
             ],
             SizedBox(height: spacing.xl),
           ]),
@@ -171,22 +175,16 @@ class _SetupHero extends ConsumerWidget {
                 ),
             ],
           ),
-          SizedBox(height: spacing.lg),
-          QaddyAvatarHuddle(
-            names: <String>[for (final p in players) p.name],
-            total: players.length,
-            textColour: muted,
-          ),
-          SizedBox(height: spacing.md),
-          Text(
-            upcomingRound.planned
-                ? 'Hole pars and distances use a sample 18-hole layout until '
-                      'course search arrives.'
-                : 'Pars and stroke indexes use a standard par-72 layout until '
-                      'course search arrives. Distances are left out rather '
-                      'than guessed.',
-            style: typography.small.copyWith(color: muted),
-          ),
+          // Company only once there is some: "1 playing" next to the list
+          // below it says nothing.
+          if (players.length > 1) ...<Widget>[
+            SizedBox(height: spacing.lg),
+            QaddyAvatarHuddle(
+              names: <String>[for (final p in players) p.name],
+              total: players.length,
+              textColour: muted,
+            ),
+          ],
         ],
       ),
     );

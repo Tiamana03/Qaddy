@@ -30,7 +30,7 @@ List<Override> _empty() {
 }
 
 void main() {
-  testWidgets('Home invites a first round and a first mate', (tester) async {
+  testWidgets('Home is just a hero and four doors', (tester) async {
     final off = _empty();
     await pumpFriends(tester, const DashboardScreen(), overrides: off);
     await tester.pumpAndSettle();
@@ -38,10 +38,12 @@ void main() {
     expect(find.text('Ready when you are'), findsOneWidget);
     expect(find.text('Your next round'), findsOneWidget);
     expect(find.text('Start a round'), findsWidgets);
-    expect(find.text('Your mates'), findsOneWidget);
-    expect(find.text('Invite a mate'), findsWidgets);
+    // A new golfer sees a hero and four doors: nothing empty, nothing pretend.
+    expect(find.text('Invite a mate'), findsOneWidget);
+    expect(find.text('Next trip'), findsNothing);
+    expect(find.text('Your mates'), findsNothing);
     expect(find.text('From your sample mates'), findsNothing);
-    expect(find.textContaining('Saturday'), findsNothing);
+    expect(find.textContaining('Saturday Boys'), findsNothing);
   });
 
   testWidgets('Rounds is just you, ready when you are', (tester) async {
@@ -52,7 +54,7 @@ void main() {
     expect(find.text('Your round'), findsOneWidget);
     expect(find.text('Ready when you are'), findsOneWidget);
     expect(find.text('Start round'), findsOneWidget);
-    expect(find.textContaining('1 playing'), findsOneWidget);
+    expect(find.textContaining('1 playing'), findsNothing);
     expect(find.text('On the course (sample)'), findsNothing);
     expect(find.textContaining('standard par-72 layout'), findsOneWidget);
     expect(find.textContaining('sample 18-hole layout'), findsNothing);

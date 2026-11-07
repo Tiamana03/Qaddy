@@ -74,12 +74,16 @@ void main() {
     expect(find.text('Wednesday Warriors'), findsOneWidget);
   });
 
-  testWidgets('Dashboard "From your mates" opens Friends Home', (tester) async {
+  testWidgets('the Friends tab opens Friends Home', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: QaddyApp()));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('See all'));
-    await tester.tap(find.text('See all'));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(QaddyBottomNav),
+        matching: find.text('Friends'),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Your squad'), findsOneWidget);

@@ -75,7 +75,6 @@ const _sampleWords = <String>[
   'Queenstown',
   'Richmond',
   'Kingston Heath',
-  'Saturday',
 ];
 
 Future<ProviderContainer> _open(
