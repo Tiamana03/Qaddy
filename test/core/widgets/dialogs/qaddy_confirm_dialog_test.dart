@@ -50,6 +50,7 @@ BoxDecoration _medallion(WidgetTester tester) {
 }
 
 void main() {
+  _noticeMain();
   testWidgets('shows a medallion, the title, the message and both actions', (
     tester,
   ) async {
@@ -107,5 +108,66 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(result(), isFalse);
+  });
+}
+
+void _noticeMain() {
+  testWidgets('a notice has a medallion, copy and one action', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: QaddyTheme.dark,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showQaddyNotice(
+                context,
+                title: 'Saved',
+                message: 'Everything is where you left it.',
+                actionLabel: 'Okay',
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.text('Saved'), findsOneWidget);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+
+    await tester.tap(find.text('Okay'));
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsNothing);
+  });
+
+  testWidgets('a notice with no action cannot be dismissed', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: QaddyTheme.dark,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: TextButton(
+              onPressed: () => showQaddyNotice(
+                context,
+                title: 'Fresh start',
+                message: 'Close Qaddy and open it again.',
+                dismissible: false,
+              ),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    await tester.tapAt(const Offset(4, 4));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(Dialog), findsOneWidget);
   });
 }

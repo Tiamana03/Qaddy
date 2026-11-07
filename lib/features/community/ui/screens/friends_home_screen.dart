@@ -21,6 +21,7 @@ import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/sample_banner.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
@@ -201,15 +202,11 @@ class _Header extends StatelessWidget {
 
     Widget action(IconData icon, String tooltip, VoidCallback onTap) => Padding(
       padding: EdgeInsets.only(left: spacing.sm),
-      child: IconButton.filledTonal(
+      child: QaddyIconButton(
         tooltip: tooltip,
+        semanticLabel: tooltip,
         onPressed: onTap,
-        style: IconButton.styleFrom(
-          backgroundColor: colours.surface1,
-          foregroundColor: colours.textPrimary,
-          minimumSize: const Size(48, 48),
-        ),
-        icon: Icon(icon),
+        icon: icon,
       ),
     );
 

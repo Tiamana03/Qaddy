@@ -14,14 +14,31 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 /// Qaddy's icon button — for a single, common quick action.
 class QaddyIconButton extends StatelessWidget {
   const QaddyIconButton({
-    required this.icon,
+    required IconData this.icon,
     required this.onPressed,
     this.semanticLabel,
+    this.tooltip,
     super.key,
-  });
+  }) : child = null;
 
-  /// The icon to display.
-  final IconData icon;
+  /// An icon button whose face is any widget (the bell with its unread
+  /// badge, for example).
+  const QaddyIconButton.custom({
+    required Widget this.child,
+    required this.onPressed,
+    this.semanticLabel,
+    this.tooltip,
+    super.key,
+  }) : icon = null;
+
+  /// The icon to display, or `null` when [child] is.
+  final IconData? icon;
+
+  /// A custom face, for [QaddyIconButton.custom].
+  final Widget? child;
+
+  /// Shown on hover and long-press, and read out by screen readers.
+  final String? tooltip;
 
   /// Called when tapped. Pass `null` to render the disabled state.
   final VoidCallback? onPressed;
@@ -42,7 +59,7 @@ class QaddyIconButton extends StatelessWidget {
         ? colours.textPrimary
         : colours.disabledForeground;
 
-    return Material(
+    final button = Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onPressed,
@@ -57,10 +74,12 @@ class QaddyIconButton extends StatelessWidget {
           child: Semantics(
             label: semanticLabel,
             button: true,
-            child: Icon(icon, color: foreground),
+            child: child ?? Icon(icon, color: foreground),
           ),
         ),
       ),
     );
+    final tip = tooltip;
+    return tip == null ? button : Tooltip(message: tip, child: button);
   }
 }

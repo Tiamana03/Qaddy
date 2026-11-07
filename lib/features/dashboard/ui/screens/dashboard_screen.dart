@@ -20,6 +20,7 @@ import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
@@ -221,15 +222,11 @@ class _Header extends ConsumerWidget {
 
     Widget action(Widget icon, String tooltip, VoidCallback onTap) => Padding(
       padding: EdgeInsets.only(left: spacing.sm),
-      child: IconButton.filledTonal(
+      child: QaddyIconButton.custom(
         tooltip: tooltip,
+        semanticLabel: tooltip,
         onPressed: onTap,
-        style: IconButton.styleFrom(
-          backgroundColor: colours.surface1,
-          foregroundColor: colours.textPrimary,
-          minimumSize: const Size(48, 48),
-        ),
-        icon: icon,
+        child: icon,
       ),
     );
 

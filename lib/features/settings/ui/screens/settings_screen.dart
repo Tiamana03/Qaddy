@@ -149,19 +149,13 @@ class SettingsScreen extends ConsumerWidget {
       }
       // The seeded world was built around the old name, so a clean start needs
       // the app opened afresh.
-      await showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (dialogContext) => const PopScope(
-          canPop: false,
-          child: AlertDialog(
-            title: Text('Fresh start'),
-            content: Text(
-              'Everything has been cleared. Close Qaddy completely and open '
-              'it again to set up from scratch.',
-            ),
-          ),
-        ),
+      await showQaddyNotice(
+        context,
+        title: 'Fresh start',
+        message:
+            'Everything has been cleared. Close Qaddy completely and open '
+            'it again to set up from scratch.',
+        dismissible: false,
       );
     }
 

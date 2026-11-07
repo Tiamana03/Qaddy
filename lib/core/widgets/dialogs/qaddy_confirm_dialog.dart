@@ -37,10 +37,7 @@ Future<bool> showQaddyConfirm(
     builder: (dialogContext) {
       final theme = Theme.of(dialogContext);
       final colours = theme.extension<QaddyColours>()!;
-      final radius = theme.extension<QaddyRadius>()!;
-      final shadows = theme.extension<QaddyShadows>()!;
       final spacing = theme.extension<QaddySpacing>()!;
-      final typography = theme.extension<QaddyTypography>()!;
 
       final tone = destructive ? colours.error : colours.secondary;
       final onTone = destructive
@@ -50,77 +47,33 @@ Future<bool> showQaddyConfirm(
           icon ??
           (destructive ? Icons.delete_outline : Icons.help_outline_rounded);
 
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        insetPadding: EdgeInsets.symmetric(
-          horizontal: spacing.xl,
-          vertical: spacing.xl,
-        ),
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 360),
-          padding: EdgeInsets.all(spacing.xl),
-          decoration: BoxDecoration(
-            color: colours.surface1,
-            borderRadius: BorderRadius.circular(radius.large),
-            border: Border.all(color: colours.border),
-            boxShadow: shadows.large,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                width: spacing.display + spacing.sm,
-                height: spacing.display + spacing.sm,
-                decoration: BoxDecoration(color: tone, shape: BoxShape.circle),
-                child: Icon(
-                  medallionIcon,
-                  size: spacing.xl + spacing.xs,
-                  color: onTone,
-                ),
+      return _DialogSurface(
+        tone: tone,
+        onTone: onTone,
+        icon: medallionIcon,
+        title: title,
+        message: message,
+        actions: Row(
+          children: <Widget>[
+            Expanded(
+              child: QaddySecondaryButton(
+                label: 'Cancel',
+                onPressed: () => Navigator.of(dialogContext).pop(false),
               ),
-              SizedBox(height: spacing.lg),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: typography.h4.copyWith(
-                  color: colours.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: spacing.sm),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: typography.small.copyWith(color: colours.textSecondary),
-              ),
-              SizedBox(height: spacing.xl),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: QaddySecondaryButton(
-                      label: 'Cancel',
-                      onPressed: () => Navigator.of(dialogContext).pop(false),
+            ),
+            SizedBox(width: spacing.md),
+            Expanded(
+              child: destructive
+                  ? _DestructiveButton(
+                      label: confirmLabel,
+                      onPressed: () => Navigator.of(dialogContext).pop(true),
+                    )
+                  : QaddyGoldButton(
+                      label: confirmLabel,
+                      onPressed: () => Navigator.of(dialogContext).pop(true),
                     ),
-                  ),
-                  SizedBox(width: spacing.md),
-                  Expanded(
-                    child: destructive
-                        ? _DestructiveButton(
-                            label: confirmLabel,
-                            onPressed: () =>
-                                Navigator.of(dialogContext).pop(true),
-                          )
-                        : QaddyGoldButton(
-                            label: confirmLabel,
-                            onPressed: () =>
-                                Navigator.of(dialogContext).pop(true),
-                          ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     },
@@ -182,6 +135,124 @@ class _DestructiveButton extends StatelessWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tells the golfer something and, optionally, lets them carry on: the
+/// Dialogs Library's Info / Success dialog. With no [actionLabel] there is no
+/// button and (with [dismissible] false) no way out, for the rare message the
+/// app must not move past.
+Future<void> showQaddyNotice(
+  BuildContext context, {
+  required String title,
+  required String message,
+  String? actionLabel,
+  IconData icon = Icons.check_rounded,
+  bool dismissible = true,
+}) {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: dismissible,
+    builder: (dialogContext) {
+      final theme = Theme.of(dialogContext);
+      final colours = theme.extension<QaddyColours>()!;
+
+      return PopScope(
+        canPop: dismissible,
+        child: _DialogSurface(
+          tone: colours.secondary,
+          onTone: theme.colorScheme.onPrimary,
+          icon: icon,
+          title: title,
+          message: message,
+          actions: actionLabel == null
+              ? null
+              : QaddyGoldButton(
+                  label: actionLabel,
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                ),
+        ),
+      );
+    },
+  );
+}
+
+/// The shared look of every Qaddy dialog: a `large`-radius surface with the
+/// `large` shadow, an icon medallion and centred copy, then [actions].
+class _DialogSurface extends StatelessWidget {
+  const _DialogSurface({
+    required this.tone,
+    required this.onTone,
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.actions,
+  });
+
+  final Color tone;
+  final Color onTone;
+  final IconData icon;
+  final String title;
+  final String message;
+  final Widget? actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final shadows = theme.extension<QaddyShadows>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: spacing.xl,
+        vertical: spacing.xl,
+      ),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 360),
+        padding: EdgeInsets.all(spacing.xl),
+        decoration: BoxDecoration(
+          color: colours.surface1,
+          borderRadius: BorderRadius.circular(radius.large),
+          border: Border.all(color: colours.border),
+          boxShadow: shadows.large,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              width: spacing.display + spacing.sm,
+              height: spacing.display + spacing.sm,
+              decoration: BoxDecoration(color: tone, shape: BoxShape.circle),
+              child: Icon(icon, size: spacing.xl + spacing.xs, color: onTone),
+            ),
+            SizedBox(height: spacing.lg),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: typography.h4.copyWith(
+                color: colours.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: spacing.sm),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: typography.small.copyWith(color: colours.textSecondary),
+            ),
+            if (actions != null) ...<Widget>[
+              SizedBox(height: spacing.xl),
+              actions!,
+            ],
+          ],
         ),
       ),
     );

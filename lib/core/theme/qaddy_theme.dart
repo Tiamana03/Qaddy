@@ -153,22 +153,23 @@ abstract final class QaddyTheme {
         thumbColor: colours.accent,
         overlayColor: colours.accent.withValues(alpha: 0.12),
       ),
-      // Material's default switch uses `primary` for its "on" track — dark
-      // green, invisible on Dark Mode surfaces. Use the readable accent.
+      // The Forms Library's Toggle Switch: the brand green track with a white
+      // thumb when on, a quiet surface when off. (Material's default uses
+      // `primary`, which is near-invisible on Dark Mode surfaces.)
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.background
+              ? colorScheme.onPrimary
               : colours.textTertiary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.accent
+              ? colours.secondary
               : colours.surface2,
         ),
         trackOutlineColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.accent
+              ? colours.secondary
               : colours.border,
         ),
       ),
@@ -205,13 +206,14 @@ abstract final class QaddyTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: colours.accent),
       ),
+      // The Forms Library's Checkbox: brand green fill, white check.
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? colours.accent
+              ? colours.secondary
               : Colors.transparent,
         ),
-        checkColor: WidgetStatePropertyAll<Color>(colours.background),
+        checkColor: WidgetStatePropertyAll<Color>(colorScheme.onPrimary),
         side: BorderSide(color: colours.textTertiary, width: 2),
       ),
       dialogTheme: DialogThemeData(
