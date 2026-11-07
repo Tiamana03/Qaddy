@@ -227,7 +227,7 @@ void main() {
       expect(find.text('Nearest the Pin on this hole'), findsOneWidget);
     });
 
-    testWidgets('keeps the mockup's places for what Qaddy cannot know yet', (
+    testWidgets('keeps the mockup places for what Qaddy cannot know yet', (
       tester,
     ) async {
       await tester.pumpWidget(_app(HoleView(hole: richmondHoles[6])));
