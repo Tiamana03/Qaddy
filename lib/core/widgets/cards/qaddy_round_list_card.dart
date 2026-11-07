@@ -13,22 +13,11 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
 import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_face_stack.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_status_pill.dart';
 import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
-
-/// How a status pill is coloured.
-enum QaddyPillTone {
-  /// Green: all good ("Finished").
-  success,
-
-  /// Amber: waiting ("Planned").
-  pending,
-
-  /// Red: needs attention.
-  danger,
-}
 
 /// One button on a [QaddyRoundListCard].
 class QaddyCardAction {
@@ -137,12 +126,6 @@ class QaddyRoundListCard extends StatelessWidget {
     );
 
     final temp = weather?.split(' ').first;
-
-    final pillColour = switch (tone) {
-      QaddyPillTone.success => colours.success,
-      QaddyPillTone.pending => colours.gold,
-      QaddyPillTone.danger => colours.error,
-    };
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -258,31 +241,10 @@ class QaddyRoundListCard extends StatelessWidget {
                         ),
                       ),
                     const Spacer(),
-                    Container(
-                      height: 26,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: pillColour.withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: pillColour.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            statusLabel,
-                            style: QaddyText.pillLabel.copyWith(
-                              color: pillColour,
-                            ),
-                          ),
-                          if (statusIcon != null) ...<Widget>[
-                            const SizedBox(width: 5),
-                            Icon(statusIcon, size: 14, color: pillColour),
-                          ],
-                        ],
-                      ),
+                    QaddyStatusPill(
+                      label: statusLabel,
+                      tone: tone,
+                      icon: statusIcon,
                     ),
                   ],
                 ),

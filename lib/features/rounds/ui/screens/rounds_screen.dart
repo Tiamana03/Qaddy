@@ -22,6 +22,7 @@ import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_status_pill.dart';
 import 'package:qaddy/core/widgets/brand/app_brand_bar.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';

@@ -34,8 +34,9 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('Your crews'), findsOneWidget);
-    expect(find.text('4 groups · Saturday Boys play next'), findsOneWidget);
+    expect(find.text('My groups'), findsOneWidget);
+    expect(find.text("Golf's better together."), findsOneWidget);
+    expect(find.text('My groups (4)'), findsOneWidget);
     for (final name in <String>[
       'Saturday Boys',
       'Wednesday Warriors',
@@ -44,18 +45,15 @@ void main() {
     ]) {
       expect(find.text(name), findsOneWidget, reason: name);
     }
-    expect(
-      find.text('Saturday mornings at Richmond. The banter is compulsory.'),
-      findsOneWidget,
-    );
     expect(find.text('Three generations, one fairway.'), findsOneWidget);
-    expect(find.text('8 members'), findsOneWidget);
+    expect(find.textContaining('8 members'), findsOneWidget);
   });
 
   testWidgets('only the group with a round coming up says so', (tester) async {
     await _pump(tester);
 
-    expect(find.text('Next round Saturday, 8:20 AM'), findsOneWidget);
+    expect(find.text('Saturday · 8:20 AM'), findsOneWidget);
+    expect(find.text('Round ready'), findsOneWidget);
   });
 
   testWidgets('every group opens its own page', (tester) async {
@@ -80,8 +78,42 @@ void main() {
     await _pump(tester);
 
     // Saturday Boys: four faces and how many are in, the others the line.
-    expect(find.byType(QaddyAvatar), findsNWidgets(4));
-    expect(find.text('8 members'), findsOneWidget);
+    // (and the golfer's own face in the brand bar)
+    expect(find.byType(QaddyAvatar), findsNWidgets(5));
+    expect(find.text('8 members · 8 confirmed'), findsOneWidget);
+  });
+
+  testWidgets('Invitations and Past groups say there is nothing yet', (
+    tester,
+  ) async {
+    await _pump(tester);
+
+    await tester.tap(find.text('Invitations'));
+    await tester.pumpAndSettle();
+    expect(find.text('No invitations yet'), findsOneWidget);
+
+    await tester.tap(find.text('Past groups'));
+    await tester.pumpAndSettle();
+    expect(find.text('No past groups'), findsOneWidget);
+  });
+
+  testWidgets('search narrows the groups', (tester) async {
+    await _pump(tester);
+
+    await tester.enterText(find.byType(TextField), 'friday');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Friday Social Club'), findsOneWidget);
+    expect(find.text('Saturday Boys'), findsNothing);
+  });
+
+  testWidgets('Create group says it is coming, kindly', (tester) async {
+    await _pump(tester);
+
+    await tester.tap(find.text('Create group'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Creating groups is coming'), findsOneWidget);
   });
 
   for (final size in <Size>[const Size(320, 2400), const Size(1280, 2400)]) {

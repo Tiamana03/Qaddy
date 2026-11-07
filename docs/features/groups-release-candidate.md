@@ -57,3 +57,7 @@ Group data lives in Groups. Friends shows groups only through the Groups widgets
 - Release 1 has no backend: there is no creating, joining, editing or leaving a group, no chat and no group settings. Invite and banter go through the share sheet.
 - "Plan a round" picks the group's members who are on the placeholder invitation list; the golfer is always in.
 - The old section documents (`docs/architecture/groups.md`, `group-details.md`) describe the earlier admin layout and are superseded by this page for the screens' contents.
+
+## The Groups list, as the mockup draws it
+
+`/friends/groups` is composed as the approved My Groups mockup (`design/mockups/groups/groups-home-v1.png`, left): the brand bar, "My groups" with the gold **Create group** button (it says creating groups is coming), a search bar that narrows by name, course or description, three pill tabs (**My groups (n)**, **Invitations**, **Past groups**; the last two are honest empty states) and each group as a photo card (`GroupCard`): a 112-wide photo slot, the name (a crown and "Admin" when the golfer runs it, otherwise "Member"), the course, the next round, "N members · M confirmed", the faces and a status pill ("Round ready", or "Waiting on N"). A group with no round shows what it is about instead. The mockup's Group Details (right) is still to be rebuilt.

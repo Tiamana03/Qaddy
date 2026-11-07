@@ -19,6 +19,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -210,6 +211,10 @@ void main() {
       const ProfileScreen(),
       container: played.container,
     );
+  }, skip: !enabled);
+
+  testWidgets('render: groups', (tester) async {
+    await _render(tester, 'groups', const GroupsScreen());
   }, skip: !enabled);
 
   testWidgets('render: home', (tester) async {

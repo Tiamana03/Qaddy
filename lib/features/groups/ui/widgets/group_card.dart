@@ -1,46 +1,73 @@
-/// A group on the Groups list: its crest, name, what it is about and what is
-/// coming up, in the colour the group always wears.
+/// A group on the My Groups list, as the approved mockup draws it: a tall
+/// course photo at the left, the group's name with a crown when you run it and
+/// "You're the admin" / "Member" beside it, the course, the date and the
+/// members beneath, then a few faces and a status pill.
+///
+/// The photo is a `QaddyMediaPlaceholder` until the course photograph arrives,
+/// at the size and in the place it will have.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_shadows.dart';
-import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/avatars/qaddy_avatar_huddle.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_face_stack.dart';
+import 'package:qaddy/core/widgets/badges/qaddy_status_pill.dart';
 import 'package:qaddy/core/widgets/badges/sample_badge.dart';
-import 'package:qaddy/features/groups/logic/group_insights.dart';
+import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
 import 'package:qaddy/features/groups/models/group.dart';
-import 'package:qaddy/features/groups/ui/widgets/group_crest.dart';
 
-/// A tappable card for [group]. [nextRound] is the line about what is coming
-/// up ("Next round Saturday, 8:20 AM"), when there is one.
+/// A tappable card for [group].
 class GroupCard extends StatelessWidget {
   const GroupCard({
     required this.group,
-    required this.accent,
     required this.onTap,
-    this.nextRound,
+    required this.photoTone,
+    this.isAdmin = false,
+    this.course,
+    this.when,
+    this.membersLine,
+    this.description,
     this.members = const <String>[],
+    this.statusLabel,
+    this.statusTone = QaddyPillTone.pending,
     super.key,
   });
 
   /// The group to show.
   final Group group;
 
-  /// The colour the group wears.
-  final Color accent;
-
   /// Opens the group's page.
   final VoidCallback onTap;
 
-  /// What is coming up, if anything.
-  final String? nextRound;
+  /// Which placeholder sky the photo slot draws (0–2).
+  final int photoTone;
+
+  /// Whether the golfer runs the group (a crown, "You're the admin").
+  final bool isAdmin;
+
+  /// Where the group plays.
+  final String? course;
+
+  /// The next round, "Saturday · 8:20 AM".
+  final String? when;
+
+  /// "8 members" or "8 members · 7 confirmed".
+  final String? membersLine;
+
+  /// What the group is about, shown when there is no round to talk about.
+  final String? description;
 
   /// Names to show faces for, when the group's people are known.
   final List<String> members;
+
+  /// Where the next round stands ("Round ready", "Waiting on 1").
+  final String? statusLabel;
+
+  /// The status pill's colour.
+  final QaddyPillTone statusTone;
 
   @override
   Widget build(BuildContext context) {
@@ -48,117 +75,180 @@ class GroupCard extends StatelessWidget {
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
     final shadows = theme.extension<QaddyShadows>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
-    final onGradient = theme.colorScheme.onPrimary;
-    final borderRadius = BorderRadius.circular(radius.large);
-    final line = groupLine(group);
+
+    Widget line(IconData icon, String text) => SizedBox(
+      height: 20,
+      child: Row(
+        children: <Widget>[
+          Icon(icon, size: 15, color: colours.textSecondary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: QaddyText.listMeta.copyWith(color: colours.textPrimary),
+            ),
+          ),
+        ],
+      ),
+    );
 
     return Semantics(
       button: true,
       label:
-          '${group.name}. ${group.description ?? ''} $line. '
-          '${nextRound ?? ''} Opens the group.',
+          '${group.name}. ${isAdmin ? "You're the admin" : 'Member'}. '
+          '${course ?? ''} ${when ?? ''} ${membersLine ?? ''} '
+          '${statusLabel ?? ''}. Opens the group.',
       excludeSemantics: true,
       onTap: onTap,
-      child: DecoratedBox(
+      child: Container(
         decoration: BoxDecoration(
-          borderRadius: borderRadius,
+          color: colours.card,
+          borderRadius: BorderRadius.circular(radius.medium),
+          border: Border.all(color: colours.border),
           boxShadow: shadows.medium,
         ),
-        child: ClipRRect(
-          borderRadius: borderRadius,
-          child: Material(
-            color: Colors.transparent,
-            child: Ink(
-              decoration: BoxDecoration(
-                gradient: groupGradient(colours, accent),
-              ),
-              child: InkWell(
-                onTap: () {
-                  QaddyHaptics.selection();
-                  onTap();
-                },
-                child: Padding(
-                  padding: EdgeInsets.all(spacing.lg),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      GroupCrest(name: group.name, size: 56),
-                      SizedBox(width: spacing.lg),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const SampleBadge(onGradient: true),
-                            SizedBox(height: spacing.xs),
-                            Text(
-                              group.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: typography.h3.copyWith(color: onGradient),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(radius.medium),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              QaddyHaptics.selection();
+              onTap();
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 112,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[
+                          QaddyMediaPlaceholder(
+                            borderRadius: BorderRadius.circular(
+                              radius.small + 2,
                             ),
-                            if (group.description != null) ...<Widget>[
-                              SizedBox(height: spacing.xs),
+                            tone: photoTone,
+                          ),
+                          const Positioned(
+                            left: 6,
+                            top: 6,
+                            child: SampleBadge(onGradient: true, dense: true),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Row(
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: Text(
+                                        group.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: QaddyText.listTitle.copyWith(
+                                          color: colours.textPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isAdmin) ...<Widget>[
+                                      const SizedBox(width: 6),
+                                      Icon(
+                                        Icons.workspace_premium,
+                                        size: 16,
+                                        color: colours.gold,
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
                               Text(
-                                group.description!,
+                                isAdmin ? 'Admin' : 'Member',
+                                style: QaddyText.weatherCondition.copyWith(
+                                  color: isAdmin
+                                      ? colours.gold
+                                      : colours.textSecondary,
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                size: 18,
+                                color: colours.textPrimary,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          if (course != null)
+                            line(Icons.location_on_outlined, course!),
+                          if (when != null)
+                            line(Icons.calendar_today_outlined, when!),
+                          if (membersLine != null)
+                            line(Icons.groups_outlined, membersLine!),
+                          if (course == null &&
+                              when == null &&
+                              description != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                description!,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: typography.small.copyWith(
-                                  color: onGradient.withValues(alpha: 0.85),
+                                style: QaddyText.meta.copyWith(
+                                  height: 17 / 12,
+                                  color: colours.textSecondary,
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),
-                            ],
-                            SizedBox(height: spacing.sm),
-                            if (members.isEmpty)
-                              Text(
-                                line,
-                                style: typography.small.copyWith(
-                                  color: onGradient.withValues(alpha: 0.85),
-                                ),
-                              )
-                            else
-                              QaddyAvatarHuddle(
-                                names: members,
-                                total: group.totalMembers,
-                                limit: 4,
-                                label: '${group.totalMembers} members',
-                                textColour: onGradient.withValues(alpha: 0.85),
-                              ),
-                            if (nextRound != null) ...<Widget>[
-                              SizedBox(height: spacing.xs),
-                              Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.flag_outlined,
-                                    size: 16,
-                                    color: colours.gold,
-                                  ),
-                                  SizedBox(width: spacing.xs),
-                                  Flexible(
-                                    child: Text(
-                                      nextRound!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: typography.small.copyWith(
-                                        color: colours.gold,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                            ),
+                          const Spacer(),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              if (members.isNotEmpty)
+                                Flexible(
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: QaddyFaceStack(
+                                      names: members,
+                                      total: group.totalMembers,
+                                      step: 19,
+                                      limit: 4,
                                     ),
                                   ),
-                                ],
-                              ),
+                                )
+                              else
+                                const SizedBox.shrink(),
+                              if (statusLabel != null) ...<Widget>[
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: QaddyStatusPill(
+                                    label: statusLabel!,
+                                    tone: statusTone,
+                                    filled: statusTone == QaddyPillTone.success,
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: onGradient.withValues(alpha: 0.8),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
