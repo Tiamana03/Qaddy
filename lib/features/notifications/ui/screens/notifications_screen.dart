@@ -52,14 +52,6 @@ class NotificationsScreen extends ConsumerWidget {
       }
     }
 
-    final pulse = entries.isEmpty
-        ? 'Nothing to tell you right now'
-        : fresh.isEmpty
-        ? "You're all caught up"
-        : fresh.length == 1
-        ? '1 new'
-        : '${fresh.length} new';
-
     return QaddyScaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
@@ -84,20 +76,14 @@ class NotificationsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
             SizedBox(height: spacing.lg),
-            Text(
-              "What's happening",
-              style: typography.h1.copyWith(color: colours.textPrimary),
-            ),
-            SizedBox(height: spacing.xs),
-            AnimatedSwitcher(
-              duration: QaddyMotion.standard.fast,
-              child: Text(
-                pulse,
-                key: ValueKey<String>(pulse),
+            // The one reassurance worth saying: nothing is waiting.
+            if (entries.isNotEmpty && fresh.isEmpty) ...<Widget>[
+              Text(
+                "You're all caught up",
                 style: typography.body.copyWith(color: colours.textSecondary),
               ),
-            ),
-            SizedBox(height: spacing.xl),
+              SizedBox(height: spacing.lg),
+            ],
             if (entries.isEmpty)
               QaddyEmptyState(
                 icon: Icons.notifications_off_outlined,

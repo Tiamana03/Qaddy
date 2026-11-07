@@ -187,7 +187,8 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
                     onBigMoment: () => setState(() => _burst++),
                   ),
                 ],
-                if (round.holesPlayed > 0) ...<Widget>[
+                if (round.holesPlayed > 0 &&
+                    round.players.length > 1) ...<Widget>[
                   SizedBox(height: spacing.sectionGap),
                   QaddyFadeSlideIn(
                     child: StandingsPreview(

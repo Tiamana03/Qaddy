@@ -26,6 +26,7 @@ class GolferForm extends StatefulWidget {
     this.initial,
     this.autofocus = false,
     this.nameEditable = true,
+    this.beforeSubmit,
     super.key,
   });
 
@@ -44,6 +45,10 @@ class GolferForm extends StatefulWidget {
   /// Whether the name can be changed. Once the golfer's rounds are recorded
   /// under it, it cannot.
   final bool nameEditable;
+
+  /// Something quiet to show between the fields and the button (the setup
+  /// screen's Sample Clubhouse switch).
+  final Widget? beforeSubmit;
 
   @override
   State<GolferForm> createState() => _GolferFormState();
@@ -176,6 +181,10 @@ class _GolferFormState extends State<GolferForm> {
           textAlign: TextAlign.center,
           style: typography.small.copyWith(color: colours.textSecondary),
         ),
+        if (widget.beforeSubmit != null) ...<Widget>[
+          SizedBox(height: spacing.lg),
+          widget.beforeSubmit!,
+        ],
         SizedBox(height: spacing.lg),
         QaddyGoldButton(
           label: widget.submitLabel,

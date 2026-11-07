@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
+import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../../../support/app_test_harness.dart';
 import '../../../../support/played_rounds.dart';
@@ -64,6 +65,13 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.tap(finder.first);
   await tester.pumpAndSettle();
 }
+
+NewTripDraft _trip() => NewTripDraft(
+  name: 'Barossa',
+  destination: 'Barossa Valley',
+  startDate: DateTime(2027, 3, 12),
+  endDate: DateTime(2027, 3, 14),
+);
 
 void main() {
   group('a golfer who has not played yet', () {
@@ -180,17 +188,27 @@ void main() {
       expect(find.text('Recent rounds'), findsOneWidget);
     });
 
+    testWidgets('your world is absent until the golfer has made something', (
+      tester,
+    ) async {
+      await _pump(tester, h.container);
+
+      expect(find.text('Your world'), findsNothing);
+      expect(find.text('+5 sample'), findsNothing);
+    });
+
     testWidgets('your world counts only your own, and says what is sample', (
       tester,
     ) async {
+      h.container.read(tripsProvider.notifier).createTrip(_trip());
       await _pump(tester, h.container);
 
       expect(find.text('Your world'), findsOneWidget);
       expect(find.text('Friends'), findsOneWidget);
       expect(find.text('Groups'), findsOneWidget);
       expect(find.text('Trips'), findsOneWidget);
-      // Nothing here was created by the golfer, so the counts are zero and the
-      // sample mates, groups and trips are named as such.
+      // One trip is the golfer's own; the sample mates, groups and trips are
+      // named as such.
       expect(find.text('+5 sample'), findsOneWidget);
       expect(find.text('+4 sample'), findsNWidgets(2));
     });
@@ -204,6 +222,7 @@ void main() {
       ('Trips', '/trips'),
     ]) {
       testWidgets('$label leads to $path', (tester) async {
+        h.container.read(tripsProvider.notifier).createTrip(_trip());
         await _pump(tester, h.container);
 
         await _tap(tester, find.text(label));

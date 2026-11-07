@@ -108,15 +108,19 @@ class ProfileScreen extends ConsumerWidget {
             QaddySectionHeading(title: 'Achievements', badge: earned),
             SizedBox(height: spacing.md),
             AchievementShelf(achievements: achievements),
-            SizedBox(height: spacing.sectionGap),
-            const QaddySectionHeading(title: 'Your world'),
-            SizedBox(height: spacing.md),
-            _World(
-              sampleFriends: sampleFriends,
-              sampleGroups: groups.length,
-              trips: allTrips.length - sampleTrips,
-              sampleTrips: sampleTrips,
-            ),
+            // Only once the golfer has made something of their own: a row of
+            // zeros (and someone else's sample numbers) says nothing.
+            if (allTrips.length - sampleTrips > 0) ...<Widget>[
+              SizedBox(height: spacing.sectionGap),
+              const QaddySectionHeading(title: 'Your world'),
+              SizedBox(height: spacing.md),
+              _World(
+                sampleFriends: sampleFriends,
+                sampleGroups: groups.length,
+                trips: allTrips.length - sampleTrips,
+                sampleTrips: sampleTrips,
+              ),
+            ],
             if (stats != null && stats.rivals.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
               const QaddySectionHeading(title: 'Your playing partners'),

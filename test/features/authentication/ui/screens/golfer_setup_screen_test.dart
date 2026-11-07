@@ -115,7 +115,7 @@ void main() {
       await _pump(tester);
 
       expect(find.text('Start with a Sample Clubhouse'), findsOneWidget);
-      expect(find.textContaining('always labelled Sample'), findsOneWidget);
+      expect(find.textContaining('Always labelled'), findsOneWidget);
       expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
     });
 

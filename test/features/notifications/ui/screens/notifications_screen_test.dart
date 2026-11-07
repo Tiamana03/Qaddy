@@ -46,7 +46,8 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text("What's happening"), findsOneWidget);
+    // The app bar is the title: no second headline.
+    expect(find.text("What's happening"), findsNothing);
     expect(find.text('Your round starts in 6 days'), findsOneWidget);
     expect(find.text('Sam wants to play with you'), findsOneWidget);
     expect(find.text('Melbourne Golf Weekend is 27 days away'), findsOneWidget);
@@ -62,7 +63,7 @@ void main() {
   ) async {
     final c = await _pump(tester);
     final fresh = c.read(unreadNotificationCountProvider);
-    expect(find.text('$fresh new'), findsOneWidget);
+    expect(find.text('$fresh'), findsOneWidget);
     expect(find.text('New'), findsOneWidget);
     expect(find.text('Earlier'), findsNothing);
 
@@ -121,7 +122,6 @@ void main() {
 
     expect(find.text('Nothing to tell you'), findsOneWidget);
     expect(find.text('Open Settings'), findsOneWidget);
-    expect(find.text('Nothing to tell you right now'), findsOneWidget);
   });
 
   testWidgets('lays out on a small phone and in the light theme', (

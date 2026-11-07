@@ -19,7 +19,6 @@ import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/user/golfer_form.dart';
 import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/badges/sample_badge.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/features/authentication/ui/widgets/launch_scaffold.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
@@ -55,7 +54,6 @@ class _GolferSetupScreenState extends ConsumerState<GolferSetupScreen> {
         builder: (context) {
           final theme = Theme.of(context);
           final colours = theme.extension<QaddyColours>()!;
-          final radius = theme.extension<QaddyRadius>()!;
           final spacing = theme.extension<QaddySpacing>()!;
           final typography = theme.extension<QaddyTypography>()!;
 
@@ -78,74 +76,77 @@ class _GolferSetupScreenState extends ConsumerState<GolferSetupScreen> {
                   textAlign: TextAlign.center,
                   style: typography.body.copyWith(color: colours.textSecondary),
                 ),
-                SizedBox(height: spacing.xl),
-                Container(
-                  padding: EdgeInsets.all(spacing.md),
-                  decoration: BoxDecoration(
-                    color: colours.surface1,
-                    borderRadius: BorderRadius.circular(radius.large),
-                    border: Border.all(
-                      color: _sample
-                          ? colours.gold.withValues(alpha: 0.6)
-                          : colours.border,
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Icon(Icons.theaters_outlined, color: colours.gold),
-                      SizedBox(width: spacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Flexible(
-                                  child: Text(
-                                    'Start with a Sample Clubhouse',
-                                    style: typography.body.copyWith(
-                                      color: colours.textPrimary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: spacing.sm),
-                                const SampleBadge(onGradient: true),
-                              ],
-                            ),
-                            SizedBox(height: spacing.xs),
-                            Text(
-                              'Pretend mates (Tom, Ben…), a group and a trip, '
-                              'so you can see what Qaddy does. They are always '
-                              'labelled Sample. Keep them, edit them or remove '
-                              'them any time in Settings.',
-                              style: typography.small.copyWith(
-                                color: colours.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: spacing.sm),
-                      Switch(
-                        value: _sample,
-                        onChanged: (value) => setState(() => _sample = value),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: spacing.xl),
                 GolferForm(
                   autofocus: true,
                   submitLabel: "Let's play",
                   onSubmit: _save,
+                  beforeSubmit: _SampleRow(
+                    value: _sample,
+                    onChanged: (value) => setState(() => _sample = value),
+                  ),
                 ),
                 SizedBox(height: spacing.xl),
               ]),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// The Sample Clubhouse choice: one quiet row between the fields and the
+/// button, so the first thing a golfer does is say who they are.
+class _SampleRow extends StatelessWidget {
+  const _SampleRow({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.md,
+        vertical: spacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: colours.surface1,
+        borderRadius: BorderRadius.circular(radius.large),
+        border: Border.all(color: colours.border),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Start with a Sample Clubhouse',
+                  style: typography.small.copyWith(
+                    color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Pretend mates, a group and a trip, so you can see what '
+                  'Qaddy does. Always labelled; remove any time in Settings.',
+                  style: typography.caption.copyWith(
+                    color: colours.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: spacing.sm),
+          Switch(value: value, onChanged: onChanged),
+        ],
       ),
     );
   }
