@@ -18,6 +18,7 @@ const List<String> _destinations = <String>[
   '/profile/statistics',
   '/profile/bag',
   '/profile/settings',
+  '/home/notifications',
 ];
 
 List<RouteBase> _routes() => <RouteBase>[
@@ -81,9 +82,11 @@ void main() {
       await _pump(tester, PlayedRounds().container);
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
-      expect(find.text('Player card'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
       expect(find.text('Tiamana'), findsOneWidget);
-      expect(find.text('Handicap 8.4'), findsOneWidget);
+      expect(find.text('Edit profile'), findsOneWidget);
+      expect(find.text('Handicap'), findsOneWidget);
+      expect(find.text('8.4'), findsOneWidget);
       expect(find.text('Since 2024'), findsOneWidget);
       expect(find.text('Start your first round'), findsOneWidget);
       // The old placeholder tables are gone.
@@ -215,8 +218,9 @@ void main() {
 
     for (final (label, path) in <(String, String)>[
       ('My stats', '/profile/statistics'),
+      ('Handicap', '/profile/statistics'),
+      ('View full statistics', '/profile/statistics'),
       ('Golf bag', '/profile/bag'),
-      ('Settings', '/profile/settings'),
       ('Friends', '/friends'),
       ('Groups', '/friends/groups'),
       ('Trips', '/trips'),
@@ -230,6 +234,37 @@ void main() {
         expect(find.text('Go: $path'), findsOneWidget);
       });
     }
+
+    testWidgets('Edit profile opens the sheet and saves a new handicap', (
+      tester,
+    ) async {
+      await _pump(tester, h.container);
+
+      await _tap(tester, find.text('Edit profile'));
+      expect(find.text('Save'), findsOneWidget);
+
+      await tester.enterText(find.widgetWithText(TextField, 'Handicap (optional)'), '12');
+      await _tap(tester, find.text('Save'));
+
+      expect(find.text('Save'), findsNothing);
+      expect(find.text('12'), findsWidgets);
+    });
+
+    testWidgets('the gear opens Settings', (tester) async {
+      await _pump(tester, h.container);
+
+      await _tap(tester, find.byTooltip('Settings'));
+
+      expect(find.text('Go: /profile/settings'), findsOneWidget);
+    });
+
+    testWidgets('the bell opens Notifications', (tester) async {
+      await _pump(tester, h.container);
+
+      await _tap(tester, find.bySemanticsLabel(RegExp('^Notifications')));
+
+      expect(find.text('Go: /home/notifications'), findsOneWidget);
+    });
 
     testWidgets('the player card and the partners open the statistics', (
       tester,

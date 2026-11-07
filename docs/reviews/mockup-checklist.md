@@ -43,7 +43,7 @@ The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in 
 | Live scorecard | `live-scoring-v1` (left) | ✅ app bar with the players, hole strip, "Hole N" title with "Par | m | SI" beneath, hole-view slot with length and side game, one "Enter scores" panel with boxed steppers, Previous and gold Next hole | 🔲 GPS, wind and course-map tiles, back/middle/front distances, Hole Notes · 🟡 hole imagery, player photos |
 | Leaderboard | `live-scoring-v1` (right) | ✅ "Live leaderboard" card with Pos / Player / Thru / Pts, side-game tiles, Round summary | 🔲 Leaderboard / Scorecard / Stats / Side Games tabs, Stroke Play dropdown, teams, side-game entries and winners · 🟡 player photos |
 | Round results | `round-details-v1` family | ✅ celebration, achievements | 🔲 payment status, teams, notes |
-| Profile | `profile-home-v1` | ✅ card, stat row, achievements | 🔲 XP journey bar · 🟡 photo avatar, badge artwork |
+| Profile | `profile-home-v1` | ✅ header (bell, gear), identity with Edit profile, four stat tiles, achievements, recent rounds with thumbnails, gold View full statistics | 🔲 XP journey bar and level, tagline/title, camera badge · 🟡 photo avatar, round thumbnails, badge artwork |
 | Statistics | `profile-home-v1` (right) | ✅ hero, form chart, mix, holes | 🔲 handicap sparkline, driving and approach tiles |
 | Golf Bag | `golf-bag-home-v1` | ✅ starter bag, distance ladder | 🔲 club list with photos, Add Club · 🟡 club photos |
 | Groups | `groups-home-v1` (left) | ✅ cards, banner, green tabs | 🔲 status pills, create group · 🟡 course photos |

@@ -17,15 +17,14 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Settings'), findsOneWidget);
+    expect(find.byTooltip('Settings'), findsOneWidget);
 
-    await tester.ensureVisible(find.text('Settings'));
-    await tester.tap(find.text('Settings'));
+    await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('Privacy'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('Settings'), findsOneWidget);
+    expect(find.byTooltip('Settings'), findsOneWidget);
   });
 }

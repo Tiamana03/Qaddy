@@ -15,7 +15,6 @@ import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/theme/theme_mode_controller.dart';
 import 'package:qaddy/core/user/golfer_controller.dart';
-import 'package:qaddy/core/user/golfer_form.dart';
 import 'package:qaddy/core/user/sample_clubhouse.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/utils/haptics.dart';
@@ -34,6 +33,7 @@ import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/notifications/models/notification_item.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
+import 'package:qaddy/features/profile/ui/widgets/edit_profile_sheet.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
@@ -54,39 +54,7 @@ class SettingsScreen extends ConsumerWidget {
     final muted = ref.watch(notificationsProvider.select((s) => s.muted));
     final rounds = ref.watch(roundHistoryProvider).length;
 
-    Future<void> editProfile() => showModalBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: colours.surface1,
-      builder: (sheetContext) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          spacing.lg,
-          0,
-          spacing.lg,
-          MediaQuery.viewInsetsOf(sheetContext).bottom + spacing.xl,
-        ),
-        child: SingleChildScrollView(
-          child: GolferForm(
-            initial: golfer,
-            nameEditable: false,
-            submitLabel: 'Save',
-            onSubmit: (name, handicap, course) {
-              ref
-                  .read(golferProvider.notifier)
-                  .save(
-                    firstName: name,
-                    handicap: handicap,
-                    homeCourse: course,
-                  );
-              QaddyHaptics.success();
-              Navigator.of(sheetContext).pop();
-            },
-          ),
-        ),
-      ),
-    );
+    Future<void> editProfile() => showEditProfileSheet(context, ref);
 
     Future<void> chooseSample({required bool on}) async {
       if (!on) {
