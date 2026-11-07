@@ -221,8 +221,22 @@ void main() {
     testWidgets('shows the hole length, and flags a side game', (tester) async {
       await tester.pumpWidget(_app(HoleView(hole: richmondHoles[11])));
 
-      expect(find.text('Length'), findsOneWidget);
+      expect(find.text('Middle'), findsOneWidget);
+      expect(find.text('Back'), findsOneWidget);
+      expect(find.text('Front'), findsOneWidget);
       expect(find.text('Nearest the Pin on this hole'), findsOneWidget);
+    });
+
+    testWidgets('keeps the mockup's places for what Qaddy cannot know yet', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(HoleView(hole: richmondHoles[6])));
+
+      for (final label in <String>['Wind', 'GPS', 'Course', 'Flyover soon']) {
+        expect(find.text(label), findsOneWidget, reason: label);
+      }
+      // Back and front are not known; nothing is invented for them.
+      expect(find.text('–'), findsWidgets);
     });
 
     testWidgets('has no side game chip on an ordinary hole', (tester) async {

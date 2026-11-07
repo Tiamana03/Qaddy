@@ -184,22 +184,36 @@ class _AerialPainter extends CustomPainter {
         ).createShader(bounds),
     );
 
-    // Trees: soft dark blobs down both sides.
-    final tree = Paint()..color = const Color(0x33000000);
-    for (var i = 0; i < 26; i++) {
-      final t = i / 25;
-      final y = h * (0.04 + 0.92 * t);
-      canvas
-        ..drawCircle(
-          Offset(w * (0.06 + 0.05 * ((i * 7) % 5) / 4), y),
-          h * 0.06,
-          tree,
-        )
-        ..drawCircle(
-          Offset(w * (0.86 + 0.07 * ((i * 3) % 5) / 4), y),
-          h * 0.065,
-          tree,
-        );
+    // Trees: many soft blobs in a few greens, kept off the fairway. The seed
+    // is fixed so the picture never shimmers between frames.
+    final greens = <Color>[
+      Color.lerp(colours.selected, Colors.black, 0.62)!,
+      Color.lerp(colours.selected, Colors.black, 0.45)!,
+      Color.lerp(colours.selected, Colors.black, 0.3)!,
+      Color.lerp(colours.accentTeal, Colors.black, 0.6)!,
+    ];
+    var seed = 7;
+    double next() {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    }
+
+    for (var i = 0; i < 230; i++) {
+      final x = next() * w;
+      final y = next() * h;
+      // Skip the fairway ribbon and the green.
+      final t = 1 - y / h;
+      final centre = w * (0.53 + 0.05 * (t < 0.5 ? t : 1 - t) - 0.02 * t);
+      if ((x - centre).abs() < w * (0.1 + 0.05 * (1 - t))) {
+        continue;
+      }
+      final r = (h * 0.022) + next() * h * 0.045;
+      canvas.drawCircle(
+        Offset(x, y),
+        r,
+        Paint()
+          ..color = greens[(next() * greens.length).floor() % greens.length],
+      );
     }
 
     // The fairway: a ribbon from the tee at the bottom to the green.

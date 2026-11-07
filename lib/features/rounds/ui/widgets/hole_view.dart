@@ -1,11 +1,14 @@
 /// The picture of the hole, as the approved Live Scoring mockup draws it: a
-/// tall aerial view with the hole's length in a frosted card at the top left
-/// and the side game, if there is one, at the bottom.
+/// tall aerial view with the distances in a frosted card at the top left, wind,
+/// weather, GPS and course tiles down the right, the length flagged at the
+/// green and a flyover pill at the foot.
 ///
 /// The aerial is a `QaddyMediaPlaceholder` until real hole imagery exists (see
-/// `docs/design/asset-register.md`), 290 tall as the mockup's is. No distance
-/// is invented: only the hole's own length is shown, and wind, GPS, the course
-/// map and the flyover are not drawn because nothing is behind them.
+/// `docs/design/asset-register.md`), 290 tall as the mockup's is. Qaddy has no
+/// GPS, wind, flyover or per-tee distances yet, so those parts hold their place
+/// at the mockup's size and say "–" (or "Soon") rather than invent a number or
+/// act like buttons. What it does know is shown: the hole's length and, for the
+/// Sample Clubhouse round, the forecast.
 library;
 
 import 'dart:ui' show ImageFilter;
@@ -13,7 +16,6 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
-import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
 import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
@@ -36,13 +38,24 @@ class HoleView extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
     final onImage = theme.colorScheme.onPrimary;
     final shape = BorderRadius.circular(radius.medium);
     final sideGames = <SideGame>[
       for (final game in upcomingRoundSideGames)
         if (game.hole == hole.number) game,
     ];
+    final metres = hole.metres;
+    // The forecast is the Sample Clubhouse round's; anyone else's is unknown.
+    final forecast = upcomingRound.planned ? upcomingRound.weather : null;
+    final space = forecast?.indexOf(' ') ?? -1;
+    final temp = forecast == null
+        ? '–'
+        : space < 0
+        ? forecast
+        : forecast.substring(0, space);
+    final sky = forecast == null || space < 0
+        ? '–'
+        : forecast.substring(space + 1);
 
     return SizedBox(
       height: 290,
@@ -50,68 +63,275 @@ class HoleView extends StatelessWidget {
         fit: StackFit.expand,
         children: <Widget>[
           QaddyMediaPlaceholder(borderRadius: shape, aerial: true),
-          Padding(
-            padding: EdgeInsets.all(spacing.md - 2),
+          // Back, middle and front. Only the middle is known.
+          Positioned(
+            left: 12,
+            top: 12,
+            child: _Frosted(
+              width: 120,
+              padding: const EdgeInsets.fromLTRB(12, 9, 12, 9),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _DistanceRow(label: 'Back', value: '–', onImage: onImage),
+                  _DistanceRow(
+                    label: 'Middle',
+                    value: metres == null ? '–' : '$metres m',
+                    onImage: onImage,
+                    strong: true,
+                  ),
+                  _DistanceRow(label: 'Front', value: '–', onImage: onImage),
+                ],
+              ),
+            ),
+          ),
+          // Wind, weather, GPS and course down the right.
+          Positioned(
+            right: 10,
+            top: 12,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                _Tile(
+                  width: 74,
+                  height: 74,
+                  icon: Icons.navigation_outlined,
+                  top: '–',
+                  bottom: 'Wind',
+                  onImage: onImage,
+                ),
+                const SizedBox(height: 6),
+                _Tile(
+                  width: 74,
+                  height: 72,
+                  icon: Icons.wb_sunny_rounded,
+                  iconColour: colours.gold,
+                  top: temp,
+                  bottom: sky,
+                  onImage: onImage,
+                ),
+                const SizedBox(height: 6),
+                _Tile(
+                  width: 62,
+                  height: 54,
+                  icon: Icons.my_location_outlined,
+                  bottom: 'GPS',
+                  onImage: onImage,
+                ),
+                const SizedBox(height: 6),
+                _Tile(
+                  width: 62,
+                  height: 54,
+                  icon: Icons.map_outlined,
+                  bottom: 'Course',
+                  onImage: onImage,
+                ),
+              ],
+            ),
+          ),
+          // The hole's length, flagged at the green.
+          if (metres != null)
+            Align(
+              alignment: const Alignment(0.12, -0.42),
+              child: _Frosted(
+                radius: 999,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                child: Text(
+                  '$metres m',
+                  style: QaddyText.pillLabel.copyWith(color: onImage),
+                ),
+              ),
+            ),
+          Positioned(
+            left: 12,
+            bottom: 12,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if (hole.metres != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(radius.medium - 4),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: spacing.md,
-                          vertical: spacing.sm,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colours.backgroundBase.withValues(alpha: 0.55),
-                          borderRadius: BorderRadius.circular(
-                            radius.medium - 4,
-                          ),
-                          border: Border.all(
-                            color: onImage.withValues(alpha: 0.14),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              'Length',
-                              style: QaddyText.weatherPlace.copyWith(
-                                color: onImage.withValues(alpha: 0.8),
-                              ),
-                            ),
-                            Text(
-                              '${hole.metres} m',
-                              style: QaddyText.timeFigure.copyWith(
-                                color: onImage,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                if (greeting != null) ...<Widget>[
+                  QaddyInfoChip(
+                    icon: Icons.waving_hand_outlined,
+                    text: greeting!,
                   ),
-                const Spacer(),
-                if (greeting != null)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      bottom: sideGames.isNotEmpty ? spacing.sm : 0,
-                    ),
-                    child: QaddyInfoChip(
-                      icon: Icons.waving_hand_outlined,
-                      text: greeting!,
-                    ),
-                  ),
-                if (sideGames.isNotEmpty)
+                  const SizedBox(height: 6),
+                ],
+                if (sideGames.isNotEmpty) ...<Widget>[
                   QaddyInfoChip(
                     icon: Icons.flag_outlined,
                     text: '${sideGames.first.name} on this hole',
                   ),
+                  const SizedBox(height: 6),
+                ],
+                _Frosted(
+                  radius: 999,
+                  padding: const EdgeInsets.fromLTRB(12, 8, 16, 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(Icons.play_arrow_rounded, color: onImage, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Flyover soon',
+                        style: QaddyText.pillLabel.copyWith(
+                          color: onImage.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A frosted dark surface that sits on the picture.
+class _Frosted extends StatelessWidget {
+  const _Frosted({
+    required this.child,
+    this.width,
+    this.height,
+    this.radius = 14,
+    this.padding = EdgeInsets.zero,
+  });
+
+  final Widget child;
+  final double? width;
+  final double? height;
+  final double radius;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final shape = BorderRadius.circular(radius);
+
+    return ClipRRect(
+      borderRadius: shape,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          width: width,
+          height: height,
+          padding: padding,
+          decoration: BoxDecoration(
+            color: colours.backgroundBase.withValues(alpha: 0.6),
+            borderRadius: shape,
+            border: Border.all(
+              color: theme.colorScheme.onPrimary.withValues(alpha: 0.14),
+            ),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _DistanceRow extends StatelessWidget {
+  const _DistanceRow({
+    required this.label,
+    required this.value,
+    required this.onImage,
+    this.strong = false,
+  });
+
+  final String label;
+  final String value;
+  final Color onImage;
+  final bool strong;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: <Widget>[
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                label,
+                style: QaddyText.meta.copyWith(
+                  height: 18 / 12,
+                  color: onImage.withValues(alpha: strong ? 1 : 0.7),
+                  fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                style: QaddyText.cardTitle.copyWith(
+                  height: 18 / 14,
+                  color: onImage.withValues(alpha: value == '–' ? 0.6 : 1),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({
+    required this.width,
+    required this.height,
+    required this.icon,
+    required this.bottom,
+    required this.onImage,
+    this.iconColour,
+    this.top,
+  });
+
+  final double width;
+  final double height;
+  final IconData icon;
+  final Color? iconColour;
+  final String? top;
+  final String bottom;
+  final Color onImage;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Frosted(
+      width: width,
+      height: height,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(icon, size: 24, color: iconColour ?? onImage),
+          if (top != null)
+            Text(
+              top!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: QaddyText.cardTitle.copyWith(
+                height: 18 / 14,
+                color: onImage.withValues(alpha: top == '–' ? 0.6 : 1),
+              ),
+            ),
+          Text(
+            bottom,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: QaddyText.weatherCondition.copyWith(
+              color: onImage.withValues(alpha: 0.85),
             ),
           ),
         ],

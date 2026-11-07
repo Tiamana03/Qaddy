@@ -163,7 +163,8 @@ void main() {
         find.bySemanticsLabel(RegExp('^Ben: picked up, Picked up')),
         findsOneWidget,
       );
-      expect(find.text('–'), findsOneWidget);
+      // The dash is in Ben's stepper (the hole view has a few of its own).
+      expect(find.text('–'), findsWidgets);
       // Nothing further to take off, but a stroke can be put back.
       final minus = find.ancestor(
         of: find.byTooltip('Take a stroke off Ben'),
