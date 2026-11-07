@@ -107,7 +107,10 @@ class _Tile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(spacing.md),
+          padding: EdgeInsets.symmetric(
+            horizontal: spacing.sm + 2,
+            vertical: spacing.md,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -130,7 +133,11 @@ class _Tile extends StatelessWidget {
               Text(
                 stat.label,
                 maxLines: 2,
-                style: typography.caption.copyWith(color: labelColour),
+                softWrap: true,
+                style: typography.caption.copyWith(
+                  color: labelColour,
+                  letterSpacing: 0,
+                ),
               ),
             ],
           ),

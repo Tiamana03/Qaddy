@@ -243,7 +243,10 @@ void main() {
       await _tap(tester, find.text('Edit profile'));
       expect(find.text('Save'), findsOneWidget);
 
-      await tester.enterText(find.widgetWithText(TextField, 'Handicap (optional)'), '12');
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Handicap (optional)'),
+        '12',
+      );
       await _tap(tester, find.text('Save'));
 
       expect(find.text('Save'), findsNothing);
