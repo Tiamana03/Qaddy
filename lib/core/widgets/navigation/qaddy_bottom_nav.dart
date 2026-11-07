@@ -1,10 +1,11 @@
-/// Qaddy's bottom navigation bar, built to the Navigation Library: a floating,
-/// rounded bar on the `surface1` layer with the `medium` shadow, outlined icons
-/// that fill when active, and a short indicator under the active destination.
+/// Qaddy's bottom navigation bar, as the approved mockups draw it: a rounded
+/// bar that runs almost edge to edge on the `surface1` layer, filled icons and
+/// a gold label for the active destination, with a soft green pill behind the
+/// active icon. (The mockups, not the Navigation Library sheet, are the
+/// source of truth; the library follows them.)
 ///
-/// The active item uses `accent` (gold in Dark Mode), per `colours.md`'s rule
-/// for the selected bottom-navigation item. Labels use the `navigation` text
-/// style (Inter 12 / 500).
+/// The active item uses `accent` (gold in Dark Mode). Labels use the
+/// `navigation` text style (Inter 12 / 500).
 library;
 
 import 'package:flutter/material.dart';
@@ -65,15 +66,15 @@ class QaddyBottomNav extends StatelessWidget {
       top: false,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          spacing.md,
+          spacing.sm,
           spacing.xs,
-          spacing.md,
+          spacing.sm,
           spacing.sm,
         ),
         child: Container(
           decoration: BoxDecoration(
             color: colours.surface1,
-            borderRadius: BorderRadius.circular(radius.large),
+            borderRadius: BorderRadius.circular(radius.extraLarge),
             border: Border.all(color: colours.border),
             boxShadow: shadows.medium,
           ),
@@ -133,14 +134,33 @@ class _NavItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(radius.large),
         child: Padding(
-          padding: EdgeInsets.only(top: spacing.sm, bottom: spacing.xs),
+          padding: EdgeInsets.symmetric(vertical: spacing.sm),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Icon(
-                active ? item.activeIcon : item.icon,
-                size: spacing.xl,
-                color: colour,
+              AnimatedContainer(
+                duration: animate ? QaddyMotion.standard.normal : Duration.zero,
+                curve: QaddyMotion.standard.enter,
+                padding: EdgeInsets.symmetric(
+                  horizontal: spacing.lg,
+                  vertical: spacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: active
+                      ? colours.selected.withValues(alpha: 0.18)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(radius.medium),
+                  border: Border.all(
+                    color: active
+                        ? colours.selected.withValues(alpha: 0.5)
+                        : Colors.transparent,
+                  ),
+                ),
+                child: Icon(
+                  active ? item.activeIcon : item.icon,
+                  size: spacing.xl + spacing.xs,
+                  color: colour,
+                ),
               ),
               SizedBox(height: spacing.xs),
               Text(
@@ -148,17 +168,6 @@ class _NavItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: typography.navigation.copyWith(color: colour),
-              ),
-              SizedBox(height: spacing.xs),
-              AnimatedContainer(
-                duration: animate ? QaddyMotion.standard.normal : Duration.zero,
-                curve: QaddyMotion.standard.enter,
-                width: active ? spacing.xl : 0,
-                height: 3,
-                decoration: BoxDecoration(
-                  color: colours.accent,
-                  borderRadius: BorderRadius.circular(radius.pill),
-                ),
               ),
             ],
           ),

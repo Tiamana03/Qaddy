@@ -3,16 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/home_hero.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/upcoming_round_card.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/your_game_tiles.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/trips/state/trips_controller.dart';
 
 import '../../../support/app_test_harness.dart';
-import '../../../support/played_rounds.dart';
 
 /// A Sunday morning: the round is six days away and the Melbourne trip 27.
 final DateTime _sundayMorning = DateTime(2026, 11, 1, 9);
@@ -75,7 +77,7 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 
 void main() {
   group('the first tee', () {
-    testWidgets('uses QaddyScaffold and greets the golfer by the hour', (
+    testWidgets('uses QaddyScaffold and greets the golfer in the hero', (
       tester,
     ) async {
       await _pump(tester);
@@ -92,51 +94,52 @@ void main() {
       expect(find.text('Good evening,'), findsOneWidget);
     });
 
-    testWidgets('has the hero, the doors and sections with something to say', (
+    testWidgets('has the hero, the doors and the round, in that order', (
       tester,
     ) async {
       await _pump(tester);
 
-      expect(find.text('Sample round · Next round'), findsOneWidget);
+      expect(find.byType(HomeHero), findsOneWidget);
       expect(find.text('Start a round'), findsOneWidget);
-      expect(find.text('Your game'), findsOneWidget);
-      expect(find.text('Highlights'), findsOneWidget);
-      // The mates' feed lives on Friends, not here.
+      expect(find.text('Upcoming round'), findsOneWidget);
+      final hero = tester.getTopLeft(find.byType(HomeHero)).dy;
+      final doors = tester.getTopLeft(find.text('Start a round')).dy;
+      final round = tester.getTopLeft(find.text('Upcoming round')).dy;
+      expect(hero, lessThan(doors));
+      expect(doors, lessThan(round));
+      // The mates feed and the highlights are not on Home.
       expect(find.text('From your sample mates'), findsNothing);
-      expect(find.text('Nice round'), findsNothing);
-      // The old placeholder furniture is gone.
-      expect(find.text('Create Round'), findsNothing);
-      expect(find.text('Continue Round'), findsNothing);
-      expect(find.text('View Summary'), findsNothing);
+      expect(find.text('Highlights'), findsNothing);
+    });
+
+    testWidgets('the hero carries the forecast, and says it is a sample', (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      expect(find.text('21°C'), findsOneWidget);
+      expect(find.text('Sunny'), findsOneWidget);
+      expect(find.text('Sample'), findsWidgets);
     });
   });
 
-  group('next round', () {
-    testWidgets('counts down to the round and says where and who', (
-      tester,
-    ) async {
+  group('the upcoming round', () {
+    testWidgets('says where, when and who', (tester) async {
       await _pump(tester);
 
-      expect(
-        find.descendant(
-          of: find.byType(NextRoundHero),
-          matching: find.text('6'),
-        ),
-        findsOneWidget,
-      );
-      expect(find.text('days to tee-off'), findsOneWidget);
-      expect(find.text('Richmond Golf Club'), findsOne);
-      expect(find.text('Saturday, 8:20 AM'), findsOne);
-      expect(find.text('21°C Sunny'), findsOneWidget);
-      expect(find.text('Stableford'), findsOneWidget);
-      expect(find.text('18 holes'), findsNothing);
-      expect(find.text('+3 more · 8 playing'), findsOneWidget);
+      expect(find.byType(UpcomingRoundCard), findsOneWidget);
+      expect(find.text('Richmond Golf Club'), findsWidgets);
+      expect(find.text('Saturday'), findsOneWidget);
+      expect(find.text('In 6 days'), findsOneWidget);
+      expect(find.text('8:20 AM'), findsOneWidget);
+      expect(find.textContaining('8 playing'), findsOneWidget);
     });
 
     testWidgets('changes its tune as the day gets closer', (tester) async {
-      await _pump(tester, now: DateTime(2026, 11, 7, 7));
+      await _pump(tester, now: DateTime(2026, 11, 6, 9));
+      expect(find.text('Tomorrow'), findsOneWidget);
 
-      expect(find.text("Sample round · It's round day"), findsOneWidget);
+      await _pump(tester, now: DateTime(2026, 11, 7, 9));
       expect(find.text('Today'), findsOneWidget);
     });
 
@@ -148,24 +151,24 @@ void main() {
       expect(find.text('Go: /rounds'), findsOneWidget);
     });
 
-    testWidgets('the story opens the round too', (tester) async {
+    testWidgets('See all opens Rounds too', (tester) async {
       await _pump(tester);
 
-      await _tap(tester, find.text('days to tee-off'));
+      await _tap(tester, find.text('See all').first);
 
       expect(find.text('Go: /rounds'), findsOneWidget);
     });
 
-    testWidgets('tells the group when, where and who is in', (tester) async {
-      final container = await _pump(tester);
+    testWidgets('View details tells the group when, where and who is in', (
+      tester,
+    ) async {
+      final c = await _pump(tester);
 
-      await _tap(tester, find.byTooltip('Tell the group'));
+      await _tap(tester, find.text('View details'));
 
-      final shared = shareOf(container).shared;
-      expect(shared, hasLength(1));
-      expect(shared.single, contains('Saturday at 8:20 AM'));
-      expect(shared.single, contains('Richmond Golf Club'));
-      expect(shared.single, contains("Who's in?"));
+      final sent = shareOf(c).shared.single;
+      expect(sent, contains('Saturday'));
+      expect(sent, contains('Richmond Golf Club'));
     });
   });
 
@@ -197,7 +200,14 @@ void main() {
           Icons.person_add_alt_1_outlined,
           Icons.bar_chart_rounded,
         ])
-          tester.getTopLeft(find.byIcon(icon)).dy,
+          tester
+              .getTopLeft(
+                find.descendant(
+                  of: find.byType(QaddyQuickActions),
+                  matching: find.byIcon(icon),
+                ),
+              )
+              .dy,
       };
 
       expect(tops, hasLength(1));
@@ -233,10 +243,9 @@ void main() {
       return container;
     }
 
-    testWidgets('the hero says so and offers to continue', (tester) async {
+    testWidgets('the card says so and offers to continue', (tester) async {
       await pumpLive(tester);
 
-      expect(find.text('Round in progress'), findsWidgets);
       expect(find.text('Hole 2 of 18'), findsOneWidget);
       expect(find.text('Continue round'), findsWidgets);
       expect(find.text('Get ready'), findsNothing);
@@ -245,7 +254,7 @@ void main() {
     testWidgets('Continue round opens the scorecard', (tester) async {
       await pumpLive(tester);
 
-      await _tap(tester, find.text('Continue round').first);
+      await _tap(tester, find.text('Continue round').last);
 
       expect(find.text('Go: /rounds/scorecard'), findsOneWidget);
     });
@@ -258,8 +267,34 @@ void main() {
     });
   });
 
-  group('after a round', () {
-    testWidgets('your game shows the round just played and opens it', (
+  group('your game', () {
+    testWidgets('starts with the handicap, and says no more than it knows', (
+      tester,
+    ) async {
+      await _pump(tester);
+
+      expect(find.byType(YourGameTiles), findsOneWidget);
+      expect(find.text('8.4'), findsOneWidget);
+      for (final label in <String>[
+        'Handicap',
+        'Rounds',
+        'Best score',
+        'Wins',
+      ]) {
+        expect(find.text(label), findsOneWidget, reason: label);
+      }
+      expect(find.text('–'), findsOneWidget);
+    });
+
+    testWidgets('opens the full statistics', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text('Handicap'));
+
+      expect(find.text('Go: /profile/statistics'), findsOneWidget);
+    });
+
+    testWidgets('after a round it counts the round just played', (
       tester,
     ) async {
       final container = friendsContainer(
@@ -288,40 +323,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Won at Richmond Golf Club'), findsOneWidget);
-      expect(find.textContaining('Today'), findsOneWidget);
-      // The numbers now come from the round just played.
-      expect(find.text('1 win in 1 round'), findsOneWidget);
-      expect(find.text('Rounds played'), findsOneWidget);
-      expect(find.text('Avg points'), findsOneWidget);
-      expect(find.text('Best round pts'), findsOneWidget);
-
-      await _tap(tester, find.text('Won at Richmond Golf Club'));
-
-      expect(find.text('Go: /rounds/complete'), findsOneWidget);
-    });
-  });
-
-  group('your game', () {
-    testWidgets(
-      'starts with the handicap and an invitation, not made-up numbers',
-      (tester) async {
-        await _pump(tester);
-
-        expect(find.text('8.4'), findsOneWidget);
-        expect(find.text('Play a round to build your game'), findsOneWidget);
-        expect(find.text('Rounds played'), findsNothing);
-        expect(find.textContaining('Dunes'), findsNothing);
-        expect(find.textContaining('↓'), findsNothing);
-      },
-    );
-
-    testWidgets('opens the full statistics', (tester) async {
-      await _pump(tester);
-
-      await _tap(tester, find.text('All stats'));
-
-      expect(find.text('Go: /profile/statistics'), findsOneWidget);
+      final tiles = find.byType(YourGameTiles);
+      expect(
+        find.descendant(of: tiles, matching: find.text('1')),
+        findsWidgets,
+      );
+      expect(
+        find.descendant(of: tiles, matching: find.text('–')),
+        findsNothing,
+      );
     });
   });
 
@@ -355,59 +365,6 @@ void main() {
       await _tap(tester, find.text('Plan a trip'));
 
       expect(find.text('Go: /trips/create'), findsOneWidget);
-    });
-  });
-
-  group('highlights', () {
-    for (final (text, path) in <(String, String)>[
-      (
-        "You're 5th in the Saturday Boys table (sample)",
-        '/friends/groups/saturday-boys',
-      ),
-      ('Sam wants to play with you', '/friends/requests'),
-    ]) {
-      testWidgets('"$text" leads to $path', (tester) async {
-        await _pump(tester);
-
-        await _tap(tester, find.text(text));
-
-        expect(find.text('Go: $path'), findsOneWidget);
-      });
-    }
-
-    testWidgets('nothing is made up before any round is played', (
-      tester,
-    ) async {
-      await _pump(tester);
-
-      expect(find.textContaining('Round completed'), findsNothing);
-      expect(find.textContaining('Handicap reduced'), findsNothing);
-      expect(find.textContaining('achievement'), findsNothing);
-    });
-
-    testWidgets('a played round shows its result and what it earned', (
-      tester,
-    ) async {
-      final played = PlayedRounds()..play(1, List<int>.filled(18, 4));
-      useScreen(tester, const Size(400, 3200));
-      final router = GoRouter(initialLocation: '/home', routes: _routes());
-      addTearDown(router.dispose);
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: played.container,
-          child: MaterialApp.router(
-            theme: QaddyTheme.dark,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.textContaining('points'), findsWidgets);
-      expect(find.textContaining('achievement'), findsOneWidget);
-
-      await _tap(tester, find.textContaining('achievement'));
-      expect(find.text('Go: /profile'), findsOneWidget);
     });
   });
 

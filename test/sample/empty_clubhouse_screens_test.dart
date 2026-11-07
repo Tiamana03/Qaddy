@@ -8,6 +8,7 @@ import 'package:qaddy/features/community/ui/screens/friend_requests_screen.dart'
 import 'package:qaddy/features/community/ui/screens/friends_home_screen.dart';
 import 'package:qaddy/features/community/ui/screens/friends_list_screen.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/home_hero.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 import 'package:qaddy/features/trips/ui/screens/trips_screen.dart';
@@ -35,8 +36,12 @@ void main() {
     await pumpFriends(tester, const DashboardScreen(), overrides: off);
     await tester.pumpAndSettle();
 
-    expect(find.text('Ready when you are'), findsOneWidget);
-    expect(find.text('Your next round'), findsOneWidget);
+    expect(find.byType(HomeHero), findsOneWidget);
+    expect(find.text('Upcoming round'), findsOneWidget);
+    // Nothing is planned, so the round is one to start, not to get ready for.
+    expect(find.text('Start round'), findsOneWidget);
+    expect(find.text('Get ready'), findsNothing);
+    expect(find.text('Sample'), findsNothing);
     expect(find.text('Start a round'), findsWidgets);
     // A new golfer sees a hero and four doors: nothing empty, nothing pretend.
     expect(find.text('Invite a mate'), findsOneWidget);

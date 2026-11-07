@@ -1,11 +1,12 @@
 /// Qaddy's Dashboard — the Home destination and the first thing a golfer sees.
 ///
-/// The Dashboard is the first tee: today, in one screen. It leads with the
-/// round you are about to play (a countdown, who is coming, one tap to get
-/// ready or to tell the group), then your shortcuts, your game, your next
-/// trip, what your mates have been up to and your recent highlights. Every
-/// card and every button leads somewhere real. See
-/// `docs/features/dashboard-release-candidate.md`.
+/// Composed as the approved mockup is: the brand and the way to Search,
+/// Notifications and Profile; a photo hero with the greeting; four doors; the
+/// upcoming round as a card; "Your Game" as four stat tiles; and the next trip.
+/// Sections arrive when they have something to say (Your Game after a handicap
+/// or a first round, the trip when there is one), so a new golfer sees a hero
+/// and four doors, nothing empty. Photography is a placeholder until the final
+/// images arrive. See `docs/features/dashboard-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
@@ -20,20 +21,18 @@ import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
+import 'package:qaddy/core/widgets/brand/qaddy_mark.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
-import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/dashboard/logic/dashboard_insights.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/highlights_card.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/next_round_hero.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/home_hero.dart';
 import 'package:qaddy/features/dashboard/ui/widgets/next_trip_card.dart';
-import 'package:qaddy/features/dashboard/ui/widgets/your_game_card.dart';
-import 'package:qaddy/features/groups/logic/group_insights.dart';
-import 'package:qaddy/features/groups/models/placeholder_groups.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/upcoming_round_card.dart';
+import 'package:qaddy/features/dashboard/ui/widgets/your_game_tiles.dart';
 import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -58,12 +57,11 @@ class DashboardScreen extends ConsumerWidget {
       ),
     );
     final live = ref.watch(liveRoundProvider);
-    final completed = ref.watch(completedRoundProvider);
     final history = ref.watch(roundHistoryProvider);
     final stats = CareerStats.of(history, you: currentUserName);
-    final lastRound = completed == null
-        ? null
-        : lastRoundFrom(completed, currentUserName, now);
+    final golfer = ref.watch(golferDetailsProvider);
+    final planned = upcomingRound.planned;
+    final countdown = planned ? roundCountdown(now, upcomingRound.date) : null;
 
     final quickActions = <QaddyQuickAction>[
       QaddyQuickAction(
@@ -95,49 +93,15 @@ class DashboardScreen extends ConsumerWidget {
       ),
     ];
 
-    final golfer = ref.watch(golferDetailsProvider);
-    final earned = achievementsFor(stats).where((a) => a.unlocked).length;
-    final requests = ref.watch(incomingRequestsProvider);
-    final race = SeasonRace.of(
-      saturdayBoysLeaderboard,
-      yourName: currentUserName,
-      roundsRemaining: saturdayBoysSeasonSummary.roundsRemaining,
-    );
+    String whenPhrase(RoundCountdown c) => switch (c.value) {
+      'Today' => 'Today',
+      '1' => 'Tomorrow',
+      _ => 'In ${c.value} days',
+    };
 
-    // Only what has really happened: the last round, what it earned, who is
-    // waiting on you and where the season stands.
-    final highlights = <Highlight>[
-      if (lastRound != null)
-        Highlight(
-          icon: Icons.golf_course,
-          colour: colours.accentTeal,
-          text:
-              '${lastRound.position} at ${lastRound.course} · '
-              '${lastRound.stableford} points',
-          onTap: () => context.push(AppRoutes.roundComplete),
-        ),
-      if (earned > 0)
-        Highlight(
-          icon: Icons.emoji_events,
-          colour: colours.gold,
-          text:
-              '$earned ${earned == 1 ? 'achievement' : 'achievements'} earned',
-          onTap: () => context.go(AppRoutes.profile),
-        ),
-      for (final request in requests.take(2))
-        Highlight(
-          icon: Icons.group_add,
-          colour: colours.accentIndigo,
-          text: '${request.friend.displayName} wants to play with you',
-          onTap: () => context.push(AppRoutes.friendRequests),
-        ),
-      if (groups.isNotEmpty)
-        Highlight(
-          icon: Icons.leaderboard_outlined,
-          colour: colours.accentOrange,
-          text: '${race.headline} in the ${saturdayBoys.name} table (sample)',
-          onTap: () => context.push(AppRoutes.friendsGroup(saturdayBoys.id)),
-        ),
+    final names = <String>[
+      currentUserName,
+      for (final friend in squad) friend.displayName,
     ];
 
     return QaddyScaffold(
@@ -145,43 +109,65 @@ class DashboardScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
+            SizedBox(height: spacing.md),
+            const _Header(),
             SizedBox(height: spacing.lg),
-            _Header(now: now),
-            SizedBox(height: spacing.xl),
-            NextRoundHero(
-              round: upcomingRound,
-              countdown: roundCountdown(now, upcomingRound.date),
-              players: <String>[
-                currentUserName,
-                for (final friend in squad) friend.displayName,
-              ],
-              inProgressHole: live == null ? null : live.currentHole + 1,
-              onOpen: () => live == null
-                  ? context.go(AppRoutes.rounds)
-                  : context.push(AppRoutes.roundScorecard),
-              onShare: () => shareOrCopy(
-                context,
-                ref,
-                text: roundShareMessage(upcomingRound, currentUserName),
-                subject: "Who's in?",
-              ),
+            HomeHero(
+              greeting: '${greetingFor(now)},',
+              name: currentUserDisplayName,
+              line: dateLine(now),
+              weather: planned ? upcomingRound.weather : null,
+              course: planned ? upcomingRound.course : null,
+              sample: planned,
             ),
-            SizedBox(height: spacing.sectionGap),
+            SizedBox(height: spacing.cardGap),
             QaddyQuickActions(actions: quickActions),
-            // Sections arrive as they have something to say: the golfer's game
-            // after a first round or a handicap, the trip when there is one,
-            // highlights when something happened. A new golfer sees a hero and
-            // four doors, nothing empty.
+            SizedBox(height: spacing.sectionGap),
+            QaddySectionHeading(
+              title: 'Upcoming round',
+              actionLabel: 'See all',
+              onAction: () => context.go(AppRoutes.rounds),
+            ),
+            SizedBox(height: spacing.md),
+            if (live != null)
+              UpcomingRoundCard(
+                course: live.course,
+                when: 'Hole ${live.currentHole + 1} of ${live.holes.length}',
+                primaryLabel: 'Continue round',
+                onPrimary: () => context.push(AppRoutes.roundScorecard),
+              )
+            else
+              UpcomingRoundCard(
+                course: upcomingRound.course,
+                day: planned ? upcomingRound.date : null,
+                when: countdown == null ? null : whenPhrase(countdown),
+                teeTime: planned ? upcomingRound.teeTime : null,
+                players: planned ? names : const <String>[],
+                total: upcomingRound.players,
+                sample: planned,
+                primaryLabel: planned ? 'Get ready' : 'Start round',
+                onPrimary: () => context.go(AppRoutes.rounds),
+                onDetails: planned
+                    ? () => shareOrCopy(
+                        context,
+                        ref,
+                        text: roundShareMessage(upcomingRound, currentUserName),
+                        subject: "Who's in?",
+                      )
+                    : null,
+              ),
             if (stats != null || golfer.handicap != null) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
-              YourGameCard(
+              QaddySectionHeading(
+                title: 'Your game',
+                actionLabel: 'See all',
+                onAction: () => context.push(AppRoutes.profileStatistics),
+              ),
+              SizedBox(height: spacing.md),
+              YourGameTiles(
                 handicap: golfer.handicap,
                 stats: stats,
-                lastRound: lastRound,
                 onOpen: () => context.push(AppRoutes.profileStatistics),
-                onOpenLastRound: lastRound == null
-                    ? null
-                    : () => context.push(AppRoutes.roundComplete),
               ),
             ],
             if (nextTrip != null) ...<Widget>[
@@ -192,12 +178,6 @@ class DashboardScreen extends ConsumerWidget {
                 onOpen: () => context.push(AppRoutes.tripDetails(nextTrip.id)),
               ),
             ],
-            if (highlights.isNotEmpty) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              const QaddySectionHeading(title: 'Highlights'),
-              SizedBox(height: spacing.md),
-              HighlightsCard(highlights: highlights),
-            ],
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -206,12 +186,12 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-/// The greeting, the golfer's name, today's date and the way to Search,
-/// Notifications and Profile.
+/// The brand, and the way to Search, Notifications and Profile.
+///
+/// The mark and wordmark are a placeholder for the crown lockup (see
+/// `docs/design/asset-register.md`).
 class _Header extends ConsumerWidget {
-  const _Header({required this.now});
-
-  final DateTime now;
+  const _Header();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -232,29 +212,24 @@ class _Header extends ConsumerWidget {
     );
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: <Widget>[
-              Text(
-                '${greetingFor(now)},',
-                style: typography.body.copyWith(color: colours.textSecondary),
-              ),
-              SizedBox(height: spacing.xs),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  currentUserDisplayName,
-                  style: typography.h1.copyWith(color: colours.textPrimary),
+              const QaddyMark(size: 32, animate: false),
+              SizedBox(width: spacing.sm),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Qaddy',
+                    style: typography.h3.copyWith(
+                      color: colours.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: spacing.xs),
-              Text(
-                dateLine(now),
-                style: typography.small.copyWith(color: colours.textTertiary),
               ),
             ],
           ),

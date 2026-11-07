@@ -18,15 +18,16 @@ Trips is a journey, Friends is a clubhouse. The Dashboard is **the first tee**: 
 
 # The screen
 
-1. **Header** — a greeting that follows the hour ("Good morning / afternoon / evening"), the golfer's name, today's date, and Search, Notifications (with a gold dot while there is something to read) and the golfer's avatar, which opens their profile.
-2. **Next round** — the hero. A countdown to the next round that counts up on arrival ("6 days to tee-off", "Today" on the day), the course and tee time, weather, format and holes, the faces of who is playing and two actions: **Get ready** (opens Rounds) and **Tell the group**, which shares a message with when, where and "Who's in?". The small line above changes as the day approaches: NEXT ROUND → GET READY → IT'S ROUND DAY.
-3. **Shortcuts** — four tiles that all work: Score a round (Live Scorecard), Plan a trip (Create Trip), Add a mate (Search golfers), My stats (Statistics).
-4. **Your game** — the handicap index, counting up, and what the golfer's finished rounds say: wins, rounds played, average points, best round and the last round. Before the first round it shows an invitation instead of numbers. The whole card opens Statistics (see `statistics-release-candidate.md`).
-5. **Next trip** — a countdown card for the soonest upcoming trip in the Trips store, in that trip's own colours; it opens the trip. With no trips it becomes "Plan your next golf trip" and opens Create Trip.
-6. **From your mates** — the two latest moments from friends, with the same cheer buttons as Friends. "See all" goes to Friends.
-7. **Your highlights** — recent moments from the golfer's own game; each row opens the place it belongs (Statistics, the group, Trips, Profile).
+Composed as the approved mockup (`design/mockups/dashboard/dashboard-home-v1.png`) draws it, top to bottom:
 
-Nothing on the screen is a dead end, and nothing is disabled.
+1. **Header** — the brand mark and wordmark (placeholder for the crown lockup), then Search, Notifications (with a gold unread count) and the golfer's avatar, which opens their profile.
+2. **Hero** (`HomeHero`) — a 200 px photo slot (`QaddyMediaPlaceholder`) with the greeting that follows the hour, the golfer's name and today's date at the bottom left, and a frosted weather card (temperature, condition, course, "Sample") at the top right. The weather is the upcoming round's forecast and only appears while a round is planned.
+3. **Shortcuts** — four tiles that all work: Start a round / Continue round (featured, green), Plan a trip, Invite a mate, My stats.
+4. **Upcoming round** (`UpcomingRoundCard`) — a thumbnail slot, the course, the day, how close it is ("Today", "Tomorrow", "In 6 days"), the tee time, the faces of who is playing, **View details** (shares when, where and "Who's in?") and the gold **Get ready** (opens Rounds). With nothing planned it is **Start round**; while a round is under way it says "Hole N of M" and **Continue round** opens the scorecard. "See all" opens Rounds.
+5. **Your game** (`YourGameTiles`) — four tiles: Handicap, Rounds, Best score, Wins; a dash for what is not known yet. Shown once there is a handicap or a finished round; opens Statistics.
+6. **Next trip** — a countdown card for the soonest upcoming trip, in that trip's own colours; it opens the trip. With no trips the "Plan a trip" shortcut is the way in.
+
+The mates feed and the highlights moved off Home: the mockup has neither, and Friends and Statistics already carry them. Nothing on the screen is a dead end, and nothing is disabled.
 
 # Motion and feel
 
@@ -42,14 +43,13 @@ The countdown works from the round's day name ("Saturday") because the placehold
 
 - New route `/rounds/scorecard` (Live Scorecard), so "Score a round" has somewhere to go. The scorecard shows an app bar with a back arrow when it was opened from another screen, and nothing extra when it stands alone.
 - The Dashboard no longer imports a `QuickActionCard`; that file is deleted.
-- Navigation tests that used the Dashboard's "Good Morning," as a marker now use "YOUR GAME", which does not depend on the hour.
+- Navigation tests that used the Dashboard's "Good Morning," as a marker now use "Upcoming round", which does not depend on the hour.
 
 # Rounds integration
 
-Once Rounds became real (see `rounds-release-candidate.md`), the hero shows "ROUND IN PROGRESS · Hole N of 18" with **Continue round** while a round is being played, the first shortcut becomes *Continue round*, and the last-round row shows the round just played (winner, points, "Today") and opens its results.
+While a round is being played the upcoming-round card shows "Hole N of M" with **Continue round**, and the first shortcut becomes *Continue round*.
 
 # Placeholders and limits
 
-- The notification dot is always on: Notifications has no read state yet.
-- Until a round has been played in the app, the last round (The Dunes), the highlights and the friends' moments are placeholder data, and the placeholder last round has no results to open.
+- The Sample Clubhouse supplies the upcoming round, its forecast and the trip; each says "Sample".
 - Weather is placeholder text ("21°C Sunny"), not a forecast.

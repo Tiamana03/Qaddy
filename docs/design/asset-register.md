@@ -23,7 +23,7 @@ All photography slots currently show a designed gradient hero with an emblem, so
 
 | ID | Asset | Spec | Where it goes | Placeholder today | Status |
 |---|---|---|---|---|---|
-| P1 | **Home hero** (a course at golden hour) | 1200×800 min, JPG | Dashboard next-round hero background | Tone gradient card (`next_round_hero.dart`) | 🔲 |
+| P1 | **Home hero** (a course at golden hour) | 1200×800 min, JPG | Home hero (`HomeHero`, 200 px) and the Upcoming Round thumbnail (76 px) | `QaddyMediaPlaceholder` (sky, hills and flag) | 🔲 |
 | P2 | **Course photos** (one per course; Richmond for the sample round) | 800×600 min | Round cards, Rounds hero, Group cards, scorecard hole banner | Gradient and emblem | 🔲 |
 | P3 | **Trip covers** | 1200×800, a set of 8–12 destinations | Trips hero, trip card, Create Trip cover picker | The nine gradient + icon presets in `TripCoverPreset` / `trip_cover_tile.dart` | 🔲 |
 | P4 | **Group covers** | 800×600 | Group cards and Group details hero | `GroupCrest` (initial in a gold ring) on a tone gradient | 🔲 |

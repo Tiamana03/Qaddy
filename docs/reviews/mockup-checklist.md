@@ -38,7 +38,7 @@ The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in 
 | Screen | Mockup | Done | Remaining |
 |---|---|---|---|
 | Splash, Onboarding | Splash Library | ✅ stage, gold, Inter | 🟡 crown logo lockup, topographic pattern |
-| Home | `dashboard-home-v1` | ✅ hero, door tiles, frosted chips, bell count, calm sections | 🟡 photo hero, avatar photo, crown logo · 🔲 Latest News, Quick Tools, trip promo |
+| Home | `dashboard-home-v1` | ✅ header, photo-slot hero with greeting and weather card, door tiles, upcoming-round card, four Your Game tiles, bottom bar | 🟡 photo hero, course thumbnail, avatar photo, crown logo · 🔲 Latest News, Quick Tools, trip promo |
 | Rounds | `rounds-home-v1` | ✅ start-a-round hero, list | 🔲 "My Rounds" list screen with Upcoming / Completed / Invitations · 🟡 course photos |
 | Live scorecard | `live-scoring-v1` (left) | ✅ hole header (stat token), steppers, gold primary | 🔲 GPS map and distances, Hole Notes · 🟡 player photos |
 | Leaderboard | `live-scoring-v1` (right) | ✅ green tabs, table | 🔲 Side Games block, Round Summary · 🟡 photos |
@@ -96,9 +96,7 @@ Measured as the median of several samples per value, then written back into `des
 
 **Still different, and why (the differences a side-by-side shows now):**
 
-- Photography in the Home hero, the Upcoming Round thumbnail and avatars. 🟡 assets
-- The crown logo and photo avatar in the Home header; the Home greeting sits in the hero in the mockup. 🟡 asset, then a layout change
-- "Your Game" is four small stat tiles in the mockup and one card here. 🔲 layout
+- Photography in the Home hero and the Upcoming Round thumbnail, the crown logo and photo avatar in the Home header. 🟡 assets (the slots exist and are the final size and position)
 - The live scorecard's hole header is a plain title ("Hole 1", "Par 4 | 380 m | SI 10") with a "Next Hole" button in the mockup and a hero card here. 🔲 layout
 - Rounds, Profile, Groups and Bag are different screens in the mockup (see section 2).
-- The mockup's bottom nav is flush and full-width with a gold glow on the active tab; ours floats inset. Left as the Navigation Library shows it.
+- The bottom bar is now the mockup's: a rounded bar nearly the width of the screen, with a green pill behind the active icon and a filled glyph, and no underline. The tab set stays Home / Rounds / Trips / Friends / Profile; the mockups disagree with each other on it (Home / Bag / Round / Community or Groups / More or Profile), so the set is a product decision, not a styling one. 🟡 decision

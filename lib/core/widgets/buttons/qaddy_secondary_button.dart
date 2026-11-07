@@ -17,6 +17,7 @@ class QaddySecondaryButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.compact = false,
     super.key,
   });
 
@@ -28,6 +29,9 @@ class QaddySecondaryButton extends StatelessWidget {
 
   /// Optional trailing icon.
   final IconData? icon;
+
+  /// The Small (40) size, to sit beside a compact gold button.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +52,7 @@ class QaddySecondaryButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: borderRadius,
         child: Container(
-          height: spacing.display,
+          height: compact ? 40 : spacing.display,
           padding: EdgeInsets.symmetric(horizontal: spacing.buttonPadding),
           decoration: BoxDecoration(
             borderRadius: borderRadius,

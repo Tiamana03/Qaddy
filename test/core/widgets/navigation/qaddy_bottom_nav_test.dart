@@ -66,17 +66,20 @@ void main() {
     expect(colourOf('Rounds'), colours.textTertiary);
   });
 
-  testWidgets('only the active item has the indicator', (tester) async {
+  testWidgets('only the active item has the green pill behind its icon', (
+    tester,
+  ) async {
     await _pump(tester);
     await tester.pumpAndSettle();
 
-    final indicators = tester.widgetList<AnimatedContainer>(
-      find.byType(AnimatedContainer),
-    );
-    final widths = <double?>[
-      for (final c in indicators) c.constraints?.maxWidth,
+    final pills = <bool>[
+      for (final c in tester.widgetList<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      ))
+        (c.decoration! as BoxDecoration).color != Colors.transparent,
     ];
-    expect(widths.where((w) => w != null && w > 0), hasLength(1));
+    expect(pills.where((filled) => filled), hasLength(1));
+    expect(pills.first, isTrue);
   });
 
   testWidgets('tapping a destination reports its index', (tester) async {
