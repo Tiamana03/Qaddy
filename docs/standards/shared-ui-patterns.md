@@ -62,15 +62,17 @@ These still appear in more than one feature and should be extracted the next tim
 
 ---
 
-# Design priority (November 2026)
+# Design priority (updated 7 November 2026)
 
-When two sources disagree, the order is: **1.** the approved design system (token docs, Colour / Typography / component libraries), **2.** the approved mockups, **3.** the existing implementation. A mockup that contradicts the design system is an earlier concept unless the difference is clearly intentional across several mockups. Never sample colours from the PNGs; use the tokens. See `docs/reviews/mockup-conformance-audit-rc1.md`.
+**The approved mockups are the source of truth for appearance.** When a mockup and a design-system document differ, the mockup wins and the document is updated to match (as `colours.md`, `spacing.md` and `radius.md` now are). Where the mockups are silent, the design system applies. A screen with no mockup keeps its layout and is flagged in `docs/reviews/mockup-checklist.md`, never improvised.
+
+Values taken from the mockups are **measured, not read off one pixel**: the median of several samples across the large mockup sheets (the images are AI renders, so single pixels are noisy).
 
 # Component rules (from the component libraries)
 
 - **Typeface:** Inter, bundled in `assets/fonts` (400 / 500 / 600 / 700) and set as the theme default. Do not set another `fontFamily`.
-- **Primary action:** `QaddyGoldButton`, the Gold Gradient token. Heights are the Buttons Library's: Large 56 (`tall`), Medium 48 (default), Small 40 (`compact`). Radius `medium`, shadow `small`.
-- **Selected state:** a green (`secondary`) fill for segmented tabs; a green outline and a check for filter chips. Gold (`accent`) is for selected bottom-navigation items, focused borders and links.
+- **Primary action:** `QaddyGoldButton`, the Gold Gradient token (amber, lighter at the top, from the mockups). Heights are the Buttons Library's: Large 56 (`tall`), Medium 48 (default), Small 40 (`compact`). Radius `medium`, shadow `small`.
+- **Selected state:** the `selected` green (`#01813D`) for segmented tabs, filter chips, a switch that is on, a checked box and the dialog medallion. Gold (`accent`) is for the selected bottom-navigation item and focused borders.
 - **Bottom navigation:** `QaddyBottomNav`, the floating rounded bar; outlined icons that fill when active and an active indicator.
 - **Dialogs:** `showQaddyConfirm`: icon medallion, centred title and message, Cancel on the left and the confirm action on the right; `destructive` uses the error colour.
 - **Cards:** `QaddyCard`: `large` radius, hairline `border`, `medium` shadow.

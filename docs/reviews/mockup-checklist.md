@@ -1,6 +1,6 @@
 # Mockup Checklist
 
-The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in `design/mockups/`; component specs in `design/ui-components/`. Conflicts are settled design system first, then mockups, then the existing code (see `docs/standards/shared-ui-patterns.md`).
+The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in `design/mockups/`; component specs in `design/ui-components/`. **The mockups win over the design-system documents** (updated 7 November 2026); the documents follow the mockups. See `docs/standards/shared-ui-patterns.md`.
 
 **Status:** ✅ matches the design language · 🟡 blocked on an asset (see `docs/design/asset-register.md`) · 🔲 mockup shows a feature or layout that is not in Release 1 · ⚠️ no mockup: left functional, flagged for design, **no new visual direction invented**
 
@@ -78,3 +78,27 @@ Not restyled and not given a new visual direction; they reuse the shared compone
 # 5. Not done, and why
 
 Everything marked 🟡 needs files from the design owner; everything marked 🔲 is a feature or layout change you have asked me not to start. Both are listed per screen above so nothing is lost.
+
+# 6. Visual fidelity pass (7 November 2026): what moved to match the mockups
+
+Measured as the median of several samples per value, then written back into `design/design-tokens/`.
+
+| Token or component | Was | Now (mockup) |
+|---|---|---|
+| `gold` | `#D4AF37` | `#F8B64D` |
+| `gradientGold` | `#D4AF37 → #F4D676` | `#FBBD55 → #F5B547` |
+| `selected` (new) | gold outline / `#1E6B4B` | `#01813D` on every selected control |
+| `pagePadding` | 24 | 12 (mockup margin ≈ 10 pt) |
+| `sectionGap` / `cardGap` | 32 / 16 | 24 / 12 |
+| radius `large` / `extraLarge` | 24 / 32 | 18 / 24 |
+| Quick-action tiles | coloured icon badge | white glyph, first tile filled green |
+| Section heading | `h3`, gold link | `h4` semibold, grey "See all ›" |
+
+**Still different, and why (the differences a side-by-side shows now):**
+
+- Photography in the Home hero, the Upcoming Round thumbnail and avatars. 🟡 assets
+- The crown logo and photo avatar in the Home header; the Home greeting sits in the hero in the mockup. 🟡 asset, then a layout change
+- "Your Game" is four small stat tiles in the mockup and one card here. 🔲 layout
+- The live scorecard's hole header is a plain title ("Hole 1", "Par 4 | 380 m | SI 10") with a "Next Hole" button in the mockup and a hero card here. 🔲 layout
+- Rounds, Profile, Groups and Bag are different screens in the mockup (see section 2).
+- The mockup's bottom nav is flush and full-width with a gold glow on the active tab; ours floats inset. Left as the Navigation Library shows it.
