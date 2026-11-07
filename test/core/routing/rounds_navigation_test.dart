@@ -26,7 +26,7 @@ void main() {
     await _tap(tester, find.text('Start round'));
 
     // On the first tee, full screen.
-    expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
+    expect(find.text('Hole 1'), findsOneWidget);
     expect(container.read(liveRoundProvider), isNotNull);
 
     // Birdie for the golfer, then play the rest of the course at par.
@@ -35,7 +35,7 @@ void main() {
     for (var hole = 1; hole < 18; hole++) {
       await _tap(tester, find.text('Next hole'));
     }
-    expect(find.text('Back nine · Hole 18 of 18'), findsOneWidget);
+    expect(find.text('Hole 18'), findsOneWidget);
 
     await _tap(tester, find.text('Finish round'));
 
@@ -68,7 +68,7 @@ void main() {
     expect(find.text('Hole 2 of 18'), findsOneWidget);
 
     await _tap(tester, find.text('Continue round'));
-    expect(find.text('Front nine · Hole 2 of 18'), findsOneWidget);
+    expect(find.text('Hole 2'), findsOneWidget);
     expect(container.read(liveRoundProvider)!.currentHole, 1);
   });
 
@@ -79,6 +79,6 @@ void main() {
     expect(find.text('Sample round · First tee'), findsOneWidget);
 
     await _tap(tester, find.text('Start round'));
-    expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
+    expect(find.text('Hole 1'), findsOneWidget);
   });
 }

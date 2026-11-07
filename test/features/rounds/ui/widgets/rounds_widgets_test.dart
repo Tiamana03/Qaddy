@@ -5,8 +5,9 @@ import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
-import 'package:qaddy/features/rounds/ui/widgets/hole_banner.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_header.dart';
 import 'package:qaddy/features/rounds/ui/widgets/hole_progress_strip.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_view.dart';
 import 'package:qaddy/features/rounds/ui/widgets/player_score_row.dart';
 import 'package:qaddy/features/rounds/ui/widgets/setup_player_tile.dart';
 import 'package:qaddy/features/rounds/ui/widgets/standing_row.dart';
@@ -190,26 +191,39 @@ void main() {
     });
   });
 
-  group('HoleBanner', () {
+  group('HoleHeader', () {
     testWidgets('gives the number, par, length and index', (tester) async {
       await tester.pumpWidget(
-        _app(HoleBanner(hole: richmondHoles[6], total: 18)),
+        _app(HoleHeader(hole: richmondHoles[6], total: 18)),
       );
 
-      expect(find.text('Front nine · Hole 7 of 18'), findsOneWidget);
-      expect(find.text('Par 4'), findsOneWidget);
-      expect(find.text('364 m · SI 9'), findsOneWidget);
+      expect(find.text('Hole 7'), findsOneWidget);
+      expect(find.text('Par 4  |  364 m  |  SI 9'), findsOneWidget);
+      expect(find.text('Front nine'), findsOneWidget);
     });
 
-    testWidgets('says back nine from the tenth, and flags a side game', (
-      tester,
-    ) async {
+    testWidgets('says back nine from the tenth', (tester) async {
       await tester.pumpWidget(
-        _app(HoleBanner(hole: richmondHoles[11], total: 18)),
+        _app(HoleHeader(hole: richmondHoles[11], total: 18)),
       );
 
-      expect(find.text('Back nine · Hole 12 of 18'), findsOneWidget);
+      expect(find.text('Hole 12'), findsOneWidget);
+      expect(find.text('Back nine'), findsOneWidget);
+    });
+  });
+
+  group('HoleView', () {
+    testWidgets('shows the hole length, and flags a side game', (tester) async {
+      await tester.pumpWidget(_app(HoleView(hole: richmondHoles[11])));
+
+      expect(find.text('Length'), findsOneWidget);
       expect(find.text('Nearest the Pin on this hole'), findsOneWidget);
+    });
+
+    testWidgets('has no side game chip on an ordinary hole', (tester) async {
+      await tester.pumpWidget(_app(HoleView(hole: richmondHoles[6])));
+
+      expect(find.textContaining('on this hole'), findsNothing);
     });
   });
 

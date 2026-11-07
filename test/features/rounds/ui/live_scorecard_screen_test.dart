@@ -77,9 +77,11 @@ void main() {
       await _pump(tester);
 
       expect(find.text('Richmond Golf Club'), findsOneWidget);
-      expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
-      expect(find.text('Par 4'), findsOneWidget);
-      expect(find.text('352 m · SI 11'), findsOneWidget);
+      expect(find.text('Live scoring'), findsOneWidget);
+      expect(find.text('Hole 1'), findsOneWidget);
+      expect(find.text('Par 4  |  352 m  |  SI 11'), findsOneWidget);
+      expect(find.text('Front nine'), findsOneWidget);
+      expect(find.text('Enter scores'), findsOneWidget);
       expect(find.bySemanticsLabel('Hole 5, not played yet'), findsOneWidget);
       expect(find.bySemanticsLabel('Hole 1, current hole'), findsOneWidget);
     });
@@ -98,7 +100,7 @@ void main() {
       await _tap(tester, find.bySemanticsLabel('Hole 6, not played yet'));
 
       expect(container.read(liveRoundProvider)!.currentHole, 5);
-      expect(find.text('Front nine · Hole 6 of 18'), findsOneWidget);
+      expect(find.text('Hole 6'), findsOneWidget);
     });
   });
 
@@ -173,7 +175,8 @@ void main() {
       expect(round.currentHole, 1);
       expect(round.grossAt('Tom', 0), 3);
       expect(round.grossAt('Ben', 0), 4);
-      expect(find.text('Par 5'), findsOneWidget);
+      expect(find.text('Hole 2'), findsOneWidget);
+      expect(find.textContaining('Par 5'), findsOneWidget);
       expect(find.textContaining('Leaderboard · after 1 hole'), findsOneWidget);
     });
 
@@ -182,15 +185,15 @@ void main() {
     ) async {
       await _pump(tester);
       final back = find.ancestor(
-        of: find.byTooltip('Previous hole'),
-        matching: find.byType(IconButton),
+        of: find.text('Previous'),
+        matching: find.byType(InkWell),
       );
-      expect(tester.widget<IconButton>(back).onPressed, isNull);
+      expect(tester.widget<InkWell>(back.first).onTap, isNull);
 
       await _tap(tester, find.text('Next hole'));
       await _tap(tester, find.byTooltip('Previous hole'));
 
-      expect(find.text('Front nine · Hole 1 of 18'), findsOneWidget);
+      expect(find.text('Hole 1'), findsOneWidget);
     });
 
     testWidgets('the last hole offers to finish instead', (tester) async {
@@ -200,7 +203,7 @@ void main() {
 
       expect(find.text('Next hole'), findsNothing);
       expect(find.text('Finish round'), findsOneWidget);
-      expect(find.text('Back nine · Hole 18 of 18'), findsOneWidget);
+      expect(find.text('Hole 18'), findsOneWidget);
     });
 
     testWidgets('Finish round files the round and opens the results', (

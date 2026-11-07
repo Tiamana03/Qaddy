@@ -12,11 +12,15 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/responsive/responsive_max_width.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
+import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_confetti.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
@@ -26,8 +30,9 @@ import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/logic/stableford.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
-import 'package:qaddy/features/rounds/ui/widgets/hole_banner.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_header.dart';
 import 'package:qaddy/features/rounds/ui/widgets/hole_progress_strip.dart';
+import 'package:qaddy/features/rounds/ui/widgets/hole_view.dart';
 import 'package:qaddy/features/rounds/ui/widgets/player_score_row.dart';
 import 'package:qaddy/features/rounds/ui/widgets/score_picker_sheet.dart';
 import 'package:qaddy/features/rounds/ui/widgets/standings_preview.dart';
@@ -59,6 +64,8 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+    final typography = theme.extension<QaddyTypography>()!;
     final controller = ref.read(roundsProvider.notifier);
     final onLast = round.currentHole == round.holes.length - 1;
     final holes = round.holesPlayed == 1
@@ -139,13 +146,35 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
 
     return QaddyScaffold(
       appBar: AppBar(
-        title: Text(round.course),
+        toolbarHeight: 64,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Text(
+              'Live scoring',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              round.course,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: typography.small.copyWith(color: colours.textSecondary),
+            ),
+          ],
+        ),
         actions: <Widget>[
-          IconButton(
-            tooltip: 'Leaderboard',
-            icon: const Icon(Icons.leaderboard_outlined),
-            onPressed: () => context.push(AppRoutes.roundLeaderboard),
-          ),
+          if (round.players.length > 1)
+            _PlayersChip(
+              names: <String>[for (final p in round.players) p.name],
+              onTap: () => context.push(AppRoutes.roundLeaderboard),
+            )
+          else
+            IconButton(
+              tooltip: 'Leaderboard',
+              icon: const Icon(Icons.leaderboard_outlined),
+              onPressed: () => context.push(AppRoutes.roundLeaderboard),
+            ),
           PopupMenuButton<_MenuAction>(
             tooltip: 'Round options',
             onSelected: onMenu,
@@ -171,22 +200,48 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
                 SizedBox(height: spacing.md),
                 HoleProgressStrip(round: round, onSelect: controller.goToHole),
                 SizedBox(height: spacing.lg),
-                HoleBanner(
+                HoleHeader(
                   hole: round.hole,
                   total: round.holes.length,
                   greeting: firstTee
                       ? 'Enjoy it out there, ${round.players.first.name}.'
                       : null,
                 ),
-                SizedBox(height: spacing.lg),
-                for (final (position, index) in players.indexed) ...<Widget>[
-                  if (position > 0) SizedBox(height: spacing.cardGap),
-                  _ScoreRow(
-                    round: round,
-                    playerIndex: index,
-                    onBigMoment: () => setState(() => _burst++),
+                SizedBox(height: spacing.md),
+                HoleView(hole: round.hole),
+                SizedBox(height: spacing.sectionGap),
+                Text(
+                  'Enter scores',
+                  style: typography.h4.copyWith(
+                    color: colours.textPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
+                ),
+                SizedBox(height: spacing.md),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colours.card,
+                    borderRadius: BorderRadius.circular(radius.large),
+                    border: Border.all(color: colours.border),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: spacing.md),
+                    child: Column(
+                      children: <Widget>[
+                        for (final (position, index)
+                            in players.indexed) ...<Widget>[
+                          if (position > 0)
+                            Divider(height: 1, color: colours.border),
+                          _ScoreRow(
+                            round: round,
+                            playerIndex: index,
+                            onBigMoment: () => setState(() => _burst++),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
                 if (round.holesPlayed > 0 &&
                     round.players.length > 1) ...<Widget>[
                   SizedBox(height: spacing.sectionGap),
@@ -219,22 +274,24 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
               ),
               child: Row(
                 children: <Widget>[
-                  IconButton.outlined(
-                    tooltip: 'Previous hole',
-                    onPressed: round.currentHole > 0
-                        ? () {
-                            QaddyHaptics.selection();
-                            controller.previousHole();
-                          }
-                        : null,
-                    style: IconButton.styleFrom(
-                      minimumSize: Size(spacing.display, spacing.display),
-                      side: BorderSide(color: colours.border),
+                  Expanded(
+                    flex: 2,
+                    child: Tooltip(
+                      message: 'Previous hole',
+                      child: QaddySecondaryButton(
+                        label: 'Previous',
+                        onPressed: round.currentHole > 0
+                            ? () {
+                                QaddyHaptics.selection();
+                                controller.previousHole();
+                              }
+                            : null,
+                      ),
                     ),
-                    icon: const Icon(Icons.arrow_back),
                   ),
                   SizedBox(width: spacing.md),
                   Expanded(
+                    flex: 3,
                     child: QaddyGoldButton(
                       label: onLast ? 'Finish round' : 'Next hole',
                       icon: onLast
@@ -247,6 +304,74 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The faces of who is playing, in the corner as the mockup has them. It
+/// opens the leaderboard.
+class _PlayersChip extends StatelessWidget {
+  const _PlayersChip({required this.names, required this.onTap});
+
+  final List<String> names;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
+    final typography = theme.extension<QaddyTypography>()!;
+    final shown = names.take(3).toList();
+    final more = names.length - shown.length;
+    const size = 28.0;
+    const step = 18.0;
+
+    return Tooltip(
+      message: 'Leaderboard',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(size),
+        child: Padding(
+          padding: EdgeInsets.all(spacing.sm),
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: size + step * (shown.length - 1),
+                height: size,
+                child: Stack(
+                  children: <Widget>[
+                    for (final (index, name) in shown.indexed)
+                      Positioned(
+                        left: step * index,
+                        child: Container(
+                          width: size,
+                          height: size,
+                          padding: const EdgeInsets.all(1.5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colours.background,
+                          ),
+                          child: FittedBox(child: QaddyAvatar(name: name)),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (more > 0) ...<Widget>[
+                SizedBox(width: spacing.xs),
+                Text(
+                  '+$more',
+                  style: typography.small.copyWith(
+                    color: colours.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ),

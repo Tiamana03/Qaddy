@@ -29,7 +29,7 @@ A golfer should prefer this to a paper card: **excitement before** the round, **
 
 - Full screen (it covers the tab bar), because a round is not the time for navigation.
 - A strip of 18 holes: played holes filled in, the current one gold; tap to jump. It scrolls to keep the current hole centred.
-- A hole banner: the hole number big, par, metres, stroke index, front or back nine — and the side game if one is played there.
+- A hole header, as the Live Scoring mockup draws it: "Hole 4" large, "Par 4  |  380 m  |  SI 10" beneath and Front or Back nine at the right; under it a hole view (an aerial placeholder with the hole's length in a frosted card and the side game, if one is played there); then one "Enter scores" panel, a row per player with a boxed stepper (minus, the score in golf's words, plus). The bottom bar is Previous and the gold Next hole / Finish round.
 - **Everyone's score on the hole**, you first. Each row has a big number with − and + under the thumb, the word for it (Par, Birdie, Eagle, Double bogey…), the Stableford points it earns and the shots the golfer is given. Untouched scores sit on par, dimmed, so a golfer only taps the exceptions. A birdie or better gets a short glow and a haptic. Taking a score below 1 picks the hole up (no score, no points).
 - **Next hole** scores par for anyone not touched. On the last hole it becomes **Finish round**.
 - A leaderboard card after each hole shows the top three and where you stand ("2 pts behind Ben").

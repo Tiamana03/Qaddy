@@ -136,19 +136,29 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
       required IconData icon,
       required String tooltip,
       required VoidCallback? onPressed,
-      bool primary = false,
-    }) => IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        minimumSize: const Size(48, 48),
-        backgroundColor: primary ? colours.surface2 : Colors.transparent,
-        foregroundColor: colours.textPrimary,
-        side: primary ? null : BorderSide(color: colours.border),
+    }) => SizedBox(
+      width: 40,
+      height: 48,
+      child: IconButton(
+        tooltip: tooltip,
+        onPressed: onPressed,
+        padding: EdgeInsets.zero,
+        style: IconButton.styleFrom(
+          foregroundColor: colours.textPrimary,
+          shape: const RoundedRectangleBorder(),
+        ),
+        icon: Icon(icon, size: 20),
       ),
-      icon: Icon(icon),
     );
 
+    final divider = VerticalDivider(
+      width: 1,
+      thickness: 1,
+      color: colours.border,
+    );
+
+    // One row of the "Enter scores" panel: the face, who and how many points,
+    // and the stepper (minus, the score in golf's words, plus).
     return AnimatedBuilder(
       animation: _burst,
       builder: (context, child) {
@@ -156,35 +166,18 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
         final pop = 1 + 0.18 * (glow * glow);
         return DecoratedBox(
           decoration: BoxDecoration(
-            color: colours.card,
-            borderRadius: BorderRadius.circular(radius.large),
-            border: Border.all(
-              color: Color.lerp(
-                widget.isYou ? colours.border : Colors.transparent,
-                colours.gold,
-                _burst.isAnimating ? glow : 0,
-              )!,
-              width: 1.5,
-            ),
-            boxShadow: _burst.isAnimating
-                ? <BoxShadow>[
-                    BoxShadow(
-                      color: colours.gold.withValues(alpha: 0.35 * glow),
-                      blurRadius: 18,
-                    ),
-                  ]
-                : null,
+            borderRadius: BorderRadius.circular(radius.medium),
+            color: _burst.isAnimating
+                ? colours.gold.withValues(alpha: 0.16 * glow)
+                : Colors.transparent,
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: spacing.md,
-              vertical: spacing.sm,
-            ),
+            padding: EdgeInsets.symmetric(vertical: spacing.sm),
             child: Row(
               children: <Widget>[
                 SizedBox(
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   child: FittedBox(child: QaddyAvatar(name: widget.name)),
                 ),
                 SizedBox(width: spacing.md),
@@ -198,7 +191,7 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
                         overflow: TextOverflow.ellipsis,
                         style: typography.body.copyWith(
                           color: colours.textPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
@@ -212,66 +205,88 @@ class _PlayerScoreRowState extends State<PlayerScoreRow>
                     ],
                   ),
                 ),
-                stepButton(
-                  icon: Icons.remove,
-                  tooltip: 'Take a stroke off ${widget.name}',
-                  onPressed: _shown > 0 ? () => widget.onNudge(-1) : null,
-                ),
-                Semantics(
-                  liveRegion: true,
-                  label:
-                      '${widget.isYou ? 'You' : widget.name}: '
-                      '${_shown == 0 ? 'picked up' : '$_shown'}, $label, '
-                      '${widget.points} points',
-                  excludeSemantics: true,
-                  onTap: widget.onTapScore,
-                  hint: 'Pick the score',
-                  child: InkWell(
-                    onTap: widget.onTapScore,
+                SizedBox(width: spacing.sm),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: colours.surface1,
                     borderRadius: BorderRadius.circular(radius.medium),
-                    child: SizedBox(
-                      width: 64,
-                      child: Opacity(
-                        opacity: recorded ? 1 : 0.6,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Transform.scale(
-                              scale: pop,
-                              child: Text(
-                                shown,
-                                style: typography.display.copyWith(
-                                  color: scoreColour,
-                                  fontSize: 34,
-                                  height: 1.1,
-                                  fontFeatures: const <FontFeature>[
-                                    FontFeature.tabularFigures(),
-                                  ],
+                    border: Border.all(color: colours.border),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius.medium),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          stepButton(
+                            icon: Icons.remove,
+                            tooltip: 'Take a stroke off ${widget.name}',
+                            onPressed: _shown > 0
+                                ? () => widget.onNudge(-1)
+                                : null,
+                          ),
+                          divider,
+                          Semantics(
+                            liveRegion: true,
+                            label:
+                                '${widget.isYou ? 'You' : widget.name}: '
+                                '${_shown == 0 ? 'picked up' : '$_shown'}, '
+                                '$label, ${widget.points} points',
+                            excludeSemantics: true,
+                            onTap: widget.onTapScore,
+                            hint: 'Pick the score',
+                            child: InkWell(
+                              onTap: widget.onTapScore,
+                              child: SizedBox(
+                                width: 56,
+                                child: Opacity(
+                                  opacity: recorded ? 1 : 0.6,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Transform.scale(
+                                        scale: pop,
+                                        child: Text(
+                                          shown,
+                                          style: typography.h3.copyWith(
+                                            color: scoreColour,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.1,
+                                            fontFeatures: const <FontFeature>[
+                                              FontFeature.tabularFigures(),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        label,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: typography.caption.copyWith(
+                                          color: scoreColour,
+                                          fontSize: 10,
+                                          height: 1.1,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                            Text(
-                              label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: typography.caption.copyWith(
-                                color: scoreColour,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                          divider,
+                          stepButton(
+                            icon: Icons.add,
+                            tooltip: 'Add a stroke for ${widget.name}',
+                            onPressed: _shown < maxStrokes
+                                ? () => widget.onNudge(1)
+                                : null,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-                stepButton(
-                  icon: Icons.add,
-                  tooltip: 'Add a stroke for ${widget.name}',
-                  onPressed: _shown < maxStrokes
-                      ? () => widget.onNudge(1)
-                      : null,
-                  primary: true,
                 ),
               ],
             ),

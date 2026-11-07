@@ -40,7 +40,7 @@ The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in 
 | Splash, Onboarding | Splash Library | ✅ stage, gold, Inter | 🟡 crown logo lockup, topographic pattern |
 | Home | `dashboard-home-v1` | ✅ header, photo-slot hero with greeting and weather card, door tiles, upcoming-round card, four Your Game tiles, bottom bar | 🟡 photo hero, course thumbnail, avatar photo, crown logo · 🔲 Latest News, Quick Tools, trip promo |
 | Rounds | `rounds-home-v1` | ✅ start-a-round hero, list | 🔲 "My Rounds" list screen with Upcoming / Completed / Invitations · 🟡 course photos |
-| Live scorecard | `live-scoring-v1` (left) | ✅ hole header (stat token), steppers, gold primary | 🔲 GPS map and distances, Hole Notes · 🟡 player photos |
+| Live scorecard | `live-scoring-v1` (left) | ✅ app bar with the players, hole strip, "Hole N" title with "Par | m | SI" beneath, hole-view slot with length and side game, one "Enter scores" panel with boxed steppers, Previous and gold Next hole | 🔲 GPS, wind and course-map tiles, back/middle/front distances, Hole Notes · 🟡 hole imagery, player photos |
 | Leaderboard | `live-scoring-v1` (right) | ✅ green tabs, table | 🔲 Side Games block, Round Summary · 🟡 photos |
 | Round results | `round-details-v1` family | ✅ celebration, achievements | 🔲 payment status, teams, notes |
 | Profile | `profile-home-v1` | ✅ card, stat row, achievements | 🔲 XP journey bar · 🟡 photo avatar, badge artwork |
@@ -97,6 +97,6 @@ Measured as the median of several samples per value, then written back into `des
 **Still different, and why (the differences a side-by-side shows now):**
 
 - Photography in the Home hero and the Upcoming Round thumbnail, the crown logo and photo avatar in the Home header. 🟡 assets (the slots exist and are the final size and position)
-- The live scorecard's hole header is a plain title ("Hole 1", "Par 4 | 380 m | SI 10") with a "Next Hole" button in the mockup and a hero card here. 🔲 layout
+- The live scorecard has one "Next hole" (gold, bottom right) rather than the mockup's two (a pill by the title and "Save Scores"): scores save as they are entered, so there is nothing to save, and a second Next would be a duplicate. The pill's place shows Front or Back nine. 🟡 decision
 - Rounds, Profile, Groups and Bag are different screens in the mockup (see section 2).
 - The bottom bar is now the mockup's: a rounded bar nearly the width of the screen, with a green pill behind the active icon and a filled glyph, and no underline. The tab set stays Home / Rounds / Trips / Friends / Profile; the mockups disagree with each other on it (Home / Bag / Round / Community or Groups / More or Profile), so the set is a product decision, not a styling one. 🟡 decision
