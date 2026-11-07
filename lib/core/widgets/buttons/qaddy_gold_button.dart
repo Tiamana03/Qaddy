@@ -39,6 +39,7 @@ class QaddyGoldButton extends StatelessWidget {
     this.iconAfter = false,
     this.tall = false,
     this.compact = false,
+    this.height,
     super.key,
   });
 
@@ -60,6 +61,9 @@ class QaddyGoldButton extends StatelessWidget {
   /// The Small (40) size, for compact inline actions.
   final bool compact;
 
+  /// Overrides the height (a few mockup buttons are 38 or 40, not 36).
+  final double? height;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -72,11 +76,13 @@ class QaddyGoldButton extends StatelessWidget {
     final enabled = onPressed != null;
     // The compact button is the mockups' pill: 36 tall, fully rounded, set in
     // the small pill label.
-    final height = tall
-        ? QaddyButtonHeight.large
-        : compact
-        ? 36.0
-        : QaddyButtonHeight.medium;
+    final resolved =
+        height ??
+        (tall
+            ? QaddyButtonHeight.large
+            : compact
+            ? 36.0
+            : QaddyButtonHeight.medium);
     final foreground = enabled
         ? colours.backgroundBase
         : colours.disabledForeground;
@@ -103,7 +109,7 @@ class QaddyGoldButton extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minWidth: double.infinity,
-                minHeight: height,
+                minHeight: resolved,
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -123,7 +129,11 @@ class QaddyGoldButton extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style:
-                            (compact ? QaddyText.pillLabel : typography.button)
+                            (compact
+                                    ? QaddyText.pillLabel.copyWith(
+                                        fontSize: resolved >= 38 ? 14 : null,
+                                      )
+                                    : typography.button)
                                 .copyWith(color: foreground),
                       ),
                     ),

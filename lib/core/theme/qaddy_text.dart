@@ -58,6 +58,28 @@ abstract final class QaddyText {
   /// A card's title: a course, a trip.
   static final TextStyle cardTitle = _style(14, FontWeight.w600, line: 20);
 
+  /// A list card's title: a course in My Rounds.
+  static final TextStyle listTitle = _style(
+    16,
+    FontWeight.w600,
+    line: 22,
+    spacing: -0.1,
+  );
+
+  /// A list card's lines: the date, the time, the place.
+  static final TextStyle listMeta = _style(13, FontWeight.w400, line: 20);
+
+  /// The title of a tab-root screen: "My rounds".
+  static final TextStyle pageTitle = _style(
+    28,
+    FontWeight.w700,
+    line: 34,
+    spacing: -0.4,
+  );
+
+  /// A pill tab's label.
+  static final TextStyle tabLabel = _style(13, FontWeight.w500, line: 18);
+
   /// A card's supporting lines: the date, the place.
   static final TextStyle meta = _style(12, FontWeight.w400, line: 20);
 

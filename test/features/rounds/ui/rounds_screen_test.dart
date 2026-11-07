@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_round_list_card.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
@@ -56,13 +56,16 @@ void main() {
         find.text('Play more. Keep track. Make it count.'),
         findsOneWidget,
       );
-      expect(find.text('Upcoming'), findsOneWidget);
+      expect(find.text('Upcoming (1)'), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
-      expect(find.byType(QaddyRoundCard), findsOneWidget);
+      expect(find.text('Invitations'), findsOneWidget);
+      expect(find.byType(QaddyRoundListCard), findsOneWidget);
       expect(find.text('Saturday'), findsOneWidget);
       expect(find.text('8:20 AM'), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
-      expect(find.text('21°C Sunny · Stableford'), findsOneWidget);
+      expect(find.text('Stableford'), findsOneWidget);
+      expect(find.text('21°C'), findsOneWidget);
+      expect(find.text('Planned'), findsOneWidget);
       expect(find.text('Sample'), findsOneWidget);
       expect(find.textContaining('1 playing'), findsNothing);
     });
@@ -102,7 +105,7 @@ void main() {
 
       await _tap(tester, find.text('Tom'));
       expect(container.read(selectedPlayersProvider), hasLength(2));
-      expect(find.textContaining('2 playing'), findsOneWidget);
+      expect(find.textContaining('2 players'), findsOneWidget);
 
       await _tap(tester, find.text('Tom'));
       expect(container.read(selectedPlayersProvider), hasLength(1));
@@ -117,7 +120,7 @@ void main() {
         container.read(selectedPlayersProvider).map((p) => p.name),
         contains('Josh'),
       );
-      expect(find.textContaining('2 playing'), findsOneWidget);
+      expect(find.textContaining('2 players'), findsOneWidget);
     });
 
     testWidgets('the golfer cannot take themselves out', (tester) async {
@@ -212,6 +215,46 @@ void main() {
     });
   });
 
+  group('the rest of the screen', () {
+    testWidgets('Invitations says there are none, kindly', (tester) async {
+      await _pump(tester);
+
+      await _tap(tester, find.text('Invitations'));
+
+      expect(find.text('No invitations yet'), findsOneWidget);
+      expect(find.text('Start round'), findsNothing);
+    });
+
+    testWidgets('search narrows the rounds by course', (tester) async {
+      await _pump(tester);
+
+      await tester.enterText(find.byType(TextField), 'zzz');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('No rounds match'), findsOneWidget);
+      expect(find.text('Start round'), findsNothing);
+
+      await tester.enterText(find.byType(TextField), 'richmond');
+      await tester.pumpAndSettle();
+      expect(find.text('Start round'), findsOneWidget);
+    });
+
+    testWidgets('Create round brings the players into view', (tester) async {
+      await _pump(tester, size: const Size(400, 700));
+
+      await _tap(tester, find.text('Create round'));
+
+      expect(find.text("Who's playing"), findsOneWidget);
+      final top = tester.getTopLeft(find.text("Who's playing")).dy;
+      expect(top, lessThan(700));
+    });
+
+    testWidgets('the filter keeps its place, dimmed', (tester) async {
+      await _pump(tester);
+
+      expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
+    });
+  });
+
   group('the Completed tab', () {
     testWidgets('says so, kindly, before a first round', (tester) async {
       await _pump(tester);
@@ -250,7 +293,7 @@ void main() {
 
       await _tap(tester, find.text('Completed (2)'));
 
-      expect(find.byType(QaddyRoundCard), findsNWidgets(2));
+      expect(find.byType(QaddyRoundListCard), findsNWidgets(2));
       // Only the latest has a results page to open.
       expect(find.text('View results'), findsOneWidget);
     });

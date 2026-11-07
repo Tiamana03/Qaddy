@@ -23,6 +23,7 @@ import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/leaderboard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
+import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 
 import '../support/app_test_harness.dart';
 
@@ -59,6 +60,7 @@ Future<void> _render(
   ProviderContainer? container,
   Duration settle = const Duration(seconds: 3),
   bool pushed = false,
+  Future<void> Function()? interact,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = _phone;
@@ -89,6 +91,10 @@ Future<void> _render(
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 600));
   await tester.pump(settle);
+  if (interact != null) {
+    await interact();
+    await tester.pump(const Duration(seconds: 1));
+  }
   final boundary =
       key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
   final bytes = await tester.runAsync(() async {
@@ -143,6 +149,51 @@ void main() {
       const LeaderboardScreen(),
       container: container,
       pushed: true,
+    );
+  }, skip: !enabled);
+
+  testWidgets('render: my rounds', (tester) async {
+    final container = friendsContainer(
+      overrides: <Override>[
+        dashboardClockProvider.overrideWithValue(
+          () => DateTime(2026, 11, 7, 9),
+        ),
+      ],
+    );
+    container.read(roundSetupProvider.notifier)
+      ..toggle('Tom')
+      ..toggle('Ben')
+      ..toggle('Luke');
+    await _render(
+      tester,
+      'my_rounds',
+      const RoundsScreen(),
+      container: container,
+    );
+  }, skip: !enabled);
+
+  testWidgets('render: my rounds, live', (tester) async {
+    final container = _roundContainer(holes: 2);
+    await _render(
+      tester,
+      'my_rounds_live',
+      const RoundsScreen(),
+      container: container,
+    );
+  }, skip: !enabled);
+
+  testWidgets('render: my rounds, completed', (tester) async {
+    final container = _roundContainer(holes: 1);
+    container.read(roundsProvider.notifier).finishRound();
+    await _render(
+      tester,
+      'my_rounds_completed',
+      const RoundsScreen(),
+      container: container,
+      interact: () async {
+        await tester.tap(find.textContaining('Completed'));
+        await tester.pump(const Duration(milliseconds: 500));
+      },
     );
   }, skip: !enabled);
 

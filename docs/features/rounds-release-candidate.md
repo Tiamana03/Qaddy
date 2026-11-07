@@ -20,15 +20,19 @@ A golfer should prefer this to a paper card: **excitement before** the round, **
 
 ## The Rounds tab — "My rounds"
 
-Composed as the approved My Rounds mockup (`design/mockups/rounds/rounds-home-v1.png`): the title "My rounds" with "Play more. Keep track. Make it count.", then two tabs, **Upcoming** and **Completed (n)**, and rounds as cards (`QaddyRoundCard`, shared with Home).
+Composed as the approved My Rounds mockup (`design/mockups/rounds/rounds-home-v1.png`): the brand bar, "My rounds" with the gold **Create round** button, the line "Play more. Keep track. Make it count.", a search bar with a filter button, three pill tabs (**Upcoming**, **Completed**, **Invitations**) and rounds as photo cards (`QaddyRoundListCard`).
 
-- **Upcoming, before a round:** the next round as a card — a thumbnail slot, the course, the day and tee time ("Saturday", "8:20 AM"), the forecast and format, the faces of who is playing, **View details** (shares when, where and "Who's in?") and the gold **Start round**.
+- **A round card:** a 138 x 94 course photo slot, the course, the date, the time, the format with the forecast at the right, the faces and "N players", a status pill and three pill buttons.
+- **Upcoming, before a round:** the next round: **View details** (brings "Who's playing" into view), **Share** (when, where and "Who's in?") and the gold **Start round**; status "Planned".
+- **Create round** brings the same player list into view: a round is made by choosing who is playing and starting it.
 - **Who's playing:** every invited friend with a switch. Friends who have said yes are in; someone who has not replied (Josh) can be added by hand; the golfer is always in. The count updates as you choose.
 - **On the course:** the side games, each on its hole.
-- **Upcoming, during a round:** the same card says "Hole N of M" and where the golfer stands, with **Continue round**; the standings follow once a hole is played.
-- **Completed:** every finished round, newest first, as a card with the day and how it went ("You win · 38 pts"). The latest has **View results**; older rounds have no results page of their own yet. Before a first round it says so and offers the way back.
+- **Upcoming, during a round:** the card says "Today", "Hole N of M" and where the golfer stands, status "Live", with **Leaderboard** and **Continue round**; the standings follow once a hole is played.
+- **Completed:** every finished round, newest first, with the day and how it went ("You win · 38 pts"), status "Finished". The latest has **View results**; older rounds have no results page of their own yet.
+- **Invitations:** says there are none yet. Rounds are not invited to in Release 1.
+- **Search** narrows the rounds by course. The **filter** button keeps its place, dimmed, until there is something to filter by.
 
-Not drawn, because nothing is behind them yet: the mockup's search and filter, the Invitations tab, Create Round and Get Directions.
+Not drawn, because nothing is behind them: Get Directions, and the Paid / Pending / Not Paid payment states.
 
 ## During — the scorecard
 

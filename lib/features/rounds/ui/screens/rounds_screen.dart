@@ -1,14 +1,13 @@
-/// Qaddy's Rounds destination, as the approved "My Rounds" mockup draws it: a
-/// title and a line, the Upcoming and Completed tabs, and rounds as cards.
+/// Qaddy's Rounds destination, as the approved "My Rounds" mockup draws it:
+/// the brand bar, the title with a gold Create round button, a search bar, the
+/// Upcoming / Completed / Invitations tabs and rounds as photo cards.
 ///
-/// Before the round the Upcoming tab is the next round and one gold button to
-/// start it, with who is playing below. During the round it is the way back to
-/// the scorecard. After the round the finished round moves to Completed, one
-/// tap from the celebration. See `docs/features/rounds-release-candidate.md`.
-///
-/// The mockup's search, Invitations tab, Create Round and Get Directions have
-/// nothing behind them yet (see `docs/reviews/mockup-checklist.md`), so they
-/// are not drawn.
+/// Before the round the Upcoming tab is the next round and its gold Start
+/// round button, with who is playing below. During the round it is the way
+/// back to the scorecard. After the round the finished round moves to
+/// Completed, one tap from the celebration. Invitations is honest about being
+/// empty: rounds are not invited to yet. The filter button keeps its place,
+/// dimmed. See `docs/features/rounds-release-candidate.md`.
 library;
 
 import 'package:flutter/material.dart';
@@ -17,16 +16,20 @@ import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/brand/app_brand_bar.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_round_card.dart';
-import 'package:qaddy/core/widgets/forms/qaddy_segmented_control.dart';
+import 'package:qaddy/core/widgets/cards/qaddy_round_list_card.dart';
+import 'package:qaddy/core/widgets/forms/qaddy_search_bar.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
+import 'package:qaddy/core/widgets/navigation/qaddy_pill_tabs.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
 import 'package:qaddy/features/rounds/logic/round_insights.dart';
@@ -37,8 +40,6 @@ import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/widgets/setup_player_tile.dart';
 import 'package:qaddy/features/rounds/ui/widgets/standings_preview.dart';
 
-enum _Tab { upcoming, completed }
-
 /// The Rounds destination (route `/rounds`).
 class RoundsScreen extends ConsumerStatefulWidget {
   const RoundsScreen({super.key});
@@ -48,14 +49,46 @@ class RoundsScreen extends ConsumerStatefulWidget {
 }
 
 class _RoundsScreenState extends ConsumerState<RoundsScreen> {
-  _Tab _tab = _Tab.upcoming;
+  static const int _upcoming = 0;
+  static const int _completed = 1;
+  static const int _invitations = 2;
+
+  int _tab = _upcoming;
+  final TextEditingController _search = TextEditingController();
+  final GlobalKey _playersKey = GlobalKey();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  /// Brings the "Who's playing" list into view: what Create round and View
+  /// details both mean when a round is planned here.
+  void _showPlayers() {
+    setState(() => _tab = _upcoming);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = _playersKey.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
+  }
+
+  bool _matches(String course) {
+    final query = _search.text.trim().toLowerCase();
+    return query.isEmpty || course.toLowerCase().contains(query);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
     final live = ref.watch(liveRoundProvider);
     final history = ref.watch(roundHistoryProvider);
@@ -65,38 +98,68 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
-            SizedBox(height: spacing.lg),
-            Text(
-              'My rounds',
-              style: typography.h1.copyWith(color: colours.textPrimary),
+            const SizedBox(height: 8),
+            const AppBrandBar(showSearch: false),
+            const SizedBox(height: 14),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'My rounds',
+                      style: QaddyText.pageTitle.copyWith(
+                        color: colours.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 142,
+                  child: QaddyGoldButton(
+                    label: 'Create round',
+                    icon: Icons.add_rounded,
+                    compact: true,
+                    height: 40,
+                    onPressed: _showPlayers,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: spacing.xs),
             Text(
               'Play more. Keep track. Make it count.',
-              style: typography.body.copyWith(color: colours.textSecondary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: QaddyText.listMeta.copyWith(color: colours.textSecondary),
             ),
-            SizedBox(height: spacing.lg),
-            QaddySegmentedControl<_Tab>(
+            const SizedBox(height: 14),
+            QaddySearchBar(
+              hintText: 'Search courses…',
+              controller: _search,
+              onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: 12),
+            QaddyPillTabs(
               selected: _tab,
               onChanged: (tab) => setState(() => _tab = tab),
-              segments: <QaddySegment<_Tab>>[
-                const QaddySegment<_Tab>(
-                  value: _Tab.upcoming,
-                  label: 'Upcoming',
-                ),
-                QaddySegment<_Tab>(
-                  value: _Tab.completed,
+              tabs: <QaddyPillTab>[
+                const QaddyPillTab(label: 'Upcoming (1)'),
+                QaddyPillTab(
                   label: history.isEmpty
                       ? 'Completed'
                       : 'Completed (${history.length})',
                 ),
+                const QaddyPillTab(label: 'Invitations'),
               ],
             ),
-            SizedBox(height: spacing.lg),
-            if (_tab == _Tab.upcoming)
-              ..._upcoming(context, live)
-            else
-              ..._completed(context, history),
+            const SizedBox(height: 14),
+            ...switch (_tab) {
+              _completed => _completedTab(context, history),
+              _invitations => _invitationsTab(),
+              _ => _upcomingTab(context, live),
+            },
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -104,57 +167,91 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
     );
   }
 
+  Widget _nothingMatches() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 24),
+    child: Center(
+      child: Text(
+        'No rounds match "${_search.text.trim()}".',
+        style: QaddyText.listMeta.copyWith(
+          color: Theme.of(context).extension<QaddyColours>()!.textSecondary,
+        ),
+      ),
+    ),
+  );
+
   /// The next round, who is playing and what is on the course.
-  List<Widget> _upcoming(BuildContext context, Round? live) {
+  List<Widget> _upcomingTab(BuildContext context, Round? live) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
     final players = ref.watch(selectedPlayersProvider);
     final planned = upcomingRound.planned;
+    final course = live?.course ?? upcomingRound.course;
+
+    final card = live != null
+        ? QaddyRoundListCard(
+            course: live.course,
+            date: 'Today',
+            time: 'Hole ${live.currentHole + 1} of ${live.holes.length}',
+            detail: _liveLine(live),
+            detailIcon: Icons.leaderboard_outlined,
+            players: <String>[for (final p in live.players) p.name],
+            total: live.players.length,
+            statusLabel: 'Live',
+            tone: QaddyPillTone.success,
+            statusIcon: Icons.circle,
+            leading: QaddyCardAction(
+              label: 'Leaderboard',
+              onPressed: () => context.push(AppRoutes.roundLeaderboard),
+            ),
+            primary: QaddyCardAction(
+              label: 'Continue round',
+              onPressed: () => context.push(AppRoutes.roundScorecard),
+            ),
+          )
+        : QaddyRoundListCard(
+            course: upcomingRound.course,
+            date: planned ? upcomingRound.date : 'Ready when you are',
+            time: planned ? upcomingRound.teeTime : null,
+            detail: upcomingRound.format,
+            weather: planned ? upcomingRound.weather : null,
+            players: <String>[for (final p in players) p.name],
+            total: players.length,
+            sample: planned,
+            statusLabel: 'Planned',
+            statusIcon: Icons.schedule,
+            leading: QaddyCardAction(
+              label: 'View details',
+              onPressed: _showPlayers,
+            ),
+            middle: planned
+                ? QaddyCardAction(
+                    label: 'Share',
+                    icon: Icons.ios_share_rounded,
+                    onPressed: () => shareOrCopy(
+                      context,
+                      ref,
+                      text: roundShareMessage(upcomingRound, currentUserName),
+                      subject: "Who's in?",
+                    ),
+                  )
+                : null,
+            primary: QaddyCardAction(
+              label: 'Start round',
+              onPressed: () {
+                QaddyHaptics.success();
+                ref.read(roundsProvider.notifier).startRound(players);
+                context.push(AppRoutes.roundScorecard);
+              },
+            ),
+          );
+
+    if (!_matches(course)) {
+      return <Widget>[_nothingMatches()];
+    }
 
     return <Widget>[
-      if (live != null)
-        QaddyRoundCard(
-          course: live.course,
-          when: 'Hole ${live.currentHole + 1} of ${live.holes.length}',
-          note: _liveLine(live),
-          noteIcon: Icons.leaderboard_outlined,
-          players: <String>[for (final p in live.players) p.name],
-          total: live.players.length,
-          primaryLabel: 'Continue round',
-          onPrimary: () => context.push(AppRoutes.roundScorecard),
-        )
-      else
-        QaddyRoundCard(
-          course: upcomingRound.course,
-          day: planned ? upcomingRound.date : null,
-          teeTime: planned ? upcomingRound.teeTime : null,
-          note: planned
-              ? '${upcomingRound.weather} · ${upcomingRound.format}'
-              : upcomingRound.format,
-          noteIcon: planned
-              ? Icons.wb_sunny_outlined
-              : Icons.emoji_events_outlined,
-          players: <String>[for (final p in players) p.name],
-          total: players.length,
-          showCount: players.length > 1,
-          sample: planned,
-          primaryLabel: 'Start round',
-          onPrimary: () {
-            QaddyHaptics.success();
-            ref.read(roundsProvider.notifier).startRound(players);
-            context.push(AppRoutes.roundScorecard);
-          },
-          onDetails: planned
-              ? () => shareOrCopy(
-                  context,
-                  ref,
-                  text: roundShareMessage(upcomingRound, currentUserName),
-                  subject: "Who's in?",
-                )
-              : null,
-        ),
+      card,
       if (live != null && live.holesPlayed > 0) ...<Widget>[
         SizedBox(height: spacing.sectionGap),
         StandingsPreview(
@@ -164,9 +261,12 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
       ],
       if (live == null) ...<Widget>[
         SizedBox(height: spacing.sectionGap),
-        QaddySectionHeading(
-          title: "Who's playing",
-          badge: ref.watch(roundSetupProvider).length,
+        KeyedSubtree(
+          key: _playersKey,
+          child: QaddySectionHeading(
+            title: "Who's playing",
+            badge: ref.watch(roundSetupProvider).length,
+          ),
         ),
         SizedBox(height: spacing.md),
         const _Players(),
@@ -188,7 +288,7 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
               : 'Pars and stroke indexes use a standard par-72 layout '
                     'until course search arrives. Distances are left '
                     'out rather than guessed.',
-          style: typography.caption.copyWith(color: colours.textTertiary),
+          style: QaddyText.tagline.copyWith(color: colours.textTertiary),
         ),
       ],
     ];
@@ -204,9 +304,7 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
   }
 
   /// Every finished round, newest first.
-  List<Widget> _completed(BuildContext context, List<Round> history) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
-
+  List<Widget> _completedTab(BuildContext context, List<Round> history) {
     if (history.isEmpty) {
       return <Widget>[
         QaddyEmptyState(
@@ -216,15 +314,22 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
               'Finish a round and it is kept here, with how it went. '
               'Your statistics are built from them.',
           actionLabel: 'See upcoming',
-          onAction: () => setState(() => _tab = _Tab.upcoming),
+          onAction: () => setState(() => _tab = _upcoming),
         ),
       ];
     }
+    final shown = <(int, Round)>[
+      for (final (index, round) in history.indexed)
+        if (_matches(round.course)) (index, round),
+    ];
+    if (shown.isEmpty) {
+      return <Widget>[_nothingMatches()];
+    }
 
     return <Widget>[
-      for (final (index, round) in history.indexed) ...<Widget>[
-        if (index > 0) SizedBox(height: spacing.cardGap),
-        _finished(context, round, latest: index == 0),
+      for (final (position, entry) in shown.indexed) ...<Widget>[
+        if (position > 0) const SizedBox(height: 12),
+        _finished(context, entry.$2, latest: entry.$1 == 0),
       ],
     ];
   }
@@ -234,18 +339,37 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
     final top = standings.first;
     final headline = winnersHeadline(standings, you: currentUserName);
 
-    return QaddyRoundCard(
+    return QaddyRoundListCard(
       course: round.course,
-      day: _dayLabel(round.completedAt ?? round.startedAt),
-      note: '$headline · ${top.points} pts',
+      date: _dayLabel(round.completedAt ?? round.startedAt),
+      detail: '$headline · ${top.points} pts',
       players: <String>[for (final p in round.players) p.name],
       total: round.players.length,
+      statusLabel: 'Finished',
+      tone: QaddyPillTone.success,
+      statusIcon: Icons.check_rounded,
       // The results screen shows the latest round; older ones have no results
       // page of their own yet.
-      primaryLabel: latest ? 'View results' : null,
-      onPrimary: latest ? () => context.push(AppRoutes.roundComplete) : null,
+      primary: latest
+          ? QaddyCardAction(
+              label: 'View results',
+              onPressed: () => context.push(AppRoutes.roundComplete),
+            )
+          : null,
     );
   }
+
+  List<Widget> _invitationsTab() => <Widget>[
+    QaddyEmptyState(
+      icon: Icons.mail_outline_rounded,
+      title: 'No invitations yet',
+      message:
+          'When a mate invites you to a round, it shows up here for you to '
+          'accept.',
+      actionLabel: 'See upcoming',
+      onAction: () => setState(() => _tab = _upcoming),
+    ),
+  ];
 }
 
 /// "Sat, 7 Nov".
