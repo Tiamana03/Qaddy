@@ -19,6 +19,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
+import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/leaderboard_screen.dart';
@@ -26,6 +27,7 @@ import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 
 import '../support/app_test_harness.dart';
+import '../support/played_rounds.dart';
 
 const Size _phone = Size(393, 852);
 
@@ -194,6 +196,19 @@ void main() {
         await tester.tap(find.textContaining('Completed'));
         await tester.pump(const Duration(milliseconds: 500));
       },
+    );
+  }, skip: !enabled);
+
+  testWidgets('render: profile', (tester) async {
+    final played = PlayedRounds()
+      ..play(1, <int>[3, 5, 3, 4], partners: <String>['Tom', 'Ben', 'Luke'])
+      ..play(2, <int>[5, 6, 4, 5])
+      ..play(3, <int>[3, 4, 2, 4]);
+    await _render(
+      tester,
+      'profile',
+      const ProfileScreen(),
+      container: played.container,
     );
   }, skip: !enabled);
 

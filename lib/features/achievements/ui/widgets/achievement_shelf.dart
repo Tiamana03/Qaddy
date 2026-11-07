@@ -8,10 +8,9 @@ import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/haptics.dart';
-import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
-import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/achievements/models/achievement.dart';
 
@@ -30,7 +29,8 @@ IconData achievementIcon(String id) {
   };
 }
 
-/// A round badge: gold when earned, dim with a lock when not.
+/// A hexagonal badge, as the approved Profile mockup draws them: a gold
+/// outline and a gold emblem when earned, a dim outline and a lock when not.
 class AchievementBadge extends StatelessWidget {
   const AchievementBadge({
     required this.achievement,
@@ -41,7 +41,7 @@ class AchievementBadge extends StatelessWidget {
   /// The achievement.
   final Achievement achievement;
 
-  /// The badge's diameter.
+  /// The badge's width.
   final double size;
 
   @override
@@ -49,31 +49,76 @@ class AchievementBadge extends StatelessWidget {
     final colours = Theme.of(context).extension<QaddyColours>()!;
     final unlocked = achievement.unlocked;
 
-    return Container(
+    return SizedBox(
       width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: unlocked
-            ? colours.gold.withValues(alpha: 0.2)
-            : colours.surface2,
-        border: Border.all(
-          color: unlocked ? colours.gold : colours.border,
-          width: unlocked ? 2 : 1,
+      height: size * 1.1,
+      child: CustomPaint(
+        painter: _HexagonPainter(
+          fill: unlocked
+              ? colours.gold.withValues(alpha: 0.16)
+              : colours.surface1,
+          outline: unlocked ? colours.gold : colours.border,
+          width: unlocked ? 1.8 : 1.2,
         ),
-      ),
-      child: Icon(
-        unlocked ? achievementIcon(achievement.id) : Icons.lock_outline,
-        size: size * 0.46,
-        color: unlocked ? colours.gold : colours.textTertiary,
+        child: Center(
+          child: Icon(
+            unlocked ? achievementIcon(achievement.id) : Icons.lock_outline,
+            size: size * 0.44,
+            color: unlocked ? colours.gold : colours.textTertiary,
+          ),
+        ),
       ),
     );
   }
 }
 
-/// A scrollable row of badges with the next target beneath.
-class AchievementShelf extends StatelessWidget {
-  const AchievementShelf({required this.achievements, super.key});
+class _HexagonPainter extends CustomPainter {
+  const _HexagonPainter({
+    required this.fill,
+    required this.outline,
+    required this.width,
+  });
+
+  final Color fill;
+  final Color outline;
+  final double width;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // A pointy-topped hexagon with softened corners.
+    final w = size.width;
+    final h = size.height;
+    final inset = width / 2;
+    final path = Path()
+      ..moveTo(w / 2, inset)
+      ..lineTo(w - inset, h * 0.25)
+      ..lineTo(w - inset, h * 0.75)
+      ..lineTo(w / 2, h - inset)
+      ..lineTo(inset, h * 0.75)
+      ..lineTo(inset, h * 0.25)
+      ..close();
+    canvas
+      ..drawPath(path, Paint()..color = fill)
+      ..drawPath(
+        path,
+        Paint()
+          ..color = outline
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = width
+          ..strokeJoin = StrokeJoin.round,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_HexagonPainter old) =>
+      old.fill != fill || old.outline != outline || old.width != width;
+}
+
+/// The golfer's progress, drawn as the mockup's "Your Golf Journey" card: an
+/// emblem, what to chase next, how many badges are earned and a gold bar
+/// towards the next one. Tapping it says how to earn that badge.
+class AchievementJourneyCard extends StatelessWidget {
+  const AchievementJourneyCard({required this.achievements, super.key});
 
   /// Every achievement, earned or not.
   final List<Achievement> achievements;
@@ -83,112 +128,219 @@ class AchievementShelf extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
     final next = nextUp(achievements);
     final earned = achievements.where((a) => a.unlocked).length;
 
-    return QaddyCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            height: 96,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              itemCount: achievements.length,
-              separatorBuilder: (context, index) => SizedBox(width: spacing.md),
-              itemBuilder: (context, index) {
-                final achievement = achievements[index];
-                return Semantics(
-                  button: true,
-                  label:
-                      '${achievement.title}. ${achievement.blurb}. '
-                      '${achievement.progressLabel}.',
-                  excludeSemantics: true,
-                  onTap: () => showAchievementSheet(context, achievement),
-                  child: InkResponse(
-                    radius: 40,
-                    onTap: () {
-                      QaddyHaptics.selection();
-                      showAchievementSheet(context, achievement);
-                    },
-                    child: SizedBox(
-                      width: 72,
+    final title = next == null
+        ? 'Every badge earned. Legend.'
+        : '${next.title} · ${next.progressLabel}';
+
+    return Semantics(
+      button: next != null,
+      label:
+          'Your golf journey. $title. '
+          '$earned of ${achievements.length} earned.',
+      excludeSemantics: true,
+      onTap: next == null ? null : () => showAchievementSheet(context, next),
+      child: Material(
+        color: colours.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius.medium),
+          side: BorderSide(color: colours.border),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: next == null
+              ? null
+              : () => showAchievementSheet(context, next),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        color: colours.surface1,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: colours.border),
+                      ),
+                      child: Icon(
+                        Icons.emoji_events_rounded,
+                        color: colours.gold,
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          AchievementBadge(achievement: achievement),
-                          SizedBox(height: spacing.sm),
                           Text(
-                            achievement.title,
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
+                            'Your golf journey',
+                            style: QaddyText.cardTitle.copyWith(
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            title,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: typography.caption.copyWith(
-                              color: achievement.unlocked
-                                  ? colours.textPrimary
-                                  : colours.textSecondary,
+                            style: QaddyText.listMeta.copyWith(
+                              color: colours.textSecondary,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          SizedBox(height: spacing.lg),
-          if (next == null)
-            Text(
-              'You have earned every achievement. Legend.',
-              style: typography.body.copyWith(color: colours.accent),
-            )
-          else ...<Widget>[
-            Row(
-              children: <Widget>[
-                const Expanded(child: QaddyEyebrow('Next up')),
-                Text(
-                  '$earned of ${achievements.length} earned',
-                  style: typography.small.copyWith(
-                    color: colours.textSecondary,
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          '$earned of ${achievements.length}',
+                          style: QaddyText.cardTitle.copyWith(
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'badges earned',
+                          style: QaddyText.weatherCondition.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (next != null) ...<Widget>[
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.chevron_right,
+                        color: colours.textSecondary,
+                        size: 20,
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(radius.large),
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween<double>(
+                      begin: MediaQuery.disableAnimationsOf(context)
+                          ? (next?.fraction ?? 1)
+                          : 0,
+                      end: next?.fraction ?? 1,
+                    ),
+                    duration: QaddyMotion.standard.loading,
+                    curve: QaddyMotion.standard.enter,
+                    builder: (context, value, _) => LinearProgressIndicator(
+                      value: value,
+                      minHeight: 6,
+                      backgroundColor: colours.selected.withValues(alpha: 0.35),
+                      valueColor: AlwaysStoppedAnimation<Color>(colours.gold),
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: spacing.sm),
-            Text(
-              next.title,
-              style: typography.h3.copyWith(color: colours.textPrimary),
-            ),
-            Text(
-              '${next.blurb} · ${next.progressLabel}',
-              style: typography.small.copyWith(color: colours.textSecondary),
-            ),
-            SizedBox(height: spacing.md),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(radius.large),
-              child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(
-                  begin: MediaQuery.disableAnimationsOf(context)
-                      ? next.fraction
-                      : 0,
-                  end: next.fraction,
-                ),
-                duration: QaddyMotion.standard.loading,
-                curve: QaddyMotion.standard.enter,
-                builder: (context, value, _) => LinearProgressIndicator(
-                  value: value,
-                  minHeight: 8,
-                  backgroundColor: colours.surface2,
-                  valueColor: AlwaysStoppedAnimation<Color>(colours.gold),
-                ),
-              ),
-            ),
-          ],
-        ],
+          ),
+        ),
       ),
+    );
+  }
+}
+
+/// The row of hexagonal badges under the journey card; six fit across and the
+/// rest scroll. Tapping one says how to earn it and how close the golfer is.
+class AchievementBadgeRow extends StatelessWidget {
+  const AchievementBadgeRow({required this.achievements, super.key});
+
+  /// Every achievement, earned or not.
+  final List<Achievement> achievements;
+
+  @override
+  Widget build(BuildContext context) {
+    final colours = Theme.of(context).extension<QaddyColours>()!;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const gap = 6.0;
+        final item = (constraints.maxWidth - gap * 5) / 6;
+
+        return SizedBox(
+          height: item * 1.1 + 34,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: achievements.length,
+            separatorBuilder: (context, index) => const SizedBox(width: gap),
+            itemBuilder: (context, index) {
+              final achievement = achievements[index];
+              return Semantics(
+                button: true,
+                label:
+                    '${achievement.title}. ${achievement.blurb}. '
+                    '${achievement.progressLabel}.',
+                excludeSemantics: true,
+                onTap: () => showAchievementSheet(context, achievement),
+                child: InkResponse(
+                  radius: 36,
+                  onTap: () {
+                    QaddyHaptics.selection();
+                    showAchievementSheet(context, achievement);
+                  },
+                  child: SizedBox(
+                    width: item,
+                    child: Column(
+                      children: <Widget>[
+                        AchievementBadge(
+                          achievement: achievement,
+                          size: item - 4,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          achievement.title,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: QaddyText.weatherCondition.copyWith(
+                            fontSize: 11,
+                            height: 13 / 11,
+                            color: achievement.unlocked
+                                ? colours.textPrimary
+                                : colours.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// The journey card and the badge row together.
+class AchievementShelf extends StatelessWidget {
+  const AchievementShelf({required this.achievements, super.key});
+
+  /// Every achievement, earned or not.
+  final List<Achievement> achievements;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        AchievementJourneyCard(achievements: achievements),
+        const SizedBox(height: 14),
+        AchievementBadgeRow(achievements: achievements),
+      ],
     );
   }
 }

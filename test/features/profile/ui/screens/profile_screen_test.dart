@@ -82,7 +82,8 @@ void main() {
       await _pump(tester, PlayedRounds().container);
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
-      expect(find.text('Profile'), findsOneWidget);
+      expect(find.byTooltip('Settings'), findsOneWidget);
+      expect(find.text('Your golf journey'), findsOneWidget);
       expect(find.text('Tiamana'), findsOneWidget);
       expect(find.text('Edit profile'), findsOneWidget);
       expect(find.text('Handicap'), findsOneWidget);
@@ -110,9 +111,9 @@ void main() {
     ) async {
       await _pump(tester, PlayedRounds().container);
 
-      expect(find.text('Achievements'), findsOneWidget);
-      expect(find.text('Next up'), findsOneWidget);
-      expect(find.text('0 of 8 earned'), findsOneWidget);
+      expect(find.text('Your golf journey'), findsOneWidget);
+      expect(find.text('0 of 8'), findsOneWidget);
+      expect(find.text('badges earned'), findsOneWidget);
       // The shelf scrolls, so only the badges in view are built.
       expect(find.byIcon(Icons.lock_outline), findsWidgets);
       expect(find.byIcon(Icons.flag), findsNothing);
@@ -135,14 +136,14 @@ void main() {
       expect(find.text('3'), findsWidgets);
       expect(find.text('Wins'), findsOneWidget);
       expect(find.text('Avg points'), findsOneWidget);
-      expect(find.text('Share my golf card'), findsOneWidget);
+      expect(find.text('Share card'), findsOneWidget);
       expect(find.text('Start your first round'), findsNothing);
     });
 
-    testWidgets('Share my golf card shares the real numbers', (tester) async {
+    testWidgets('Share card shares the real numbers', (tester) async {
       await _pump(tester, h.container);
 
-      await _tap(tester, find.text('Share my golf card'));
+      await _tap(tester, find.text('Share card'));
 
       final shared = shareOf(h.container).shared;
       expect(shared, hasLength(1));
@@ -159,7 +160,8 @@ void main() {
       // First Round, Full Eighteen? no (4 holes), Winner, Social Golfer, ...
       expect(find.byIcon(Icons.flag), findsOneWidget);
       expect(find.byIcon(Icons.lock_outline), findsWidgets);
-      expect(find.textContaining(' of 8 earned'), findsOneWidget);
+      expect(find.textContaining(' of 8'), findsOneWidget);
+      expect(find.text('badges earned'), findsOneWidget);
     });
 
     testWidgets('tapping a badge says how to earn it', (tester) async {

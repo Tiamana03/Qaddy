@@ -1,11 +1,11 @@
-/// Qaddy's Profile screen, as the approved mockup draws it: who the golfer is,
-/// four headline numbers, the badges they have earned and their recent rounds,
-/// with one gold button to the full statistics.
+/// Qaddy's Profile screen, as the approved mockup draws it: the brand bar with
+/// Settings, who the golfer is, four headline numbers, the golf journey and the
+/// badges earned, recent rounds, and one gold button to the full statistics.
 ///
 /// Everything on it comes from rounds actually played; where there are none yet
 /// it says so and offers the first tee. See
-/// `docs/features/profile-release-candidate.md`. The mockup's XP journey has no
-/// data behind it, so it is not drawn.
+/// `docs/features/profile-release-candidate.md`. The mockup's XP is the next
+/// achievement's progress here: there is no XP to invent.
 library;
 
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ import 'package:qaddy/core/routing/app_routes.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/user/current_user.dart';
 import 'package:qaddy/core/user/golfer.dart';
@@ -22,11 +23,11 @@ import 'package:qaddy/core/user/golfer_controller.dart';
 import 'package:qaddy/core/utils/date_extensions.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/widgets/actions/link_actions.dart';
-import 'package:qaddy/core/widgets/actions/qaddy_quick_actions.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
+import 'package:qaddy/core/widgets/brand/app_brand_bar.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
-import 'package:qaddy/core/widgets/buttons/qaddy_icon_button.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_stat_tiles.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
@@ -37,7 +38,6 @@ import 'package:qaddy/features/achievements/logic/achievements.dart';
 import 'package:qaddy/features/achievements/ui/widgets/achievement_shelf.dart';
 import 'package:qaddy/features/community/state/friends_controller.dart';
 import 'package:qaddy/features/groups/models/placeholder_groups.dart';
-import 'package:qaddy/features/notifications/state/notifications_controller.dart';
 import 'package:qaddy/features/profile/ui/widgets/edit_profile_sheet.dart';
 import 'package:qaddy/features/profile/ui/widgets/profile_header.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -53,16 +53,12 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
     final golfer = ref.watch(golferDetailsProvider);
     final history = ref.watch(roundHistoryProvider);
     final stats = CareerStats.of(history, you: currentUserName);
     final achievements = achievementsFor(stats);
-    final earned = achievements.where((a) => a.unlocked).length;
-    final unread = ref.watch(unreadNotificationCountProvider);
 
     // In Release 1 the only mates and groups are the Sample Clubhouse's, so
     // the golfer's own count of them is honestly zero.
@@ -73,115 +69,23 @@ class ProfileScreen extends ConsumerWidget {
     ];
     final sampleTrips = allTrips.where(TripsController.isSample).length;
 
-    final shortcuts = <QaddyQuickAction>[
-      QaddyQuickAction(
-        icon: Icons.sports_golf,
-        featured: true,
-        label: 'Golf bag',
-        colour: colours.accentTeal,
-        onTap: () => context.push(AppRoutes.profileGolfBag),
-      ),
-      QaddyQuickAction(
-        icon: Icons.ios_share_rounded,
-        label: 'Share my golf card',
-        colour: colours.accentOrange,
-        onTap: () => shareOrCopy(
-          context,
-          ref,
-          text: _cardMessage(golfer, stats),
-          subject: '${golfer.firstName} on Qaddy',
-        ),
-      ),
-      QaddyQuickAction(
-        icon: Icons.bar_chart_rounded,
-        label: 'My stats',
-        colour: colours.accentSky,
-        onTap: () => context.push(AppRoutes.profileStatistics),
-      ),
-    ];
-
-    Widget action(Widget icon, String tooltip, VoidCallback onTap) => Padding(
-      padding: EdgeInsets.only(left: spacing.sm),
-      child: QaddyIconButton.custom(
-        tooltip: tooltip,
-        semanticLabel: tooltip,
-        onPressed: onTap,
-        child: icon,
-      ),
-    );
-
     return QaddyScaffold(
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: staggered(<Widget>[
-            SizedBox(height: spacing.md),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    'Profile',
-                    style: typography.h1.copyWith(color: colours.textPrimary),
-                  ),
-                ),
-                action(
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: <Widget>[
-                      const Icon(Icons.notifications_outlined),
-                      if (unread > 0)
-                        Positioned(
-                          right: -spacing.sm,
-                          top: -spacing.sm,
-                          child: Container(
-                            constraints: BoxConstraints(
-                              minWidth: spacing.lg,
-                              minHeight: spacing.lg,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: spacing.xs,
-                            ),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: colours.gold,
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: colours.surface1,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Text(
-                              unread > 9 ? '9+' : '$unread',
-                              style: typography.caption.copyWith(
-                                color: colours.backgroundBase,
-                                fontWeight: FontWeight.w700,
-                                height: 1,
-                                letterSpacing: 0,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  unread > 0 ? 'Notifications, $unread new' : 'Notifications',
-                  () => context.push(AppRoutes.homeNotifications),
-                ),
-                action(
-                  const Icon(Icons.settings_outlined),
-                  'Settings',
-                  () => context.push(AppRoutes.profileSettings),
-                ),
-              ],
-            ),
-            SizedBox(height: spacing.lg),
+            const SizedBox(height: 8),
+            const AppBrandBar(showSearch: false, showGear: true),
+            const SizedBox(height: 14),
             ProfileHeader(
               golfer: golfer,
               onEdit: () => showEditProfileSheet(context, ref),
             ),
             if (stats != null || golfer.handicap != null) ...<Widget>[
-              SizedBox(height: spacing.lg),
+              const SizedBox(height: 14),
               QaddyStatTiles(
                 layout: QaddyStatLayout.profile,
+                tintFirst: false,
                 onOpen: () => context.push(AppRoutes.profileStatistics),
                 stats: <QaddyStat>[
                   QaddyStat(
@@ -211,30 +115,75 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ],
-            SizedBox(height: spacing.sectionGap),
-            QaddyQuickActions(actions: shortcuts),
-            SizedBox(height: spacing.sectionGap),
-            QaddySectionHeading(title: 'Achievements', badge: earned),
-            SizedBox(height: spacing.md),
-            AchievementShelf(achievements: achievements),
+            const SizedBox(height: 14),
+            AchievementJourneyCard(achievements: achievements),
+            const SizedBox(height: 14),
+            AchievementBadgeRow(achievements: achievements),
             if (stats != null) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              QaddySectionHeading(
-                title: 'Recent rounds',
-                actionLabel: 'View all',
-                onAction: () => context.push(AppRoutes.profileStatistics),
-              ),
-              SizedBox(height: spacing.md),
+              const SizedBox(height: 14),
               _RecentRounds(
                 rounds: stats.chronological.reversed.take(3).toList(),
+                onViewAll: () => context.push(AppRoutes.profileStatistics),
               ),
             ],
+            const SizedBox(height: 16),
+            if (stats == null)
+              QaddyGoldButton(
+                label: 'Start your first round',
+                icon: Icons.sports_golf,
+                onPressed: () => context.go(AppRoutes.rounds),
+              )
+            else
+              QaddyGoldButton(
+                label: 'View full statistics',
+                icon: Icons.bar_chart_rounded,
+                onPressed: () => context.push(AppRoutes.profileStatistics),
+              ),
+            const SizedBox(height: 12),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: QaddySecondaryButton(
+                    label: 'Golf bag',
+                    icon: Icons.sports_golf,
+                    iconBefore: true,
+                    compact: true,
+                    onPressed: () => context.push(AppRoutes.profileGolfBag),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: QaddySecondaryButton(
+                    label: 'Share card',
+                    icon: Icons.ios_share_rounded,
+                    iconBefore: true,
+                    compact: true,
+                    onPressed: () => shareOrCopy(
+                      context,
+                      ref,
+                      text: _cardMessage(golfer, stats),
+                      subject: '${golfer.firstName} on Qaddy',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: QaddySecondaryButton(
+                    label: 'My stats',
+                    icon: Icons.bar_chart_rounded,
+                    iconBefore: true,
+                    compact: true,
+                    onPressed: () => context.push(AppRoutes.profileStatistics),
+                  ),
+                ),
+              ],
+            ),
             // Only once the golfer has made something of their own: a row of
             // zeros (and someone else's sample numbers) says nothing.
             if (allTrips.length - sampleTrips > 0) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
               const QaddySectionHeading(title: 'Your world'),
-              SizedBox(height: spacing.md),
+              const SizedBox(height: 10),
               _World(
                 sampleFriends: sampleFriends,
                 sampleGroups: groups.length,
@@ -245,24 +194,9 @@ class ProfileScreen extends ConsumerWidget {
             if (stats != null && stats.rivals.isNotEmpty) ...<Widget>[
               SizedBox(height: spacing.sectionGap),
               const QaddySectionHeading(title: 'Your playing partners'),
-              SizedBox(height: spacing.md),
+              const SizedBox(height: 10),
               _Partners(rivals: stats.rivals.take(4).toList()),
             ],
-            SizedBox(height: spacing.sectionGap),
-            if (stats == null)
-              QaddyGoldButton(
-                label: 'Start your first round',
-                icon: Icons.sports_golf,
-                tall: true,
-                onPressed: () => context.go(AppRoutes.rounds),
-              )
-            else
-              QaddyGoldButton(
-                label: 'View full statistics',
-                icon: Icons.bar_chart_rounded,
-                tall: true,
-                onPressed: () => context.push(AppRoutes.profileStatistics),
-              ),
             SizedBox(height: spacing.xl),
           ]),
         ),
@@ -271,7 +205,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-/// The message shared with "Share my golf card".
+/// The message shared with "Share card".
 String _cardMessage(GolferProfile golfer, CareerStats? stats) {
   final handicap = golfer.handicap;
   final facts = <String>[
@@ -451,105 +385,139 @@ class _Partners extends StatelessWidget {
   }
 }
 
-/// The last few rounds, newest first: a thumbnail, the course and day, the
-/// points and where the golfer finished.
+/// The last few rounds, newest first, as the mockup's "Recent Rounds" card: a
+/// heading with "View all", then a row each: a thumbnail, the course and day,
+/// the points in a box, where the golfer finished and a chevron.
 class _RecentRounds extends StatelessWidget {
-  const _RecentRounds({required this.rounds});
+  const _RecentRounds({required this.rounds, required this.onViewAll});
 
   final List<YourRound> rounds;
+  final VoidCallback onViewAll;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
-    final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
-    return QaddyCard(
-      onTap: () => context.push(AppRoutes.profileStatistics),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 6, 10, 8),
+      decoration: BoxDecoration(
+        color: colours.card,
+        borderRadius: BorderRadius.circular(radius.medium),
+        border: Border.all(color: colours.border),
+      ),
       child: Column(
         children: <Widget>[
-          for (final (index, round) in rounds.indexed) ...<Widget>[
-            if (index > 0) ...<Widget>[
-              SizedBox(height: spacing.sm),
-              Divider(height: 1, color: colours.border),
-              SizedBox(height: spacing.sm),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  'Recent rounds',
+                  style: QaddyText.sectionTitle.copyWith(
+                    color: colours.textPrimary,
+                  ),
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: colours.textSecondary,
+                  minimumSize: const Size(48, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                ),
+                onPressed: onViewAll,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text('View all', style: QaddyText.sectionLink),
+                    const Icon(Icons.chevron_right, size: 18),
+                  ],
+                ),
+              ),
             ],
-            Row(
-              children: <Widget>[
-                SizedBox(
-                  width: 52,
-                  height: 44,
-                  child: QaddyMediaPlaceholder(
-                    borderRadius: BorderRadius.circular(radius.small),
-                    tone: index % 3,
-                  ),
-                ),
-                SizedBox(width: spacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        round.round.course,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: typography.body.copyWith(
+          ),
+          for (final (index, round) in rounds.indexed) ...<Widget>[
+            Divider(height: 1, color: colours.border),
+            InkWell(
+              onTap: onViewAll,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 56,
+                      height: 42,
+                      child: QaddyMediaPlaceholder(
+                        borderRadius: BorderRadius.circular(radius.small),
+                        tone: index % 3,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            round.round.course,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: QaddyText.cardTitle.copyWith(
+                              color: colours.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            '${round.date.day} ${round.date.monthAbbreviation}',
+                            style: QaddyText.meta.copyWith(
+                              height: 16 / 12,
+                              color: colours.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: colours.border),
+                      ),
+                      child: Text(
+                        '${round.points}',
+                        style: QaddyText.tileFigure.copyWith(
                           color: colours.textPrimary,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Text(
-                        '${round.date.day} ${round.date.monthAbbreviation}',
-                        style: typography.small.copyWith(
-                          color: colours.textSecondary,
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 42,
+                      height: 32,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: round.won ? colours.selected : colours.surface2,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        round.won ? 'Won' : round.standing.position,
+                        style: QaddyText.pillLabel.copyWith(
+                          color: round.won
+                              ? theme.colorScheme.onPrimary
+                              : colours.textPrimary,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: spacing.sm),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: spacing.sm,
-                    vertical: spacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius.small),
-                    border: Border.all(color: colours.border),
-                  ),
-                  child: Text(
-                    '${round.points} pts',
-                    style: typography.small.copyWith(
+                    ),
+                    const SizedBox(width: 2),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 20,
                       color: colours.textPrimary,
-                      fontWeight: FontWeight.w700,
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(width: spacing.sm),
-                Container(
-                  constraints: const BoxConstraints(minWidth: 32),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: spacing.sm,
-                    vertical: spacing.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: round.won ? colours.selected : colours.surface2,
-                    borderRadius: BorderRadius.circular(radius.small),
-                  ),
-                  child: Text(
-                    round.won ? 'Won' : round.standing.position,
-                    style: typography.small.copyWith(
-                      color: round.won
-                          ? theme.colorScheme.onPrimary
-                          : colours.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ],

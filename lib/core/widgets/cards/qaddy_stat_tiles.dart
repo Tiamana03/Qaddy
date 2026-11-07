@@ -47,6 +47,7 @@ class QaddyStatTiles extends StatelessWidget {
     required this.stats,
     required this.onOpen,
     this.layout = QaddyStatLayout.game,
+    this.tintFirst = true,
     this.semanticPrefix = 'Your game',
     super.key,
   });
@@ -59,6 +60,9 @@ class QaddyStatTiles extends StatelessWidget {
 
   /// Which of the mockups' two arrangements to use.
   final QaddyStatLayout layout;
+
+  /// Tints the first tile green (Home does; Profile's four are alike).
+  final bool tintFirst;
 
   /// What the whole row is called to a screen reader.
   final String semanticPrefix;
@@ -86,7 +90,7 @@ class QaddyStatTiles extends StatelessWidget {
                 child: _Tile(
                   stat: stat,
                   layout: layout,
-                  tinted: index == 0,
+                  tinted: tintFirst && index == 0,
                   onTap: onOpen,
                 ),
               ),

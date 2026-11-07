@@ -9,7 +9,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
-import 'package:qaddy/core/theme/qaddy_typography.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/user/golfer.dart';
 import 'package:qaddy/core/widgets/avatars/qaddy_avatar.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
@@ -29,7 +29,6 @@ class ProfileHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final colours = theme.extension<QaddyColours>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final typography = theme.extension<QaddyTypography>()!;
 
     final details = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,30 +37,29 @@ class ProfileHeader extends StatelessWidget {
           golfer.firstName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: typography.h2.copyWith(
-            color: colours.textPrimary,
-            fontWeight: FontWeight.w700,
-          ),
+          style: QaddyText.holeTitle.copyWith(color: colours.textPrimary),
         ),
         SizedBox(height: spacing.xs),
         if (golfer.homeCourse != null)
           Row(
             children: <Widget>[
-              Icon(Icons.location_on, size: 16, color: colours.gold),
+              Icon(Icons.location_on, size: 16, color: colours.textPrimary),
               SizedBox(width: spacing.xs),
               Flexible(
                 child: Text(
                   golfer.homeCourse!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: typography.body.copyWith(color: colours.textSecondary),
+                  style: QaddyText.listMeta.copyWith(
+                    color: colours.textPrimary,
+                  ),
                 ),
               ),
             ],
           ),
         Text(
           'Since ${golfer.joinedAt.year}',
-          style: typography.small.copyWith(color: colours.textTertiary),
+          style: QaddyText.listMeta.copyWith(color: colours.textSecondary),
         ),
       ],
     );
@@ -77,17 +75,51 @@ class ProfileHeader extends StatelessWidget {
 
         return Row(
           children: <Widget>[
-            Container(
-              width: 88,
-              height: 88,
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: colours.gold, width: 3),
+            // The face in its ring, with the mockup's camera badge. Adding a
+            // photograph is Release 2, so the badge only holds its place.
+            SizedBox(
+              width: 90,
+              height: 90,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: <Widget>[
+                  Container(
+                    width: 90,
+                    height: 90,
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        width: 2.5,
+                      ),
+                    ),
+                    child: FittedBox(
+                      child: QaddyAvatar(name: golfer.firstName),
+                    ),
+                  ),
+                  Positioned(
+                    right: -2,
+                    bottom: 2,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: colours.surface1,
+                        border: Border.all(color: colours.border),
+                      ),
+                      child: Icon(
+                        Icons.photo_camera_outlined,
+                        size: 15,
+                        color: colours.textPrimary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: FittedBox(child: QaddyAvatar(name: golfer.firstName)),
             ),
-            SizedBox(width: spacing.lg),
+            SizedBox(width: spacing.md + 2),
             Expanded(
               child: wide
                   ? details

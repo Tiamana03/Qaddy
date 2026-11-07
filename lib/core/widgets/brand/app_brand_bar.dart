@@ -21,11 +21,15 @@ import 'package:qaddy/features/notifications/state/notifications_controller.dart
 /// `docs/design/asset-register.md`). As in the mockup, the icons have no
 /// circle behind them and the face wears a thin white ring.
 class AppBrandBar extends ConsumerWidget {
-  const AppBrandBar({this.showSearch = true, super.key});
+  const AppBrandBar({this.showSearch = true, this.showGear = false, super.key});
 
   /// Whether the magnifying glass is drawn (Home has it; the mockups for the
   /// other tabs do not).
   final bool showSearch;
+
+  /// Draws Settings' gear where the golfer's face would be: the Profile tab
+  /// is the golfer's own face, so its bar offers Settings instead.
+  final bool showGear;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -143,30 +147,42 @@ class AppBrandBar extends ConsumerWidget {
                 : 'Notifications',
             onTap: () => context.push(AppRoutes.homeNotifications),
           ),
-          const SizedBox(width: 6),
-          Semantics(
-            button: true,
-            label: 'Your profile',
-            excludeSemantics: true,
-            onTap: () => context.go(AppRoutes.profile),
-            child: InkResponse(
+          if (showGear)
+            action(
+              icon: Icon(
+                Icons.settings_outlined,
+                size: 26,
+                color: colours.textPrimary,
+              ),
+              tooltip: 'Settings',
+              onTap: () => context.push(AppRoutes.profileSettings),
+            )
+          else ...<Widget>[
+            const SizedBox(width: 6),
+            Semantics(
+              button: true,
+              label: 'Your profile',
+              excludeSemantics: true,
               onTap: () => context.go(AppRoutes.profile),
-              radius: 28,
-              child: Container(
-                width: 43,
-                height: 43,
-                padding: const EdgeInsets.all(1.5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    width: 1.5,
+              child: InkResponse(
+                onTap: () => context.go(AppRoutes.profile),
+                radius: 28,
+                child: Container(
+                  width: 43,
+                  height: 43,
+                  padding: const EdgeInsets.all(1.5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      width: 1.5,
+                    ),
                   ),
+                  child: FittedBox(child: QaddyAvatar(name: currentUserName)),
                 ),
-                child: FittedBox(child: QaddyAvatar(name: currentUserName)),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -20,17 +20,17 @@ Profile is the golfer's **player card**: it is about me, it is true, and it give
 
 Composed as the approved Profile mockup (`design/mockups/profile/profile-home-v1.png`), top to bottom:
 
-1. **Header** — "Profile", with Notifications (a gold unread count) and Settings (the gear) at the right.
-2. **Identity** — the golfer's face in a gold ring, their name, where they play and since when, and **Edit profile** (opens the same sheet Settings uses; below the name on a narrow screen). The face is initials until a photo can be added; there is no camera badge for that reason.
-3. **Four stat tiles** — Handicap, Avg points, Rounds, Wins (the shared `QaddyStatTiles`, as on Home); a dash for what is not known yet. Shown once there is a handicap or a finished round; they open Statistics.
-4. **Shortcuts** — Golf bag, Share my golf card (the message carries the real numbers) and My stats.
-5. **Achievements** — a shelf of eight badges, earned ones lit in gold, the rest locked, the count in the heading, and **Next up** with a progress bar towards the closest one ("Regular · 7 of 10"). Tapping a badge opens a sheet that says how to earn it and how close they are.
-6. **Recent rounds** — the last three as rows: a thumbnail slot, the course and day, the points and where they finished (a green "Won" when they did); "View all" opens Statistics.
-7. **Your world** (once they have made something of their own) — Friends, Groups and Trips as three tiles, each leading to its tab.
-8. **Your playing partners** — the golfers they have played with most, from real rounds; opens the head to head in Statistics.
-9. **The gold button** — **View full statistics** once there are rounds; before the first round, **Start your first round**.
+1. **Brand bar** — the brand, Notifications (a gold unread count) and Settings' gear where the golfer's face is on other tabs.
+2. **Identity** — the golfer's face in a white ring with the camera badge (it holds its place: a photograph is Release 2), their name, where they play and since when, and **Edit profile** (the sheet Settings uses; below the name on a narrow screen).
+3. **Four stat tiles** — Handicap, Avg points, Rounds, Wins (the shared `QaddyStatTiles`, Profile layout); a dash for what is not known yet. Shown once there is a handicap or a finished round; they open Statistics.
+4. **Your golf journey** — the next badge to earn, how many badges are earned ("3 of 8") and a gold bar towards it; tapping says how to earn it. This is the mockup's XP card: Qaddy has no XP, so it shows real progress instead.
+5. **The badges** — a row of hexagons, earned ones outlined in gold, the rest locked; six fit across and the others scroll. Tapping one says how to earn it and how close they are.
+6. **Recent rounds** — a card with "View all": the last three, each with a thumbnail slot, the course and day, the points in a box and where they finished (a green "Won" when they did).
+7. **The gold button** — **View full statistics** once there are rounds; before the first round, **Start your first round**.
+8. **Quiet shortcuts** — Golf bag, Share card (the message carries the real numbers) and My stats.
+9. **Your world** (once they have made something of their own) and **Your playing partners** follow.
 
-Not drawn, because there is no data behind it: the mockup's "Your Golf Journey" XP bar and level.
+
 
 Partners and recent rounds appear only once there are rounds.
 
