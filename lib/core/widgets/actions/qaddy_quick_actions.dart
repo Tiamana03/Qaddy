@@ -54,7 +54,7 @@ class QaddyQuickActions extends StatelessWidget {
             Expanded(
               child: QaddyFadeSlideIn(
                 offset: 10,
-                delay: staggerDelay(index, stepMs: 50),
+                delay: staggerDelay(index),
                 child: _ActionTile(action: action),
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/core/widgets/forms/qaddy_search_field.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/community/ui/widgets/friend_peek_sheet.dart';
 import 'package:qaddy/features/search/ui/screens/search_screen.dart';
@@ -41,7 +42,8 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(QaddyScaffold), findsOneWidget);
-    expect(find.text('Find anything'), findsOneWidget);
+    expect(find.text('Find anything'), findsNothing);
+    expect(find.byType(QaddySearchField), findsOneWidget);
     for (final label in <String>[
       'Friends',
       'Rounds',

@@ -18,6 +18,7 @@ class QaddySearchField extends StatelessWidget {
     this.hintText = 'Search…',
     this.enabled = true,
     this.onChanged,
+    this.autofocus = false,
     super.key,
   });
 
@@ -33,6 +34,9 @@ class QaddySearchField extends StatelessWidget {
   /// Called on every text change.
   final ValueChanged<String>? onChanged;
 
+  /// Whether the field takes focus (and opens the keyboard) when it appears.
+  final bool autofocus;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -46,6 +50,8 @@ class QaddySearchField extends StatelessWidget {
     return TextField(
       controller: controller,
       enabled: enabled,
+      autofocus: autofocus,
+      textInputAction: TextInputAction.search,
       onChanged: onChanged,
       style: typography.body.copyWith(
         color: enabled ? colours.textPrimary : colours.disabledForeground,

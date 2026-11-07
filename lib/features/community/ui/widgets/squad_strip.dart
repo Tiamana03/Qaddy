@@ -53,7 +53,7 @@ class SquadStrip extends StatelessWidget {
           final friend = friends[index];
           return QaddyFadeSlideIn(
             offset: 8,
-            delay: staggerDelay(index, stepMs: 50),
+            delay: staggerDelay(index),
             child: _SquadMember(
               friend: friend,
               active: playedRecently(friend, now),

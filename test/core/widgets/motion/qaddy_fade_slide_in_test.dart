@@ -55,10 +55,10 @@ void main() {
 
   test('staggerDelay grows by a step per item and then stops growing', () {
     expect(staggerDelay(0), Duration.zero);
-    expect(staggerDelay(1), const Duration(milliseconds: 70));
-    expect(staggerDelay(3), const Duration(milliseconds: 210));
-    expect(staggerDelay(6), const Duration(milliseconds: 420));
-    expect(staggerDelay(40), const Duration(milliseconds: 420));
+    expect(staggerDelay(1), const Duration(milliseconds: 50));
+    expect(staggerDelay(3), const Duration(milliseconds: 150));
+    expect(staggerDelay(5), const Duration(milliseconds: 250));
+    expect(staggerDelay(40), const Duration(milliseconds: 250));
   });
 
   testWidgets('staggered wraps content but leaves plain spacers alone', (

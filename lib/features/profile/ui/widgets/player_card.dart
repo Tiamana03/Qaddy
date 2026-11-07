@@ -116,12 +116,16 @@ class PlayerCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: typography.h1.copyWith(color: onGradient),
           ),
-          SizedBox(height: spacing.xs),
-          Text(
-            golfer.homeCourse ?? 'Your player card',
-            textAlign: TextAlign.center,
-            style: typography.body.copyWith(color: muted),
-          ),
+          // The home course when there is one; otherwise nothing, rather than
+          // a line that repeats the card's own title.
+          if (golfer.homeCourse != null) ...<Widget>[
+            SizedBox(height: spacing.xs),
+            Text(
+              golfer.homeCourse!,
+              textAlign: TextAlign.center,
+              style: typography.body.copyWith(color: muted),
+            ),
+          ],
           SizedBox(height: spacing.md),
           Wrap(
             alignment: WrapAlignment.center,

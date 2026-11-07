@@ -10,7 +10,7 @@ import 'package:qaddy/core/theme/qaddy_animations.dart';
 
 /// The delay for the [index]th item of a staggered group. Capped so a long
 /// list never makes the last item wait noticeably.
-Duration staggerDelay(int index, {int stepMs = 70, int maxSteps = 6}) =>
+Duration staggerDelay(int index, {int stepMs = 50, int maxSteps = 5}) =>
     Duration(milliseconds: stepMs * (index < maxSteps ? index : maxSteps));
 
 /// Fades and slides [child] in once, when it first appears.
@@ -37,7 +37,7 @@ class QaddyFadeSlideIn extends StatelessWidget {
       return child;
     }
     final motion = Theme.of(context).extension<QaddyMotion>()!;
-    final total = delay + motion.slow;
+    final total = delay + motion.normal;
     // The wait is the first part of one animation (rather than a timer), so
     // nothing is left pending if the widget is removed early.
     final waitFraction = total.inMilliseconds == 0

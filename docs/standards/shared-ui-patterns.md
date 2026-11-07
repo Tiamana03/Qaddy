@@ -87,3 +87,14 @@ The bar is "would this pass a design review at Apple?". If not, fix the shared c
 - **One row of facts.** Hero chips are small and frosted; a value that is the default (18 holes) is not shown at all.
 - **Nothing looks like a Flutter default.** The theme styles the app bar (title, back, no tint), popup menus, bottom sheets, tooltips, progress, sliders, the text cursor and selection, dividers, and a soft ink ripple.
 - **Placeholders** for missing photography, logo and icons are listed in `docs/design/asset-register.md`; replace them there, not screen by screen.
+
+# Craft rules (November 2026)
+
+Questions to ask of every screen: does it feel effortless; is there visual noise; can anything be removed; does the eye know where to look first; is every animation justified; does the interaction reward the golfer?
+
+- **One first thing to look at.** A screen has one hero and one gold action. A new golfer's Home is a hero and four doors; sections (Your game, Next trip, Highlights) arrive when they have something to say. Nothing is shown empty.
+- **Say it once.** No subtitle that repeats the hero, no count that repeats the list below it, no card that repeats a tile (Trips' hero no longer repeats its own page).
+- **Caveats are quiet.** Honest notes (sample layout, sample content) sit below the action as a caption, never inside the hero in front of it.
+- **Charts never lie by size.** A bar is never wider than a sensible column, so one data point is a bar, not a slab.
+- **Motion earns its place.** Entrances are 250 ms with a short stagger; count-ups, the score pop and confetti are reserved for moments that reward the golfer.
+- **Search opens ready to type** (focused field, headline is the field itself).

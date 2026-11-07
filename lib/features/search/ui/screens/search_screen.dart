@@ -86,25 +86,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: spacing.lg),
-            Text(
-              'Find anything',
-              style: typography.h1.copyWith(color: colours.textPrimary),
-            ),
-            SizedBox(height: spacing.xs),
-            AnimatedSwitcher(
-              duration: QaddyMotion.standard.fast,
-              child: Text(
-                summary,
-                key: ValueKey<String>(summary),
-                style: typography.body.copyWith(color: colours.textSecondary),
-              ),
-            ),
-            SizedBox(height: spacing.lg),
             QaddySearchField(
+              autofocus: true,
               controller: _controller,
               hintText: 'Try a mate, a course, a trip…',
               onChanged: (value) => setState(() => _query = value),
             ),
+            // Said once there is something to say: the field is the headline.
+            if (query.isNotEmpty) ...<Widget>[
+              SizedBox(height: spacing.md),
+              AnimatedSwitcher(
+                duration: QaddyMotion.standard.fast,
+                child: Text(
+                  summary,
+                  key: ValueKey<String>(summary),
+                  style: typography.small.copyWith(
+                    color: colours.textSecondary,
+                  ),
+                ),
+              ),
+            ],
             SizedBox(height: spacing.sectionGap),
             if (results.isEmpty)
               QaddyEmptyState(
