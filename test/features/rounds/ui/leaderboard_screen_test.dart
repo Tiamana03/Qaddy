@@ -107,6 +107,55 @@ void main() {
     expect(find.textContaining('win'), findsOneWidget);
   });
 
+  testWidgets('is a table: title, Pos, Player, Thru and Pts', (tester) async {
+    await _pump(
+      tester,
+      play: (store) {
+        store
+          ..nudgeScore('Tom', -1)
+          ..nextHole();
+      },
+    );
+
+    expect(find.text('Live leaderboard'), findsOneWidget);
+    expect(find.text('Stableford'), findsWidgets);
+    for (final column in <String>['Pos', 'Player', 'Thru', 'Pts']) {
+      expect(find.text(column), findsOneWidget, reason: column);
+    }
+  });
+
+  testWidgets('says Final once the round is over', (tester) async {
+    await _pump(
+      tester,
+      play: (store) {
+        store
+          ..nextHole()
+          ..finishRound();
+      },
+    );
+
+    expect(find.text('Final leaderboard'), findsOneWidget);
+    expect(find.text('Winner'), findsOneWidget);
+  });
+
+  testWidgets('has the side games and a round summary', (tester) async {
+    await _pump(
+      tester,
+      play: (store) {
+        store.nextHole();
+      },
+    );
+
+    expect(find.text('Side games (sample)'), findsOneWidget);
+    expect(find.text('Hole 5'), findsOneWidget);
+    expect(find.text('Coming up'), findsNWidgets(3));
+    expect(find.text('Round summary'), findsOneWidget);
+    expect(find.text('Holes completed'), findsOneWidget);
+    expect(find.text('1 / 18'), findsOneWidget);
+    expect(find.text('Leading'), findsOneWidget);
+    expect(find.text('Your position'), findsOneWidget);
+  });
+
   testWidgets('with no round at all, says so', (tester) async {
     useScreen(tester, const Size(400, 900));
     final container = friendsContainer();

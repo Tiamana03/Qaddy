@@ -43,7 +43,9 @@ Not drawn, because nothing is behind them yet: the mockup's search and filter, t
 
 ## The table — the leaderboard
 
-Stableford points decide it (ties broken by score against par; those still level share a "T" position). Each row has the position, the face, strokes and score against par, the points and a bar showing how close they are to the leader. Mid-round the headline says who **leads**; at the end, who **wins**.
+Composed as the right-hand Live Scoring mockup: the headline and where you stand, then one **Live leaderboard** card (a **Final leaderboard** once the round is over) with a header row of Pos, Player, Thru and Pts and a row per golfer: the position (ringed in gold for the leader), the face, the name with a crown for the leader, how they stand against par and their strokes, how many holes they have scored, and their points. Below it, **Side games (sample)** as tiles (the game, its hole and whether that hole has been played: Qaddy does not score side games yet, so no entries are shown) and a **Round summary** (holes completed, format, who leads or won, your position).
+
+Stableford points decide it (ties broken by score against par; those still level share a "T" position). Mid-round the headline says who **leads**; at the end, who **wins**.
 
 ## After — the celebration
 

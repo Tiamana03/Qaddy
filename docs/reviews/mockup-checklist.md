@@ -41,7 +41,7 @@ The working checklist behind `mockup-conformance-audit-rc1.md`. Mockups live in 
 | Home | `dashboard-home-v1` | ✅ header, photo-slot hero with greeting and weather card, door tiles, upcoming-round card, four Your Game tiles, bottom bar | 🟡 photo hero, course thumbnail, avatar photo, crown logo · 🔲 Latest News, Quick Tools, trip promo |
 | Rounds | `rounds-home-v1` | ✅ "My rounds" title and line, Upcoming / Completed tabs, round cards (thumbnail slot, day, time, forecast, faces, View details, gold action) | 🔲 search and filter, Invitations tab, Create Round, Get Directions, round-details screen · 🟡 course photos |
 | Live scorecard | `live-scoring-v1` (left) | ✅ app bar with the players, hole strip, "Hole N" title with "Par | m | SI" beneath, hole-view slot with length and side game, one "Enter scores" panel with boxed steppers, Previous and gold Next hole | 🔲 GPS, wind and course-map tiles, back/middle/front distances, Hole Notes · 🟡 hole imagery, player photos |
-| Leaderboard | `live-scoring-v1` (right) | ✅ green tabs, table | 🔲 Side Games block, Round Summary · 🟡 photos |
+| Leaderboard | `live-scoring-v1` (right) | ✅ "Live leaderboard" card with Pos / Player / Thru / Pts, side-game tiles, Round summary | 🔲 Leaderboard / Scorecard / Stats / Side Games tabs, Stroke Play dropdown, teams, side-game entries and winners · 🟡 player photos |
 | Round results | `round-details-v1` family | ✅ celebration, achievements | 🔲 payment status, teams, notes |
 | Profile | `profile-home-v1` | ✅ card, stat row, achievements | 🔲 XP journey bar · 🟡 photo avatar, badge artwork |
 | Statistics | `profile-home-v1` (right) | ✅ hero, form chart, mix, holes | 🔲 handicap sparkline, driving and approach tiles |
