@@ -12,6 +12,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/responsive/responsive_max_width.dart';
 import 'package:qaddy/core/responsive/responsive_padding.dart';
+import 'package:qaddy/core/theme/qaddy_breakpoints.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 
 /// The base page layout used by every screen in the app.
@@ -20,8 +21,14 @@ class QaddyScaffold extends StatelessWidget {
     required this.body,
     this.appBar,
     this.bottomNavigationBar,
+    this.phoneSidePadding,
     super.key,
   });
+
+  /// Overrides the side padding on a phone (a few mockups, Statistics among
+  /// them, run their cards closer to the edge). Tablets and desktops keep the
+  /// responsive padding.
+  final double? phoneSidePadding;
 
   /// The page's main content.
   final Widget body;
@@ -54,7 +61,15 @@ class QaddyScaffold extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: ResponsivePadding(child: ResponsiveMaxWidth(child: body)),
+          child:
+              phoneSidePadding != null &&
+                  !QaddyBreakpoints.isTablet(context) &&
+                  !QaddyBreakpoints.isDesktop(context)
+              ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: phoneSidePadding!),
+                  child: body,
+                )
+              : ResponsivePadding(child: ResponsiveMaxWidth(child: body)),
         ),
       ),
     );

@@ -27,8 +27,18 @@ class QaddyPillTabs extends StatelessWidget {
     required this.selected,
     required this.onChanged,
     this.joined = false,
+    this.proportional = false,
+    this.dense = false,
     super.key,
   });
+
+  /// A shorter row of smaller pills (32 tall), as the Profile mockup's five
+  /// tabs are.
+  final bool dense;
+
+  /// Sizes each pill to its label, as the Profile mockup's five do, rather
+  /// than sharing the width equally.
+  final bool proportional;
 
   /// The tabs, left to right.
   final List<QaddyPillTab> tabs;
@@ -141,6 +151,7 @@ class QaddyPillTabs extends StatelessWidget {
         for (final (index, tab) in tabs.indexed) ...<Widget>[
           if (index > 0) const SizedBox(width: 6),
           Expanded(
+            flex: proportional ? tab.label.length * 3 + 15 : 1,
             child: Semantics(
               button: true,
               selected: index == selected,
@@ -155,7 +166,7 @@ class QaddyPillTabs extends StatelessWidget {
                         ? colours.selected
                         : colours.surface1,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(dense ? 12 : 16),
                       side: BorderSide(
                         color: index == selected
                             ? colours.selected
@@ -169,7 +180,7 @@ class QaddyPillTabs extends StatelessWidget {
                         onChanged(index);
                       },
                       child: SizedBox(
-                        height: 40,
+                        height: dense ? 33 : 40,
                         child: Center(
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
@@ -182,6 +193,7 @@ class QaddyPillTabs extends StatelessWidget {
                                 maxLines: 1,
                                 style: QaddyText.tabLabel.copyWith(
                                   color: colours.textPrimary,
+                                  fontSize: dense ? 10.5 : null,
                                   fontWeight: index == selected
                                       ? FontWeight.w600
                                       : FontWeight.w500,

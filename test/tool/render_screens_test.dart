@@ -27,6 +27,7 @@ import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/leaderboard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
+import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 
 import '../support/app_test_harness.dart';
 import '../support/played_rounds.dart';
@@ -65,9 +66,10 @@ Future<void> _render(
   Duration settle = const Duration(seconds: 3),
   bool pushed = false,
   Future<void> Function()? interact,
+  Size size = _phone,
 }) async {
   tester.view.devicePixelRatio = 1;
-  tester.view.physicalSize = _phone;
+  tester.view.physicalSize = size;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   final key = GlobalKey();
@@ -222,6 +224,8 @@ void main() {
     await _render(tester, 'golf_bag', const GolfBagScreen(), pushed: true);
   }, skip: !enabled);
 
+  registerStatisticsRender(enabled: enabled);
+
   testWidgets('render: home', (tester) async {
     await _render(
       tester,
@@ -234,6 +238,34 @@ void main() {
           ),
         ],
       ),
+    );
+  }, skip: !enabled);
+}
+
+// Statistics, with enough rounds for a form line and all eighteen holes.
+void registerStatisticsRender({required bool enabled}) {
+  testWidgets('render: statistics', (tester) async {
+    final played = PlayedRounds();
+    const patterns = <List<int>>[
+      <int>[6, 5, 4, 5, 6, 4, 5, 5, 6, 5, 4, 6, 5, 5, 4, 6, 5, 5],
+      <int>[5, 5, 4, 5, 5, 4, 5, 4, 5, 5, 4, 5, 4, 5, 4, 5, 5, 4],
+      <int>[5, 4, 3, 5, 5, 4, 4, 4, 5, 4, 4, 5, 4, 4, 3, 5, 4, 4],
+      <int>[4, 4, 3, 4, 5, 3, 4, 4, 4, 4, 3, 5, 4, 4, 3, 5, 4, 4],
+      <int>[4, 5, 3, 4, 4, 3, 4, 3, 4, 4, 3, 4, 4, 4, 3, 4, 4, 3],
+      <int>[4, 4, 3, 4, 4, 3, 4, 3, 4, 3, 3, 4, 4, 4, 3, 4, 4, 3],
+      <int>[4, 4, 2, 4, 4, 3, 4, 3, 4, 3, 3, 4, 3, 4, 3, 4, 3, 3],
+    ];
+    for (final (index, strokes) in patterns.indexed) {
+      played.play(index + 1, strokes, partners: <String>['Tom', 'Ben', 'Luke']);
+    }
+    await _render(
+      tester,
+      'statistics',
+      const StatisticsScreen(),
+      container: played.container,
+      pushed: true,
+      // Taller than a phone, so the whole top half shows at once.
+      size: const Size(393, 960),
     );
   }, skip: !enabled);
 }

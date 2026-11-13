@@ -22,12 +22,20 @@ With no finished round it is an invitation — "Your story starts on the first t
 
 With rounds:
 
-1. **Your game (hero)** — the average, said big and counting up: "31 Stableford points a round", a one-line verdict on form ("On the up: 9 points a round better over your last three", "A quiet patch…", "Steady…", or how many rounds until there is a form guide), and chips for rounds played, wins and win rate, and the handicap index. A gold button opens the last round's results.
-2. **Your form** — a bar for each of the last eight rounds (points per eighteen holes), the latest in gold, a trophy over rounds you won.
-3. **How you score** — "Par or better on 54% of holes" and one coloured bar of every hole you have played: eagle or better, birdie, par, bogey, double or worse, picked up.
-4. **Your holes** — your favourite hole and your nemesis (by average points), and your average on par 3s, 4s and 5s and on the front and back nine. Shown once four holes have been played.
-5. **Head to head** — for each playing partner, rounds together and who has won more of them, as a split bar (gold for you, blue for them).
-6. **Highlights** — your best round, the most birdies in a round, your longest win streak (from two) and holes played.
+The screen follows the approved Profile mockup's Stats page (visual fidelity pass, November 2026): the app bar, the Profile tab row (Overview, Stats, Equipment, Activity, Achievements, with Stats chosen; the others open Profile, the Golf Bag and My Rounds), then five panels at the mockup's size, with cards 9 px from the screen edge as the mockup draws them.
+
+1. **Handicap** — the handicap index from Profile, big, an info button that explains it, a pill for how form is moving ("On the up", "Quiet patch", "Holding steady", "Early days") with the points a round behind it, and a line beside it: the points per round, oldest first, with a dot on each. "View History" opens My Rounds. Qaddy has no handicap history, so the mockup's falling handicap line is the form line instead.
+2. **Scoring Overview** — four tiles: average points, best round, birdies and par-or-better share. "View Details" scrolls to How you score. (The mockup's "Average Score" and "Average to Par" are strokes; Qaddy scores in Stableford, so those are points.)
+3. **Driving** and 4. **Approach** — the mockup's tiles (average drive, fairways, greens in regulation, proximity, putts) and a dimmed hole picture, with a dash in each tile. Qaddy does not record them, so nothing is guessed; tapping says they arrive with shot tracking.
+5. **Performance by Hole** — eighteen bars around an E line: a hole's average Stableford points against the two a par is worth, green above, gold below, grey level, with a short stub for holes not yet played, and a key. "View Full" scrolls to Your holes.
+
+Under those, the rest of the story:
+
+6. **Your form** — a one-line verdict ("On the up: 9 points a round better over your last three", "A quiet patch…", "Steady…", or how many rounds until there is a form guide), then a bar for each of the last eight rounds (points per eighteen holes), the latest in gold, a trophy over rounds you won.
+7. **How you score** — "Par or better on 54% of holes" and one coloured bar of every hole you have played: eagle or better, birdie, par, bogey, double or worse, picked up.
+8. **Your holes** — your favourite hole and your nemesis (by average points), and your average on par 3s, 4s and 5s and on the front and back nine. Shown once four holes have been played.
+9. **Head to head** — for each playing partner, rounds together and who has won more of them, as a split bar (gold for you, blue for them).
+10. **Highlights** — your best round, wins and win rate, the most birdies in a round, your longest win streak (from two) and holes played. A gold button below opens the last round's results.
 
 # How it is worked out
 
@@ -54,6 +62,6 @@ The placeholder statistics model and data (`placeholder_statistics.dart`, `StatT
 
 - The handicap index (8.4) is still Profile's placeholder value. It is not derived from rounds, because a handicap index is an official figure.
 - Stats cover rounds scored in Qaddy only. Rounds from before the app do not exist here.
-- Fairways, greens and putts are not recorded by the scorecard, so they are not shown; they return if the scorecard ever captures them.
+- Fairways, greens, drive length, proximity and putts are not recorded by the scorecard, so Driving and Approach show dashes (as the mockup's layout) until shot tracking exists.
 - Head to head counts rounds, not strokes, and compares Stableford points, so handicaps are respected.
 - Profile and the Dashboard's highlights still show placeholder figures (rounds played 68 etc.); Profile is a later screen.

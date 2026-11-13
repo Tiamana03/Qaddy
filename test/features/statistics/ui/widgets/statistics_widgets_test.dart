@@ -6,8 +6,11 @@ import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 import 'package:qaddy/features/statistics/logic/career_stats.dart';
 import 'package:qaddy/features/statistics/ui/widgets/form_chart.dart';
+import 'package:qaddy/features/statistics/ui/widgets/form_sparkline.dart';
+import 'package:qaddy/features/statistics/ui/widgets/hole_bars.dart';
 import 'package:qaddy/features/statistics/ui/widgets/rival_row.dart';
 import 'package:qaddy/features/statistics/ui/widgets/score_mix_bar.dart';
+import 'package:qaddy/features/statistics/ui/widgets/stats_panel.dart';
 
 Widget _app(Widget child) => MaterialApp(
   theme: QaddyTheme.dark,
@@ -214,6 +217,120 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('StatsPanel', () {
+    testWidgets('shows its title and a tappable link', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        _app(
+          StatsPanel(
+            title: 'Driving',
+            actionLabel: 'View Details',
+            onAction: () => taps++,
+            child: const Text('inside'),
+          ),
+        ),
+      );
+
+      expect(find.text('Driving'), findsOneWidget);
+      expect(find.text('inside'), findsOneWidget);
+      await tester.tap(find.text('View Details'));
+      expect(taps, 1);
+    });
+
+    testWidgets('has no link when it has no action', (tester) async {
+      await tester.pumpWidget(
+        _app(const StatsPanel(title: 'Approach', child: Text('inside'))),
+      );
+
+      expect(find.text('View Details'), findsNothing);
+    });
+  });
+
+  group('HoleBars', () {
+    testWidgets('always numbers all eighteen holes and keys the colours', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _app(
+          const HoleBars(
+            holes: <HoleStat>[
+              HoleStat(number: 1, par: 4, averagePoints: 3, played: 2),
+              HoleStat(number: 2, par: 5, averagePoints: 1, played: 2),
+            ],
+          ),
+        ),
+      );
+
+      for (var hole = 1; hole <= 18; hole++) {
+        expect(find.text('$hole'), findsOneWidget, reason: 'hole $hole');
+      }
+      expect(find.text('Better than par'), findsOneWidget);
+      expect(find.text('Par'), findsOneWidget);
+      expect(find.text('Worse than par'), findsOneWidget);
+    });
+
+    testWidgets('describes only the holes that were played', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _app(
+          const HoleBars(
+            holes: <HoleStat>[
+              HoleStat(number: 3, par: 3, averagePoints: 2.5, played: 1),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        find.bySemanticsLabel(RegExp('Hole 3: 2.5 points on average')),
+        findsOneWidget,
+      );
+      expect(find.bySemanticsLabel(RegExp('Hole 4:')), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets('lays out with no holes played', (tester) async {
+      await tester.pumpWidget(_app(const HoleBars(holes: <HoleStat>[])));
+
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('FormSparkline', () {
+    testWidgets('draws one round, several and none without error', (
+      tester,
+    ) async {
+      for (final values in <List<double>>[
+        <double>[],
+        <double>[30],
+        <double>[30, 34, 28, 40],
+      ]) {
+        await tester.pumpWidget(
+          _app(SizedBox(height: 80, child: FormSparkline(values: values))),
+        );
+        expect(tester.takeException(), isNull);
+      }
+    });
+
+    testWidgets('says the points for a screen reader', (tester) async {
+      final handle = tester.ensureSemantics();
+      await tester.pumpWidget(
+        _app(
+          const SizedBox(
+            height: 80,
+            child: FormSparkline(values: <double>[30, 34.4]),
+          ),
+        ),
+      );
+
+      expect(
+        find.bySemanticsLabel('Points per round, oldest first: 30, 34.'),
+        findsOneWidget,
+      );
+      handle.dispose();
     });
   });
 }

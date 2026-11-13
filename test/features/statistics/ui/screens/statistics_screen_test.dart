@@ -6,6 +6,7 @@ import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/features/statistics/ui/screens/statistics_screen.dart';
 import 'package:qaddy/features/statistics/ui/widgets/form_chart.dart';
+import 'package:qaddy/features/statistics/ui/widgets/hole_bars.dart';
 
 import '../../../../support/app_test_harness.dart';
 import '../../../../support/played_rounds.dart';
@@ -79,14 +80,83 @@ void main() {
       h = PlayedRounds()..play(1, <int>[3, 5, 3, 4]); // birdie then pars
     });
 
-    testWidgets('tells the story of the round just played', (tester) async {
+    testWidgets('opens with the handicap card', (tester) async {
       await _pump(tester, h);
 
-      expect(find.text('Your game'), findsOneWidget);
-      expect(find.text('Stableford points\na round'), findsOneWidget);
+      expect(find.text('Handicap'), findsOneWidget);
+      expect(find.text('8.4'), findsOneWidget);
+      expect(find.text('View History'), findsOneWidget);
+      // One round is too few to call a trend.
+      expect(find.text('Early days'), findsOneWidget);
+      expect(find.text('3 more rounds'), findsOneWidget);
+    });
+
+    testWidgets('lays out the five panels of the mockup in order', (
+      tester,
+    ) async {
+      await _pump(tester, h);
+
+      const titles = <String>[
+        'Handicap',
+        'Scoring Overview',
+        'Driving',
+        'Approach',
+        'Performance by Hole',
+      ];
+      var last = -1.0;
+      for (final title in titles) {
+        expect(find.text(title), findsOneWidget);
+        final top = tester.getTopLeft(find.text(title)).dy;
+        expect(top, greaterThan(last), reason: title);
+        last = top;
+      }
+      expect(find.text('Birdies'), findsOneWidget);
+      expect(find.text('Par or better'), findsOneWidget);
+      expect(find.byType(HoleBars), findsOneWidget);
+    });
+
+    testWidgets('has the profile tab row with Stats chosen', (tester) async {
+      await _pump(tester, h);
+
+      for (final label in <String>[
+        'Overview',
+        'Stats',
+        'Equipment',
+        'Activity',
+        'Achievements',
+      ]) {
+        expect(find.text(label), findsOneWidget, reason: label);
+      }
+    });
+
+    testWidgets('says what driving and approach are waiting for', (
+      tester,
+    ) async {
+      await _pump(tester, h);
+
+      // No made-up distances, fairways, greens or putts.
+      expect(find.text('–'), findsAtLeastNWidgets(5));
+
+      await tester.tap(find.text('View Details').at(1));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Driving needs shot tracking'), findsOneWidget);
+    });
+
+    testWidgets('View History goes to the rounds', (tester) async {
+      await _pump(tester, h);
+
+      await tester.tap(find.text('View History'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Go: /rounds'), findsOneWidget);
+    });
+
+    testWidgets('counts the round and the win', (tester) async {
+      await _pump(tester, h);
+
       expect(find.text('1 round'), findsWidgets);
-      expect(find.text('Handicap 8.4'), findsOneWidget);
-      expect(find.textContaining('3 more rounds'), findsOneWidget);
+      expect(find.text('1 win · 100%'), findsOneWidget);
     });
 
     testWidgets('shows how the holes broke down', (tester) async {
@@ -158,7 +228,8 @@ void main() {
       await _pump(tester, h);
 
       expect(find.text('6 rounds'), findsWidgets);
-      expect(find.textContaining('On the up'), findsOneWidget);
+      expect(find.text('On the up'), findsOneWidget);
+      expect(find.textContaining('On the up:'), findsOneWidget);
       expect(find.text('Points over your last 6 rounds'), findsOneWidget);
       expect(find.text('3 wins · 50%'), findsOneWidget);
       expect(find.text('Longest win streak: 3 rounds'), findsOneWidget);

@@ -39,6 +39,10 @@ enum QaddyStatLayout {
 
   /// Centred: icon, figure, label (Profile).
   profile,
+
+  /// Centred and shorter, for the Statistics panels: the icon is optional and
+  /// the figure and label are a size smaller.
+  compact,
 }
 
 /// Tiles for [stats], sharing the width equally.
@@ -49,6 +53,8 @@ class QaddyStatTiles extends StatelessWidget {
     this.layout = QaddyStatLayout.game,
     this.tintFirst = true,
     this.semanticPrefix = 'Your game',
+    this.semanticAction = 'Opens your statistics.',
+    this.height,
     super.key,
   });
 
@@ -67,6 +73,12 @@ class QaddyStatTiles extends StatelessWidget {
   /// What the whole row is called to a screen reader.
   final String semanticPrefix;
 
+  /// What tapping does, said after the figures.
+  final String semanticAction;
+
+  /// Overrides the row's height (the Statistics tiles are 58 to 70).
+  final double? height;
+
   @override
   Widget build(BuildContext context) {
     final spacing = Theme.of(context).extension<QaddySpacing>()!;
@@ -78,9 +90,15 @@ class QaddyStatTiles extends StatelessWidget {
       label:
           '$semanticPrefix. '
           '${stats.map((t) => '${t.label} ${t.figure}').join(', ')}. '
-          'Opens your statistics.',
+          '$semanticAction',
       child: SizedBox(
-        height: layout == QaddyStatLayout.game ? 92 : 90,
+        height:
+            height ??
+            switch (layout) {
+              QaddyStatLayout.game => 92,
+              QaddyStatLayout.profile => 90,
+              QaddyStatLayout.compact => 64,
+            },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -121,7 +139,9 @@ class _Tile extends StatelessWidget {
     final colours = theme.extension<QaddyColours>()!;
     final radius = theme.extension<QaddyRadius>()!;
     final spacing = theme.extension<QaddySpacing>()!;
-    final shape = BorderRadius.circular(radius.medium);
+    final shape = BorderRadius.circular(
+      layout == QaddyStatLayout.compact ? 10 : radius.medium,
+    );
     final figureColour = tinted
         ? theme.colorScheme.onPrimary
         : colours.textPrimary;
@@ -132,7 +152,11 @@ class _Tile extends StatelessWidget {
         ? null
         : Icon(
             stat.icon,
-            size: layout == QaddyStatLayout.game ? 22 : 20,
+            size: switch (layout) {
+              QaddyStatLayout.game => 22,
+              QaddyStatLayout.profile => 20,
+              QaddyStatLayout.compact => 18,
+            },
             color: stat.iconColour ?? colours.gold,
           );
 
@@ -145,8 +169,16 @@ class _Tile extends StatelessWidget {
         stat.figure,
         style: QaddyText.tileFigure.copyWith(
           color: figureColour,
-          fontSize: layout == QaddyStatLayout.profile ? 21 : null,
-          height: layout == QaddyStatLayout.profile ? 26 / 21 : null,
+          fontSize: switch (layout) {
+            QaddyStatLayout.profile => 21,
+            QaddyStatLayout.compact => 19,
+            QaddyStatLayout.game => null,
+          },
+          height: switch (layout) {
+            QaddyStatLayout.profile => 26 / 21,
+            QaddyStatLayout.compact => 22 / 19,
+            QaddyStatLayout.game => null,
+          },
         ),
       ),
     );
@@ -157,7 +189,11 @@ class _Tile extends StatelessWidget {
       textAlign: layout == QaddyStatLayout.game
           ? TextAlign.start
           : TextAlign.center,
-      style: QaddyText.tileLabel.copyWith(color: labelColour),
+      style: QaddyText.tileLabel.copyWith(
+        color: labelColour,
+        fontSize: layout == QaddyStatLayout.compact ? 10.5 : null,
+        height: layout == QaddyStatLayout.compact ? 13 / 10.5 : null,
+      ),
     );
     // Profile's labels stay on one line, shrinking a touch, never wrapping.
     final label = layout == QaddyStatLayout.game
@@ -177,7 +213,10 @@ class _Tile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ?icon,
-              if (icon != null) SizedBox(height: spacing.xs),
+              if (icon != null)
+                SizedBox(
+                  height: layout == QaddyStatLayout.compact ? 1 : spacing.xs,
+                ),
               figure,
               label,
             ],
@@ -210,12 +249,14 @@ class _Tile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              spacing.md,
-              spacing.sm + 1,
-              spacing.sm,
-              spacing.sm,
-            ),
+            padding: layout == QaddyStatLayout.compact
+                ? const EdgeInsets.fromLTRB(4, 3, 4, 3)
+                : EdgeInsets.fromLTRB(
+                    spacing.md,
+                    spacing.sm + 1,
+                    spacing.sm,
+                    spacing.sm,
+                  ),
             child: content,
           ),
         ),
