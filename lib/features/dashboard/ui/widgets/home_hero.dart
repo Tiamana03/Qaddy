@@ -61,7 +61,11 @@ class HomeHero extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            QaddyMediaPlaceholder(borderRadius: shape, scrim: true),
+            QaddyMediaPlaceholder(
+              borderRadius: shape,
+              scrim: true,
+              coastal: true,
+            ),
             Positioned(
               left: 19,
               top: 19,

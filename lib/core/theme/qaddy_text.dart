@@ -87,7 +87,7 @@ abstract final class QaddyText {
   static final TextStyle timeFigure = _style(15, FontWeight.w700, line: 20);
 
   /// A shortcut tile's label.
-  static final TextStyle doorLabel = _style(12, FontWeight.w500, line: 16);
+  static final TextStyle doorLabel = _style(11.5, FontWeight.w500, line: 15);
 
   /// A pill button's label.
   static final TextStyle pillLabel = _style(12, FontWeight.w600, line: 16);

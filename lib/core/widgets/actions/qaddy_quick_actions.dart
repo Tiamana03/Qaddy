@@ -92,7 +92,8 @@ class _ActionTile extends StatelessWidget {
       onTap: action.onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: action.featured ? colours.secondary : colours.card,
+          color: action.featured ? null : colours.card,
+          gradient: action.featured ? colours.featuredGradient : null,
           borderRadius: borderRadius,
           border: Border.all(
             color: action.featured

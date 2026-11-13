@@ -59,8 +59,10 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
     background: Color(0xFF081B14),
     surface1: Color(0xFF102820),
     surface2: Color(0xFF163B2E),
-    card: Color(0xFF1F2F29),
-    border: Color(0xFF2E4A3F),
+    // Measured on the approved Home mockup: a card is about #102620 and its
+    // hairline barely lighter, not the greyer #1F2F29 / #2E4A3F first used.
+    card: Color(0xFF122A23),
+    border: Color(0xFF26443A),
     divider: Color(0xFF3F5E52),
     textPrimary: Color(0xFFFFFFFF),
     textSecondary: Color(0xFF9FB3AA),
@@ -249,6 +251,27 @@ class QaddyColours extends ThemeExtension<QaddyColours> {
   /// any theme built from these tokens. [primary] remains the right choice
   /// for *filled* surfaces such as the primary button.
   Color get accent => background.computeLuminance() < 0.5 ? gold : primary;
+
+  /// The fill of the one featured tile (Home's first door): a lighter green
+  /// at the top left easing to the deeper one, as in the mockups.
+  LinearGradient get featuredGradient => const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[Color(0xFF2F7B56), Color(0xFF1F5F42)],
+  );
+
+  /// The darker version for a tinted stat tile (Home's first Your Game tile).
+  LinearGradient get tintedGradient => const LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: <Color>[Color(0xFF1D5039), Color(0xFF133726)],
+  );
+
+  /// The lift at the top of a dark page: the mockups fade from about #0E261D
+  /// at the top to [background] lower down. Light Mode has none.
+  Color get backgroundGlow => background.computeLuminance() < 0.5
+      ? const Color(0xFF0E261D)
+      : background;
 
   /// The vivid green of a selected state in the approved mockups: the active
   /// segment, tab and filter, a switch that is on, a checked box, a

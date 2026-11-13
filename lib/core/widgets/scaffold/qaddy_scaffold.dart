@@ -42,8 +42,20 @@ class QaddyScaffold extends StatelessWidget {
       backgroundColor: colours.background,
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
-      body: SafeArea(
-        child: ResponsivePadding(child: ResponsiveMaxWidth(child: body)),
+      // The page fades from a lift at the top to the base colour, as the
+      // mockups' backgrounds do.
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[colours.backgroundGlow, colours.background],
+            stops: const <double>[0, 0.55],
+          ),
+        ),
+        child: SafeArea(
+          child: ResponsivePadding(child: ResponsiveMaxWidth(child: body)),
+        ),
       ),
     );
   }

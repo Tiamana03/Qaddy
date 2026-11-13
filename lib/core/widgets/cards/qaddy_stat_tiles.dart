@@ -80,7 +80,7 @@ class QaddyStatTiles extends StatelessWidget {
           '${stats.map((t) => '${t.label} ${t.figure}').join(', ')}. '
           'Opens your statistics.',
       child: SizedBox(
-        height: layout == QaddyStatLayout.game ? 90 : 92,
+        height: layout == QaddyStatLayout.game ? 92 : 94,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -175,27 +175,41 @@ class _Tile extends StatelessWidget {
             ],
           );
 
-    return Material(
-      color: tinted ? colours.secondary.withValues(alpha: 0.55) : colours.card,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: tinted ? null : colours.card,
+        gradient: tinted ? colours.tintedGradient : null,
         borderRadius: shape,
-        side: BorderSide(
+        border: Border.all(
           color: tinted
               ? colours.selected.withValues(alpha: 0.45)
               : colours.border,
         ),
+        boxShadow: tinted
+            ? const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x66000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            spacing.md,
-            spacing.sm + 1,
-            spacing.sm,
-            spacing.sm,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: shape,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              spacing.md,
+              spacing.sm + 1,
+              spacing.sm,
+              spacing.sm,
+            ),
+            child: content,
           ),
-          child: content,
         ),
       ),
     );

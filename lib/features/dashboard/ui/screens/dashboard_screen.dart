@@ -137,7 +137,10 @@ class DashboardScreen extends ConsumerWidget {
             else
               QaddyRoundCard(
                 course: upcomingRound.course,
-                day: planned ? upcomingRound.date : null,
+                day: planned
+                    ? roundDateLabel(now, upcomingRound.date) ??
+                          upcomingRound.date
+                    : null,
                 when: countdown == null ? null : whenPhrase(countdown),
                 teeTime: planned ? upcomingRound.teeTime : null,
                 players: planned ? names : const <String>[],

@@ -85,6 +85,33 @@ RoundCountdown? roundCountdown(DateTime now, String weekdayName) {
   );
 }
 
+/// The date of the next [weekdayName] from [now], as the round card writes it:
+/// "Sat, 14 Nov 2026". `null` when the name is not a weekday.
+String? roundDateLabel(DateTime now, String weekdayName) {
+  final days = daysUntilWeekday(now, weekdayName);
+  if (days == null) {
+    return null;
+  }
+  final date = DateTime(now.year, now.month, now.day + days);
+  const weekdays = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const months = <String>[
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '${weekdays[date.weekday - 1]}, ${date.day} '
+      '${months[date.month - 1]} ${date.year}';
+}
+
 /// The date line under the golfer's name: "Sunday 1 November".
 String dateLine(DateTime now) => now.toWeekdayAndDate();
 

@@ -20,6 +20,7 @@ class QaddyMediaPlaceholder extends StatelessWidget {
     this.child,
     this.tone = 0,
     this.aerial = false,
+    this.coastal = false,
     super.key,
   });
 
@@ -43,6 +44,10 @@ class QaddyMediaPlaceholder extends StatelessWidget {
   /// ribbon, a green with its flag and a bunker.
   final bool aerial;
 
+  /// Draws a bright coastal course at golden hour (sky, sea, a headland of
+  /// trees, rolling fairway and a flag): the Home hero.
+  final bool coastal;
+
   @override
   Widget build(BuildContext context) {
     final colours = Theme.of(context).extension<QaddyColours>()!;
@@ -58,6 +63,8 @@ class QaddyMediaPlaceholder extends StatelessWidget {
             CustomPaint(
               painter: aerial
                   ? _AerialPainter(colours: colours)
+                  : coastal
+                  ? const _CoastalPainter()
                   : _CoursePainter(colours: colours, tone: tone),
             ),
           if (scrim)
@@ -284,4 +291,147 @@ class _AerialPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_AerialPainter old) => old.colours != colours;
+}
+
+/// A coastal course in the afternoon light: the placeholder for a wide hero
+/// photograph.
+class _CoastalPainter extends CustomPainter {
+  const _CoastalPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final bounds = Offset.zero & size;
+    final horizon = h * 0.58;
+
+    // Sky.
+    canvas.drawRect(
+      bounds,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Color(0xFF5E96D2),
+            Color(0xFFA9C9E6),
+            Color(0xFFF2E4C8),
+          ],
+          stops: <double>[0, 0.55, 0.78],
+        ).createShader(Rect.fromLTWH(0, 0, w, horizon * 1.05)),
+    );
+
+    // The sea, left of a headland.
+    canvas.drawRect(
+      Rect.fromLTWH(0, horizon, w * 0.6, h * 0.12),
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[Color(0xFF8DB4D6), Color(0xFF2F6C9E)],
+        ).createShader(Rect.fromLTWH(0, horizon, w * 0.6, h * 0.12)),
+    );
+
+    // The headland and its trees.
+    final headland = Path()
+      ..moveTo(w * 0.34, horizon + h * 0.06)
+      ..quadraticBezierTo(
+        w * 0.42,
+        horizon - h * 0.04,
+        w * 0.58,
+        horizon - h * 0.02,
+      )
+      ..lineTo(w, horizon - h * 0.03)
+      ..lineTo(w, horizon + h * 0.2)
+      ..lineTo(w * 0.3, horizon + h * 0.2)
+      ..close();
+    canvas.drawPath(headland, Paint()..color = const Color(0xFF3B5A2E));
+    var seed = 11;
+    double next() {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    }
+
+    for (var i = 0; i < 90; i++) {
+      final x = w * (0.3 + 0.7 * next());
+      final y = horizon + h * (0.0 + 0.13 * next());
+      final r = h * (0.016 + 0.026 * next());
+      canvas.drawCircle(
+        Offset(x, y),
+        r,
+        Paint()
+          ..color = Color.lerp(
+            const Color(0xFF1F3B22),
+            const Color(0xFF55772F),
+            next(),
+          )!,
+      );
+    }
+
+    // The rolling fairway in front.
+    final fairway = Path()
+      ..moveTo(0, horizon + h * 0.2)
+      ..cubicTo(
+        w * 0.25,
+        horizon + h * 0.12,
+        w * 0.55,
+        horizon + h * 0.2,
+        w,
+        horizon + h * 0.12,
+      )
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+    canvas.drawPath(
+      fairway,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Color(0xFFA2BE48),
+            Color(0xFF6D9531),
+            Color(0xFF4F7A27),
+          ],
+        ).createShader(Rect.fromLTWH(0, horizon, w, h - horizon)),
+    );
+    // A lighter mown stripe and a bunker.
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(w * 0.1, h)
+          ..cubicTo(w * 0.3, h * 0.82, w * 0.6, h * 0.8, w * 0.9, h * 0.7)
+          ..lineTo(w * 0.95, h * 0.74)
+          ..cubicTo(w * 0.65, h * 0.86, w * 0.4, h * 0.88, w * 0.25, h)
+          ..close(),
+        Paint()..color = const Color(0x33FFFFFF),
+      )
+      ..drawOval(
+        Rect.fromCenter(
+          center: Offset(w * 0.5, h * 0.76),
+          width: w * 0.18,
+          height: h * 0.07,
+        ),
+        Paint()..color = const Color(0xFFE6D7B3),
+      )
+      // The flag.
+      ..drawLine(
+        Offset(w * 0.86, h * 0.9),
+        Offset(w * 0.86, h * 0.56),
+        Paint()
+          ..color = Colors.white
+          ..strokeWidth = 1.4,
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(w * 0.86, h * 0.56)
+          ..lineTo(w * 0.9, h * 0.585)
+          ..lineTo(w * 0.86, h * 0.61)
+          ..close(),
+        Paint()..color = const Color(0xFFF2C94C),
+      );
+  }
+
+  @override
+  bool shouldRepaint(_CoastalPainter old) => false;
 }

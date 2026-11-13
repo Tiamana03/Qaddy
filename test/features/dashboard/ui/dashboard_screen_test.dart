@@ -129,7 +129,7 @@ void main() {
 
       expect(find.byType(QaddyRoundCard), findsOneWidget);
       expect(find.text('Richmond Golf Club'), findsWidgets);
-      expect(find.text('Saturday'), findsOneWidget);
+      expect(find.text('Sat, 7 Nov 2026'), findsOneWidget);
       expect(find.text('In 6 days'), findsOneWidget);
       expect(find.text('8:20 AM'), findsOneWidget);
       expect(find.bySemanticsLabel('8 playing'), findsOneWidget);

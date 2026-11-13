@@ -104,7 +104,7 @@ class QaddyRoundCard extends StatelessWidget {
     );
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
         color: colours.card,
         borderRadius: BorderRadius.circular(radius.medium),
@@ -188,7 +188,12 @@ class QaddyRoundCard extends StatelessWidget {
                                 : const SizedBox.shrink(),
                           ),
                           if (players.length > 1)
-                            QaddyFaceStack(names: players, total: total),
+                            QaddyFaceStack(
+                              names: players,
+                              total: total,
+                              size: 28,
+                              step: 21,
+                            ),
                         ],
                       ),
                     if (note != null) metaRow(noteIcon, note!),
@@ -198,7 +203,7 @@ class QaddyRoundCard extends StatelessWidget {
             ],
           ),
           if (onPrimary != null || onDetails != null) ...<Widget>[
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Row(
               children: <Widget>[
                 if (onDetails != null)

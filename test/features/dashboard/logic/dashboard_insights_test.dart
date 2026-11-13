@@ -35,6 +35,30 @@ void main() {
     });
   });
 
+  group('roundDateLabel', () {
+    test('writes the next date of that weekday in full', () {
+      expect(
+        roundDateLabel(DateTime(2026, 11, 1, 9), 'Saturday'),
+        'Sat, 7 Nov 2026',
+      );
+    });
+
+    test('is today when it is that day, and crosses a month end', () {
+      expect(
+        roundDateLabel(DateTime(2026, 11, 7), 'Saturday'),
+        'Sat, 7 Nov 2026',
+      );
+      expect(
+        roundDateLabel(DateTime(2026, 11, 28), 'Friday'),
+        'Fri, 4 Dec 2026',
+      );
+    });
+
+    test('is null for a word that is not a weekday', () {
+      expect(roundDateLabel(DateTime(2026, 11, 1), 'Someday'), isNull);
+    });
+  });
+
   group('roundCountdown', () {
     test('counts the days to a round', () {
       final countdown = roundCountdown(_sunday, 'Saturday')!;
