@@ -13,6 +13,7 @@ class QaddyAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.subtitle,
     this.actions = const <Widget>[],
+    this.centerTitle = false,
     super.key,
   });
 
@@ -25,6 +26,10 @@ class QaddyAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Widgets at the right, in order.
   final List<Widget> actions;
 
+  /// Centres the title (the Golf Bag's); the default is left, beside the back
+  /// arrow.
+  final bool centerTitle;
+
   @override
   Size get preferredSize => const Size.fromHeight(60);
 
@@ -35,9 +40,12 @@ class QaddyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: 60,
       titleSpacing: 0,
+      centerTitle: centerTitle,
       title: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: centerTitle
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             title,

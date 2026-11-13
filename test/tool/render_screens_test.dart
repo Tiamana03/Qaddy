@@ -20,6 +20,7 @@ import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/features/dashboard/state/dashboard_clock.dart';
 import 'package:qaddy/features/dashboard/ui/screens/dashboard_screen.dart';
 import 'package:qaddy/features/groups/ui/screens/groups_screen.dart';
+import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
 import 'package:qaddy/features/profile/ui/screens/profile_screen.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
@@ -215,6 +216,10 @@ void main() {
 
   testWidgets('render: groups', (tester) async {
     await _render(tester, 'groups', const GroupsScreen());
+  }, skip: !enabled);
+
+  testWidgets('render: golf bag', (tester) async {
+    await _render(tester, 'golf_bag', const GolfBagScreen(), pushed: true);
   }, skip: !enabled);
 
   testWidgets('render: home', (tester) async {

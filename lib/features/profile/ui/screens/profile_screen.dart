@@ -136,6 +136,8 @@ class ProfileScreen extends ConsumerWidget {
             else
               QaddyGoldButton(
                 label: 'View full statistics',
+                pill: true,
+                height: 52,
                 icon: Icons.bar_chart_rounded,
                 onPressed: () => context.push(AppRoutes.profileStatistics),
               ),

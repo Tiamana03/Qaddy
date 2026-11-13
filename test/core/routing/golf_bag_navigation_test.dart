@@ -22,7 +22,7 @@ void main() {
     await tester.ensureVisible(find.text('Golf bag'));
     await tester.tap(find.text('Golf bag'));
     await tester.pumpAndSettle();
-    expect(find.text('Starter bag'), findsOneWidget);
+    expect(find.text('My golf bag'), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

@@ -40,6 +40,7 @@ class QaddyGoldButton extends StatelessWidget {
     this.tall = false,
     this.compact = false,
     this.height,
+    this.pill = false,
     super.key,
   });
 
@@ -64,6 +65,9 @@ class QaddyGoldButton extends StatelessWidget {
   /// Overrides the height (a few mockup buttons are 38 or 40, not 36).
   final double? height;
 
+  /// Fully rounded ends, as the mockups' wide bottom buttons ("Add Club") are.
+  final bool pill;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -86,7 +90,7 @@ class QaddyGoldButton extends StatelessWidget {
     final foreground = enabled
         ? colours.backgroundBase
         : colours.disabledForeground;
-    final shape = BorderRadius.circular(compact ? 999 : radius.medium);
+    final shape = BorderRadius.circular(compact || pill ? 999 : radius.medium);
 
     return Semantics(
       button: true,

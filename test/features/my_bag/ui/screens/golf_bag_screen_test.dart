@@ -8,6 +8,7 @@ import 'package:qaddy/features/my_bag/models/bag_club.dart';
 import 'package:qaddy/features/my_bag/models/placeholder_my_bag.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
 import 'package:qaddy/features/my_bag/ui/screens/golf_bag_screen.dart';
+import 'package:qaddy/features/my_bag/ui/widgets/club_picture.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/club_sheet.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/distance_ladder.dart';
 
@@ -29,6 +30,7 @@ Future<ProviderContainer> _pump(
   Size size = const Size(400, 3000),
   ThemeData? theme,
   DocumentStorage? storage,
+  String tab = 'Distances',
 }) async {
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -50,6 +52,10 @@ Future<ProviderContainer> _pump(
     ),
   );
   await tester.pumpAndSettle();
+  if (tab != 'My clubs') {
+    await tester.tap(find.text(tab));
+    await tester.pumpAndSettle();
+  }
   return container;
 }
 
@@ -60,11 +66,33 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  group('the tabs', () {
+    testWidgets('My clubs lists every club with its picture and distance', (
+      tester,
+    ) async {
+      await _pump(tester, tab: 'My clubs');
+
+      expect(find.text('My golf bag'), findsOneWidget);
+      expect(find.byType(ClubPicture), findsWidgets);
+      expect(find.text('Avg distance'), findsWidgets);
+      expect(find.text('Add club'), findsOneWidget);
+    });
+
+    testWidgets('Add club says it is coming and the plus does too', (
+      tester,
+    ) async {
+      await _pump(tester, tab: 'My clubs');
+
+      await _tap(tester, find.text('Add club'));
+      expect(find.text('Adding clubs is coming'), findsOneWidget);
+    });
+  });
+
   group('the locker', () {
     testWidgets('opens with how many clubs and how they are gapped', (
       tester,
     ) async {
-      await _pump(tester);
+      await _pump(tester, tab: 'Insights');
 
       expect(find.byType(QaddyScaffold), findsOneWidget);
       expect(find.text('Starter bag'), findsOneWidget);
@@ -80,7 +108,7 @@ void main() {
     testWidgets('highlights the longest club and does not invent a go-to', (
       tester,
     ) async {
-      await _pump(tester);
+      await _pump(tester, tab: 'Insights');
 
       expect(find.text('Driver 235m'), findsOneWidget);
       expect(find.textContaining('Go-to:'), findsNothing);
@@ -99,13 +127,14 @@ void main() {
             .update(club.id, carryMetres: club.carryMetres! + 2);
       }
       await tester.pumpAndSettle();
+      await _tap(tester, find.text('Insights'));
 
       expect(find.text('Your bag'), findsOneWidget);
       expect(find.textContaining('Starter distances'), findsNothing);
     });
 
     testWidgets('has none of the old inventory tables', (tester) async {
-      await _pump(tester);
+      await _pump(tester, tab: 'Insights');
 
       expect(find.text('Bag Summary'), findsNothing);
       expect(find.text('Total Clubs'), findsNothing);
@@ -192,7 +221,7 @@ void main() {
     testWidgets('shows the putter and the ball as their own tiles', (
       tester,
     ) async {
-      await _pump(tester);
+      await _pump(tester, tab: 'Insights');
 
       expect(find.text('Putter and ball'), findsOneWidget);
       expect(find.text('Putter'), findsWidgets);
@@ -204,7 +233,7 @@ void main() {
     testWidgets('invites a first note, then quotes the golfer back', (
       tester,
     ) async {
-      final c = await _pump(tester);
+      final c = await _pump(tester, tab: 'Insights');
 
       expect(find.text('Notes to self'), findsOneWidget);
       expect(find.textContaining('Nothing here yet'), findsOneWidget);
@@ -290,6 +319,7 @@ void main() {
       await _tap(tester, find.text('Save'));
 
       expect(_club(c, '9-iron').note, 'Plays a club longer into the wind');
+      await _tap(tester, find.text('Insights'));
       expect(find.text('Plays a club longer into the wind'), findsOneWidget);
     });
 
@@ -307,7 +337,7 @@ void main() {
     });
 
     testWidgets('a putter has no carry to set', (tester) async {
-      await _pump(tester);
+      await _pump(tester, tab: 'My clubs');
       await _tap(tester, find.text('Putter').first);
 
       expect(find.byType(ClubSheet), findsOneWidget);

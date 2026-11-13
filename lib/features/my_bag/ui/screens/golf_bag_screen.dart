@@ -14,32 +14,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/theme/qaddy_animations.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
+import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
+import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/theme/qaddy_typography.dart';
 import 'package:qaddy/core/utils/formatting.dart';
 import 'package:qaddy/core/utils/haptics.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_icon_badge.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
+import 'package:qaddy/core/widgets/buttons/qaddy_gold_button.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_card.dart';
 import 'package:qaddy/core/widgets/cards/qaddy_hero_card.dart';
+import 'package:qaddy/core/widgets/dialogs/qaddy_confirm_dialog.dart';
 import 'package:qaddy/core/widgets/headings/qaddy_section_heading.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
+import 'package:qaddy/core/widgets/navigation/qaddy_underline_tabs.dart';
+import 'package:qaddy/core/widgets/scaffold/qaddy_app_bar.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/text/qaddy_eyebrow.dart';
 import 'package:qaddy/features/my_bag/logic/bag_insights.dart';
 import 'package:qaddy/features/my_bag/models/bag_club.dart';
 import 'package:qaddy/features/my_bag/models/placeholder_my_bag.dart';
 import 'package:qaddy/features/my_bag/state/bag_controller.dart';
+import 'package:qaddy/features/my_bag/ui/widgets/club_picture.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/club_sheet.dart';
 import 'package:qaddy/features/my_bag/ui/widgets/distance_ladder.dart';
 
 /// Golf Bag (route `/profile/bag`).
-class GolfBagScreen extends ConsumerWidget {
+class GolfBagScreen extends ConsumerStatefulWidget {
   const GolfBagScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final spacing = Theme.of(context).extension<QaddySpacing>()!;
+  ConsumerState<GolfBagScreen> createState() => _GolfBagScreenState();
+}
+
+class _GolfBagScreenState extends ConsumerState<GolfBagScreen> {
+  static const List<String> _tabs = <String>[
+    'My clubs',
+    'Distances',
+    'Insights',
+  ];
+  int _tab = 0;
+
+  Future<void> _addClub() => showQaddyNotice(
+    context,
+    title: 'Adding clubs is coming',
+    message:
+        'For now, tap any club to tune its model, distance, trust and notes. '
+        'Your starter set already covers a full bag.',
+    icon: Icons.sports_golf,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final spacing = theme.extension<QaddySpacing>()!;
     final bag = ref.watch(bagProvider);
     final goTo = goToClub(bag);
 
@@ -55,39 +85,217 @@ class GolfBagScreen extends ConsumerWidget {
     ];
 
     return QaddyScaffold(
-      appBar: AppBar(title: const Text('Golf Bag')),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: staggered(<Widget>[
-            SizedBox(height: spacing.lg),
-            _Hero(bag: bag, goTo: goTo),
-            SizedBox(height: spacing.sectionGap),
-            const QaddySectionHeading(title: 'Your distances'),
-            SizedBox(height: spacing.xs),
-            _Hint(
-              starterClubCount(bag) == 0
-                  ? 'Tap a club to tune its distance, trust and notes.'
-                  : 'Starter distances: typical carries so you can see how '
-                        'this works. Tap a club and set yours.',
+      appBar: QaddyAppBar(
+        title: 'My golf bag',
+        centerTitle: true,
+        actions: <Widget>[
+          Tooltip(
+            message: 'Add a club',
+            child: InkResponse(
+              onTap: _addClub,
+              radius: 24,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: colours.gradientGold,
+                ),
+                child: Icon(Icons.add, size: 22, color: colours.backgroundBase),
+              ),
             ),
-            SizedBox(height: spacing.md),
-            DistanceLadder(clubs: bag, goTo: goTo, onTapClub: open),
-            if (kit.isNotEmpty) ...<Widget>[
-              SizedBox(height: spacing.sectionGap),
-              const QaddySectionHeading(title: 'Putter and ball'),
-              SizedBox(height: spacing.md),
-              _Kit(kit: kit, onTap: open),
-            ],
-            SizedBox(height: spacing.sectionGap),
-            const QaddySectionHeading(title: 'Notes to self'),
-            SizedBox(height: spacing.md),
-            if (noted.isNotEmpty)
-              _Notes(clubs: noted, onTap: open)
-            else
-              const _NotesInvite(),
-            SizedBox(height: spacing.xl),
-          ]),
+          ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          const SizedBox(height: 6),
+          QaddyUnderlineTabs(
+            labels: _tabs,
+            selected: _tab,
+            onChanged: (tab) => setState(() => _tab = tab),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: staggered(<Widget>[
+                  const SizedBox(height: 14),
+                  if (_tab == 0) ...<Widget>[
+                    for (final (index, club) in bag.indexed) ...<Widget>[
+                      if (index > 0) const SizedBox(height: 10),
+                      _ClubRow(club: club, onTap: () => open(club)),
+                    ],
+                  ] else if (_tab == 1) ...<Widget>[
+                    const QaddySectionHeading(title: 'Your distances'),
+                    SizedBox(height: spacing.xs),
+                    _Hint(
+                      starterClubCount(bag) == 0
+                          ? 'Tap a club to tune its distance, trust and notes.'
+                          : 'Starter distances: typical carries so you can see '
+                                'how this works. Tap a club and set yours.',
+                    ),
+                    SizedBox(height: spacing.md),
+                    DistanceLadder(clubs: bag, goTo: goTo, onTapClub: open),
+                  ] else ...<Widget>[
+                    _Hero(bag: bag, goTo: goTo),
+                    if (kit.isNotEmpty) ...<Widget>[
+                      SizedBox(height: spacing.sectionGap),
+                      const QaddySectionHeading(title: 'Putter and ball'),
+                      SizedBox(height: spacing.md),
+                      _Kit(kit: kit, onTap: open),
+                    ],
+                    SizedBox(height: spacing.sectionGap),
+                    const QaddySectionHeading(title: 'Notes to self'),
+                    SizedBox(height: spacing.md),
+                    if (noted.isNotEmpty)
+                      _Notes(clubs: noted, onTap: open)
+                    else
+                      const _NotesInvite(),
+                  ],
+                  SizedBox(height: spacing.xl),
+                ]),
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: ColoredBox(
+        color: colours.background,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              spacing.pagePadding,
+              spacing.sm,
+              spacing.pagePadding,
+              spacing.md,
+            ),
+            child: QaddyGoldButton(
+              label: 'Add club',
+              pill: true,
+              height: 52,
+              onPressed: _addClub,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "220m average distance. " for a club that has a carry.
+String _distance(BagClub club) =>
+    '${formatDistance(club.carryMetres!)} average distance. ';
+
+/// A club in the list, as the mockup draws it: its picture, its name and
+/// model, and how far it goes at the right.
+class _ClubRow extends StatelessWidget {
+  const _ClubRow({required this.club, required this.onTap});
+
+  final BagClub club;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colours = theme.extension<QaddyColours>()!;
+    final radius = theme.extension<QaddyRadius>()!;
+
+    return Semantics(
+      button: true,
+      label:
+          '${club.name}. ${club.hasModel ? club.model : 'Model not set'}. '
+          '${club.hasCarry ? _distance(club) : ''}'
+          'Tap to tune it.',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: colours.card,
+          borderRadius: BorderRadius.circular(radius.medium),
+          border: Border.all(color: colours.border),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(radius.medium),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              QaddyHaptics.selection();
+              onTap();
+            },
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 16, 10),
+              child: Row(
+                children: <Widget>[
+                  ClubPicture(family: club.family, width: 84),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          club.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: QaddyText.listTitle.copyWith(
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          club.hasModel
+                              ? club.model
+                              : 'Add your ${club.name.toLowerCase()}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: QaddyText.meta.copyWith(
+                            height: 17 / 12,
+                            color: club.hasModel
+                                ? colours.textSecondary
+                                : colours.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (club.hasCarry)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text.rich(
+                          TextSpan(
+                            children: <InlineSpan>[
+                              TextSpan(
+                                text: club.carryMetres!.round().toString(),
+                              ),
+                              const TextSpan(
+                                text: 'm',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          style: QaddyText.tileFigure.copyWith(
+                            fontSize: 22,
+                            height: 28 / 22,
+                            color: colours.textPrimary,
+                          ),
+                        ),
+                        Text(
+                          'Avg distance',
+                          style: QaddyText.weatherCondition.copyWith(
+                            color: colours.textSecondary,
+                          ),
+                        ),
+                      ],
+                    )
+                  else if (club.family == ClubFamily.putter)
+                    ConfidenceDots(confidence: club.confidence),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
