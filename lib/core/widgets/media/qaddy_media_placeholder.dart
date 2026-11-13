@@ -8,6 +8,12 @@
 /// else about the screen changes.
 library;
 
+// The painters draw one layer after another; cascading every canvas call would
+// hide the order the picture is built in.
+// ignore_for_file: cascade_invocations
+
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:qaddy/core/theme/qaddy_colours.dart';
 
@@ -64,7 +70,7 @@ class QaddyMediaPlaceholder extends StatelessWidget {
               painter: aerial
                   ? _AerialPainter(colours: colours)
                   : coastal
-                  ? const _CoastalPainter()
+                  ? _CoastalPainter(tone: tone)
                   : _CoursePainter(colours: colours, tone: tone),
             ),
           if (scrim)
@@ -164,12 +170,17 @@ class _CoursePainter extends CustomPainter {
       old.colours != colours || old.tone != tone;
 }
 
-/// A hole from above: dark trees, a fairway ribbon bending up to a green with
-/// a flag, and a bunker beside it.
+/// A hole from above, as an aerial photograph would show it: a canopy of
+/// trees in many greens with soft shadows, a mown fairway in stripes bending up
+/// to a green with its flag, a bunker and a cart path.
 class _AerialPainter extends CustomPainter {
   const _AerialPainter({required this.colours});
 
   final QaddyColours colours;
+
+  /// The fairway's centre line at [t] (0 at the tee, 1 at the green), as a
+  /// fraction of the width.
+  static double _centre(double t) => 0.52 - 0.07 * math.sin(t * math.pi * 1.1);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -177,116 +188,187 @@ class _AerialPainter extends CustomPainter {
     final h = size.height;
     final bounds = Offset.zero & size;
 
-    // The rough: a deep green with a lighter middle.
+    // The rough: a deep green, lighter in the middle.
     canvas.drawRect(
       bounds,
       Paint()
-        ..shader = RadialGradient(
-          center: const Alignment(0.1, 0.1),
-          radius: 1.1,
-          colors: <Color>[
-            Color.lerp(colours.selected, colours.backgroundBase, 0.55)!,
-            Color.lerp(colours.primary, colours.backgroundBase, 0.6)!,
-          ],
+        ..shader = const RadialGradient(
+          center: Alignment(0.1, 0.1),
+          radius: 1,
+          colors: <Color>[Color(0xFF2F6B2C), Color(0xFF123A18)],
         ).createShader(bounds),
     );
 
-    // Trees: many soft blobs in a few greens, kept off the fairway. The seed
-    // is fixed so the picture never shimmers between frames.
-    final greens = <Color>[
-      Color.lerp(colours.selected, Colors.black, 0.62)!,
-      Color.lerp(colours.selected, Colors.black, 0.45)!,
-      Color.lerp(colours.selected, Colors.black, 0.3)!,
-      Color.lerp(colours.accentTeal, Colors.black, 0.6)!,
+    // The tree canopy, kept off the fairway. The seed is fixed so the picture
+    // never shimmers between frames.
+    const palette = <Color>[
+      Color(0xFF0E3A17),
+      Color(0xFF1B5A24),
+      Color(0xFF2A7A31),
+      Color(0xFF3C913A),
+      Color(0xFF14461C),
+      Color(0xFF4E9F42),
     ];
-    var seed = 7;
+    var seed = 5;
     double next() {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;
       return seed / 0x7fffffff;
     }
 
-    for (var i = 0; i < 230; i++) {
-      final x = next() * w;
-      final y = next() * h;
-      // Skip the fairway ribbon and the green.
+    bool onFairway(double x, double y, double margin) {
       final t = 1 - y / h;
-      final centre = w * (0.53 + 0.05 * (t < 0.5 ? t : 1 - t) - 0.02 * t);
-      if ((x - centre).abs() < w * (0.1 + 0.05 * (1 - t))) {
-        continue;
-      }
-      final r = (h * 0.022) + next() * h * 0.045;
-      canvas.drawCircle(
-        Offset(x, y),
-        r,
-        Paint()
-          ..color = greens[(next() * greens.length).floor() % greens.length],
-      );
+      final half = w * (0.085 + 0.03 * (1 - t) - 0.02 * t) + margin;
+      return (x - w * _centre(t)).abs() < half;
     }
 
-    // The fairway: a ribbon from the tee at the bottom to the green.
-    final fairway = Path()
-      ..moveTo(w * 0.42, h)
-      ..cubicTo(w * 0.36, h * 0.7, w * 0.5, h * 0.5, w * 0.46, h * 0.22)
-      ..lineTo(w * 0.62, h * 0.22)
-      ..cubicTo(w * 0.66, h * 0.5, w * 0.58, h * 0.7, w * 0.64, h)
-      ..close();
+    for (var i = 0; i < 900; i++) {
+      final x = next() * w;
+      final y = next() * h;
+      if (onFairway(x, y, h * 0.02)) {
+        continue;
+      }
+      final r = h * (0.012 + 0.022 * next());
+      final colour =
+          palette[(next() * palette.length).floor() % palette.length];
+      canvas
+        ..drawCircle(
+          Offset(x + r * 0.35, y + r * 0.4),
+          r,
+          Paint()..color = const Color(0x33000000),
+        )
+        ..drawCircle(Offset(x, y), r, Paint()..color = colour)
+        ..drawCircle(
+          Offset(x - r * 0.25, y - r * 0.3),
+          r * 0.45,
+          Paint()..color = Colors.white.withValues(alpha: 0.07),
+        );
+    }
+
+    // The first cut of rough beside the fairway.
+    Path ribbon(double halfTop, double halfBottom) {
+      final path = Path();
+      const steps = 24;
+      for (var i = 0; i <= steps; i++) {
+        final t = i / steps;
+        final y = h * (1 - t);
+        final half = w * (halfBottom + (halfTop - halfBottom) * t);
+        final x = w * _centre(t) - half;
+        if (i == 0) {
+          path.moveTo(x, y);
+        } else {
+          path.lineTo(x, y);
+        }
+      }
+      for (var i = steps; i >= 0; i--) {
+        final t = i / steps;
+        final y = h * (1 - t);
+        final half = w * (halfBottom + (halfTop - halfBottom) * t);
+        path.lineTo(w * _centre(t) + half, y);
+      }
+      return path..close();
+    }
+
     canvas.drawPath(
-      fairway,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Color.lerp(colours.accentTeal, colours.selected, 0.6)!,
-            colours.selected,
-          ],
-        ).createShader(bounds),
+      ribbon(0.085, 0.14),
+      Paint()..color = const Color(0xFF4C9A3A),
     );
-    // The mown line down the middle, then the green and its flag.
-    final green = Offset(w * 0.54, h * 0.2);
+
+    // The fairway, mown in stripes.
+    final fairway = ribbon(0.07, 0.115);
     canvas
-      ..drawPath(
-        Path()
-          ..moveTo(w * 0.53, h)
-          ..cubicTo(w * 0.47, h * 0.7, w * 0.58, h * 0.5, w * 0.54, h * 0.22),
-        Paint()
-          ..color = colours.gold.withValues(alpha: 0.6)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.6,
-      )
-      ..drawCircle(green, h * 0.1, Paint()..color = colours.selected)
+      ..save()
+      ..clipPath(fairway)
+      ..drawRect(bounds, Paint()..color = const Color(0xFF6DB241));
+    for (var i = 0; i < 14; i++) {
+      canvas.drawRect(
+        Rect.fromLTWH(0, h * (i / 14), w, h / 28),
+        Paint()..color = const Color(0x2AFFFFFF),
+      );
+    }
+    canvas.restore();
+
+    // The mown line down the middle.
+    final line = Path();
+    for (var i = 0; i <= 24; i++) {
+      final t = i / 24;
+      final point = Offset(w * _centre(t), h * (1 - t));
+      i == 0
+          ? line.moveTo(point.dx, point.dy)
+          : line.lineTo(point.dx, point.dy);
+    }
+    canvas.drawPath(
+      line,
+      Paint()
+        ..color = colours.gold.withValues(alpha: 0.75)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.6,
+    );
+
+    // A cart path down the left edge of the rough.
+    final path = Path();
+    for (var i = 0; i <= 24; i++) {
+      final t = i / 24;
+      final point = Offset(w * (_centre(t) - 0.2 + 0.04 * t), h * (1 - t));
+      i == 0
+          ? path.moveTo(point.dx, point.dy)
+          : path.lineTo(point.dx, point.dy);
+    }
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xCCD8CBA8)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.4,
+    );
+
+    // The green, its fringe and the flag.
+    final green = Offset(w * _centre(0.86), h * 0.2);
+    canvas
+      ..drawCircle(green, h * 0.105, Paint()..color = const Color(0xFF58AE3E))
+      ..drawCircle(green, h * 0.088, Paint()..color = const Color(0xFF7CC84B))
       ..drawCircle(
         green,
         h * 0.1,
         Paint()
-          ..color = Colors.white.withValues(alpha: 0.7)
+          ..color = Colors.white.withValues(alpha: 0.8)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.4,
+          ..strokeWidth = 1.5,
       )
       ..drawLine(
         green,
-        green.translate(0, -h * 0.09),
+        green.translate(0, -h * 0.1),
         Paint()
           ..color = Colors.white
           ..strokeWidth = 1.5,
       )
       ..drawPath(
         Path()
-          ..moveTo(green.dx, green.dy - h * 0.09)
-          ..lineTo(green.dx + h * 0.05, green.dy - h * 0.07)
-          ..lineTo(green.dx, green.dy - h * 0.05)
+          ..moveTo(green.dx, green.dy - h * 0.1)
+          ..lineTo(green.dx + h * 0.055, green.dy - h * 0.08)
+          ..lineTo(green.dx, green.dy - h * 0.06)
           ..close(),
-        Paint()..color = colours.gold,
-      )
-      // A bunker beside the green.
-      ..drawOval(
-        Rect.fromCenter(
-          center: Offset(w * 0.42, h * 0.3),
-          width: w * 0.07,
-          height: h * 0.1,
-        ),
-        Paint()..color = const Color(0xFFD9C9A0).withValues(alpha: 0.85),
+        Paint()..color = const Color(0xFFE0463A),
       );
+
+    // Bunkers beside the green.
+    void bunker(Offset at, double bw, double bh) {
+      canvas
+        ..drawOval(
+          Rect.fromCenter(center: at, width: bw, height: bh),
+          Paint()..color = const Color(0xFFE6D8B0),
+        )
+        ..drawOval(
+          Rect.fromCenter(
+            center: at.translate(-bw * 0.08, -bh * 0.1),
+            width: bw * 0.75,
+            height: bh * 0.7,
+          ),
+          Paint()..color = const Color(0xFFF3E8C9),
+        );
+    }
+
+    bunker(Offset(w * (_centre(0.78) - 0.12), h * 0.3), w * 0.075, h * 0.12);
+    bunker(Offset(w * (_centre(0.62) + 0.13), h * 0.44), w * 0.06, h * 0.09);
   }
 
   @override
@@ -296,7 +378,10 @@ class _AerialPainter extends CustomPainter {
 /// A coastal course in the afternoon light: the placeholder for a wide hero
 /// photograph.
 class _CoastalPainter extends CustomPainter {
-  const _CoastalPainter();
+  const _CoastalPainter({required this.tone});
+
+  /// Which of a few variations to draw (the flag and the sky move).
+  final int tone;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -304,6 +389,7 @@ class _CoastalPainter extends CustomPainter {
     final h = size.height;
     final bounds = Offset.zero & size;
     final horizon = h * 0.58;
+    final flagX = <double>[0.86, 0.3, 0.62][tone % 3];
 
     // Sky.
     canvas.drawRect(
@@ -416,22 +502,22 @@ class _CoastalPainter extends CustomPainter {
       )
       // The flag.
       ..drawLine(
-        Offset(w * 0.86, h * 0.9),
-        Offset(w * 0.86, h * 0.56),
+        Offset(w * flagX, h * 0.9),
+        Offset(w * flagX, h * 0.56),
         Paint()
           ..color = Colors.white
           ..strokeWidth = 1.4,
       )
       ..drawPath(
         Path()
-          ..moveTo(w * 0.86, h * 0.56)
-          ..lineTo(w * 0.9, h * 0.585)
-          ..lineTo(w * 0.86, h * 0.61)
+          ..moveTo(w * flagX, h * 0.56)
+          ..lineTo(w * (flagX + 0.04), h * 0.585)
+          ..lineTo(w * flagX, h * 0.61)
           ..close(),
         Paint()..color = const Color(0xFFF2C94C),
       );
   }
 
   @override
-  bool shouldRepaint(_CoastalPainter old) => false;
+  bool shouldRepaint(_CoastalPainter old) => old.tone != tone;
 }

@@ -80,7 +80,7 @@ class QaddyStatTiles extends StatelessWidget {
           '${stats.map((t) => '${t.label} ${t.figure}').join(', ')}. '
           'Opens your statistics.',
       child: SizedBox(
-        height: layout == QaddyStatLayout.game ? 92 : 94,
+        height: layout == QaddyStatLayout.game ? 92 : 90,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -143,18 +143,26 @@ class _Tile extends StatelessWidget {
           : Alignment.center,
       child: Text(
         stat.figure,
-        style: QaddyText.tileFigure.copyWith(color: figureColour),
+        style: QaddyText.tileFigure.copyWith(
+          color: figureColour,
+          fontSize: layout == QaddyStatLayout.profile ? 21 : null,
+          height: layout == QaddyStatLayout.profile ? 26 / 21 : null,
+        ),
       ),
     );
-    final label = Text(
+    final labelText = Text(
       stat.label,
-      maxLines: 2,
+      maxLines: layout == QaddyStatLayout.game ? 2 : 1,
       overflow: TextOverflow.ellipsis,
       textAlign: layout == QaddyStatLayout.game
           ? TextAlign.start
           : TextAlign.center,
       style: QaddyText.tileLabel.copyWith(color: labelColour),
     );
+    // Profile's labels stay on one line, shrinking a touch, never wrapping.
+    final label = layout == QaddyStatLayout.game
+        ? labelText
+        : FittedBox(fit: BoxFit.scaleDown, child: labelText);
 
     final content = layout == QaddyStatLayout.game
         ? Column(

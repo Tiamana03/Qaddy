@@ -114,6 +114,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
             ),
             const SizedBox(height: 12),
             QaddyPillTabs(
+              joined: true,
               selected: _tab,
               onChanged: (tab) => setState(() => _tab = tab),
               tabs: <QaddyPillTab>[

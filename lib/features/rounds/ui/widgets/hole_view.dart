@@ -129,6 +129,16 @@ class HoleView extends StatelessWidget {
               ],
             ),
           ),
+          // Two more distance pills on the fairway, as the mockup has them;
+          // there is no GPS yet, so they hold their place with a dash.
+          const Align(
+            alignment: Alignment(-0.22, 0.04),
+            child: _DistancePill(text: '– m'),
+          ),
+          const Align(
+            alignment: Alignment(0.08, 0.4),
+            child: _DistancePill(text: '– m'),
+          ),
           // The hole's length, flagged at the green.
           if (metres != null)
             Align(
@@ -335,6 +345,27 @@ class _Tile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A distance pill on the fairway.
+class _DistancePill extends StatelessWidget {
+  const _DistancePill({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Frosted(
+      radius: 999,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Text(
+        text,
+        style: QaddyText.pillLabel.copyWith(
+          color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.6),
+        ),
       ),
     );
   }

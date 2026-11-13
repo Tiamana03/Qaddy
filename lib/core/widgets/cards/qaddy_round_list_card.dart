@@ -149,6 +149,7 @@ class QaddyRoundListCard extends StatelessWidget {
                   children: <Widget>[
                     QaddyMediaPlaceholder(
                       borderRadius: BorderRadius.circular(radius.small + 2),
+                      coastal: true,
                       tone: 1,
                     ),
                     if (sample)

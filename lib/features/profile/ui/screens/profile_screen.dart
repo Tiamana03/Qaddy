@@ -449,6 +449,7 @@ class _RecentRounds extends StatelessWidget {
                       height: 42,
                       child: QaddyMediaPlaceholder(
                         borderRadius: BorderRadius.circular(radius.small),
+                        coastal: true,
                         tone: index % 3,
                       ),
                     ),

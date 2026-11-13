@@ -271,7 +271,7 @@ class AchievementBadgeRow extends StatelessWidget {
         final item = (constraints.maxWidth - gap * 5) / 6;
 
         return SizedBox(
-          height: item * 1.1 + 34,
+          height: item * 1.1 + 24,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: achievements.length,
@@ -300,17 +300,18 @@ class AchievementBadgeRow extends StatelessWidget {
                           size: item - 4,
                         ),
                         const SizedBox(height: 6),
-                        Text(
-                          achievement.title,
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: QaddyText.weatherCondition.copyWith(
-                            fontSize: 11,
-                            height: 13 / 11,
-                            color: achievement.unlocked
-                                ? colours.textPrimary
-                                : colours.textSecondary,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            achievement.title,
+                            maxLines: 1,
+                            style: QaddyText.weatherCondition.copyWith(
+                              fontSize: 11,
+                              height: 13 / 11,
+                              color: achievement.unlocked
+                                  ? colours.textPrimary
+                                  : colours.textSecondary,
+                            ),
                           ),
                         ),
                       ],

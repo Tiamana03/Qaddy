@@ -55,7 +55,7 @@ void main() {
     });
 
     test('is null for a word that is not a weekday', () {
-      expect(roundDateLabel(DateTime(2026, 11, 1), 'Someday'), isNull);
+      expect(roundDateLabel(DateTime(2026, 11), 'Someday'), isNull);
     });
   });
 

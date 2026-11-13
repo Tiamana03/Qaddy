@@ -133,6 +133,7 @@ class GroupCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(
                               radius.small + 2,
                             ),
+                            coastal: true,
                             tone: photoTone,
                           ),
                           const Positioned(

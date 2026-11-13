@@ -86,7 +86,30 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
     final spacing = theme.extension<QaddySpacing>()!;
     final round = widget.round;
 
-    return SizedBox(
+    Widget chevron(IconData icon, String tooltip, int direction) => Tooltip(
+      message: tooltip,
+      child: InkResponse(
+        radius: 16,
+        onTap: () {
+          QaddyHaptics.selection();
+          final position = _controller.position;
+          final target = (position.pixels + direction * 3 * (_size + _gap))
+              .clamp(0.0, position.maxScrollExtent);
+          _controller.animateTo(
+            target,
+            duration: QaddyMotion.standard.fast,
+            curve: QaddyMotion.standard.enter,
+          );
+        },
+        child: SizedBox(
+          width: 16,
+          height: _size,
+          child: Icon(icon, size: 16, color: colours.textSecondary),
+        ),
+      ),
+    );
+
+    final strip = SizedBox(
       height: _size + spacing.xs,
       child: ListView.separated(
         controller: _controller,
@@ -157,6 +180,14 @@ class _HoleProgressStripState extends State<HoleProgressStrip> {
           );
         },
       ),
+    );
+
+    return Row(
+      children: <Widget>[
+        chevron(Icons.chevron_left, 'Earlier holes', -1),
+        Expanded(child: strip),
+        chevron(Icons.chevron_right, 'Later holes', 1),
+      ],
     );
   }
 }
