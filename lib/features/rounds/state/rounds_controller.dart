@@ -12,6 +12,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qaddy/core/user/current_user.dart';
+import 'package:qaddy/features/courses/state/course_providers.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
@@ -144,12 +145,14 @@ class RoundsController extends Notifier<RoundsState> {
     if (state.live != null || players.isEmpty) {
       return;
     }
+    final course = ref.read(nextRoundCourseProvider);
     state = RoundsState(
       live: Round.start(
         id: 'round-${_now.microsecondsSinceEpoch}-${_sequence++}',
-        course: upcomingRound.course,
+        course: course.name,
+        courseId: course.isGeneric ? null : course.id,
         format: upcomingRound.format,
-        holes: upcomingRoundHoles,
+        holes: course.holesFrom(),
         players: players,
         now: _now,
       ),

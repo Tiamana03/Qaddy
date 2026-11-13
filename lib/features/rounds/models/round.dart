@@ -6,7 +6,7 @@
 /// and `0` means the player picked up (no score, no points).
 library;
 
-import 'package:qaddy/features/rounds/models/course_hole.dart';
+import 'package:qaddy/features/courses/models/course_hole.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 
 /// Where a round is in its life.
@@ -31,6 +31,7 @@ class Round {
     required this.status,
     required this.startedAt,
     this.completedAt,
+    this.courseId,
   });
 
   /// Starts a round on [holes] for [players] at [now], on the first tee.
@@ -41,6 +42,7 @@ class Round {
     required List<CourseHole> holes,
     required List<RoundPlayer> players,
     required DateTime now,
+    String? courseId,
   }) => Round(
     id: id,
     course: course,
@@ -54,6 +56,7 @@ class Round {
     currentHole: 0,
     status: RoundStatus.inProgress,
     startedAt: now,
+    courseId: courseId,
   );
 
   /// A unique id.
@@ -61,6 +64,11 @@ class Round {
 
   /// The course's name.
   final String course;
+
+  /// The course catalogue's id for the course, or `null` when the round was
+  /// played on the standard layout with no course chosen. It lets a played
+  /// round find its course (and the forecast and pictures) again.
+  final String? courseId;
 
   /// The scoring format, e.g. "Stableford".
   final String format;
@@ -135,5 +143,6 @@ class Round {
     status: status ?? this.status,
     startedAt: startedAt,
     completedAt: completedAt ?? this.completedAt,
+    courseId: courseId,
   );
 }

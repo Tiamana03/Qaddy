@@ -33,6 +33,9 @@ import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/navigation/qaddy_pill_tabs.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
+import 'package:qaddy/features/courses/models/course.dart';
+import 'package:qaddy/features/courses/state/course_providers.dart';
+import 'package:qaddy/features/courses/ui/course_picker_sheet.dart';
 import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
@@ -187,7 +190,8 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
     final spacing = theme.extension<QaddySpacing>()!;
     final players = ref.watch(selectedPlayersProvider);
     final planned = upcomingRound.planned;
-    final course = live?.course ?? upcomingRound.course;
+    final nextCourse = ref.watch(nextRoundCourseProvider);
+    final course = live?.course ?? nextCourse.name;
 
     final card = live != null
         ? QaddyRoundListCard(
@@ -211,7 +215,7 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
             ),
           )
         : QaddyRoundListCard(
-            course: upcomingRound.course,
+            course: nextCourse.name,
             date: planned ? upcomingRound.date : 'Ready when you are',
             time: planned ? upcomingRound.teeTime : null,
             detail: upcomingRound.format,
@@ -261,6 +265,10 @@ class _RoundsScreenState extends ConsumerState<RoundsScreen> {
         ),
       ],
       if (live == null) ...<Widget>[
+        SizedBox(height: spacing.sectionGap),
+        const QaddySectionHeading(title: 'Course'),
+        SizedBox(height: spacing.md),
+        const _CourseChoice(),
         SizedBox(height: spacing.sectionGap),
         KeyedSubtree(
           key: _playersKey,
@@ -394,6 +402,38 @@ String _dayLabel(DateTime when) {
 }
 
 /// Everyone invited, each with a switch.
+/// The course the next round is on, with a way to change it.
+class _CourseChoice extends ConsumerWidget {
+  const _CourseChoice();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colours = Theme.of(context).extension<QaddyColours>()!;
+    final course = ref.watch(nextRoundCourseProvider);
+    final detail = switch (course.origin) {
+      CourseOrigin.generic =>
+        'Standard layout: par and stroke index only. Choose your course for '
+            'its holes and distances.',
+      CourseOrigin.sample => 'Sample course',
+      CourseOrigin.database => <String>[
+        if (course.location.label.isNotEmpty) course.location.label,
+        '${course.holeCount} holes',
+      ].join(' · '),
+    };
+
+    return CourseRow(
+      name: course.name,
+      detail: detail,
+      logoUrl: course.logoUrl,
+      onTap: () => showCoursePicker(context),
+      trailing: Text(
+        'Change',
+        style: QaddyText.listMeta.copyWith(color: colours.gold),
+      ),
+    );
+  }
+}
+
 class _Players extends ConsumerWidget {
   const _Players();
 

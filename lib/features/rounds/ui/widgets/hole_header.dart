@@ -10,7 +10,7 @@ import 'package:qaddy/core/theme/qaddy_colours.dart';
 import 'package:qaddy/core/theme/qaddy_spacing.dart';
 import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/widgets/buttons/qaddy_secondary_button.dart';
-import 'package:qaddy/features/rounds/models/course_hole.dart';
+import 'package:qaddy/features/courses/models/course_hole.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
 /// The header for [hole] of [total] holes.

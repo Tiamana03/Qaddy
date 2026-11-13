@@ -30,6 +30,8 @@ import 'package:qaddy/core/widgets/motion/qaddy_fade_slide_in.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_app_bar.dart';
 import 'package:qaddy/core/widgets/scaffold/qaddy_scaffold.dart';
 import 'package:qaddy/core/widgets/states/qaddy_empty_state.dart';
+import 'package:qaddy/features/courses/models/hole_guide.dart';
+import 'package:qaddy/features/courses/state/course_providers.dart';
 import 'package:qaddy/features/rounds/logic/round_insights.dart';
 import 'package:qaddy/features/rounds/logic/stableford.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
@@ -62,6 +64,22 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
   @override
   Widget build(BuildContext context) {
     final round = ref.watch(liveRoundProvider);
+    // What the course data sources know about this hole; nothing breaks if
+    // none is connected.
+    final guide = round == null
+        ? HoleGuide.unavailable
+        : ref
+                  .watch(
+                    holeGuideProvider(
+                      HoleRef(
+                        courseId: round.courseId,
+                        hole: round.hole.number,
+                        at: round.startedAt,
+                      ),
+                    ),
+                  )
+                  .valueOrNull ??
+              HoleGuide.unavailable;
     if (round == null) {
       return const _NoRound();
     }
@@ -238,6 +256,7 @@ class _LiveScorecardScreenState extends ConsumerState<LiveScorecardScreen> {
                 _Bleed(
                   child: HoleView(
                     hole: round.hole,
+                    guide: guide,
                     greeting: firstTee
                         ? 'Enjoy it out there, ${round.players.first.name}.'
                         : null,

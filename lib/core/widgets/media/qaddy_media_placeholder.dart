@@ -63,15 +63,21 @@ class QaddyMediaPlaceholder extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
+          // The drawing is always underneath: it is what shows while a picture
+          // loads, and if it cannot be loaded.
+          CustomPaint(
+            painter: aerial
+                ? _AerialPainter(colours: colours)
+                : coastal
+                ? _CoastalPainter(tone: tone)
+                : _CoursePainter(colours: colours, tone: tone),
+          ),
           if (image != null)
-            Image(image: image!, fit: BoxFit.cover)
-          else
-            CustomPaint(
-              painter: aerial
-                  ? _AerialPainter(colours: colours)
-                  : coastal
-                  ? _CoastalPainter(tone: tone)
-                  : _CoursePainter(colours: colours, tone: tone),
+            Image(
+              image: image!,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
             ),
           if (scrim)
             const DecoratedBox(

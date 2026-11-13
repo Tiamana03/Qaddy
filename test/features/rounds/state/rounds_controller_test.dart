@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qaddy/core/user/sample_clubhouse.dart';
+
+import 'package:qaddy/features/courses/state/course_providers.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
 import 'package:qaddy/features/rounds/models/round_player.dart';
 import 'package:qaddy/features/rounds/repositories/rounds_storage.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
+
+import '../../../support/fake_course_data.dart';
+import '../../../support/sample_off.dart';
 
 const RoundPlayer _alex = RoundPlayer(name: 'Alex', handicap: 8.4);
 const RoundPlayer _tom = RoundPlayer(name: 'Tom', handicap: 8);
@@ -23,9 +27,13 @@ class _MemoryStorage implements RoundsStorage {
   Future<void> write(String document) async => this.document = document;
 }
 
-ProviderContainer _container([RoundsStorage? storage]) {
+ProviderContainer _container([
+  RoundsStorage? storage,
+  List<Override> more = const <Override>[],
+]) {
   final container = ProviderContainer(
     overrides: <Override>[
+      ...more,
       roundsClockProvider.overrideWithValue(() => DateTime(2026, 11, 7, 8, 20)),
       if (storage != null) roundsStorageProvider.overrideWithValue(storage),
     ],
@@ -54,9 +62,7 @@ void main() {
     test(
       'a round with no sample plan has par and index but no guessed length',
       () {
-        useSampleClubhouse(on: false);
-        addTearDown(resetSampleClubhouseForTests);
-        final c = _container();
+        final c = _container(null, sampleOff());
 
         _store(c).startRound(<RoundPlayer>[_alex]);
         final round = c.read(liveRoundProvider)!;
@@ -375,6 +381,52 @@ void main() {
 
       expect(c.read(liveRoundProvider), isNull);
       expect(c.read(completedRoundProvider), isNull);
+    });
+  });
+
+  group('the course', () {
+    test('a round starts on the sample course by default', () {
+      final container = _container();
+
+      _store(container).startRound(const <RoundPlayer>[_alex]);
+      final round = container.read(liveRoundProvider)!;
+
+      expect(round.course, 'Richmond Golf Club');
+      expect(round.courseId, 'sample-richmond');
+      expect(round.holes, richmondHoles);
+    });
+
+    test('a round starts on the course the golfer chose', () {
+      final container = _container();
+      container.read(selectedCourseProvider.notifier).choose(fakeCourse);
+
+      _store(container).startRound(const <RoundPlayer>[_alex]);
+      final round = container.read(liveRoundProvider)!;
+
+      expect(round.course, 'Test Links');
+      expect(round.courseId, 'fake-1');
+      expect(round.holes, fakeHoles);
+    });
+
+    test('with no course chosen and no sample it is the standard layout', () {
+      final container = _container(null, sampleOff());
+
+      _store(container).startRound(const <RoundPlayer>[_alex]);
+      final round = container.read(liveRoundProvider)!;
+
+      expect(round.courseId, isNull);
+      expect(round.holes, standardHoles);
+      expect(round.holes.every((hole) => hole.metres == null), isTrue);
+    });
+
+    test('a round keeps its course when the choice changes later', () {
+      final container = _container();
+      container.read(selectedCourseProvider.notifier).choose(fakeCourse);
+      _store(container).startRound(const <RoundPlayer>[_alex]);
+
+      container.read(selectedCourseProvider.notifier).choose(null);
+
+      expect(container.read(liveRoundProvider)!.course, 'Test Links');
     });
   });
 }

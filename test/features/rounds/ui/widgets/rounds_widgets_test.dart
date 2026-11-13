@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
+import 'package:qaddy/features/courses/models/hole_guide.dart';
 import 'package:qaddy/features/rounds/logic/standings.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/models/round.dart';
@@ -237,6 +238,42 @@ void main() {
       }
       // Back and front are not known; nothing is invented for them.
       expect(find.text('–'), findsWidgets);
+    });
+
+    testWidgets('shows what the course data sources supply', (tester) async {
+      await tester.pumpWidget(
+        _app(
+          HoleView(
+            hole: richmondHoles[6],
+            guide: const HoleGuide(
+              distances: HoleDistances(front: 101, middle: 111, back: 121),
+              forecast: Forecast(
+                temperatureC: 17.4,
+                condition: 'Showers',
+                windKph: 23,
+                windFrom: 'SW',
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('101 m'), findsOneWidget);
+      expect(find.text('111 m'), findsOneWidget);
+      expect(find.text('121 m'), findsOneWidget);
+      expect(find.text('17°'), findsOneWidget);
+      expect(find.text('Showers'), findsOneWidget);
+      expect(find.text('23 km/h SW'), findsOneWidget);
+    });
+
+    testWidgets('invents no forecast or GPS when none is supplied', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_app(HoleView(hole: richmondHoles[6])));
+
+      expect(find.textContaining('°'), findsNothing);
+      expect(find.textContaining('km/h'), findsNothing);
+      expect(find.text('Sunny'), findsNothing);
     });
 
     testWidgets('has no side game chip on an ordinary hole', (tester) async {

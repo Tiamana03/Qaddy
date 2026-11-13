@@ -9,6 +9,8 @@ import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/rounds_screen.dart';
 
 import '../../../support/app_test_harness.dart';
+import '../../../support/fake_course_data.dart';
+import '../../../support/sample_off.dart';
 
 List<RouteBase> _routes() => <RouteBase>[
   GoRoute(path: '/rounds', builder: (context, state) => const RoundsScreen()),
@@ -24,9 +26,10 @@ Future<ProviderContainer> _pump(
   WidgetTester tester, {
   Size size = const Size(400, 3200),
   void Function(ProviderContainer container)? before,
+  List<Override> overrides = const <Override>[],
 }) async {
   useScreen(tester, size);
-  final container = friendsContainer();
+  final container = friendsContainer(overrides: overrides);
   before?.call(container);
   final router = GoRouter(initialLocation: '/rounds', routes: _routes());
   addTearDown(router.dispose);
@@ -47,6 +50,40 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  group('the course', () {
+    testWidgets('shows the course the round is on, and lets it change', (
+      tester,
+    ) async {
+      final container = await _pump(tester, overrides: fakeCourseData());
+
+      expect(find.text('Course'), findsOneWidget);
+      expect(find.text('Sample course'), findsOneWidget);
+
+      await _tap(tester, find.text('Change'));
+      expect(find.text('Choose your course'), findsOneWidget);
+      await tester.tap(find.text('Test Links'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Test Links'), findsWidgets);
+      expect(find.text('Testville, TS · 2 holes'), findsOneWidget);
+
+      await _tap(tester, find.text('Start round'));
+      final round = container.read(liveRoundProvider)!;
+      expect(round.course, 'Test Links');
+      expect(round.holes, fakeHoles);
+    });
+
+    testWidgets('without a course says what a standard layout is', (
+      tester,
+    ) async {
+      await _pump(tester, overrides: sampleOff());
+
+      expect(find.textContaining('Standard layout'), findsOneWidget);
+      await _tap(tester, find.text('Change'));
+      expect(find.text('Course search is not connected yet'), findsOneWidget);
+    });
+  });
+
   group('before the round', () {
     testWidgets('is an invitation to the first tee', (tester) async {
       await _pump(tester);

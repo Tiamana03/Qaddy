@@ -3,12 +3,12 @@
 /// weather, GPS and course tiles down the right, the length flagged at the
 /// green and a flyover pill at the foot.
 ///
-/// The aerial is a `QaddyMediaPlaceholder` until real hole imagery exists (see
-/// `docs/design/asset-register.md`), 290 tall as the mockup's is. Qaddy has no
-/// GPS, wind, flyover or per-tee distances yet, so those parts hold their place
-/// at the mockup's size and say "–" (or "Soon") rather than invent a number or
-/// act like buttons. What it does know is shown: the hole's length and, for the
-/// Sample Clubhouse round, the forecast.
+/// Everything beyond the hole's par and length arrives in a [HoleGuide], which
+/// the course data sources fill (see `features/courses`): GPS distances, the
+/// forecast and the pictures. The aerial is a `QaddyMediaPlaceholder`, 290
+/// tall as the mockup's is, until the guide has a picture. Whatever the guide
+/// does not have keeps its place at the mockup's size and says "–" (or "Soon")
+/// rather than invent a number or act like a button.
 library;
 
 import 'dart:ui' show ImageFilter;
@@ -19,12 +19,21 @@ import 'package:qaddy/core/theme/qaddy_radius.dart';
 import 'package:qaddy/core/theme/qaddy_text.dart';
 import 'package:qaddy/core/widgets/badges/qaddy_info_chip.dart';
 import 'package:qaddy/core/widgets/media/qaddy_media_placeholder.dart';
-import 'package:qaddy/features/rounds/models/course_hole.dart';
+import 'package:qaddy/features/courses/models/course_hole.dart';
+import 'package:qaddy/features/courses/models/hole_guide.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 
 /// The hole view for [hole].
 class HoleView extends StatelessWidget {
-  const HoleView({required this.hole, this.greeting, super.key});
+  const HoleView({
+    required this.hole,
+    this.guide = HoleGuide.unavailable,
+    this.greeting,
+    super.key,
+  });
+
+  /// What the course data sources know about the hole right now.
+  final HoleGuide guide;
 
   /// The hole being played.
   final CourseHole hole;
@@ -45,25 +54,25 @@ class HoleView extends StatelessWidget {
         if (game.hole == hole.number) game,
     ];
     final metres = hole.metres;
-    // The forecast is the Sample Clubhouse round's; anyone else's is unknown.
-    final forecast = upcomingRound.planned ? upcomingRound.weather : null;
-    final space = forecast?.indexOf(' ') ?? -1;
-    final temp = forecast == null
-        ? '–'
-        : space < 0
-        ? forecast
-        : forecast.substring(0, space);
-    final sky = forecast == null || space < 0
-        ? '–'
-        : forecast.substring(space + 1);
+    final distances = guide.distances;
+    final forecast = guide.forecast;
+    final temp = forecast?.temperatureLabel ?? '–';
+    final sky = forecast?.condition ?? '–';
+    final aerial = guide.media.aerialUrl;
+    String metresOrDash(int? value) => value == null ? '–' : '$value m';
 
     return SizedBox(
       height: 290,
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          QaddyMediaPlaceholder(borderRadius: shape, aerial: true),
-          // Back, middle and front. Only the middle is known.
+          QaddyMediaPlaceholder(
+            borderRadius: shape,
+            aerial: true,
+            image: aerial == null ? null : NetworkImage(aerial.toString()),
+          ),
+          // Back, middle and front: GPS when there is a fix, else the hole's
+          // length stands in for the middle.
           Positioned(
             left: 12,
             top: 12,
@@ -73,14 +82,24 @@ class HoleView extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  _DistanceRow(label: 'Back', value: '–', onImage: onImage),
+                  _DistanceRow(
+                    label: 'Back',
+                    value: metresOrDash(distances?.back),
+                    onImage: onImage,
+                  ),
                   _DistanceRow(
                     label: 'Middle',
-                    value: metres == null ? '–' : '$metres m',
+                    value: distances?.middle != null
+                        ? metresOrDash(distances!.middle)
+                        : metresOrDash(metres),
                     onImage: onImage,
                     strong: true,
                   ),
-                  _DistanceRow(label: 'Front', value: '–', onImage: onImage),
+                  _DistanceRow(
+                    label: 'Front',
+                    value: metresOrDash(distances?.front),
+                    onImage: onImage,
+                  ),
                 ],
               ),
             ),
@@ -96,7 +115,7 @@ class HoleView extends StatelessWidget {
                   width: 74,
                   height: 74,
                   icon: Icons.navigation_outlined,
-                  top: '–',
+                  top: forecast?.windLabel ?? '–',
                   bottom: 'Wind',
                   onImage: onImage,
                 ),

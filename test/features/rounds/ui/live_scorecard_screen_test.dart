@@ -6,11 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qaddy/core/theme/qaddy_theme.dart';
 import 'package:qaddy/core/widgets/motion/qaddy_confetti.dart';
+import 'package:qaddy/features/courses/state/course_providers.dart';
 import 'package:qaddy/features/rounds/models/placeholder_rounds.dart';
 import 'package:qaddy/features/rounds/state/rounds_controller.dart';
 import 'package:qaddy/features/rounds/ui/screens/live_scorecard_screen.dart';
 
 import '../../../support/app_test_harness.dart';
+import '../../../support/fake_course_data.dart';
 
 List<RouteBase> _routes() => <RouteBase>[
   GoRoute(
@@ -39,9 +41,12 @@ Future<ProviderContainer> _pump(
   WidgetTester tester, {
   bool start = true,
   Size size = const Size(400, 1400),
+  List<Override> overrides = const <Override>[],
+  void Function(ProviderContainer container)? before,
 }) async {
   useScreen(tester, size);
-  final container = friendsContainer();
+  final container = friendsContainer(overrides: overrides);
+  before?.call(container);
   if (start) {
     container
         .read(roundsProvider.notifier)
@@ -70,6 +75,33 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
+  group('with course data connected', () {
+    testWidgets('the hole view shows GPS, wind and the forecast', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        overrides: fakeCourseData(),
+        before: (c) =>
+            c.read(selectedCourseProvider.notifier).choose(fakeCourse),
+      );
+
+      // The hole's length is the course's; distances are GPS.
+      expect(find.text('101 m'), findsOneWidget);
+      expect(find.text('121 m'), findsOneWidget);
+      expect(find.text('23 km/h SW'), findsOneWidget);
+      expect(find.text('Showers'), findsOneWidget);
+      expect(find.text('Hole 1'), findsWidgets);
+    });
+
+    testWidgets('with nothing connected it invents none of it', (tester) async {
+      await _pump(tester);
+
+      expect(find.text('101 m'), findsNothing);
+      expect(find.textContaining('km/h'), findsNothing);
+    });
+  });
+
   group('the hole', () {
     testWidgets('shows the course, the hole, par and the strip of holes', (
       tester,
