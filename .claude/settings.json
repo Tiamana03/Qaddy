@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "C:\\Developer\\qaddy-devtools"
+    ],
+    "ask": [
+      "Edit(/docs/**)",
+      "Edit(//c/Developer/qaddy-devtools/**)"
+    ]
+  }
+}
