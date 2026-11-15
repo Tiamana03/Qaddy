@@ -153,7 +153,7 @@ Matches `placeholder-group-data.md`'s "Saturday Boys" season and leaderboard exa
 | Putter | Odyssey White Hot |
 | Ball | Titleist Pro V1 |
 
-This is the canonical Equipment list — the Golf Bag feature reads it directly (`profileEquipment`) rather than restating it. See `placeholder-golf-bag-data.md`.
+**Superseded (November 2026).** Profile no longer holds equipment, and `profileEquipment` no longer exists. The Golf Bag feature owns the whole bag: the starting bag is `lib/features/my_bag/models/placeholder_my_bag.dart` and the live bag is `lib/features/my_bag/state/bag_controller.dart`. See `docs/architecture/data-ownership.md` and `docs/features/golf-bag-release-candidate.md`. This list is kept for history.
 
 ---
 
